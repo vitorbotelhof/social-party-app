@@ -70,7 +70,7 @@ export function TelaCadastroJogadores({ navigation, route }: Props) {
       estaConectado: true,
       entrouEm: agora + i,
     }));
-    inicializarJogoLocal(jogadores, opcoes);
+    inicializarJogoLocal(route.params.jogoId, jogadores, opcoes);
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     navigation.replace('JogoLocal');
   }

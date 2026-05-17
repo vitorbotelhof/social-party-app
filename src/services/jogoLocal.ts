@@ -1,59 +1,52 @@
-import type { GameAction, GameState, Player } from '@/engine/types';
-import { mrWhiteEngine } from '@/games/mr-white';
-import type {
-  MrWhiteAction,
-  MrWhitePrivateState,
-  MrWhitePublicState,
-  OpcoesMrWhite,
-} from '@/games/mr-white/types';
+import { obterJogo } from '@/engine/registry';
+import type { GameAction, GameId, GameState, Player } from '@/engine/types';
 
-type EstadoMrWhite = GameState<MrWhitePublicState, MrWhitePrivateState>;
-
-let estadoAtual: EstadoMrWhite | null = null;
+let jogoIdAtual: GameId | null = null;
+let estadoAtual: GameState | null = null;
 let jogadoresLocais: Player[] = [];
-let opcoesAtuais: OpcoesMrWhite | null = null;
-const ouvintes = new Set<(estado: EstadoMrWhite | null) => void>();
+let opcoesAtuais: unknown = null;
+const ouvintes = new Set<(estado: GameState | null) => void>();
 
 function notificar(): void {
   for (const cb of ouvintes) cb(estadoAtual);
 }
 
 export function inicializarJogoLocal(
+  jogoId: GameId,
   jogadores: Player[],
-  opcoes: OpcoesMrWhite,
+  opcoes: unknown,
 ): void {
-  if (jogadores.length === 0) return;
+  const engine = obterJogo(jogoId);
+  if (!engine || jogadores.length === 0) return;
+  jogoIdAtual = jogoId;
   jogadoresLocais = [...jogadores];
   opcoesAtuais = opcoes;
-  estadoAtual = mrWhiteEngine.criarEstadoInicial(
-    jogadores,
-    jogadores[0]!.id,
-    opcoes,
-  ) as EstadoMrWhite;
+  estadoAtual = engine.criarEstadoInicial(jogadores, jogadores[0]!.id, opcoes);
   notificar();
 }
 
 export function reiniciarPartidaLocal(): void {
-  if (!opcoesAtuais || jogadoresLocais.length === 0) return;
-  estadoAtual = mrWhiteEngine.criarEstadoInicial(
+  if (!jogoIdAtual || jogadoresLocais.length === 0) return;
+  const engine = obterJogo(jogoIdAtual);
+  if (!engine) return;
+  estadoAtual = engine.criarEstadoInicial(
     jogadoresLocais,
     jogadoresLocais[0]!.id,
     opcoesAtuais,
-  ) as EstadoMrWhite;
+  );
   notificar();
 }
 
 export function despacharAcaoLocal(acao: GameAction): void {
-  if (!estadoAtual) return;
-  estadoAtual = mrWhiteEngine.processarAcao(
-    estadoAtual,
-    acao as MrWhiteAction,
-  ) as EstadoMrWhite;
+  if (!estadoAtual || !jogoIdAtual) return;
+  const engine = obterJogo(jogoIdAtual);
+  if (!engine) return;
+  estadoAtual = engine.processarAcao(estadoAtual, acao);
   notificar();
 }
 
 export function observarEstadoLocal(
-  cb: (estado: EstadoMrWhite | null) => void,
+  cb: (estado: GameState | null) => void,
 ): () => void {
   ouvintes.add(cb);
   cb(estadoAtual);
@@ -62,7 +55,7 @@ export function observarEstadoLocal(
   };
 }
 
-export function getEstadoLocal(): EstadoMrWhite | null {
+export function getEstadoLocal(): GameState | null {
   return estadoAtual;
 }
 
@@ -71,17 +64,13 @@ export function getJogadoresLocais(): Player[] {
 }
 
 export function resetarJogoLocal(): void {
+  jogoIdAtual = null;
   estadoAtual = null;
   jogadoresLocais = [];
   opcoesAtuais = null;
   notificar();
 }
 
-/**
- * Limpa o estado da partida atual mas mantém a lista de jogadores
- * cadastrada — usado pelo "jogar de novo com o mesmo grupo" pra
- * reabrir a tela de configuração com os mesmos nomes.
- */
 export function limparEstadoMantendoJogadores(): void {
   estadoAtual = null;
   opcoesAtuais = null;

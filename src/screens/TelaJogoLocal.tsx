@@ -53,7 +53,7 @@ export function TelaJogoLocal() {
   const [estado, setEstado] = useState<EstadoMrWhite | null>(null);
   const permitirSaidaRef = useRef(false);
 
-  useEffect(() => observarEstadoLocal(setEstado), []);
+  useEffect(() => observarEstadoLocal((e) => setEstado(e as EstadoMrWhite | null)), []);
 
   // Intercepta qualquer tentativa de voltar (swipe iOS, hardware back
   // Android, etc.) e pede confirmação, exceto quando a saída é

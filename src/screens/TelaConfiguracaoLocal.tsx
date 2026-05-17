@@ -101,7 +101,7 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
       numeroMrWhites: numMrWhites,
       duracaoTurnoSegundos: 60,
     };
-    inicializarJogoLocal(jogadores, opcoes);
+    inicializarJogoLocal('mrwhite', jogadores, opcoes);
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     navigation.replace('JogoLocal');
   }
