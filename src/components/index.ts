@@ -1,0 +1,12 @@
+export { BadgeUmCelular } from '@/components/BadgeUmCelular';
+export { BarraAcoesJogo } from '@/components/BarraAcoesJogo';
+export { BotaoPrimario } from '@/components/BotaoPrimario';
+export { BotaoSecundario } from '@/components/BotaoSecundario';
+export { CartaoJogador } from '@/components/CartaoJogador';
+export { CodigoSala } from '@/components/CodigoSala';
+export { ContagemRegressiva } from '@/components/ContagemRegressiva';
+export { IndicadorConexao } from '@/components/IndicadorConexao';
+export { JogadorAnimado } from '@/components/JogadorAnimado';
+export { Logo } from '@/components/Logo';
+export { TelaCarregamento } from '@/components/TelaCarregamento';
+export { Temporizador } from '@/components/Temporizador';

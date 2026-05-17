@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npx expo *)",
+      "Bash(node -e \"const c = require\\('/Users/vitorfreitas/social-party-app/src/games/mr-white/categorias.ts'\\)\")",
+      "Bash(awk '/civis:/{count++} END {print count, \\\\\"pares totais\\\\\"}' /Users/vitorfreitas/social-party-app/src/games/mr-white/categorias.ts)",
+      "Bash(awk -v 'cat=id: '\\\\''__TRACKED_VAR__'\\\\''' 'BEGIN{found=0} $0 ~ cat {found=1} found && /civis:/ {c++} found && /^  [a-z]+: \\\\{/ && c {if \\(started\\) {print prev_cat\": \"c; c=0; started=0} prev_cat=cat; started=1} END {print cat\": \"c}' /Users/vitorfreitas/social-party-app/src/games/mr-white/categorias.ts)",
+      "Bash(awk '/id: .[a-z]+./{cat=$0} /civis:/{counts[cat]++} END{for \\(k in counts\\) print k, counts[k]}' /Users/vitorfreitas/social-party-app/src/games/mr-white/categorias.ts)",
+      "Bash(npm uninstall *)",
+      "Bash(npm install *)",
+      "Bash(curl -sS -o /tmp/bundle-ios.js -w \"HTTP %{http_code} • %{size_download} bytes • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
+      "Bash(pkill -f \"expo start\")",
+      "Bash(curl -sS -o /tmp/bundle-ios2.js -w \"HTTP %{http_code} • %{size_download} bytes • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
+      "Bash(curl -sS -o /tmp/bundle-android.js -w \"HTTP %{http_code} • %{size_download} bytes • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=android&dev=false&minify=false\")",
+      "Bash(curl -sS -o /tmp/bundle-test.js -w \"HTTP %{http_code} • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
+      "Bash(curl -sS -o /tmp/bundle-rev.js -w \"HTTP %{http_code} • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
+      "Bash(curl -sS -o /tmp/bundle-rodada.js -w \"HTTP %{http_code} • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
+      "Bash(curl -sS -o /tmp/bundle-vot.js -w \"HTTP %{http_code} • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
+      "Bash(curl -sS -o /tmp/bundle-resultado.js -w \"HTTP %{http_code} • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
+      "Bash(curl -sS -o /tmp/bundle-final.js -w \"HTTP %{http_code} • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
+      "Bash(curl -sS -o /tmp/onda1-ios.js -w \"HTTP %{http_code} • %{size_download}B • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
+      "Bash(npx eslint *)"
+    ]
+  }
+}
