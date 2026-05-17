@@ -20,7 +20,6 @@ import type { Player, PlayerId } from '@/engine/types';
 import type { RootStackParamList } from '@/navigation/types';
 import { tocar } from '@/services/audio';
 import { limparPartida } from '@/services/partidaAtiva';
-import { configurarPresenca } from '@/services/presenca';
 import { observarSala, sairDaSala } from '@/services/roomService';
 import { cores, espacamento, tipografia } from '@/theme/colors';
 
@@ -32,11 +31,6 @@ export function TelaLobby({ navigation, route }: Props) {
   const [anfitriaoId, setAnfitriaoId] = useState<PlayerId | null>(null);
   const [salaRemovida, setSalaRemovida] = useState(false);
   const totalAnteriorRef = useRef(0);
-
-  useEffect(
-    () => configurarPresenca(roomCode, jogadorId),
-    [roomCode, jogadorId],
-  );
 
   useEffect(() => {
     const cancelar = observarSala(roomCode, (sala) => {

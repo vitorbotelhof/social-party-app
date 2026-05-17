@@ -15,6 +15,7 @@ import { TelaRodada } from '@/screens/TelaRodada';
 import { TelaVotacao } from '@/screens/TelaVotacao';
 import { TelaWordReveal } from '@/screens/TelaWordReveal';
 import { setPartidaAtiva } from '@/services/partidaAtiva';
+import { configurarPresenca } from '@/services/presenca';
 import {
   observarEstadoDoJogo,
   observarJogadores,
@@ -58,6 +59,11 @@ export function GameScreen({ navigation, route }: Props) {
     setPartidaAtiva({ roomCode, jogoId, jogadorId });
     return () => setPartidaAtiva(null);
   }, [roomCode, jogoId, jogadorId]);
+
+  useEffect(
+    () => configurarPresenca(roomCode, jogadorId),
+    [roomCode, jogadorId],
+  );
 
   useEffect(() => {
     if (estado?.fase === 'lobby') {
