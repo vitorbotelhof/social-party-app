@@ -19,7 +19,7 @@ import {
 import type { Player, PlayerId } from '@/engine/types';
 import type { RootStackParamList } from '@/navigation/types';
 import { tocar } from '@/services/audio';
-import { limparPartida, setPartidaAtiva } from '@/services/partidaAtiva';
+import { limparPartida } from '@/services/partidaAtiva';
 import { configurarPresenca } from '@/services/presenca';
 import { observarSala, sairDaSala } from '@/services/roomService';
 import { cores, espacamento, tipografia } from '@/theme/colors';
@@ -27,16 +27,11 @@ import { cores, espacamento, tipografia } from '@/theme/colors';
 type Props = NativeStackScreenProps<RootStackParamList, 'Lobby'>;
 
 export function TelaLobby({ navigation, route }: Props) {
-  const { roomCode, jogoId, jogadorId } = route.params;
+  const { roomCode, jogadorId } = route.params;
   const [jogadores, setJogadores] = useState<Player[]>([]);
   const [anfitriaoId, setAnfitriaoId] = useState<PlayerId | null>(null);
   const [salaRemovida, setSalaRemovida] = useState(false);
   const totalAnteriorRef = useRef(0);
-
-  useEffect(() => {
-    setPartidaAtiva({ roomCode, jogoId, jogadorId });
-    return () => setPartidaAtiva(null);
-  }, [roomCode, jogoId, jogadorId]);
 
   useEffect(
     () => configurarPresenca(roomCode, jogadorId),
