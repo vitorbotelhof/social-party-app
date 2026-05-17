@@ -27,7 +27,6 @@ import type {
   PistaDada,
 } from '@/games/mr-white/types';
 import { criarAcao, despacharAcao } from '@/services/gameActions';
-import { observarJogadores } from '@/services/roomService';
 import {
   PALETA_AVATARES,
   cores,
@@ -43,17 +42,15 @@ interface Props {
   roomCode: RoomCode;
   jogoId: GameId;
   jogadorId: PlayerId;
+  jogadores: Player[];
 }
 
-export function TelaVotacao({ estado, roomCode, jogoId, jogadorId }: Props) {
-  const [jogadores, setJogadores] = useState<Player[]>([]);
+export function TelaVotacao({ estado, roomCode, jogoId, jogadorId, jogadores }: Props) {
   const [selecionado, setSelecionado] = useState<PlayerId | null>(null);
   const [enviando, setEnviando] = useState(false);
   const estadoRef = useRef(estado);
   estadoRef.current = estado;
   const ultimoCliqueRef = useRef(0);
-
-  useEffect(() => observarJogadores(roomCode, setJogadores), [roomCode]);
 
   const meuVoto = estado.estadoPublico.votos[jogadorId] ?? null;
   const votos = estado.estadoPublico.votos;

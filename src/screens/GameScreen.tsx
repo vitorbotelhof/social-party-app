@@ -145,9 +145,9 @@ export function GameScreen({ navigation, route }: Props) {
     case 'revelando':
       return <TelaWordReveal {...props} jogadores={jogadores} />;
     case 'dando_dicas':
-      return <TelaRodada {...props} />;
+      return <TelaRodada {...props} jogadores={jogadores} />;
     case 'votando':
-      return <TelaVotacao {...props} />;
+      return <TelaVotacao {...props} jogadores={jogadores} />;
     case 'palpite_final':
       return <TelaPalpiteMrWhite {...props} />;
     case 'finalizado':

@@ -28,7 +28,6 @@ import type {
   PistaDada,
 } from '@/games/mr-white/types';
 import { criarAcao, despacharAcao } from '@/services/gameActions';
-import { observarJogadores } from '@/services/roomService';
 import {
   PALETA_AVATARES,
   cores,
@@ -44,6 +43,7 @@ interface Props {
   roomCode: RoomCode;
   jogoId: GameId;
   jogadorId: PlayerId;
+  jogadores: Player[];
 }
 
 const MAX_CARACTERES = 50;
@@ -89,21 +89,17 @@ function useTimer(
   };
 }
 
-export function TelaRodada({ estado, roomCode, jogoId, jogadorId }: Props) {
+export function TelaRodada({ estado, roomCode, jogoId, jogadorId, jogadores: listaJogadores }: Props) {
   const [dica, setDica] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [tempoEsgotadoVisivel, setTempoEsgotadoVisivel] = useState(false);
-  const [jogadores, setJogadores] = useState<Record<PlayerId, Player>>({});
   const scrollRef = useRef<ScrollView>(null);
   const turnoAutoEnviadoRef = useRef<number | null>(null);
   const ultimoCliqueRef = useRef(0);
 
-  useEffect(
-    () =>
-      observarJogadores(roomCode, (lista) => {
-        setJogadores(Object.fromEntries(lista.map((j) => [j.id, j])));
-      }),
-    [roomCode],
+  const jogadores = useMemo(
+    () => Object.fromEntries(listaJogadores.map((j) => [j.id, j])),
+    [listaJogadores],
   );
 
   const ordem = estado.estadoPublico.ordemJogadores;
