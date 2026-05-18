@@ -86,8 +86,6 @@ export default function App() {
   });
   const navegacaoPronta = useRef(false);
 
-  if (!fontsLoaded) return null;
-
   useEffect(() => {
     function aoMudarAppState(state: AppStateStatus) {
       if (state === 'background' || state === 'inactive') {
@@ -107,6 +105,8 @@ export default function App() {
     const sub = AppState.addEventListener('change', aoMudarAppState);
     return () => sub.remove();
   }, []);
+
+  if (!fontsLoaded) return null;
 
   return (
     <SafeAreaProvider>
