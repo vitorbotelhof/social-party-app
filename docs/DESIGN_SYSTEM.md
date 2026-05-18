@@ -387,3 +387,34 @@ Never allow:
 
 Every screen must feel like:
 “a premium social experience happening at night.”
+
+
+# Navigation Feeling
+
+The app should feel like:
+- browsing social experiences
+- discovering party dynamics
+- selecting emotional experiences
+
+NOT:
+- configuring multiplayer infrastructure
+
+# Home Experience
+
+The home screen should behave like:
+- a premium social game catalog
+- a Netflix-style browsing experience
+- an emotional game discovery layer
+
+Games are the primary product entities.
+
+# Game Cards
+
+Game cards should communicate:
+- emotional tone
+- social energy
+- player count
+- tension/fun style
+- atmosphere
+
+Cards should feel cinematic and socially intriguing.

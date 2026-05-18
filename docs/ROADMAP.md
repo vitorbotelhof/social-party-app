@@ -145,3 +145,59 @@ The foundation is considered successful when:
 * architecture stays modular
 * duplication decreases naturally
 * no large rewrites are needed
+
+
+# Completed Work
+
+## Onda A — Completed
+
+Completed:
+- extracted duplicated multiplayer normalization
+- removed dead mocks
+- consolidated normalization layer
+
+Result:
+- reduced duplicated multiplayer state logic
+- improved foundation consistency
+
+---
+
+## Onda B — In Progress
+
+Completed so far:
+- centralized player subscriptions in GameScreen
+- centralized active session ownership
+- centralized multiplayer presence ownership
+- decoupled jogoLocal.ts from Mr White
+- connected local gameplay to game registry
+
+Result:
+- explicit multiplayer ownership
+- reduced realtime listener duplication
+- clearer gameplay lifecycle
+- improved future multi-game scalability
+
+# Future Priorities
+
+Current priorities:
+- multiplayer stability
+- reconnect safety
+- gameplay lifecycle validation
+- realtime consistency
+- multiplayer testing
+
+NOT priorities:
+- adding many games
+- generalized engines
+- plugin systems
+- advanced abstractions
+
+# Current Product Direction
+
+The platform is evolving from:
+"Mr White app"
+
+into:
+"social multiplayer platform"
+
+The game catalog is now considered the primary navigation structure.

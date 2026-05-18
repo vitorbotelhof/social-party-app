@@ -132,9 +132,9 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
         >
           <View style={estilos.cabecalho}>
             <Text style={estilos.legenda}>📱 UM CELULAR</Text>
-            <Text style={estilos.tituloPagina}>configurar partida</Text>
+            <Text style={estilos.tituloPagina}>como vai ser?</Text>
             <Text style={estilos.subtitulo}>
-              modo 1 celular • sem internet
+              offline · passando de mão em mão
             </Text>
           </View>
 
@@ -286,7 +286,7 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
 
         <View style={estilos.rodape}>
           <BotaoPrimario
-            titulo="começar"
+            titulo="começa aí"
             disabled={!podeIniciar}
             carregando={iniciando}
             onPress={aoComecar}

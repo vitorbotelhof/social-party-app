@@ -1,11 +1,15 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useEffect, useRef, useState } from 'react';
+import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
+  ImageBackground,
   KeyboardAvoidingView,
   Modal,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -13,30 +17,33 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BotaoPrimario, BotaoSecundario, Logo } from '@/components';
+import { BotaoPrimario } from '@/components';
+import { JOGOS, type DefinicaoJogo } from '@/games/gameRegistry';
 import type { RootStackParamList } from '@/navigation/types';
-import {
-  obterOuCriarJogador,
-  salvarNome,
-} from '@/services/jogadorLocal';
+import { obterOuCriarJogador, salvarNome } from '@/services/jogadorLocal';
 import { cores, espacamento, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Inicio'>;
 
-const ANO_ATUAL = new Date().getFullYear();
 const MIN_TAMANHO_NOME = 2;
+const ALTURA_CARD = 216;
+const STAGGER_MS = 70;
+const GRADIENTE_CARD: [string, string, string] = [
+  'rgba(0,0,0,0)',
+  'rgba(0,0,0,0.52)',
+  'rgba(0,0,0,0.94)',
+];
+
 
 export function TelaInicio({ navigation }: Props) {
-  const logoOp = useRef(new Animated.Value(0)).current;
-  const logoY = useRef(new Animated.Value(18)).current;
-  const ctaOp = useRef(new Animated.Value(0)).current;
-  const ctaY = useRef(new Animated.Value(18)).current;
-  const rodapeOp = useRef(new Animated.Value(0)).current;
+  const headerOp = useRef(new Animated.Value(0)).current;
+  const headerY = useRef(new Animated.Value(10)).current;
+  const cardsAnim = useMemo(
+    () => JOGOS.map(() => ({ op: new Animated.Value(0), y: new Animated.Value(24) })),
+    [],
+  );
 
-  const [jogador, setJogador] = useState<{
-    id: string;
-    nome: string | null;
-  } | null>(null);
+  const [jogador, setJogador] = useState<{ id: string; nome: string | null } | null>(null);
   const [mostrarModalNome, setMostrarModalNome] = useState(false);
   const [nomeDigitado, setNomeDigitado] = useState('');
   const [salvando, setSalvando] = useState(false);
@@ -49,38 +56,21 @@ export function TelaInicio({ navigation }: Props) {
   }, []);
 
   useEffect(() => {
-    Animated.stagger(140, [
-      Animated.parallel([
-        Animated.timing(logoOp, {
-          toValue: 1,
-          duration: 520,
-          useNativeDriver: true,
-        }),
-        Animated.timing(logoY, {
-          toValue: 0,
-          duration: 520,
-          useNativeDriver: true,
-        }),
-      ]),
-      Animated.parallel([
-        Animated.timing(ctaOp, {
-          toValue: 1,
-          duration: 520,
-          useNativeDriver: true,
-        }),
-        Animated.timing(ctaY, {
-          toValue: 0,
-          duration: 520,
-          useNativeDriver: true,
-        }),
-      ]),
-      Animated.timing(rodapeOp, {
-        toValue: 1,
-        duration: 520,
-        useNativeDriver: true,
-      }),
+    Animated.parallel([
+      Animated.timing(headerOp, { toValue: 1, duration: 420, useNativeDriver: true }),
+      Animated.timing(headerY, { toValue: 0, duration: 420, useNativeDriver: true }),
     ]).start();
-  }, [ctaOp, ctaY, logoOp, logoY, rodapeOp]);
+
+    Animated.stagger(
+      STAGGER_MS,
+      cardsAnim.map((anim) =>
+        Animated.parallel([
+          Animated.timing(anim.op, { toValue: 1, duration: 380, useNativeDriver: true }),
+          Animated.timing(anim.y, { toValue: 0, duration: 380, useNativeDriver: true }),
+        ]),
+      ),
+    ).start();
+  }, [cardsAnim, headerOp, headerY]);
 
   const nomeValido = nomeDigitado.trim().length >= MIN_TAMANHO_NOME;
 
@@ -98,12 +88,14 @@ export function TelaInicio({ navigation }: Props) {
     }
   }
 
-  function aoCriarPartida() {
+  function aoEscolherJogo(jogo: DefinicaoJogo) {
+    if (!jogo.disponivel) return;
     if (!jogador?.nome) {
       setMostrarModalNome(true);
       return;
     }
-    navigation.navigate('SelecaoJogo');
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    navigation.navigate('SelecaoDinamica', { jogoId: jogo.id });
   }
 
   function aoEntrarPartida() {
@@ -114,69 +106,51 @@ export function TelaInicio({ navigation }: Props) {
     navigation.navigate('EntrarSala');
   }
 
-  function aoJogarUmCelular() {
-    navigation.navigate('ConfiguracaoLocal');
-  }
-
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
-      <View style={estilos.miolo}>
-        <Animated.View
-          style={[
-            estilos.blocoMarca,
-            { opacity: logoOp, transform: [{ translateY: logoY }] },
-          ]}
-        >
-          <View style={estilos.containerLogo}>
-            <View style={estilos.glow} pointerEvents="none" />
-            <Logo tamanho={180} />
+      <Animated.View
+        style={[
+          estilos.header,
+          { opacity: headerOp, transform: [{ translateY: headerY }] },
+        ]}
+      >
+        <View style={estilos.headerLinha}>
+          <View>
+            <Text style={estilos.marca}>entre nós</Text>
+            <Text style={estilos.slogan}>qual o clima hoje?</Text>
           </View>
-
-          <Text style={estilos.marca}>entre nós</Text>
-          <Text style={estilos.slogan}>
-            jogos sociais para momentos reais.
-          </Text>
-        </Animated.View>
-
-        <View style={estilos.divisor} />
-
-        <Animated.View
-          style={[
-            estilos.acoes,
-            { opacity: ctaOp, transform: [{ translateY: ctaY }] },
-          ]}
-        >
-          <View style={estilos.blocoBotao}>
-            <BotaoPrimario titulo="criar partida" onPress={aoCriarPartida} />
-            <Text style={estilos.legendaBotao}>cada um no próprio celular</Text>
-          </View>
-          <View style={estilos.blocoBotao}>
-            <BotaoSecundario
-              titulo="entrar em partida"
-              onPress={aoEntrarPartida}
-            />
-            <Text style={estilos.legendaBotao}>com código de outra sala</Text>
-          </View>
-          <View style={estilos.blocoBotao}>
-            <Pressable
-              onPress={aoJogarUmCelular}
-              style={({ pressed }) => [
-                estilos.botaoUmCelular,
-                pressed && estilos.botaoUmCelularPressionado,
-              ]}
-            >
-              <Text style={estilos.botaoUmCelularTexto}>
-                📱 jogar agora • 1 celular
-              </Text>
-            </Pressable>
-            <Text style={estilos.legendaBotao}>passando o celular entre si</Text>
-          </View>
-        </Animated.View>
-      </View>
-
-      <Animated.View style={[estilos.rodape, { opacity: rodapeOp }]}>
-        <Text style={estilos.rodapeTexto}>entre nós © {ANO_ATUAL}</Text>
+          <Pressable
+            onPress={aoEntrarPartida}
+            style={({ pressed }) => [
+              estilos.botaoEntrar,
+              pressed && estilos.botaoEntrarPressionado,
+            ]}
+          >
+            <Text style={estilos.botaoEntrarTexto}>tenho código</Text>
+          </Pressable>
+        </View>
       </Animated.View>
+
+      <ScrollView
+        style={estilos.scroll}
+        contentContainerStyle={estilos.scrollConteudo}
+        showsVerticalScrollIndicator={false}
+      >
+        {JOGOS.map((jogo, i) => (
+          <Animated.View
+            key={jogo.id}
+            style={{
+              opacity: cardsAnim[i]!.op,
+              transform: [{ translateY: cardsAnim[i]!.y }],
+            }}
+          >
+            <CardJogo
+              jogo={jogo}
+              onPress={() => aoEscolherJogo(jogo)}
+            />
+          </Animated.View>
+        ))}
+      </ScrollView>
 
       <Modal
         visible={mostrarModalNome}
@@ -200,9 +174,8 @@ export function TelaInicio({ navigation }: Props) {
           <View style={estilos.modalCard}>
             <Text style={estilos.modalTitulo}>como te chamam?</Text>
             <Text style={estilos.modalSubtitulo}>
-              seu nome aparece para os outros jogadores
+              é como os outros vão te ver
             </Text>
-
             <TextInput
               value={nomeDigitado}
               onChangeText={setNomeDigitado}
@@ -214,7 +187,6 @@ export function TelaInicio({ navigation }: Props) {
               onSubmitEditing={confirmarNome}
               style={estilos.modalInput}
             />
-
             <BotaoPrimario
               titulo="entrar"
               carregando={salvando}
@@ -228,81 +200,208 @@ export function TelaInicio({ navigation }: Props) {
   );
 }
 
-const TAMANHO_GLOW = 280;
+interface CardJogoProps {
+  jogo: DefinicaoJogo;
+  onPress: () => void;
+}
+
+function CardJogo({ jogo, onPress }: CardJogoProps) {
+  const escala = useRef(new Animated.Value(1)).current;
+
+  function aoPressionar() {
+    if (!jogo.disponivel) return;
+    Animated.spring(escala, {
+      toValue: 0.97,
+      useNativeDriver: true,
+      speed: 40,
+      bounciness: 0,
+    }).start();
+  }
+
+  function aoSoltar() {
+    if (!jogo.disponivel) return;
+    Animated.spring(escala, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 6,
+    }).start();
+  }
+
+  return (
+    <Animated.View
+      style={[
+        estilos.cardWrapper,
+        jogo.disponivel && estilos.cardAtivo,
+        { transform: [{ scale: escala }] },
+      ]}
+    >
+      <Pressable
+        onPress={onPress}
+        onPressIn={aoPressionar}
+        onPressOut={aoSoltar}
+        disabled={!jogo.disponivel}
+        style={estilos.cardPressavel}
+      >
+        <ImageBackground
+          source={jogo.cover}
+          style={estilos.cardImagem}
+          imageStyle={estilos.cardImagemRaio}
+        >
+          <LinearGradient
+            colors={GRADIENTE_CARD}
+            locations={[0, 0.45, 1]}
+            style={estilos.gradiente}
+          />
+
+          <View style={estilos.barraTopo}>
+            <View style={estilos.badge}>
+              <Text style={estilos.badgeTexto}>
+                {jogo.minJogadores}–{jogo.maxJogadores} jogadores
+              </Text>
+            </View>
+            <View style={estilos.badge}>
+              <Text style={estilos.badgeTexto}>{'🔥'.repeat(jogo.intensidade)}</Text>
+            </View>
+          </View>
+
+          <View style={estilos.blocoBottom}>
+            <Text style={estilos.cardNome}>{jogo.nome}</Text>
+            <Text style={estilos.cardSlogan} numberOfLines={2}>
+              {jogo.slogan}
+            </Text>
+            {jogo.socialTags.length > 0 && (
+              <View style={estilos.chips}>
+                {jogo.socialTags.map((cat) => (
+                  <View key={cat} style={estilos.chip}>
+                    <Text style={estilos.chipTexto}>{cat}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+
+          {!jogo.disponivel && (
+            <View style={estilos.overlayEmBreve}>
+              <View style={estilos.seloEmBreve}>
+                <Text style={estilos.seloTexto}>EM BREVE</Text>
+              </View>
+            </View>
+          )}
+        </ImageBackground>
+      </Pressable>
+    </Animated.View>
+  );
+}
 
 const estilos = StyleSheet.create({
-  acoes: {
-    gap: espacamento.md,
-    paddingHorizontal: espacamento.lg,
+  badge: {
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    borderRadius: raio.pill,
+    paddingHorizontal: espacamento.sm + 2,
+    paddingVertical: 4,
   },
-  blocoBotao: {
-    gap: 4,
+  badgeTexto: {
+    color: cores.texto,
+    fontSize: tipografia.tamanhoLegenda,
+    fontWeight: tipografia.pesoBold,
+    letterSpacing: 0.2,
   },
-  blocoMarca: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: espacamento.lg,
+  barraTopo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: espacamento.md,
   },
-  botaoUmCelular: {
-    alignItems: 'center',
+  blocoBottom: {
+    gap: espacamento.xs,
+    padding: espacamento.md,
+    paddingTop: 0,
+  },
+  botaoEntrar: {
     backgroundColor: cores.superficieElevada,
     borderColor: cores.borda,
     borderRadius: raio.pill,
     borderWidth: 1,
-    justifyContent: 'center',
     paddingHorizontal: espacamento.md,
-    paddingVertical: 14,
+    paddingVertical: espacamento.sm,
   },
-  botaoUmCelularPressionado: {
-    backgroundColor: cores.superficie,
-    transform: [{ scale: 0.98 }],
+  botaoEntrarPressionado: {
+    opacity: 0.7,
   },
-  botaoUmCelularTexto: {
-    color: cores.texto,
+  botaoEntrarTexto: {
+    color: cores.textoSecundario,
+    fontSize: tipografia.tamanhoLegenda,
+    fontWeight: tipografia.pesoSemibold,
+  },
+  cardAtivo: {
+    borderColor: 'rgba(108, 77, 255, 0.45)',
+    borderWidth: 1.5,
+  },
+  cardImagem: {
+    height: ALTURA_CARD,
+    justifyContent: 'space-between',
+  },
+  cardImagemRaio: {
+    borderRadius: raio.xl,
+  },
+  cardNome: {
+    color: cores.textoSobrePrimaria,
+    fontSize: tipografia.tamanhoSubtitulo,
+    fontWeight: tipografia.pesoExtraBold,
+    letterSpacing: tipografia.letraSpacingTitulo,
+  },
+  cardPressavel: {
+    borderRadius: raio.xl,
+    overflow: 'hidden',
+  },
+  cardSlogan: {
+    color: 'rgba(255,255,255,0.72)',
     fontSize: tipografia.tamanhoCorpoMenor,
+  },
+  cardWrapper: {
+    borderRadius: raio.xl,
+    marginBottom: espacamento.md,
+  },
+  chip: {
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: raio.pill,
+    paddingHorizontal: espacamento.sm + 2,
+    paddingVertical: 3,
+  },
+  chipTexto: {
+    color: 'rgba(255,255,255,0.75)',
+    fontSize: 11,
     fontWeight: tipografia.pesoSemibold,
     letterSpacing: 0.3,
   },
-  legendaBotao: {
-    color: cores.textoMudo,
-    fontSize: tipografia.tamanhoMicro,
-    textAlign: 'center',
+  chips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: espacamento.xs,
+    marginTop: espacamento.xs,
   },
-  containerLogo: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: espacamento.xl,
-    position: 'relative',
-  },
-  divisor: {
-    alignSelf: 'center',
-    backgroundColor: cores.borda,
-    height: 1,
-    marginVertical: espacamento.lg,
-    width: '40%',
-  },
-  glow: {
-    backgroundColor: cores.primaria,
-    borderRadius: TAMANHO_GLOW / 2,
-    elevation: 24,
-    height: TAMANHO_GLOW,
-    opacity: 0.22,
+  gradiente: {
+    bottom: 0,
+    left: 0,
     position: 'absolute',
-    shadowColor: cores.primaria,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 60,
-    width: TAMANHO_GLOW,
+    right: 0,
+    top: 0,
+  },
+  header: {
+    paddingBottom: espacamento.md,
+    paddingHorizontal: espacamento.lg,
+    paddingTop: espacamento.sm,
+  },
+  headerLinha: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   marca: {
     color: cores.texto,
-    fontSize: 36,
+    fontSize: 22,
     fontWeight: tipografia.pesoLeve,
-    letterSpacing: 1.5,
-  },
-  miolo: {
-    flex: 1,
+    letterSpacing: 1.2,
   },
   modalCard: {
     backgroundColor: cores.superficie,
@@ -321,7 +420,7 @@ const estilos = StyleSheet.create({
   },
   modalOverlay: {
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(0,0,0,0.75)',
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: espacamento.lg,
@@ -343,23 +442,46 @@ const estilos = StyleSheet.create({
     right: 0,
     top: 0,
   },
-  rodape: {
-    alignItems: 'center',
-    paddingBottom: espacamento.md,
+  scroll: {
+    flex: 1,
   },
-  rodapeTexto: {
-    color: cores.textoMudo,
-    fontSize: tipografia.tamanhoMicro,
+  scrollConteudo: {
+    paddingBottom: espacamento.xl,
+    paddingHorizontal: espacamento.lg,
+    paddingTop: espacamento.sm,
+  },
+  seloEmBreve: {
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderColor: 'rgba(255,255,255,0.5)',
+    borderRadius: raio.sm,
+    borderWidth: 1,
+    paddingHorizontal: espacamento.md,
+    paddingVertical: espacamento.sm - 2,
+  },
+  seloTexto: {
+    color: cores.texto,
+    fontSize: tipografia.tamanhoLegenda,
+    fontWeight: tipografia.pesoExtraBold,
     letterSpacing: tipografia.spacingLabel,
   },
   slogan: {
-    color: cores.textoSecundario,
-    fontSize: tipografia.tamanhoCorpoMenor,
-    marginTop: espacamento.sm,
-    textAlign: 'center',
+    color: cores.textoMudo,
+    fontSize: tipografia.tamanhoMicro,
+    letterSpacing: 0.3,
+    marginTop: 2,
   },
   tela: {
     backgroundColor: cores.fundo,
     flex: 1,
+  },
+  overlayEmBreve: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
 });

@@ -18,11 +18,9 @@ import type {
   OpcoesMrWhite,
 } from '@/games/mr-white/types';
 import type { RootStackParamList } from '@/navigation/types';
-import { iniciarJogo, sairDaSala } from '@/services/roomService';
+import { iniciarJogo } from '@/services/roomService';
 import { RoomServiceError } from '@/types/room';
 import { cores, espacamento, raio } from '@/theme/colors';
-
-type ModoJogo = 'local' | 'remoto';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ConfiguracaoJogo'>;
 
@@ -45,7 +43,6 @@ const OPCOES_TEMPO: { valor: number; rotulo: string }[] = [
 export function TelaConfiguracaoJogo({ navigation, route }: Props) {
   const { roomCode, jogoId, jogadorId } = route.params;
 
-  const [modo, setModo] = useState<ModoJogo>('local');
   const [categoriaId, setCategoriaId] = useState<CategoriaId>('comidas');
   const [dificuldade, setDificuldade] = useState<Dificuldade>('medio');
   const [numMrWhites, setNumMrWhites] = useState(1);
@@ -62,15 +59,7 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
     };
     setIniciando(true);
     try {
-      if (modo === 'local') {
-        // Abandona a sala Firebase criada antes (modo local não usa rede).
-        void sairDaSala(roomCode, jogadorId);
-        navigation.replace('CadastroJogadores', { jogoId, opcoes });
-        return;
-      }
       await iniciarJogo(roomCode, jogadorId, opcoes);
-      // Mostra contagem regressiva pro host. Outros jogadores vão direto
-      // pra revelação (o engine já transicionou no Firebase).
       setMostrarContagem(true);
     } catch (erro) {
       setIniciando(false);
@@ -95,65 +84,7 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
   return (
     <SafeAreaView style={estilos.tela} edges={['bottom']}>
       <ScrollView contentContainerStyle={estilos.conteudo}>
-        <Text style={estilos.tituloPagina}>configurar partida</Text>
-
-        <Section titulo="Modo de Jogo">
-          <View style={estilos.linhaSegmentos}>
-            <Pressable
-              onPress={() => setModo('local')}
-              style={[
-                estilos.segmento,
-                modo === 'local' && estilos.segmentoAtivo,
-              ]}
-            >
-              <Text
-                style={[
-                  estilos.segmentoTexto,
-                  modo === 'local' && estilos.segmentoTextoAtivo,
-                ]}
-              >
-                Um celular
-              </Text>
-              <Text
-                style={[
-                  estilos.segmentoSub,
-                  modo === 'local' && estilos.segmentoSubAtivo,
-                ]}
-              >
-                recomendado
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setModo('remoto')}
-              style={[
-                estilos.segmento,
-                modo === 'remoto' && estilos.segmentoAtivo,
-              ]}
-            >
-              <Text
-                style={[
-                  estilos.segmentoTexto,
-                  modo === 'remoto' && estilos.segmentoTextoAtivo,
-                ]}
-              >
-                Um por jogador
-              </Text>
-              <Text
-                style={[
-                  estilos.segmentoSub,
-                  modo === 'remoto' && estilos.segmentoSubAtivo,
-                ]}
-              >
-                multiplayer
-              </Text>
-            </Pressable>
-          </View>
-          <Text style={estilos.ajuda}>
-            {modo === 'local'
-              ? 'um celular passa entre os jogadores. mais social e fácil de começar.'
-              : 'cada jogador joga no próprio celular. precisa de internet.'}
-          </Text>
-        </Section>
+        <Text style={estilos.tituloPagina}>como vai ser?</Text>
 
         <Section titulo="Categoria">
           <View style={estilos.chipsLinha}>
@@ -206,7 +137,7 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
           </View>
         </Section>
 
-        <Section titulo="Número de Mr Whites">
+        <Section titulo="Impostores">
           <View style={estilos.controleNumero}>
             <Pressable
               onPress={() =>
@@ -266,7 +197,7 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
 
       <View style={estilos.rodape}>
         <BotaoPrimario
-          titulo="começar o jogo"
+          titulo="é hora de jogar"
           carregando={iniciando}
           disabled={iniciando}
           onPress={aoIniciar}
@@ -385,17 +316,6 @@ const estilos = StyleSheet.create({
   },
   segmentoTextoAtivo: {
     color: cores.textoSobrePrimaria,
-  },
-  segmentoSub: {
-    color: cores.textoMudo,
-    fontSize: 11,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    marginTop: 2,
-    textTransform: 'uppercase',
-  },
-  segmentoSubAtivo: {
-    color: 'rgba(255, 255, 255, 0.75)',
   },
   tela: {
     backgroundColor: cores.fundo,

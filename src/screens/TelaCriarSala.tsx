@@ -156,7 +156,7 @@ export function TelaCriarSala({ navigation, route }: Props) {
         <Text style={estilos.legenda}>CÓDIGO DA SALA</Text>
         <CodigoSala codigo={codigoSala} />
         <Text style={estilos.subtitulo}>
-          manda esse código pra galera entrar
+          manda pro grupo e espera todo mundo entrar
         </Text>
       </View>
 
@@ -186,10 +186,10 @@ export function TelaCriarSala({ navigation, route }: Props) {
 
       <View style={estilos.rodape}>
         {podeIniciar ? (
-          <BotaoPrimario titulo="configurar o jogo" onPress={aoConfigurar} />
+          <BotaoPrimario titulo="configurar e começar" onPress={aoConfigurar} />
         ) : (
           <Text style={estilos.aguardando}>
-            esperando a galera... mínimo {MIN_JOGADORES}
+            a galera ainda está entrando... mínimo {MIN_JOGADORES}
           </Text>
         )}
       </View>

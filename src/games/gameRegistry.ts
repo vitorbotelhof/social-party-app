@@ -9,6 +9,9 @@ export interface DefinicaoJogo {
   tempoMedio: string;
   intensidade: 1 | 2 | 3;
   disponivel: boolean;
+  supportsLocal: boolean;
+  supportsRealtime: boolean;
+  socialTags: string[];
   instrucoes: {
     objetivo: string;
     passos: string[];
@@ -20,7 +23,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
   {
     id: 'mrwhite',
     nome: 'Mr White',
-    slogan: 'Descubra o impostor antes que ele descubra a palavra',
+    slogan: 'todo mundo tem a mesma palavra. menos um.',
     descricao:
       'Um jogo de blefe e dedução em grupo. Quase todo mundo recebe a mesma palavra secreta — exceto o Mr White, que precisa fingir que sabe do que estão falando até descobrir a verdade.',
     cover: require('../../assets/games/mr-white/cover.png'),
@@ -29,6 +32,9 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     tempoMedio: '15-30 min',
     intensidade: 3,
     disponivel: true,
+    supportsLocal: true,
+    supportsRealtime: true,
+    socialTags: ['tensão', 'bluff', 'impostor'],
     instrucoes: {
       objetivo:
         'Os civis precisam descobrir e eliminar o Mr White antes que ele descubra a palavra secreta. Já o Mr White precisa se passar por civil, observar as pistas e adivinhar a palavra para vencer no susto.',
@@ -59,6 +65,9 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     tempoMedio: '10-20 min',
     intensidade: 2,
     disponivel: false,
+    supportsLocal: false,
+    supportsRealtime: true,
+    socialTags: ['party', 'revelações', 'caos'],
     instrucoes: {
       objetivo:
         'Descobrir como o grupo realmente enxerga cada pessoa. Não há vencedor formal — o prêmio é a risada coletiva e as revelações inesperadas sobre os amigos.',
@@ -88,6 +97,9 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     tempoMedio: '20-40 min',
     intensidade: 3,
     disponivel: false,
+    supportsLocal: true,
+    supportsRealtime: true,
+    socialTags: ['drinking', 'confissões', 'caos'],
     instrucoes: {
       objetivo:
         'Conhecer melhor o grupo através das confissões. Não existe vencedor: o legal é descobrir histórias escondidas e segredos que ninguém imaginava — sempre com respeito a quem não quer responder.',
@@ -117,6 +129,9 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     tempoMedio: '20-40 min',
     intensidade: 3,
     disponivel: false,
+    supportsLocal: true,
+    supportsRealtime: false,
+    socialTags: ['desafio', 'confissões', 'caos'],
     instrucoes: {
       objetivo:
         'Quebrar o gelo e arrancar histórias e momentos memoráveis do grupo. Não há vencedor: a graça está em escolher entre se expor com a verdade ou topar o desafio.',
@@ -147,6 +162,9 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     tempoMedio: '10-20 min',
     intensidade: 2,
     disponivel: false,
+    supportsLocal: false,
+    supportsRealtime: true,
+    socialTags: ['drama', 'tensão', 'votação'],
     instrucoes: {
       objetivo:
         'Descobrir o que o grupo realmente pensa sem ninguém precisar se expor. As perguntas vão do elogio à zoeira pesada, e o resultado anônimo gera as melhores reações da noite.',

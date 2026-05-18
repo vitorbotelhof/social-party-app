@@ -201,3 +201,57 @@ Do not:
 
 Always think platform-first, not game-first.
 
+# Product Navigation Philosophy
+
+The user should always think about:
+1. what social experience they want
+2. which game they want to play
+3. how the group will play
+4. session rules/configuration
+5. gameplay
+
+The app should prioritize:
+- emotional intent before infrastructure
+- social dynamics before multiplayer logistics
+- game discovery before room management
+
+Users should never need to think about:
+- realtime infrastructure
+- room systems
+- technical multiplayer concepts
+before selecting a game.
+
+# Core Product Flow
+
+Main product flow:
+
+1. Select Game
+2. Select Social Dynamic
+3. Configure Session
+4. Start Game
+
+Example:
+
+Mr White
+↓
+How do you want to play?
+- 1 device
+- each player on their own device
+- join existing room
+↓
+Configure players / timers / categories
+↓
+Start match
+
+The game is always the primary entry point.
+Multiplayer infrastructure is secondary.
+
+# UX Hierarchy
+
+Correct hierarchy:
+
+emotion → social intent → logistics
+
+Never:
+
+logistics → emotion

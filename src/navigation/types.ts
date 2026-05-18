@@ -4,6 +4,7 @@ export type RootStackParamList = {
   Inicio: undefined;
   SelecaoJogo: undefined;
   DetalhesJogo: { jogoId: GameId };
+  SelecaoDinamica: { jogoId: GameId };
   Tutorial: { jogoId: GameId };
   CriarSala: { jogoId: GameId };
   EntrarSala: undefined;

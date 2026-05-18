@@ -89,7 +89,7 @@ export function TelaLobby({ navigation, route }: Props) {
       <SafeAreaView style={[estilos.tela, estilos.telaCentralizada]}>
         <Text style={estilos.titulo}>sala encerrada</Text>
         <Text style={estilos.subtitulo}>
-          o anfitrião encerrou a partida.
+          o anfitrião fechou a sala.
         </Text>
         <BotaoPrimario
           titulo="voltar pro início"
@@ -132,7 +132,7 @@ export function TelaLobby({ navigation, route }: Props) {
 
       <View style={estilos.rodape}>
         <Text style={estilos.aguardando}>
-          esperando o anfitrião começar...
+          aguardando o anfitrião iniciar a rodada...
         </Text>
         <BotaoSecundario titulo="sair da sala" onPress={aoSair} />
       </View>

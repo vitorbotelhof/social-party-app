@@ -131,3 +131,36 @@ The product must always feel:
 * cinematic
 * human
 
+# Anti-Overengineering Rules
+
+Never:
+- create engines before repeated validated patterns
+- abstract emotional systems too early
+- create enterprise-style multiplayer systems prematurely
+- generalize speculative use cases
+
+Prefer:
+- incremental refactors
+- explicit ownership
+- lightweight abstractions
+- architecture guided by real pain
+
+# Multiplayer Ownership Rules
+
+Gameplay screens should own:
+- multiplayer subscriptions
+- presence lifecycle
+- active sessions
+
+Child screens should:
+- avoid direct realtime listeners
+- receive synchronized state via props
+
+# Product Navigation Rules
+
+The user should always:
+1. choose a game first
+2. choose social dynamics second
+3. configure the session third
+
+Never expose multiplayer infrastructure before game selection.

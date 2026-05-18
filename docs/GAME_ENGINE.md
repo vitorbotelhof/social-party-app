@@ -95,33 +95,6 @@ Used by:
 * Quem na Sala
 * Mafia-style games
 
----
-
-## PromptEngine
-
-Responsibilities:
-
-* prompt distribution
-* prompt categories
-* prompt packs
-* difficulty filtering
-* spicy filtering
-* localization
-* moderation layers
-
-Prompts should support:
-
-* tags
-* metadata
-* categories
-* content safety levels
-
-Used by:
-
-* Eu Nunca
-* Verdade ou Desafio
-* Most Likely To
-* Hot Takes
 
 ---
 
@@ -164,39 +137,6 @@ Must support:
 * pause/resume
 * reconnect-safe timers
 
----
-
-## RevealEngine
-
-Responsibilities:
-
-* reveal sequencing
-* suspense pacing
-* synchronized reveals
-* result presentation
-
-Must support:
-
-* cinematic reveals
-* multiplayer synchronization
-* reaction windows
-
----
-
-## ReactionEngine
-
-Responsibilities:
-
-* reactions
-* emoji interactions
-* lightweight feedback
-* social engagement loops
-
-Must support:
-
-* low latency
-* non-blocking interactions
-* realtime reactions
 
 ---
 
@@ -341,3 +281,52 @@ The platform should evolve into:
 * a realtime social interaction engine
 
 Platform-first always.
+
+--- 
+
+# Current Foundation Philosophy
+
+The project is currently validating multiplayer foundations through Mr White.
+
+The goal is not maximum abstraction.
+
+The goal is:
+- stable multiplayer ownership
+- reconnect-safe lifecycle
+- predictable realtime synchronization
+- reusable multiplayer boundaries
+
+Only abstract systems after repeated validated usage.
+
+---
+
+# Current Validated Foundations
+
+The following systems are currently validated:
+
+- game registry
+- multiplayer ownership boundaries
+- centralized gameplay subscriptions
+- gameplay presence ownership
+- deterministic session ownership
+
+The following systems are intentionally NOT abstracted yet:
+
+- prompts
+- reveals
+- reactions
+- advanced voting flows
+
+---
+
+# Ownership Rules
+
+Gameplay screens own:
+- realtime subscriptions
+- active session lifecycle
+- multiplayer presence
+
+Sub-screens should:
+- remain stateless when possible
+- receive synchronized state via props
+- avoid transport coupling

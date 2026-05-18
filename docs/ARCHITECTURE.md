@@ -4,7 +4,10 @@
 
 The platform is built as a modular multiplayer social engine.
 
-Games are lightweight layers built on top of reusable realtime systems.
+Games evolve gradually from lightweight implementations into reusable multiplayer primitives.
+
+Avoid premature abstractions.
+Only consolidate systems after repeated validated patterns.
 
 Architecture priorities:
 
@@ -40,11 +43,7 @@ Core engines:
 
 * RoomEngine
 * VotingEngine
-* PromptEngine
-* HiddenRoleEngine
 * TimerEngine
-* RevealEngine
-* ReactionEngine
 * PresenceEngine
 
 Rules:
@@ -52,6 +51,20 @@ Rules:
 * engines must be UI-agnostic
 * engines must not contain game-specific logic
 * engines must be reusable across multiple games
+
+# Current Foundation Systems
+
+The platform is currently consolidating:
+
+- room lifecycle
+- multiplayer state ownership
+- player presence
+- deterministic phases
+- realtime synchronization
+- game registry
+- lightweight game orchestration
+
+The platform intentionally avoids premature engine abstraction.
 
 ---
 
@@ -107,13 +120,11 @@ UI should never contain:
 /app
 /components
 /ui
-/screens
 /features
 /engines
 /services
 /hooks
 /types
-/constants
 /assets
 /docs
 
@@ -140,6 +151,21 @@ Realtime responsibilities:
 * timer synchronization
 * reactions
 * reveals
+
+
+# Realtime Philosophy
+
+Realtime systems should evolve incrementally.
+
+Avoid:
+- speculative abstractions
+- enterprise-style engine systems
+- generalized multiplayer frameworks too early
+
+Prefer:
+- incremental consolidation
+- measured refactors
+- architecture guided by real pain
 
 ---
 
@@ -175,6 +201,25 @@ Base multiplayer flow:
 9. Restart or switch game
 
 This flow must be reusable across all games.
+
+# Multiplayer Ownership Philosophy
+
+Ownership must remain explicit.
+
+Current ownership:
+
+GameScreen owns:
+- active multiplayer session
+- player presence
+- gameplay subscriptions
+- realtime listeners
+
+Sub-screens should:
+- receive props
+- remain transport-agnostic
+- avoid direct realtime subscriptions
+
+Avoid duplicated realtime listeners.
 
 ---
 
@@ -276,6 +321,22 @@ Main flows:
 * room
 * game
 * results
+
+# Navigation Philosophy
+
+Navigation should follow social intent.
+
+Correct flow:
+
+Game Selection
+↓
+Social Dynamic Selection
+↓
+Session Configuration
+↓
+Gameplay
+
+The app should not expose multiplayer infrastructure too early in the flow.
 
 ---
 

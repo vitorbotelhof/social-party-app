@@ -11,6 +11,7 @@ import { TelaConfiguracaoLocal } from '@/screens/TelaConfiguracaoLocal';
 import { TelaInicio } from '@/screens/TelaInicio';
 import { TelaJogoLocal } from '@/screens/TelaJogoLocal';
 import { TelaLobby } from '@/screens/TelaLobby';
+import { TelaSelecaoDinamica } from '@/screens/TelaSelecaoDinamica';
 import { TelaSelecaoJogo } from '@/screens/TelaSelecaoJogo';
 import { TelaTutorial } from '@/screens/TelaTutorial';
 import { cores } from '@/theme/colors';
@@ -49,6 +50,11 @@ export function RootNavigator() {
       <Stack.Screen
         name="DetalhesJogo"
         component={TelaDetalhesJogo}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SelecaoDinamica"
+        component={TelaSelecaoDinamica}
         options={{ headerShown: false }}
       />
       <Stack.Screen
