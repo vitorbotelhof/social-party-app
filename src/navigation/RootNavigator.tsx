@@ -9,6 +9,7 @@ import { TelaEntrarSala } from '@/screens/TelaEntrarSala';
 import { TelaCadastroJogadores } from '@/screens/TelaCadastroJogadores';
 import { TelaConfiguracaoLocal } from '@/screens/TelaConfiguracaoLocal';
 import { TelaInicio } from '@/screens/TelaInicio';
+import { TelaIntro } from '@/screens/TelaIntro';
 import { TelaJogoLocal } from '@/screens/TelaJogoLocal';
 import { TelaLobby } from '@/screens/TelaLobby';
 import { TelaSelecaoDinamica } from '@/screens/TelaSelecaoDinamica';
@@ -21,7 +22,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export function RootNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Inicio"
+      initialRouteName="Intro"
       screenOptions={{
         headerStyle: { backgroundColor: cores.fundo },
         // Back button na cor primária (roxo vibrante);
@@ -38,9 +39,14 @@ export function RootNavigator() {
       }}
     >
       <Stack.Screen
+        name="Intro"
+        component={TelaIntro}
+        options={{ headerShown: false, animation: 'none' }}
+      />
+      <Stack.Screen
         name="Inicio"
         component={TelaInicio}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, animation: 'fade', animationDuration: 500 }}
       />
       <Stack.Screen
         name="SelecaoJogo"

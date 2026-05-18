@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { cores, espacamento, tipografia } from '@/theme/colors';
+import { cores, familias } from '@/theme/colors';
 
 type Tamanho = 'medio' | 'grande';
 
@@ -11,64 +11,65 @@ interface Props {
 
 export function CodigoSala({ codigo, tamanho = 'grande' }: Props) {
   const eGrande = tamanho === 'grande';
+
+  // Split into two halves with a center separator — reads like a ticket stub
+  const meio = Math.ceil(codigo.length / 2);
+  const parte1 = codigo.slice(0, meio);
+  const parte2 = codigo.slice(meio);
+
   return (
-    <View style={estilos.linha}>
-      {codigo.split('').map((letra, i) => (
-        <View
-          key={`${letra}-${i}`}
-          style={[estilos.tile, eGrande ? estilos.tileGrande : estilos.tileMedio]}
-        >
-          <Text
-            style={[
-              estilos.letra,
-              eGrande ? estilos.letraGrande : estilos.letraMedia,
-            ]}
-          >
-            {letra}
-          </Text>
-        </View>
-      ))}
+    <View style={estilos.container}>
+      <Text style={[estilos.codigo, eGrande ? estilos.codigoGrande : estilos.codigoMedio]}>
+        {parte1}
+        <Text style={[estilos.ponto, eGrande ? estilos.pontoGrande : estilos.pontoMedio]}>
+          {' ·  '}
+        </Text>
+        {parte2}
+      </Text>
+      <View style={[estilos.linhaBase, eGrande ? estilos.linhaBaseGrande : estilos.linhaBaseMedio]} />
     </View>
   );
 }
 
 const estilos = StyleSheet.create({
-  letra: {
-    color: cores.primaria,
-    fontWeight: tipografia.pesoExtraBold,
+  codigo: {
+    color: cores.acento,
+    fontFamily: familias.serifDisplay,
+    letterSpacing: 6,
+    textAlign: 'center',
   },
-  letraGrande: {
-    fontSize: 40,
-    letterSpacing: -0.5,
+  codigoGrande: {
+    fontSize: 42,
+    lineHeight: 52,
   },
-  letraMedia: {
-    fontSize: 26,
+  codigoMedio: {
+    fontSize: 28,
+    lineHeight: 36,
   },
-  linha: {
-    flexDirection: 'row',
-    gap: espacamento.sm,
-  },
-  tile: {
+  container: {
     alignItems: 'center',
-    backgroundColor: cores.superficie,
-    // borda roxa sutil (#8B5CF6 com 40% opacidade)
-    borderColor: 'rgba(139, 92, 246, 0.4)',
-    borderRadius: 12,
-    borderWidth: 1,
-    elevation: 3,
-    justifyContent: 'center',
-    // sombra roxa muito sutil
-    shadowColor: cores.primaria,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
   },
-  tileGrande: {
-    height: 72,
-    width: 60,
+  linhaBase: {
+    backgroundColor: 'rgba(201,137,58,0.2)',
+    borderRadius: 1,
+    marginTop: 10,
   },
-  tileMedio: {
-    height: 48,
-    width: 40,
+  linhaBaseGrande: {
+    height: 1,
+    width: 220,
+  },
+  linhaBaseMedio: {
+    height: 1,
+    width: 150,
+  },
+  ponto: {
+    color: 'rgba(201,137,58,0.4)',
+    fontFamily: familias.serifDisplay,
+  },
+  pontoGrande: {
+    fontSize: 28,
+  },
+  pontoMedio: {
+    fontSize: 18,
   },
 });

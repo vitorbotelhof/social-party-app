@@ -4,10 +4,11 @@
 
 Games are lightweight orchestration layers built on top of reusable social multiplayer engines.
 
-The platform should behave as a modular social interaction engine, not as isolated games.
+The platform behaves as a modular social interaction engine, not as isolated games.
 
 Core priorities:
 
+* social experience first
 * multiplayer-first
 * realtime-first
 * reusable primitives
@@ -93,8 +94,6 @@ Used by:
 * Mr White
 * Most Likely To
 * Quem na Sala
-* Mafia-style games
-
 
 ---
 
@@ -116,9 +115,6 @@ Must support:
 Used by:
 
 * Mr White
-* Spyfall
-* Mafia
-* Werewolf
 
 ---
 
@@ -137,6 +133,18 @@ Must support:
 * pause/resume
 * reconnect-safe timers
 
+---
+
+# Intentionally NOT Abstracted Yet
+
+The following systems are NOT engines yet:
+
+* PromptEngine — not needed until second game requires it
+* RevealEngine — not needed until validated pattern emerges
+* ReactionEngine — not needed until validated pattern emerges
+
+Rule: only abstract after repeated validated usage across multiple games.
+Building engines for speculative future use is overengineering.
 
 ---
 
@@ -150,7 +158,7 @@ Base lifecycle:
 2. Game Initialization
 3. Role/Prompt Distribution
 4. Active Phases
-5. Voting/Reactions
+5. Voting / Reactions
 6. Reveal Phase
 7. Results
 8. Restart or Game Switch
@@ -249,7 +257,6 @@ NOT:
 
 * rebuilding multiplayer systems
 * rebuilding voting
-* rebuilding prompts
 * rebuilding timers
 
 ---
@@ -272,31 +279,19 @@ Games must NOT:
 
 ---
 
-# Long-Term Vision
+# Ownership Rules
 
-The platform should evolve into:
+Gameplay screens own:
 
-* a reusable social multiplayer framework
-* a scalable party game platform
-* a realtime social interaction engine
+* realtime subscriptions
+* active session lifecycle
+* multiplayer presence
 
-Platform-first always.
+Sub-screens should:
 
---- 
-
-# Current Foundation Philosophy
-
-The project is currently validating multiplayer foundations through Mr White.
-
-The goal is not maximum abstraction.
-
-The goal is:
-- stable multiplayer ownership
-- reconnect-safe lifecycle
-- predictable realtime synchronization
-- reusable multiplayer boundaries
-
-Only abstract systems after repeated validated usage.
+* remain stateless when possible
+* receive synchronized state via props
+* avoid transport coupling
 
 ---
 
@@ -304,29 +299,24 @@ Only abstract systems after repeated validated usage.
 
 The following systems are currently validated:
 
-- game registry
-- multiplayer ownership boundaries
-- centralized gameplay subscriptions
-- gameplay presence ownership
-- deterministic session ownership
+* game registry
+* multiplayer ownership boundaries
+* centralized gameplay subscriptions
+* gameplay presence ownership
+* deterministic session ownership
 
-The following systems are intentionally NOT abstracted yet:
-
-- prompts
-- reveals
-- reactions
-- advanced voting flows
+These are the stable foundation.
+Everything else is built incrementally on top.
 
 ---
 
-# Ownership Rules
+# Long-Term Vision
 
-Gameplay screens own:
-- realtime subscriptions
-- active session lifecycle
-- multiplayer presence
+The platform should evolve into:
 
-Sub-screens should:
-- remain stateless when possible
-- receive synchronized state via props
-- avoid transport coupling
+* a reusable social multiplayer framework
+* a scalable social experience platform
+* a realtime social interaction engine for in-person gatherings
+
+Platform-first always.
+Real-world social interaction first always.

@@ -1,42 +1,41 @@
 /**
  * Identidade visual oficial — Entre Nós.
- * Paleta noturna roxa/rosa-vinho com texto off-white quente.
+ * Paleta noir quente: carvão escuro / vinho / âmbar. Sem azul frio, sem neon.
  */
 export const cores = {
-  // Backgrounds
-  fundo: '#0D0D0D',
-  fundoSecundario: '#141414',
-  superficie: '#1C1C2E',
-  superficieElevada: '#252538',
-  borda: '#2E2E45',
+  // Backgrounds — carvão com subtom castanho, não azul
+  fundo: '#0E0B08',
+  fundoSecundario: '#141009',
+  superficie: '#1C1610',
+  superficieElevada: '#231A12',
+  borda: '#352A1C',
 
-  // Brand
-  primaria: '#8B5CF6',
-  primariaPressionada: '#7C3AED',
-  acento: '#C084FC',
-  acentoQuente: '#E879A0',
-  acentoEscuro: '#6D28D9',
-  // alias mantido para compat com código antigo
-  acentoPressionado: '#7C3AED',
+  // Brand — vinho profundo como primária, âmbar como acento
+  primaria: '#A0522D',        // sienna: terra, calor, presença
+  primariaPressionada: '#7A3D20',
+  acento: '#C9893A',          // âmbar dourado: tensão, luz baixa
+  acentoQuente: '#D4633A',    // laranja cobre: emoção quente
+  acentoEscuro: '#6B3318',
+  acentoPressionado: '#7A3D20',
 
-  // States
-  sucesso: '#34D399',
+  // States — verde mais quente, alerta já era bom, erro levemente mais quente
+  sucesso: '#2ECC8A',
   alerta: '#FFB020',
-  erro: '#F87171',
+  erro: '#E86A5A',
 
-  // Text
+  // Text — off-white quente, secundário sepia, mudo terra
   texto: '#F5F0EB',
-  textoSecundario: '#9090A8',
-  textoMudo: '#5A5A72',
+  textoSecundario: '#9A8878',
+  textoMudo: '#6B5A4A',
   textoSobrePrimaria: '#FFFFFF',
 } as const;
 
 /** Gradientes oficiais — usar com expo-linear-gradient. */
 export const gradientes = {
-  /** Principal: roxo vibrante → rosa vinho. Botão primário, destaques. */
-  principal: ['#8B5CF6', '#E879A0'] as [string, string],
-  /** Acento: roxo profundo → lilás claro. Avatares, detalhes. */
-  acento: ['#6D28D9', '#C084FC'] as [string, string],
+  /** Principal: vinho → âmbar. Botão primário, destaques. */
+  principal: ['#A0522D', '#C9893A'] as [string, string],
+  /** Acento: sépia profundo → cobre. Avatares, detalhes. */
+  acento: ['#6B3318', '#D4633A'] as [string, string],
 } as const;
 
 export const espacamento = {
@@ -61,6 +60,15 @@ export const raio = {
  * Hierarquia: heros (36-48 / 800) → títulos (28 / 700) →
  * subtítulos (20-24 / 600) → corpo (15-16 / 400) → legendas (12-13 / 700).
  */
+/**
+ * Famílias tipográficas — display serif para momentos de alto impacto.
+ * UI funcional usa System (sans-serif).
+ */
+export const familias = {
+  serifDisplay: 'PlayfairDisplay_700Bold',
+  serifItalico: 'PlayfairDisplay_400Regular_Italic',
+} as const;
+
 export const tipografia = {
   pesoRegular: '400' as const,
   pesoMedio: '500' as const,
@@ -92,14 +100,14 @@ export const tipografia = {
   letraSpacingTitulo: -0.5,
 } as const;
 
-/** Paleta dos avatares — derivada da identidade roxo/rosa. */
+/** Paleta dos avatares — derivada da identidade vinho/âmbar/cobre. */
 export const PALETA_AVATARES = [
-  '#8B5CF6',
-  '#C084FC',
-  '#E879A0',
-  '#7C3AED',
-  '#A78BFA',
-  '#F9A8D4',
-  '#6366F1',
-  '#EC4899',
+  '#A0522D',
+  '#C9893A',
+  '#D4633A',
+  '#7A3D20',
+  '#B87333',
+  '#C46A2E',
+  '#8B4513',
+  '#E8924A',
 ] as const;

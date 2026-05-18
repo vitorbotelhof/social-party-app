@@ -2,6 +2,11 @@ import {
   createNavigationContainerRef,
   NavigationContainer,
 } from '@react-navigation/native';
+import {
+  PlayfairDisplay_400Regular_Italic,
+  PlayfairDisplay_700Bold,
+} from '@expo-google-fonts/playfair-display';
+import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
@@ -75,7 +80,13 @@ async function restaurarPartidaSeNecessario(): Promise<void> {
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    PlayfairDisplay_700Bold,
+    PlayfairDisplay_400Regular_Italic,
+  });
   const navegacaoPronta = useRef(false);
+
+  if (!fontsLoaded) return null;
 
   useEffect(() => {
     function aoMudarAppState(state: AppStateStatus) {

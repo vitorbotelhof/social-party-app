@@ -1,6 +1,7 @@
 import type { GameId, PlayerId, RoomCode } from '@/engine/types';
 
 export type RootStackParamList = {
+  Intro: undefined;
   Inicio: undefined;
   SelecaoJogo: undefined;
   DetalhesJogo: { jogoId: GameId };

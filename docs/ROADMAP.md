@@ -2,28 +2,49 @@
 
 ## Current Goal
 
-Transform Mr White into the foundation game for the platform.
+Consolidar o Mr White como jogo fundação da plataforma e evoluir o produto de
+"app de jogos de festa" para "plataforma premium de experiência social".
 
 The objective is NOT to build many games quickly.
 
 The objective is:
 
-* stabilize multiplayer architecture
-* reduce technical debt
-* validate reusable multiplayer foundations
-* avoid premature abstractions
-* make future games cheap to implement
+* estabilizar a arquitetura multiplayer
+* reduzir débito técnico
+* validar fundações multiplayer reutilizáveis
+* evitar abstrações prematuras
+* tornar futuros jogos baratos de implementar
+* elevar a qualidade emocional do produto
 
 ---
 
-# Current Phase
+## Product Direction
 
-Foundation Multiplayer Consolidation
+The platform is evolving from:
+"app de Mr White"
+
+into:
+"plataforma premium de experiência social"
+
+This means:
+
+* o catálogo de jogos é a estrutura primária de navegação
+* a identidade visual deve comunicar sofisticação social noturna
+* a experiência emocional precede a infraestrutura técnica
+* cada jogo é uma experiência social, não um modo de jogo
+
+---
+
+## Current Phase
+
+**Consolidação Multiplayer + Elevação do Produto**
 
 The project is currently focused on:
 
-* multiplayer stability
-* architectural boundaries
+* multiplayer stability (Onda C)
+* design system emotional alignment
+* warm-dark visual direction
+* anti-cyberpunk visual corrections
 * reusable foundations
 * incremental refactors
 * deterministic game state
@@ -40,52 +61,49 @@ Avoid:
 
 # Consolidation Waves
 
-## Onda A — Safe Consolidation
+## Onda A — Concluída ✓
 
 Goal:
-remove obvious duplication and dead code with minimal risk.
+remover duplicação óbvia e código morto com risco mínimo.
 
-Tasks:
+Completed:
 
-* extract duplicated normalizarEstadoPublico into shared module
-* remove dead mocks
-* preserve identical behavior
-* avoid architecture changes
-* avoid UX changes
+* extracted duplicated normalizarEstadoPublico into shared module
+* removed dead mocks
+* consolidated normalization layer
 
-Requirements:
-
-* app must continue working fully
-* Mr White must continue playable
-* minimal code changes
-* minimal risk
+Result:
+* reduced duplicated multiplayer state logic
+* improved foundation consistency
 
 ---
 
-## Onda B — Multiplayer Boundaries
+## Onda B — Concluída ✓
 
 Goal:
-clarify multiplayer ownership and responsibilities.
+clarificar ownership e responsabilidades multiplayer.
 
-Tasks:
+Completed:
 
-* isolate multiplayer state ownership
-* reduce coupling between game logic and transport
-* improve room lifecycle clarity
-* improve deterministic phases
+* centralized player subscriptions in GameScreen
+* centralized active session ownership
+* centralized multiplayer presence ownership
+* decoupled jogoLocal.ts from Mr White
+* connected local gameplay to game registry
 
-Requirements:
+Result:
 
-* avoid new engines
-* avoid overengineering
-* preserve current gameplay
+* explicit multiplayer ownership
+* reduced realtime listener duplication
+* clearer gameplay lifecycle
+* improved future multi-game scalability
 
 ---
 
-## Onda C — Presence and Reconnect Stability
+## Onda C — Em Progresso
 
 Goal:
-improve realtime resilience.
+melhorar resiliência realtime e estabilidade de presença.
 
 Tasks:
 
@@ -102,9 +120,31 @@ Requirements:
 
 ---
 
+## Onda D — Design Emocional (Próxima)
+
+Goal:
+alinhar a identidade visual à direção premium social noturna.
+
+Tasks:
+
+* migrar superfícies de azul-frio para sépia-quente
+* substituir paleta primária roxo→pink por bordeaux/âmbar
+* reduzir intensidade do glow (max 0.20 opacity)
+* introduzir serif editorial (Playfair Display) em momentos de alto impacto
+* revisar paleta de avatares para tons humanos e terrosos
+* revisar room code display (tipográfico, não tiles com borda neon)
+
+Requirements:
+
+* incremental — não redesign completo
+* preservar UX atual
+* apenas refinamento emocional
+
+---
+
 ## Future Waves (NOT NOW)
 
-These are intentionally postponed:
+Intencionalmente adiado:
 
 * generic PromptEngine
 * generic RevealEngine
@@ -112,13 +152,15 @@ These are intentionally postponed:
 * plugin systems
 * advanced GameRegistry
 * complex abstractions
+* social graph
+* user profiles
 
 Rule:
 only abstract after repeated validated patterns.
 
 ---
 
-# Current Architectural Philosophy
+# Architectural Philosophy
 
 The project should evolve through:
 
@@ -132,6 +174,7 @@ Never:
 * refactor everything at once
 * rebuild systems prematurely
 * optimize imaginary problems
+* build engines for future games that don't exist yet
 
 ---
 
@@ -145,59 +188,17 @@ The foundation is considered successful when:
 * architecture stays modular
 * duplication decreases naturally
 * no large rewrites are needed
-
-
-# Completed Work
-
-## Onda A — Completed
-
-Completed:
-- extracted duplicated multiplayer normalization
-- removed dead mocks
-- consolidated normalization layer
-
-Result:
-- reduced duplicated multiplayer state logic
-- improved foundation consistency
+* the product feels premium and emotionally coherent
 
 ---
 
-## Onda B — In Progress
+# Future Game Priorities (NOT NOW)
 
-Completed so far:
-- centralized player subscriptions in GameScreen
-- centralized active session ownership
-- centralized multiplayer presence ownership
-- decoupled jogoLocal.ts from Mr White
-- connected local gameplay to game registry
+When the foundation is stable:
 
-Result:
-- explicit multiplayer ownership
-- reduced realtime listener duplication
-- clearer gameplay lifecycle
-- improved future multi-game scalability
+1. Most Likely To — votação social, vulnerabilidade
+2. Eu Nunca — revelação, caos social
+3. Quem na Sala — tensão social de grupo
 
-# Future Priorities
-
-Current priorities:
-- multiplayer stability
-- reconnect safety
-- gameplay lifecycle validation
-- realtime consistency
-- multiplayer testing
-
-NOT priorities:
-- adding many games
-- generalized engines
-- plugin systems
-- advanced abstractions
-
-# Current Product Direction
-
-The platform is evolving from:
-"Mr White app"
-
-into:
-"social multiplayer platform"
-
-The game catalog is now considered the primary navigation structure.
+Each game validates a different social mechanic.
+Each game reuses the same multiplayer foundation.

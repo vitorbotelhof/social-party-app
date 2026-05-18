@@ -20,7 +20,20 @@
       "Bash(curl -sS -o /tmp/bundle-resultado.js -w \"HTTP %{http_code} • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
       "Bash(curl -sS -o /tmp/bundle-final.js -w \"HTTP %{http_code} • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
       "Bash(curl -sS -o /tmp/onda1-ios.js -w \"HTTP %{http_code} • %{size_download}B • %{time_total}s\\\\n\" \"http://localhost:8090/index.bundle?platform=ios&dev=false&minify=false\")",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"dark premium button CTA elevation shadow depth\" --domain style -n 6)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"button CTA primary action touch feedback\" --domain ux -n 8)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"button shadow elevation depth warm dark premium\" --stack react-native -n 5)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"Cormorant Garamond serif display\" --domain google-fonts -n 4)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"Playfair Display serif dramatic\" --domain google-fonts -n 4)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({**d.get\\('dependencies',{}\\), **d.get\\('devDependencies',{}\\)}, indent=2\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('expo',{}\\), indent=2\\)\\)\")",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"social entertainment game dark intimate premium onboarding\" --domain product -n 4)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"hero section emotional pacing breathing space whitespace\" --domain ux -n 6)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"stagger entrance fade cinematic reveal animation\" --domain ux -n 5)",
+      "Bash(wait)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"minimalism dark premium intimate atmospheric\" --domain style -n 3)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"content-first discovery immersive\" --domain landing -n 3)"
     ]
   }
 }

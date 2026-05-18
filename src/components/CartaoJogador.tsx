@@ -88,7 +88,7 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoExtraBold,
   },
   badgeHost: {
-    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    backgroundColor: 'rgba(160, 82, 45, 0.15)',
     borderColor: cores.primaria,
     borderRadius: raio.sm,
     borderWidth: 1,

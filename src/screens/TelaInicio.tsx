@@ -21,23 +21,27 @@ import { BotaoPrimario } from '@/components';
 import { JOGOS, type DefinicaoJogo } from '@/games/gameRegistry';
 import type { RootStackParamList } from '@/navigation/types';
 import { obterOuCriarJogador, salvarNome } from '@/services/jogadorLocal';
-import { cores, espacamento, raio, tipografia } from '@/theme/colors';
+import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Inicio'>;
 
 const MIN_TAMANHO_NOME = 2;
-const ALTURA_CARD = 216;
-const STAGGER_MS = 70;
-const GRADIENTE_CARD: [string, string, string] = [
+const ALTURA_CARD = 272;
+const STAGGER_MS = 85;
+// Noir warm: topo claro, base carvão quente (não preto puro)
+const GRADIENTE_CARD: [string, string, string, string] = [
   'rgba(0,0,0,0)',
-  'rgba(0,0,0,0.52)',
-  'rgba(0,0,0,0.94)',
+  'rgba(0,0,0,0)',
+  'rgba(10,6,2,0.64)',
+  'rgba(10,6,2,0.97)',
 ];
 
 
 export function TelaInicio({ navigation }: Props) {
   const headerOp = useRef(new Animated.Value(0)).current;
   const headerY = useRef(new Animated.Value(10)).current;
+  const taglineOp = useRef(new Animated.Value(0)).current;
+  const taglineY = useRef(new Animated.Value(10)).current;
   const cardsAnim = useMemo(
     () => JOGOS.map(() => ({ op: new Animated.Value(0), y: new Animated.Value(24) })),
     [],
@@ -56,21 +60,32 @@ export function TelaInicio({ navigation }: Props) {
   }, []);
 
   useEffect(() => {
+    // Header: entrada rápida para estabelecer o espaço
     Animated.parallel([
-      Animated.timing(headerOp, { toValue: 1, duration: 420, useNativeDriver: true }),
-      Animated.timing(headerY, { toValue: 0, duration: 420, useNativeDriver: true }),
+      Animated.timing(headerOp, { toValue: 1, duration: 400, useNativeDriver: true }),
+      Animated.timing(headerY, { toValue: 0, duration: 400, useNativeDriver: true }),
     ]).start();
 
+    // Tagline: 160ms de delay — o palco se abre antes das estrelas entrarem
+    Animated.sequence([
+      Animated.delay(160),
+      Animated.parallel([
+        Animated.timing(taglineOp, { toValue: 1, duration: 500, useNativeDriver: true }),
+        Animated.timing(taglineY, { toValue: 0, duration: 500, useNativeDriver: true }),
+      ]),
+    ]).start();
+
+    // Cards: entram deliberadamente após a atmosfera se estabelecer
     Animated.stagger(
       STAGGER_MS,
       cardsAnim.map((anim) =>
         Animated.parallel([
-          Animated.timing(anim.op, { toValue: 1, duration: 380, useNativeDriver: true }),
-          Animated.timing(anim.y, { toValue: 0, duration: 380, useNativeDriver: true }),
+          Animated.timing(anim.op, { toValue: 1, duration: 440, useNativeDriver: true }),
+          Animated.timing(anim.y, { toValue: 0, duration: 440, useNativeDriver: true }),
         ]),
       ),
     ).start();
-  }, [cardsAnim, headerOp, headerY]);
+  }, [cardsAnim, headerOp, headerY, taglineOp, taglineY]);
 
   const nomeValido = nomeDigitado.trim().length >= MIN_TAMANHO_NOME;
 
@@ -115,10 +130,7 @@ export function TelaInicio({ navigation }: Props) {
         ]}
       >
         <View style={estilos.headerLinha}>
-          <View>
-            <Text style={estilos.marca}>entre nós</Text>
-            <Text style={estilos.slogan}>qual o clima hoje?</Text>
-          </View>
+          <Text style={estilos.marca}>entre nós</Text>
           <Pressable
             onPress={aoEntrarPartida}
             style={({ pressed }) => [
@@ -136,6 +148,17 @@ export function TelaInicio({ navigation }: Props) {
         contentContainerStyle={estilos.scrollConteudo}
         showsVerticalScrollIndicator={false}
       >
+        <Animated.View
+          style={[
+            estilos.blocoTagline,
+            { opacity: taglineOp, transform: [{ translateY: taglineY }] },
+          ]}
+        >
+          <Text style={estilos.tagline}>
+            cuidado com o que você começa.
+          </Text>
+        </Animated.View>
+
         {JOGOS.map((jogo, i) => (
           <Animated.View
             key={jogo.id}
@@ -250,20 +273,9 @@ function CardJogo({ jogo, onPress }: CardJogoProps) {
         >
           <LinearGradient
             colors={GRADIENTE_CARD}
-            locations={[0, 0.45, 1]}
+            locations={[0, 0.3, 0.62, 1]}
             style={estilos.gradiente}
           />
-
-          <View style={estilos.barraTopo}>
-            <View style={estilos.badge}>
-              <Text style={estilos.badgeTexto}>
-                {jogo.minJogadores}–{jogo.maxJogadores} jogadores
-              </Text>
-            </View>
-            <View style={estilos.badge}>
-              <Text style={estilos.badgeTexto}>{'🔥'.repeat(jogo.intensidade)}</Text>
-            </View>
-          </View>
 
           <View style={estilos.blocoBottom}>
             <Text style={estilos.cardNome}>{jogo.nome}</Text>
@@ -279,6 +291,9 @@ function CardJogo({ jogo, onPress }: CardJogoProps) {
                 ))}
               </View>
             )}
+            <Text style={estilos.metadados}>
+              {jogo.minJogadores}–{jogo.maxJogadores} jogadores · {jogo.tempoMedio}
+            </Text>
           </View>
 
           {!jogo.disponivel && (
@@ -295,26 +310,10 @@ function CardJogo({ jogo, onPress }: CardJogoProps) {
 }
 
 const estilos = StyleSheet.create({
-  badge: {
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    borderRadius: raio.pill,
-    paddingHorizontal: espacamento.sm + 2,
-    paddingVertical: 4,
-  },
-  badgeTexto: {
-    color: cores.texto,
-    fontSize: tipografia.tamanhoLegenda,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: 0.2,
-  },
-  barraTopo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: espacamento.md,
-  },
   blocoBottom: {
-    gap: espacamento.xs,
-    padding: espacamento.md,
+    gap: 6,
+    paddingBottom: espacamento.lg,
+    paddingHorizontal: espacamento.md + 4,
     paddingTop: 0,
   },
   botaoEntrar: {
@@ -334,51 +333,61 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoSemibold,
   },
   cardAtivo: {
-    borderColor: 'rgba(108, 77, 255, 0.45)',
-    borderWidth: 1.5,
+    borderColor: 'rgba(160, 82, 45, 0.5)',
+    borderWidth: 1,
   },
   cardImagem: {
     height: ALTURA_CARD,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
   },
   cardImagemRaio: {
     borderRadius: raio.xl,
   },
   cardNome: {
     color: cores.textoSobrePrimaria,
-    fontSize: tipografia.tamanhoSubtitulo,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.letraSpacingTitulo,
+    fontFamily: familias.serifDisplay,
+    fontSize: 26,
+    letterSpacing: 0.2,
+    lineHeight: 32,
   },
   cardPressavel: {
     borderRadius: raio.xl,
     overflow: 'hidden',
   },
   cardSlogan: {
-    color: 'rgba(255,255,255,0.72)',
-    fontSize: tipografia.tamanhoCorpoMenor,
+    color: 'rgba(245,238,228,0.80)',
+    fontSize: 14,
+    fontWeight: tipografia.pesoMedio,
+    lineHeight: 20,
   },
   cardWrapper: {
     borderRadius: raio.xl,
-    marginBottom: espacamento.md,
+    marginBottom: 28,
   },
   chip: {
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderColor: 'rgba(245,230,210,0.22)',
     borderRadius: raio.pill,
+    borderWidth: 1,
     paddingHorizontal: espacamento.sm + 2,
     paddingVertical: 3,
   },
   chipTexto: {
-    color: 'rgba(255,255,255,0.75)',
+    color: 'rgba(245,230,210,0.55)',
     fontSize: 11,
-    fontWeight: tipografia.pesoSemibold,
-    letterSpacing: 0.3,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.5,
   },
   chips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: espacamento.xs,
-    marginTop: espacamento.xs,
+    marginTop: 2,
+  },
+  metadados: {
+    color: 'rgba(245,230,210,0.35)',
+    fontSize: 11,
+    letterSpacing: 0.3,
+    marginTop: 6,
   },
   gradiente: {
     bottom: 0,
@@ -387,8 +396,12 @@ const estilos = StyleSheet.create({
     right: 0,
     top: 0,
   },
+  blocoTagline: {
+    paddingBottom: espacamento.xxl,
+    paddingTop: espacamento.sm,
+  },
   header: {
-    paddingBottom: espacamento.md,
+    paddingBottom: espacamento.xl,
     paddingHorizontal: espacamento.lg,
     paddingTop: espacamento.sm,
   },
@@ -399,9 +412,9 @@ const estilos = StyleSheet.create({
   },
   marca: {
     color: cores.texto,
+    fontFamily: familias.serifItalico,
     fontSize: 22,
-    fontWeight: tipografia.pesoLeve,
-    letterSpacing: 1.2,
+    letterSpacing: 0.3,
   },
   modalCard: {
     backgroundColor: cores.superficie,
@@ -446,9 +459,9 @@ const estilos = StyleSheet.create({
     flex: 1,
   },
   scrollConteudo: {
-    paddingBottom: espacamento.xl,
+    paddingBottom: espacamento.xxl + espacamento.lg,
     paddingHorizontal: espacamento.lg,
-    paddingTop: espacamento.sm,
+    paddingTop: espacamento.lg,
   },
   seloEmBreve: {
     backgroundColor: 'rgba(255,255,255,0.14)',
@@ -464,11 +477,13 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoExtraBold,
     letterSpacing: tipografia.spacingLabel,
   },
-  slogan: {
-    color: cores.textoMudo,
-    fontSize: tipografia.tamanhoMicro,
-    letterSpacing: 0.3,
-    marginTop: 2,
+  tagline: {
+    color: cores.textoSecundario,
+    fontSize: 20,
+    fontWeight: '300',
+    letterSpacing: 0.15,
+    lineHeight: 28,
+    opacity: 0.85,
   },
   tela: {
     backgroundColor: cores.fundo,

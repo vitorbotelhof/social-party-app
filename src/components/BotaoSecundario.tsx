@@ -31,7 +31,7 @@ export function BotaoSecundario({
       ]}
     >
       {carregando ? (
-        <ActivityIndicator color={cores.primaria} />
+        <ActivityIndicator color={cores.textoSecundario} />
       ) : (
         <Text style={estilos.texto}>{titulo}</Text>
       )}
@@ -42,27 +42,26 @@ export function BotaoSecundario({
 const estilos = StyleSheet.create({
   base: {
     alignItems: 'center',
-    backgroundColor: 'rgba(139, 92, 246, 0.08)',
-    borderColor: cores.primaria,
+    borderColor: cores.borda,
     borderRadius: raio.pill,
-    borderWidth: 1.5,
+    borderWidth: 1,
     justifyContent: 'center',
-    minHeight: 56,
+    minHeight: 52,
     paddingHorizontal: espacamento.lg,
     paddingVertical: espacamento.md,
     width: '100%',
   },
   desabilitado: {
-    opacity: 0.4,
+    opacity: 0.38,
   },
   pressionado: {
-    backgroundColor: 'rgba(139, 92, 246, 0.18)',
+    backgroundColor: 'rgba(160,82,45,0.08)',
     transform: [{ scale: 0.98 }],
   },
   texto: {
-    color: cores.primaria,
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    color: cores.textoSecundario,
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: 0.3,
   },
 });

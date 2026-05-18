@@ -2,52 +2,72 @@
 
 ## Product Identity
 
-Entre Nós is a premium mobile-first social gaming platform focused on real-world social interactions and multiplayer party experiences.
+Entre Nós is a premium mobile-first social experience platform centered on real-world human interaction.
 
 Tagline:
-“Jogos sociais para momentos reais.”
+"Jogos sociais para momentos reais."
 
-The platform is not a “casual party game app”. It is a social-first lifestyle platform centered around human connection, tension, conversation, vulnerability, humor, and real-life gatherings.
+The platform is not a "casual party game app". It is a social-first lifestyle platform built around human connection, social tension, vulnerability, laughter, intimacy, and chaos between people who are physically together.
+
+The product emotion:
+something is about to happen between these people.
 
 Core emotional pillars:
 
-* social tension
-* mystery
-* laughter
-* vulnerability
-* chaos
-* real-world connection
-* nightlife energy
+* tensão social
+* mistério
+* cumplicidade
+* vulnerabilidade
+* caos controlado
+* conexão presencial
+* energia noturna
+* revelação
+
+---
+
+## What the Product Feels Like
+
+Emotional references:
+
+* poker — silêncio carregado, olhares, blefe
+* filme noir — luz baixa, sombra dramática, tensão
+* bar de jazz sofisticado — madeira escura, âmbar, conversa íntima
+* jantar entre amigos — calor, caos, revelações
+* fotografia analógica — imperfeição quente, profundidade
+* vinho tinto — temperatura, sofisticação, lentidão intencional
+
+The product should never feel like:
+
+* um app de gaming
+* um produto tech / AI startup
+* um dashboard multiplayer
+* uma plataforma web3
+* um app neon cyberpunk
 
 ---
 
 ## Product Vision
 
-Build the leading mobile social gaming platform for in-person interactions.
+Build the leading mobile social experience platform for in-person interactions.
 
 Long-term vision:
 
-* hundreds of social games
-* modular multiplayer engine
-* reusable social systems
-* social graph
-* party infrastructure
-* premium lifestyle brand
+* centenas de jogos sociais
+* motor modular de multiplayer
+* social graph entre amigos reais
+* infraestrutura de festas e encontros
+* marca premium de lifestyle social
+* plataforma, não produto único
 
-Games are built on top of reusable multiplayer/social engines.
+Games are built on top of reusable multiplayer and social engines.
 
-The product should feel closer to:
+The product should feel closer in quality and care to:
 
-* Spotify
-* Netflix
-* Discord
-* Airbnb social experiences
+* Spotify — browsing, discovery, catalog
+* Netflix — cinematic hierarchy, emotional cards
+* Apple Music — premium, intimate atmosphere
 
-NOT:
-
-* gamer platform
-* childish party games
-* meme app
+NOT aesthetically like those products — similar in product quality and emotional intentionality.
 
 ---
 
@@ -56,37 +76,39 @@ NOT:
 Visual identity:
 
 * dark mode first
+* warm dark surfaces — madeira escura, sépia, couro
 * premium cinematic aesthetic
-* minimalist
-* emotional
-* social nightlife vibe
-* modern Gen Z
-* elegant and human
+* emotional minimalism
+* atmosfera social noturna
+* elegante e humano
 
 Avoid:
 
-* gamer aesthetics
-* cartoon visuals
-* neon overload
+* cold blue-purple surfaces
+* gamer neon aesthetics
+* cyberpunk visuals
+* AI startup color palettes (purple→pink gradients)
 * childish UI
 * generic startup visuals
 
 Color palette:
 
-* deep black
-* charcoal
-* dark purple
-* plum/wine
-* warm off-white
+* preto sépia aquecido (#0C0A09)
+* carvão quente (#111009)
+* madeira escura (#1A1614)
+* couro escuro (#221E1B)
+* bordeaux / vinho (#9B2335)
+* âmbar / cobre (#B85C2A)
+* dourado sépia (#8B6914)
+* off-white quente (#F0EAE0)
 
 Typography:
 
-* modern rounded sans-serif
-* clean hierarchy
-* generous spacing
+* sans-serif moderno para UI e corpo
+* serif editorial (Playfair Display) para momentos de alto impacto emocional
 
 UI feeling:
-“something interesting happens when people gather.”
+"algo interessante está prestes a acontecer entre essas pessoas."
 
 ---
 
@@ -102,13 +124,41 @@ Core UX principles:
 * high emotional pacing
 * social reactions > complex mechanics
 
+Correct hierarchy:
+
+**emoção → intenção social → logística**
+
+Never: logística → emoção
+
 The app should maximize:
 
-* first laugh speed
+* velocidade do primeiro riso
 * replayability
-* social interaction density
-* viral moments
-* real-world conversation
+* densidade de interação social
+* momentos virais
+* conversa no mundo real
+
+---
+
+## Game-First Philosophy
+
+The game is always the primary entry point.
+
+Users should always think about:
+1. que experiência social querem ter
+2. qual jogo querem jogar
+3. como o grupo vai jogar
+4. configurações da sessão
+5. gameplay
+
+Users should never need to think about:
+* infraestrutura realtime
+* sistemas de sala
+* conceitos técnicos de multiplayer
+
+before selecting a game.
+
+Multiplayer infrastructure is invisible to the user.
 
 ---
 
@@ -134,26 +184,29 @@ Architecture goals:
 
 The platform is built as a modular social multiplayer engine.
 
-Core systems:
+Core systems (validated or in progress):
 
 * Room Engine
 * Voting Engine
-* Prompt Engine
 * Hidden Role Engine
 * Timer Engine
-* Reveal Engine
-* Reaction Engine
 * Presence System
 
-Games should reuse engines instead of implementing isolated logic.
+Systems intentionally NOT abstracted yet:
+
+* Prompt Engine (future)
+* Reveal Engine (future)
+* Reaction Engine (future)
+
+Only abstract systems after repeated validated patterns.
 
 ---
 
 ## Initial Game Priorities
 
-1. Mr White
-2. Most Likely To
-3. Eu Nunca
+1. Mr White — hidden role, social tension, blefe
+2. Most Likely To — votação social, vulnerabilidade
+3. Eu Nunca — revelação, caos social
 
 These games validate:
 
@@ -169,9 +222,11 @@ These games validate:
 ## Non-Negotiable Rules
 
 * premium UI only
-* dark mode first
+* dark mode first — warm dark, not cold dark
 * no gamer aesthetics
-* no childish visuals
+* no cyberpunk aesthetics
+* no cold blue-purple surfaces
+* no AI startup color palette
 * reusable abstractions only
 * multiplayer-first architecture
 * avoid duplicated logic
@@ -191,6 +246,7 @@ Always prioritize:
 * low complexity
 * clean abstractions
 * multiplayer stability
+* emotional product quality
 
 Do not:
 
@@ -198,60 +254,9 @@ Do not:
 * tightly couple UI and game logic
 * duplicate systems
 * overengineer early
+* build speculative engines before validated need
+* apply cold blue-purple color palettes
+* use gamer-style neon glow effects
 
 Always think platform-first, not game-first.
-
-# Product Navigation Philosophy
-
-The user should always think about:
-1. what social experience they want
-2. which game they want to play
-3. how the group will play
-4. session rules/configuration
-5. gameplay
-
-The app should prioritize:
-- emotional intent before infrastructure
-- social dynamics before multiplayer logistics
-- game discovery before room management
-
-Users should never need to think about:
-- realtime infrastructure
-- room systems
-- technical multiplayer concepts
-before selecting a game.
-
-# Core Product Flow
-
-Main product flow:
-
-1. Select Game
-2. Select Social Dynamic
-3. Configure Session
-4. Start Game
-
-Example:
-
-Mr White
-↓
-How do you want to play?
-- 1 device
-- each player on their own device
-- join existing room
-↓
-Configure players / timers / categories
-↓
-Start match
-
-The game is always the primary entry point.
-Multiplayer infrastructure is secondary.
-
-# UX Hierarchy
-
-Correct hierarchy:
-
-emotion → social intent → logistics
-
-Never:
-
-logistics → emotion
+Always think emotion-first, not infrastructure-first.

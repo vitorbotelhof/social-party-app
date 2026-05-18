@@ -49,7 +49,7 @@ export function BotaoPrimario({
 
 const estilos = StyleSheet.create({
   desabilitado: {
-    opacity: 0.4,
+    opacity: 0.38,
   },
   gradiente: {
     alignItems: 'center',
@@ -59,23 +59,23 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacamento.lg,
     paddingVertical: espacamento.md,
   },
+  // Profundidade real — sombra escura quente, não glow de cor
   pressionado: {
-    opacity: 0.92,
-    transform: [{ scale: 0.98 }],
+    transform: [{ scale: 0.97 }],
   },
   texto: {
     color: cores.textoSobrePrimaria,
     fontSize: 16,
     fontWeight: '700',
-    letterSpacing: 0.5,
+    letterSpacing: 0.6,
   },
   wrapper: {
     borderRadius: raio.pill,
-    elevation: 8,
-    shadowColor: cores.primaria,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
+    elevation: 4,
+    shadowColor: '#0E0B08',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.55,
+    shadowRadius: 8,
     width: '100%',
   },
 });

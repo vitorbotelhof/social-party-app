@@ -2,7 +2,7 @@
 
 ## Core Philosophy
 
-The platform is built as a modular multiplayer social engine.
+The platform is built as a modular social multiplayer engine.
 
 Games evolve gradually from lightweight implementations into reusable multiplayer primitives.
 
@@ -11,6 +11,7 @@ Only consolidate systems after repeated validated patterns.
 
 Architecture priorities:
 
+* social experience first
 * multiplayer-first
 * realtime-first
 * reusable abstractions
@@ -26,7 +27,7 @@ Architecture priorities:
 The app is divided into 3 layers:
 
 1. Core Engines
-2. Features/Games
+2. Features / Games
 3. UI Layer
 
 ---
@@ -52,19 +53,29 @@ Rules:
 * engines must not contain game-specific logic
 * engines must be reusable across multiple games
 
+---
+
 # Current Foundation Systems
 
-The platform is currently consolidating:
+The platform is currently consolidating (Onda B completed):
 
-- room lifecycle
-- multiplayer state ownership
-- player presence
-- deterministic phases
-- realtime synchronization
-- game registry
-- lightweight game orchestration
+* room lifecycle
+* multiplayer state ownership
+* player presence
+* deterministic phases
+* realtime synchronization
+* game registry
+* lightweight game orchestration
 
 The platform intentionally avoids premature engine abstraction.
+
+NOT abstracted yet (intentionally):
+
+* PromptEngine
+* RevealEngine
+* ReactionEngine
+
+These will only be extracted after repeated validated usage.
 
 ---
 
@@ -113,6 +124,9 @@ UI should never contain:
 * game state management
 * business rules
 
+The UI layer is the emotional layer.
+Its job is to translate game state into feeling.
+
 ---
 
 # Folder Structure
@@ -152,20 +166,46 @@ Realtime responsibilities:
 * reactions
 * reveals
 
+---
 
 # Realtime Philosophy
 
 Realtime systems should evolve incrementally.
 
 Avoid:
-- speculative abstractions
-- enterprise-style engine systems
-- generalized multiplayer frameworks too early
+
+* speculative abstractions
+* enterprise-style engine systems
+* generalized multiplayer frameworks too early
 
 Prefer:
-- incremental consolidation
-- measured refactors
-- architecture guided by real pain
+
+* incremental consolidation
+* measured refactors
+* architecture guided by real pain
+
+---
+
+# Multiplayer Ownership Philosophy
+
+Ownership must remain explicit.
+
+Current ownership:
+
+GameScreen owns:
+
+* active multiplayer session
+* player presence
+* gameplay subscriptions
+* realtime listeners
+
+Sub-screens should:
+
+* receive props
+* remain transport-agnostic
+* avoid direct realtime subscriptions
+
+Avoid duplicated realtime listeners.
 
 ---
 
@@ -183,43 +223,6 @@ Rules:
 * isolate realtime state
 * keep game state predictable
 * prefer explicit state transitions
-
----
-
-# Multiplayer Flow
-
-Base multiplayer flow:
-
-1. Create room
-2. Join room
-3. Sync players
-4. Select game
-5. Initialize game state
-6. Run game phases
-7. Synchronize realtime events
-8. Reveal results
-9. Restart or switch game
-
-This flow must be reusable across all games.
-
-# Multiplayer Ownership Philosophy
-
-Ownership must remain explicit.
-
-Current ownership:
-
-GameScreen owns:
-- active multiplayer session
-- player presence
-- gameplay subscriptions
-- realtime listeners
-
-Sub-screens should:
-- receive props
-- remain transport-agnostic
-- avoid direct realtime subscriptions
-
-Avoid duplicated realtime listeners.
 
 ---
 
@@ -242,6 +245,39 @@ Avoid:
 * duplicated multiplayer logic
 * duplicated voting logic
 * duplicated timer logic
+
+---
+
+# Navigation Architecture
+
+Navigation should be:
+
+* lightweight
+* predictable
+* multiplayer-aware
+* emotion-first
+
+Main flows:
+
+* home (game catalog)
+* game detail
+* social dynamic selection
+* session configuration
+* lobby
+* game
+* results
+
+Navigation follows social intent:
+
+Game Selection
+↓
+Social Dynamic Selection
+↓
+Session Configuration
+↓
+Gameplay
+
+The app must not expose multiplayer infrastructure early in the flow.
 
 ---
 
@@ -305,59 +341,6 @@ Avoid duplicated type definitions.
 
 ---
 
-# Navigation Architecture
-
-Navigation should be:
-
-* lightweight
-* predictable
-* multiplayer-aware
-
-Main flows:
-
-* onboarding
-* home
-* lobby
-* room
-* game
-* results
-
-# Navigation Philosophy
-
-Navigation should follow social intent.
-
-Correct flow:
-
-Game Selection
-↓
-Social Dynamic Selection
-↓
-Session Configuration
-↓
-Gameplay
-
-The app should not expose multiplayer infrastructure too early in the flow.
-
----
-
-# Prompt Architecture
-
-Prompts are content infrastructure.
-
-Prompts should support:
-
-* categories
-* difficulty
-* spicy level
-* localization
-* tags
-* moderation
-* packs
-
-Prompt system must be reusable across games.
-
----
-
 # Scalability Philosophy
 
 Always build:
@@ -371,5 +354,7 @@ Never build:
 * isolated game implementations
 * tightly coupled flows
 * temporary hacks that break scalability
+* engines for games that don't exist yet
 
 Platform-first always.
+Emotion-first always.

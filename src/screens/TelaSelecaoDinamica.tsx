@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { JOGOS } from '@/games/gameRegistry';
 import type { RootStackParamList } from '@/navigation/types';
 import { tutorialFoiVisto } from '@/services/tutorial';
-import { cores, espacamento, raio, tipografia } from '@/theme/colors';
+import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SelecaoDinamica'>;
 
@@ -254,7 +254,7 @@ const estilos = StyleSheet.create({
     marginTop: 2,
   },
   cardDestaque: {
-    borderColor: 'rgba(139, 92, 246, 0.35)',
+    borderColor: 'rgba(160, 82, 45, 0.4)',
   },
   cardTextos: {
     flex: 1,
@@ -280,7 +280,7 @@ const estilos = StyleSheet.create({
     width: 48,
   },
   iconeContainerDestaque: {
-    backgroundColor: 'rgba(139, 92, 246, 0.18)',
+    backgroundColor: 'rgba(160, 82, 45, 0.16)',
   },
   linkRegras: {
     alignItems: 'center',
@@ -307,10 +307,10 @@ const estilos = StyleSheet.create({
   },
   pergunta: {
     color: cores.texto,
-    fontSize: tipografia.tamanhoTitulo,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.spacingTitulo,
-    lineHeight: 36,
+    fontFamily: familias.serifDisplay,
+    fontSize: 32,
+    letterSpacing: 0.1,
+    lineHeight: 42,
   },
   scroll: {
     flex: 1,
