@@ -1,6 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text } from 'react-native';
+import { Animated, Pressable, StyleSheet, View } from 'react-native';
 
 import { TelaCarregamento } from '@/components';
 import type { GameState, Player, PlayerId } from '@/engine/types';
@@ -20,7 +20,7 @@ import {
   observarEstadoDoJogo,
   observarJogadores,
 } from '@/services/roomService';
-import { cores, espacamento, tipografia } from '@/theme/colors';
+import { cores, espacamento, familias, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
 type EstadoMrWhite = GameState<MrWhitePublicState, MrWhitePrivateState>;
@@ -186,157 +186,287 @@ function OverlayTransicao({
   etapa: NonNullable<EtapaTransicao>;
   onPular: () => void;
 }) {
-  const pulso = useRef(new Animated.Value(0.4)).current;
-  const escala = useRef(new Animated.Value(0.6)).current;
+  // apurando: single-element entrance
+  const textoOpacidade = useRef(new Animated.Value(0)).current;
+  const textoY = useRef(new Animated.Value(12)).current;
+
+  // empate / descoberto: staggered three-beat reveal
+  const labelOpacidade = useRef(new Animated.Value(0)).current;
+  const labelY = useRef(new Animated.Value(8)).current;
+  const hairlineOpacidade = useRef(new Animated.Value(0)).current;
+  const nomeOpacidade = useRef(new Animated.Value(0)).current;
+  const nomeEscala = useRef(new Animated.Value(0.88)).current;
+  const subtextoOpacidade = useRef(new Animated.Value(0)).current;
+  const subtextoY = useRef(new Animated.Value(6)).current;
+
+  // hint: appears after main reveal settles
+  const dicaOpacidade = useRef(new Animated.Value(0)).current;
+
+  const animRef = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
+    textoOpacidade.setValue(0);
+    textoY.setValue(12);
+    labelOpacidade.setValue(0);
+    labelY.setValue(8);
+    hairlineOpacidade.setValue(0);
+    nomeOpacidade.setValue(0);
+    nomeEscala.setValue(0.88);
+    subtextoOpacidade.setValue(0);
+    subtextoY.setValue(6);
+    dicaOpacidade.setValue(0);
+
+    animRef.current?.stop();
+
+    const dicaEntrada = Animated.sequence([
+      Animated.delay(1100),
+      Animated.timing(dicaOpacidade, {
+        toValue: 0.55,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]);
+
     if (etapa.tipo === 'apurando') {
-      const loop = Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulso, {
+      // One slow rise — then stillness. The silence is the tension.
+      animRef.current = Animated.parallel([
+        Animated.parallel([
+          Animated.timing(textoOpacidade, {
             toValue: 1,
-            duration: 600,
+            duration: 720,
             useNativeDriver: true,
           }),
-          Animated.timing(pulso, {
-            toValue: 0.4,
-            duration: 600,
+          Animated.timing(textoY, {
+            toValue: 0,
+            duration: 720,
             useNativeDriver: true,
           }),
         ]),
-      );
-      loop.start();
-      return () => loop.stop();
+        dicaEntrada,
+      ]);
+    } else {
+      // Three beats: context → identity → consequence
+      animRef.current = Animated.parallel([
+        // Beat 1: label fades in from below
+        Animated.parallel([
+          Animated.timing(labelOpacidade, {
+            toValue: 1,
+            duration: 480,
+            useNativeDriver: true,
+          }),
+          Animated.timing(labelY, {
+            toValue: 0,
+            duration: 480,
+            useNativeDriver: true,
+          }),
+        ]),
+        // Hairline: appears just after label
+        Animated.sequence([
+          Animated.delay(220),
+          Animated.timing(hairlineOpacidade, {
+            toValue: 0.4,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ]),
+        // Beat 2: name springs in — the reveal
+        Animated.sequence([
+          Animated.delay(380),
+          Animated.parallel([
+            Animated.timing(nomeOpacidade, {
+              toValue: 1,
+              duration: 420,
+              useNativeDriver: true,
+            }),
+            Animated.spring(nomeEscala, {
+              toValue: 1,
+              useNativeDriver: true,
+              tension: 52,
+              friction: 7,
+            }),
+          ]),
+        ]),
+        // Beat 3: consequence fades in quietly
+        Animated.sequence([
+          Animated.delay(700),
+          Animated.parallel([
+            Animated.timing(subtextoOpacidade, {
+              toValue: 1,
+              duration: 480,
+              useNativeDriver: true,
+            }),
+            Animated.timing(subtextoY, {
+              toValue: 0,
+              duration: 480,
+              useNativeDriver: true,
+            }),
+          ]),
+        ]),
+        dicaEntrada,
+      ]);
     }
-    pulso.setValue(1);
-    Animated.spring(escala, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 70,
-      friction: 6,
-    }).start();
-    return undefined;
-  }, [escala, etapa.tipo, pulso]);
+
+    animRef.current.start();
+
+    return () => {
+      animRef.current?.stop();
+    };
+  }, [
+    etapa.tipo,
+    textoOpacidade, textoY,
+    labelOpacidade, labelY,
+    hairlineOpacidade,
+    nomeOpacidade, nomeEscala,
+    subtextoOpacidade, subtextoY,
+    dicaOpacidade,
+  ]);
 
   return (
     <Pressable style={estilosOverlay.overlay} onPress={onPular}>
       {etapa.tipo === 'apurando' && (
-        <Animated.View style={{ opacity: pulso }}>
-          <Text style={estilosOverlay.apurandoEmoji}>🗳️</Text>
-          <Text style={estilosOverlay.apurandoTexto}>apurando os votos...</Text>
-        </Animated.View>
+        <Animated.Text
+          style={[
+            estilosOverlay.apurandoTexto,
+            { opacity: textoOpacidade, transform: [{ translateY: textoY }] },
+          ]}
+        >
+          {'o grupo\ndecidiu.'}
+        </Animated.Text>
       )}
+
       {etapa.tipo === 'empate' && (
-        <Animated.View
-          style={[estilosOverlay.bloco, { transform: [{ scale: escala }] }]}
-        >
-          <Text style={estilosOverlay.titulo}>EMPATE!</Text>
-          <Text style={estilosOverlay.subtitulo}>
+        <View style={estilosOverlay.bloco}>
+          <Animated.Text
+            style={[
+              estilosOverlay.tituloEmpate,
+              { opacity: labelOpacidade, transform: [{ translateY: labelY }] },
+            ]}
+          >
+            empate.
+          </Animated.Text>
+          <Animated.View style={[estilosOverlay.hairline, { opacity: hairlineOpacidade }]} />
+          <Animated.Text
+            style={[
+              estilosOverlay.nomeDestaque,
+              estilosOverlay.nomeEmpate,
+              { opacity: nomeOpacidade, transform: [{ scale: nomeEscala }] },
+            ]}
+          >
+            {etapa.nomeEliminado ?? '...'}
+          </Animated.Text>
+          <Animated.Text
+            style={[
+              estilosOverlay.subtextoFinal,
+              { opacity: subtextoOpacidade, transform: [{ translateY: subtextoY }] },
+            ]}
+          >
             o mais antigo na sala foi eliminado
-          </Text>
-          {etapa.nomeEliminado && (
-            <Text style={estilosOverlay.nomeAcento}>
-              {etapa.nomeEliminado}
-            </Text>
-          )}
-        </Animated.View>
+          </Animated.Text>
+        </View>
       )}
+
       {etapa.tipo === 'descoberto' && (
-        <Animated.View
-          style={[estilosOverlay.bloco, { transform: [{ scale: escala }] }]}
-        >
-          <Text style={estilosOverlay.emojiDescoberto}>👁</Text>
-          <Text style={estilosOverlay.nomeDescoberto}>
+        <View style={estilosOverlay.bloco}>
+          <Animated.Text
+            style={[
+              estilosOverlay.labelDescoberto,
+              { opacity: labelOpacidade, transform: [{ translateY: labelY }] },
+            ]}
+          >
+            o mr white era
+          </Animated.Text>
+          <Animated.View style={[estilosOverlay.hairline, { opacity: hairlineOpacidade }]} />
+          <Animated.Text
+            style={[
+              estilosOverlay.nomeDestaque,
+              { opacity: nomeOpacidade, transform: [{ scale: nomeEscala }] },
+            ]}
+          >
             {etapa.nomeMrWhite ?? '...'}
-          </Text>
-          <Text style={estilosOverlay.tituloDescoberto}>
-            era o MR WHITE!
-          </Text>
-          <Text style={estilosOverlay.subtituloDescoberto}>
-            ele ainda tem uma última chance...
-          </Text>
-        </Animated.View>
+          </Animated.Text>
+          <Animated.Text
+            style={[
+              estilosOverlay.subtextoFinal,
+              { opacity: subtextoOpacidade, transform: [{ translateY: subtextoY }] },
+            ]}
+          >
+            ele ainda tem uma última chance.
+          </Animated.Text>
+        </View>
       )}
-      <Text style={estilosOverlay.dicaPular}>toque para pular</Text>
+
+      <Animated.Text style={[estilosOverlay.dicaPular, { opacity: dicaOpacidade }]}>
+        toque para continuar
+      </Animated.Text>
     </Pressable>
   );
 }
 
 const estilosOverlay = StyleSheet.create({
-  apurandoEmoji: {
-    fontSize: 64,
-    marginBottom: espacamento.lg,
-    textAlign: 'center',
-  },
   apurandoTexto: {
     color: cores.texto,
+    fontFamily: familias.serifDisplay,
     fontSize: tipografia.tamanhoTitulo,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.spacingTitulo,
+    letterSpacing: 0,
+    lineHeight: 38,
     textAlign: 'center',
   },
   bloco: {
     alignItems: 'center',
+    gap: espacamento.md,
     paddingHorizontal: espacamento.lg,
   },
   dicaPular: {
     bottom: espacamento.xl,
     color: cores.textoMudo,
+    fontFamily: familias.serifItalico,
     fontSize: tipografia.tamanhoLegenda,
-    fontStyle: 'italic',
     position: 'absolute',
   },
-  emojiDescoberto: {
-    fontSize: 72,
-    marginBottom: espacamento.md,
+  hairline: {
+    backgroundColor: cores.borda,
+    height: 1,
+    width: 48,
   },
-  nomeAcento: {
-    color: cores.acento,
-    fontSize: tipografia.tamanhoSubtituloGrande,
-    fontWeight: tipografia.pesoExtraBold,
-    marginTop: espacamento.md,
+  labelDescoberto: {
+    color: cores.textoMudo,
+    fontFamily: familias.serifItalico,
+    fontSize: tipografia.tamanhoLegenda,
+    letterSpacing: 0.3,
     textAlign: 'center',
   },
-  nomeDescoberto: {
+  nomeDestaque: {
     color: cores.acento,
+    fontFamily: familias.serifDisplay,
     fontSize: tipografia.tamanhoTituloGrande,
-    fontWeight: tipografia.pesoBlack,
-    letterSpacing: tipografia.spacingTitulo,
+    letterSpacing: 0,
+    lineHeight: 44,
     textAlign: 'center',
+  },
+  nomeEmpate: {
+    fontSize: tipografia.tamanhoSubtituloGrande,
+    lineHeight: 32,
   },
   overlay: {
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: cores.fundo,
     flex: 1,
     justifyContent: 'center',
     padding: espacamento.lg,
   },
-  subtitulo: {
+  subtextoFinal: {
     color: cores.textoSecundario,
-    fontSize: tipografia.tamanhoCorpoMaior,
-    marginTop: espacamento.sm,
-    textAlign: 'center',
-  },
-  subtituloDescoberto: {
-    color: cores.textoSecundario,
+    fontFamily: familias.serifItalico,
     fontSize: tipografia.tamanhoCorpoMenor,
-    fontStyle: 'italic',
-    marginTop: espacamento.md,
+    letterSpacing: 0.2,
+    lineHeight: 22,
     textAlign: 'center',
   },
-  titulo: {
+  tituloEmpate: {
     color: cores.alerta,
-    fontSize: tipografia.tamanhoTituloGrande,
-    fontWeight: tipografia.pesoBlack,
-    letterSpacing: tipografia.spacingTitulo,
-    textAlign: 'center',
-  },
-  tituloDescoberto: {
-    color: cores.texto,
-    fontSize: tipografia.tamanhoSubtituloGrande,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.spacingTitulo,
-    marginTop: espacamento.xs,
+    fontFamily: familias.serifDisplay,
+    fontSize: tipografia.tamanhoTitulo,
+    letterSpacing: 0,
     textAlign: 'center',
   },
 });

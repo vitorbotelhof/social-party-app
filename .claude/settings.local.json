@@ -35,7 +35,15 @@
       "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"minimalism dark premium intimate atmospheric\" --domain style -n 3)",
       "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"content-first discovery immersive\" --domain landing -n 3)",
       "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/src/ui-ux-pro-max/scripts/search.py \"editorial catalog discovery horizontal scroll social premium mobile\" --design-system -p \"Entre Nós\")",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"editorial copy hierarchy typography emotional social discovery\" --domain ux -n 5)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"typography weight hierarchy label caption scale\" --domain ux -n 4)",
+      "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"social party game dark intimate cinematic tension noir\" --design-system -f markdown)",
+      "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"noir thriller social tension cinematic overlay\" --domain ux)",
+      "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"animation motion timing transition dramatic reveal\" --domain ux)",
+      "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"spring physics stagger sequence reveal\" --domain ux)",
+      "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"social deduction game tension reveal dramatic\" --design-system -f markdown)",
+      "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"intimate reveal hold interaction suspense dramatic\" --domain ux)"
     ]
   }
 }

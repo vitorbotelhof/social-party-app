@@ -21,7 +21,7 @@ import type { RootStackParamList } from '@/navigation/types';
 import { tocar } from '@/services/audio';
 import { limparPartida } from '@/services/partidaAtiva';
 import { observarSala, sairDaSala } from '@/services/roomService';
-import { cores, espacamento, tipografia } from '@/theme/colors';
+import { cores, espacamento, familias, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Lobby'>;
 
@@ -102,8 +102,11 @@ export function TelaLobby({ navigation, route }: Props) {
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
       <View style={estilos.cabecalho}>
-        <Text style={estilos.legenda}>SALA</Text>
+        <Text style={estilos.legenda}>sala</Text>
         <CodigoSala codigo={roomCode} tamanho="medio" />
+        <Text style={estilos.fraseCabecalho}>
+          alguém aqui não vai ser quem parece.
+        </Text>
       </View>
 
       <View style={estilos.blocoLista}>
@@ -132,7 +135,7 @@ export function TelaLobby({ navigation, route }: Props) {
 
       <View style={estilos.rodape}>
         <Text style={estilos.aguardando}>
-          aguardando o anfitrião iniciar a rodada...
+          aguardando o anfitrião.
         </Text>
         <BotaoSecundario titulo="sair da sala" onPress={aoSair} />
       </View>
@@ -142,9 +145,18 @@ export function TelaLobby({ navigation, route }: Props) {
 
 const estilos = StyleSheet.create({
   aguardando: {
-    color: cores.textoSecundario,
-    fontSize: 15,
+    color: cores.textoMudo,
+    fontFamily: familias.serifItalico,
+    fontSize: tipografia.tamanhoCorpoMenor,
     marginBottom: espacamento.md,
+    textAlign: 'center',
+  },
+  fraseCabecalho: {
+    color: cores.textoMudo,
+    fontFamily: familias.serifItalico,
+    fontSize: tipografia.tamanhoCorpoMenor,
+    letterSpacing: 0.2,
+    marginTop: espacamento.sm,
     textAlign: 'center',
   },
   blocoLista: {
@@ -170,10 +182,10 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoMedio,
   },
   legenda: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
   },
   listaConteudo: {
     paddingBottom: espacamento.lg,

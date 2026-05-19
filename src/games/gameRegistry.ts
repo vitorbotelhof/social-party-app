@@ -17,43 +17,43 @@ export interface CategoriaMeta {
 export const CATEGORIAS_EMOCIONAIS: ReadonlyArray<CategoriaMeta> = [
   {
     id: 'tensao_misterio',
-    label: 'tensão & mistério',
-    sublabel: 'para quando a desconfiança está no ar',
+    label: 'quando ninguém confia em ninguém',
+    sublabel: 'alguém está mentindo. ou não.',
   },
   {
     id: 'revelacoes_caos',
-    label: 'revelações & caos',
-    sublabel: 'para confissões que não têm volta',
+    label: 'quando alguém vai contar tudo',
+    sublabel: 'sem filtro. sem volta.',
   },
   {
     id: 'quem_voces_sao',
-    label: 'quem vocês são',
-    sublabel: 'para descobrir o que o grupo realmente pensa',
+    label: 'quando o grupo se vê como realmente é',
+    sublabel: 'o que ninguém falou em voz alta.',
   },
   {
     id: 'conversa_profunda',
-    label: 'conversa profunda',
-    sublabel: 'para quando a noite pede mais que risada',
+    label: 'quando a noite pede honestidade',
+    sublabel: 'mais lento. mais real.',
   },
   {
     id: 'casal_intimidade',
-    label: 'casal & intimidade',
-    sublabel: 'para dois que querem se conhecer melhor',
+    label: 'quando são só vocês dois',
+    sublabel: 'intimidade que incomoda, do jeito bom.',
   },
   {
     id: 'festa_barulho',
-    label: 'festa & barulho',
-    sublabel: 'para quando a energia está lá em cima',
+    label: 'quando ninguém consegue ficar sério',
+    sublabel: 'o grupo está entregue.',
   },
   {
     id: 'humor_absurdo',
-    label: 'humor & absurdo',
-    sublabel: 'para rir até não conseguir mais',
+    label: 'quando o absurdo já virou regra',
+    sublabel: 'controle? nunca foi uma opção.',
   },
   {
     id: 'votacao_exposicao',
-    label: 'votação & exposição',
-    sublabel: 'para colocar o grupo em evidência',
+    label: 'quando alguém vai estar no centro',
+    sublabel: 'o grupo decide. você aguenta.',
   },
 ];
 

@@ -21,7 +21,7 @@ import type {
 } from '@/games/mr-white/types';
 import { tocar } from '@/services/audio';
 import { criarAcao, despacharAcao } from '@/services/gameActions';
-import { cores, espacamento, raio, tipografia } from '@/theme/colors';
+import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type EstadoMrWhite = GameState<MrWhitePublicState, MrWhitePrivateState>;
 
@@ -33,10 +33,10 @@ interface Props {
   jogadores: Player[];
 }
 
-const COR_FUNDO_MRWHITE = '#7F1D1D';
-const COR_FUNDO_CIVIL = '#064E3B';
-const COR_FUNDO_PREPARANDO = '#0A0A0A';
-const COR_PERIGO = '#FCA5A5';
+const COR_FUNDO_MRWHITE = '#1E0606';
+const COR_FUNDO_CIVIL = '#061410';
+const COR_FUNDO_PREPARANDO = cores.fundo;
+const COR_PERIGO = '#F08080';
 const MS_PREPARO = 1500;
 
 export function TelaWordReveal({
@@ -53,11 +53,9 @@ export function TelaWordReveal({
   >('inicial');
   const [enviando, setEnviando] = useState(false);
 
-  const pulso = useRef(new Animated.Value(1)).current;
   const escalaPalavra = useRef(new Animated.Value(0.5)).current;
   const fundoAnim = useRef(new Animated.Value(0)).current;
   const opacidadeIntro = useRef(new Animated.Value(0)).current;
-  const pulsoOlho = useRef(new Animated.Value(1)).current;
   const ultimoCliqueRef = useRef(0);
 
   const meuEstado = estado.estadosPrivados[jogadorId];
@@ -84,31 +82,6 @@ export function TelaWordReveal({
     return null;
   }, [jogadorId, mapaNomes, ordem, queViram]);
 
-  // Pulso suave no ícone enquanto aguarda primeiro toque.
-  useEffect(() => {
-    if (jaVi || segurando || jaSegurou) {
-      pulso.stopAnimation();
-      pulso.setValue(1);
-      return;
-    }
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulso, {
-          toValue: 1.15,
-          duration: 700,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulso, {
-          toValue: 1,
-          duration: 700,
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [jaSegurou, jaVi, pulso, segurando]);
-
   // Sequência de estágios enquanto o jogador segura.
   useEffect(() => {
     if (!segurando) {
@@ -122,31 +95,6 @@ export function TelaWordReveal({
     }, MS_PREPARO);
     return () => clearTimeout(id);
   }, [segurando]);
-
-  // Pulso do 👁 durante o preparo do Mr White.
-  useEffect(() => {
-    if (estagio !== 'preparando') {
-      pulsoOlho.stopAnimation();
-      pulsoOlho.setValue(1);
-      return;
-    }
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulsoOlho, {
-          toValue: 1.25,
-          duration: 380,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulsoOlho, {
-          toValue: 1,
-          duration: 380,
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [estagio, pulsoOlho]);
 
   // Fade-in do texto introdutório ("só você pode ver isso...").
   useEffect(() => {
@@ -234,11 +182,11 @@ export function TelaWordReveal({
 
         {jaVi ? (
           <View style={estilos.blocoCentralAguardando}>
-            <Text style={estilos.aguardandoTitulo}>você já viu ✓</Text>
+            <Text style={estilos.aguardandoTitulo}>você já viu.</Text>
             <Text style={estilos.aguardando}>
               {todosViram
-                ? 'todo mundo pronto!'
-                : `${totalQueViram} de ${total} já viram a palavra`}
+                ? 'o grupo está pronto.'
+                : `${totalQueViram} de ${total} já viram`}
             </Text>
             {!todosViram && (
               <Text style={estilos.aguardandoNomes}>
@@ -251,7 +199,7 @@ export function TelaWordReveal({
           </View>
         ) : (
           <>
-            <Text style={estilos.legendaVez}>VEZ DE</Text>
+            <Text style={estilos.legendaVez}>vez de</Text>
             <Text style={estilos.nomeVez}>{meuNome}</Text>
 
             <Animated.View
@@ -264,14 +212,6 @@ export function TelaWordReveal({
               >
                 {estagio === 'inicial' && (
                   <View style={estilos.escondidoBloco}>
-                    <Animated.Text
-                      style={[
-                        estilos.iconeDedo,
-                        { transform: [{ scale: pulso }] },
-                      ]}
-                    >
-                      👆
-                    </Animated.Text>
                     <Text style={estilos.instrucaoEsconder}>
                       segure a tela para revelar
                     </Text>
@@ -284,43 +224,48 @@ export function TelaWordReveal({
                       { opacity: opacidadeIntro },
                     ]}
                   >
-                    {ehMrWhite && (
-                      <Animated.Text
-                        style={[
-                          estilos.olhoMrWhite,
-                          { transform: [{ scale: pulsoOlho }] },
-                        ]}
-                      >
-                        👁
-                      </Animated.Text>
-                    )}
+                    <View style={estilos.hairlinePreparo} />
                     <Text style={estilos.textoPreparo}>
-                      só você pode ver isso...
+                      {'só você\npode ver isso.'}
                     </Text>
                   </Animated.View>
                 )}
                 {estagio === 'revelado' && (
                   <View style={estilos.reveladoBloco}>
                     <Animated.View
-                      style={{ transform: [{ scale: escalaPalavra }] }}
+                      style={[
+                        estilos.reveladoConteudo,
+                        { transform: [{ scale: escalaPalavra }] },
+                      ]}
                     >
                       {ehMrWhite ? (
                         <>
                           <Text style={estilos.tituloMrWhite}>
-                            🤫 psiu...{'\n'}você é o MR WHITE
+                            {'você é\no mr white.'}
                           </Text>
                           <Text style={estilos.subtextoMrWhite}>
-                            descubra a palavra sem ser pego
+                            não tem palavra.{'\n'}descubra a dos outros.
                           </Text>
                         </>
                       ) : (
-                        <Text style={estilos.palavra}>
-                          {meuEstado.palavraSecreta}
-                        </Text>
+                        <>
+                          <Text style={estilos.labelPalavra}>
+                            sua palavra
+                          </Text>
+                          <Text
+                            style={estilos.palavra}
+                            adjustsFontSizeToFit
+                            numberOfLines={1}
+                          >
+                            {meuEstado.palavraSecreta}
+                          </Text>
+                        </>
                       )}
                     </Animated.View>
                     <Text style={estilos.instrucaoRevelado}>
-                      memorize e solte quando terminar
+                      {ehMrWhite
+                        ? 'solte quando estiver pronto.'
+                        : 'memorize. solte quando terminar.'}
                     </Text>
                   </View>
                 )}
@@ -358,12 +303,6 @@ function BarraProgresso({ atual, total }: { atual: number; total: number }) {
   const proporcao = total === 0 ? 0 : atual / total;
   return (
     <View style={estilos.progressoBloco}>
-      <View style={estilos.progressoCabecalho}>
-        <Text style={estilos.progressoTexto}>jogadores prontos</Text>
-        <Text style={estilos.progressoContador}>
-          {atual} de {total}
-        </Text>
-      </View>
       <View style={estilos.progressoTrilho}>
         <View
           style={[
@@ -372,6 +311,7 @@ function BarraProgresso({ atual, total }: { atual: number; total: number }) {
           ]}
         />
       </View>
+      <Text style={estilos.progressoContador}>{atual} de {total}</Text>
     </View>
   );
 }
@@ -409,7 +349,7 @@ function ListaJogadores({
               {sou ? ' (você)' : ''}
             </Text>
             {viu ? (
-              <Text style={estilos.itemListaCheck}>✓</Text>
+              <Text style={estilos.itemListaCheck}>·</Text>
             ) : (
               <Text style={estilos.itemListaAguardando}>aguardando</Text>
             )}
@@ -425,20 +365,22 @@ const ALTURA_CARTAO = 280;
 const estilos = StyleSheet.create({
   aguardando: {
     color: cores.textoSecundario,
+    fontFamily: familias.serifItalico,
     fontSize: tipografia.tamanhoCorpoMenor,
+    marginTop: espacamento.xs,
     textAlign: 'center',
   },
   aguardandoTitulo: {
-    color: cores.sucesso,
+    color: cores.acento,
+    fontFamily: familias.serifItalico,
     fontSize: tipografia.tamanhoSubtitulo,
-    fontWeight: tipografia.pesoBold,
-    marginBottom: espacamento.sm,
+    marginBottom: espacamento.xs,
     textAlign: 'center',
   },
   aguardandoNomes: {
     color: cores.textoMudo,
+    fontFamily: familias.serifItalico,
     fontSize: tipografia.tamanhoLegenda,
-    fontStyle: 'italic',
     marginTop: espacamento.sm,
     paddingHorizontal: espacamento.lg,
     textAlign: 'center',
@@ -480,18 +422,24 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     gap: espacamento.md,
   },
-  iconeDedo: {
-    fontSize: 64,
+  hairlinePreparo: {
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    height: 1,
+    marginBottom: espacamento.xs,
+    width: 36,
   },
   instrucaoEsconder: {
-    color: cores.texto,
+    color: cores.textoSecundario,
+    fontFamily: familias.serifItalico,
     fontSize: tipografia.tamanhoCorpoMaior,
-    fontWeight: tipografia.pesoSemibold,
+    letterSpacing: 0.2,
     textAlign: 'center',
   },
   instrucaoRevelado: {
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: 'rgba(255, 255, 255, 0.5)',
+    fontFamily: familias.serifItalico,
     fontSize: tipografia.tamanhoCorpoMenor,
+    letterSpacing: 0.2,
     marginTop: espacamento.lg,
     textAlign: 'center',
   },
@@ -506,7 +454,7 @@ const estilos = StyleSheet.create({
     fontSize: tipografia.tamanhoLegenda,
   },
   itemListaCheck: {
-    color: cores.sucesso,
+    color: cores.textoSecundario,
     fontSize: tipografia.tamanhoCorpoMaior,
     fontWeight: tipografia.pesoBold,
   },
@@ -523,11 +471,19 @@ const estilos = StyleSheet.create({
     color: cores.texto,
     fontWeight: tipografia.pesoSemibold,
   },
+  labelPalavra: {
+    color: 'rgba(255, 255, 255, 0.4)',
+    fontFamily: familias.serifItalico,
+    fontSize: tipografia.tamanhoLegenda,
+    letterSpacing: 0.3,
+    marginBottom: espacamento.xs,
+    textAlign: 'center',
+  },
   legendaVez: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
     marginTop: espacamento.lg,
     textAlign: 'center',
   },
@@ -539,86 +495,80 @@ const estilos = StyleSheet.create({
   },
   nomeVez: {
     color: cores.texto,
+    fontFamily: familias.serifDisplay,
     fontSize: 32,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.spacingTitulo,
+    letterSpacing: 0,
     marginTop: espacamento.xs,
     textAlign: 'center',
   },
   palavra: {
     color: cores.textoSobrePrimaria,
+    fontFamily: familias.serifDisplay,
     fontSize: 48,
-    fontWeight: tipografia.pesoExtraBold,
+    letterSpacing: 0,
     textAlign: 'center',
   },
-  progressoBloco: {
-    gap: espacamento.sm,
-  },
-  progressoCabecalho: {
+  preparandoBloco: {
     alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: espacamento.md,
+  },
+  progressoBloco: {
+    alignItems: 'flex-end',
+    gap: espacamento.xs,
   },
   progressoContador: {
-    color: cores.primaria,
-    fontSize: tipografia.tamanhoLegenda,
-    fontWeight: tipografia.pesoBold,
+    color: cores.textoMudo,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
   },
   progressoPreenchido: {
     backgroundColor: cores.primaria,
     borderRadius: raio.pill,
     height: '100%',
   },
-  progressoTexto: {
-    color: cores.textoSecundario,
-    fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
-  },
   progressoTrilho: {
     backgroundColor: cores.superficie,
     borderRadius: raio.pill,
-    height: 6,
+    height: 3,
     overflow: 'hidden',
     width: '100%',
   },
   reveladoBloco: {
     alignItems: 'center',
-    gap: espacamento.sm,
+    gap: 0,
   },
-  preparandoBloco: {
+  reveladoConteudo: {
     alignItems: 'center',
-    gap: espacamento.md,
-  },
-  textoPreparo: {
-    color: 'rgba(255, 255, 255, 0.85)',
-    fontSize: tipografia.tamanhoSubtitulo,
-    fontStyle: 'italic',
-    letterSpacing: 0.5,
-    textAlign: 'center',
-  },
-  olhoMrWhite: {
-    fontSize: 72,
-    marginBottom: espacamento.sm,
-  },
-  subtextoMrWhite: {
-    color: 'rgba(255, 255, 255, 0.85)',
-    fontSize: tipografia.tamanhoCorpoMenor,
-    fontStyle: 'italic',
-    marginTop: espacamento.md,
-    textAlign: 'center',
   },
   rodape: {
     minHeight: 60,
+  },
+  subtextoMrWhite: {
+    color: 'rgba(255, 255, 255, 0.55)',
+    fontFamily: familias.serifItalico,
+    fontSize: tipografia.tamanhoCorpoMenor,
+    lineHeight: 22,
+    marginTop: espacamento.md,
+    textAlign: 'center',
   },
   tela: {
     backgroundColor: cores.fundo,
     flex: 1,
   },
+  textoPreparo: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontFamily: familias.serifDisplay,
+    fontSize: tipografia.tamanhoSubtitulo,
+    letterSpacing: 0,
+    lineHeight: 30,
+    textAlign: 'center',
+  },
   tituloMrWhite: {
     color: COR_PERIGO,
-    fontSize: 36,
-    fontWeight: tipografia.pesoExtraBold,
+    fontFamily: familias.serifDisplay,
+    fontSize: 34,
+    letterSpacing: 0,
     lineHeight: 42,
     textAlign: 'center',
   },

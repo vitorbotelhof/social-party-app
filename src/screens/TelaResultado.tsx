@@ -34,7 +34,7 @@ import {
   resetarJogo,
   sairDaSala,
 } from '@/services/roomService';
-import { cores, espacamento, raio, tipografia } from '@/theme/colors';
+import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type EstadoMrWhite = GameState<MrWhitePublicState, MrWhitePrivateState>;
 
@@ -185,7 +185,7 @@ export function TelaResultado({
           <View style={estilos.blocoResumo}>
             <BlocoStagger indice={0}>
               <View style={estilos.cardResumo}>
-                <Text style={estilos.rotulo}>A PALAVRA ERA</Text>
+                <Text style={estilos.rotulo}>a palavra era</Text>
                 <Text style={estilos.palavraDestaque}>
                   {estado.estadoPublico.palavraRevelada}
                 </Text>
@@ -195,7 +195,7 @@ export function TelaResultado({
             {estado.estadoPublico.palpiteFinal && (
               <BlocoStagger indice={1}>
                 <View style={estilos.cardResumo}>
-                  <Text style={estilos.rotulo}>PALPITE DO MR WHITE</Text>
+                  <Text style={estilos.rotulo}>palpite do mr white</Text>
                   <Text style={estilos.palpiteTexto}>
                     “{estado.estadoPublico.palpiteFinal}”
                   </Text>
@@ -209,8 +209,8 @@ export function TelaResultado({
                   >
                     <Text style={estilos.tagPalpiteTexto}>
                       {estado.estadoPublico.palpiteCorreto
-                        ? 'ACERTOU ✓'
-                        : 'ERROU ✗'}
+                        ? 'acertou ✓'
+                        : 'errou ✗'}
                     </Text>
                   </View>
                 </View>
@@ -220,7 +220,7 @@ export function TelaResultado({
             {dicasMaisVotadas.length > 0 && (
               <BlocoStagger indice={2}>
                 <View style={estilos.cardResumo}>
-                  <Text style={estilos.rotulo}>DICAS MAIS VOTADAS</Text>
+                  <Text style={estilos.rotulo}>o que chamou atenção</Text>
                   {dicasMaisVotadas.map((p, i) => (
                     <View key={`${p.jogadorId}-${i}`} style={estilos.linhaDica}>
                       <Text style={estilos.dicaAutor}>
@@ -370,7 +370,7 @@ function BlocoLegendaMrWhite({
 
   return (
     <Animated.Text style={[estilos.legendaMrWhite, { opacity: op }]}>
-      {quantidade > 1 ? 'OS MR WHITES ERAM...' : 'O MR WHITE ERA...'}
+      {quantidade > 1 ? 'os mr whites eram...' : 'o mr white era...'}
     </Animated.Text>
   );
 }
@@ -444,11 +444,8 @@ function BannerVitoria({ ehVitoriaMrWhite }: { ehVitoriaMrWhite: boolean }) {
       ]}
     >
       <Particulas />
-      <Text style={estilos.bannerEmoji}>
-        {ehVitoriaMrWhite ? '👁' : '🎉'}
-      </Text>
       <Text style={estilos.bannerTitulo}>
-        {ehVitoriaMrWhite ? 'MR WHITE VENCEU' : 'CIVIS VENCERAM'}
+        {ehVitoriaMrWhite ? 'mr white venceu' : 'civis venceram'}
       </Text>
     </Animated.View>
   );
@@ -627,18 +624,14 @@ const estilos = StyleSheet.create({
   bannerCivis: {
     backgroundColor: '#064E3B',
   },
-  bannerEmoji: {
-    fontSize: 56,
-    marginBottom: espacamento.sm,
-  },
   bannerMrWhite: {
     backgroundColor: '#3B0764',
   },
   bannerTitulo: {
     color: cores.textoSobrePrimaria,
+    fontFamily: familias.serifDisplay,
     fontSize: tipografia.tamanhoTitulo,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.spacingTitulo,
+    letterSpacing: 0,
     textAlign: 'center',
   },
   blocoResumo: {
@@ -679,10 +672,10 @@ const estilos = StyleSheet.create({
     fontStyle: 'italic',
   },
   legendaMrWhite: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
+    fontFamily: familias.serifItalico,
     fontSize: tipografia.tamanhoLegenda,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    letterSpacing: 0.2,
     marginTop: espacamento.xl,
     textAlign: 'center',
   },
@@ -735,10 +728,10 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
   },
   revelandoTexto: {
-    color: cores.texto,
+    color: cores.textoSecundario,
+    fontFamily: familias.serifItalico,
     fontSize: tipografia.tamanhoSubtitulo,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    letterSpacing: 0,
   },
   rodape: {
     borderTopColor: cores.borda,
@@ -749,10 +742,10 @@ const estilos = StyleSheet.create({
     paddingTop: espacamento.md,
   },
   rotulo: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
   },
   tagCorreto: {
     backgroundColor: 'rgba(52, 211, 153, 0.15)',

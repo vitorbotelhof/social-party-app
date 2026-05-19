@@ -31,6 +31,7 @@ import {
   PALETA_AVATARES,
   cores,
   espacamento,
+  familias,
   raio,
   tipografia,
 } from '@/theme/colors';
@@ -142,7 +143,7 @@ export function TelaVotacao({ estado, roomCode, jogoId, jogadorId, jogadores }: 
       <BarraAcoesJogo />
       <View style={estilos.cabecalho}>
         <View style={estilos.cabecalhoLinha}>
-          <Text style={estilos.legenda}>VOTAÇÃO</Text>
+          <Text style={estilos.legenda}>votação</Text>
           <Text style={estilos.contador}>
             {totalVotos} de {total} votaram
           </Text>
@@ -156,7 +157,7 @@ export function TelaVotacao({ estado, roomCode, jogoId, jogadorId, jogadores }: 
         contentContainerStyle={estilos.scrollConteudo}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={estilos.rotuloSecao}>DICAS DA RODADA</Text>
+        <Text style={estilos.rotuloSecao}>dicas desta rodada</Text>
         <View style={estilos.blocoDicas}>
           {pistasDaRodada.length === 0 ? (
             <Text style={estilos.dicasVazio}>nenhuma dica registrada.</Text>
@@ -172,7 +173,7 @@ export function TelaVotacao({ estado, roomCode, jogoId, jogadorId, jogadores }: 
         </View>
 
         <Text style={[estilos.rotuloSecao, estilos.rotuloSecaoEspaco]}>
-          ESCOLHA UM SUSPEITO
+          quem vocês vão eliminar?
         </Text>
         <View style={estilos.cards}>
           {jogadores.map((j) => {
@@ -398,39 +399,51 @@ function RodapeEspera({
   total: number;
   todosVotaram: boolean;
 }) {
-  const pulso = useRef(new Animated.Value(0.4)).current;
+  const opacidade = useRef(new Animated.Value(todosVotaram ? 0 : 1)).current;
+  const animRef = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
-    const loop = Animated.loop(
+    animRef.current?.stop();
+    if (todosVotaram) {
+      opacidade.setValue(0);
+      animRef.current = Animated.timing(opacidade, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      });
+      animRef.current.start();
+      return;
+    }
+    opacidade.setValue(1);
+    // Slow breath — anticipation, not loading
+    animRef.current = Animated.loop(
       Animated.sequence([
-        Animated.timing(pulso, {
-          toValue: 1,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulso, {
-          toValue: 0.4,
-          duration: 600,
-          useNativeDriver: true,
-        }),
+        Animated.timing(opacidade, { toValue: 0.4, duration: 2400, useNativeDriver: true }),
+        Animated.timing(opacidade, { toValue: 1, duration: 2400, useNativeDriver: true }),
       ]),
     );
-    loop.start();
-    return () => loop.stop();
-  }, [pulso]);
+    animRef.current.start();
+    return () => { animRef.current?.stop(); };
+  }, [todosVotaram, opacidade]);
 
   return (
     <View style={estilos.rodape}>
-      <Animated.View
-        style={[estilos.esperaBloco, { opacity: pulso }]}
-      >
-        <Text style={estilos.esperaTitulo}>
-          {todosVotaram ? 'calculando...' : 'aguardando os outros'}
-        </Text>
-      </Animated.View>
-      <Text style={estilos.esperaContador}>
-        {totalVotos} de {total} votaram
-      </Text>
+      <View style={estilos.esperaBloco}>
+        {todosVotaram ? (
+          <Animated.Text style={[estilos.esperaDecidiu, { opacity: opacidade }]}>
+            o grupo decidiu.
+          </Animated.Text>
+        ) : (
+          <Animated.Text style={[estilos.esperaAguardando, { opacity: opacidade }]}>
+            o grupo está decidindo.
+          </Animated.Text>
+        )}
+        {!todosVotaram && (
+          <Text style={estilos.esperaContador}>
+            {totalVotos} de {total} votaram
+          </Text>
+        )}
+      </View>
     </View>
   );
 }
@@ -561,7 +574,7 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoExtraBold,
   },
   cardOpaco: {
-    opacity: 0.5,
+    opacity: 0.72,
   },
   cardSemDica: {
     color: cores.textoMudo,
@@ -614,24 +627,31 @@ const estilos = StyleSheet.create({
   esperaBloco: {
     alignItems: 'center',
   },
+  esperaAguardando: {
+    color: cores.textoMudo,
+    fontFamily: familias.serifItalico,
+    fontSize: tipografia.tamanhoSubtitulo,
+    textAlign: 'center',
+  },
   esperaContador: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoLegenda,
-    fontWeight: tipografia.pesoSemibold,
+    fontWeight: tipografia.pesoMedio,
     marginTop: espacamento.xs,
     textAlign: 'center',
   },
-  esperaTitulo: {
+  esperaDecidiu: {
     color: cores.texto,
+    fontFamily: familias.serifDisplay,
     fontSize: tipografia.tamanhoSubtitulo,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.spacingTitulo,
+    letterSpacing: 0,
+    textAlign: 'center',
   },
   legenda: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
   },
   rodape: {
     alignItems: 'stretch',
@@ -649,10 +669,10 @@ const estilos = StyleSheet.create({
     textAlign: 'center',
   },
   rotuloSecao: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
   },
   rotuloSecaoEspaco: {
     marginTop: espacamento.lg,

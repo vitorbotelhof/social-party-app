@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BotaoPrimario } from '@/components';
 import { HeroJogo } from '@/components/HeroJogo';
+import { PerguntaDoMomento } from '@/components/PerguntaDoMomento';
 import {
   CATEGORIAS_EMOCIONAIS,
   JOGOS,
@@ -55,8 +56,6 @@ const categoriasComJogos = CATEGORIAS_EMOCIONAIS.filter(
 export function TelaInicio({ navigation }: Props) {
   const headerOp = useRef(new Animated.Value(0)).current;
   const headerY = useRef(new Animated.Value(10)).current;
-  const taglineOp = useRef(new Animated.Value(0)).current;
-  const taglineY = useRef(new Animated.Value(10)).current;
   const heroOp = useRef(new Animated.Value(0)).current;
   const heroY = useRef(new Animated.Value(20)).current;
   const secoesAnim = useMemo(
@@ -85,15 +84,6 @@ export function TelaInicio({ navigation }: Props) {
       Animated.timing(headerY, { toValue: 0, duration: 400, useNativeDriver: true }),
     ]).start();
 
-    // Tagline: 160ms de delay — o palco se abre antes das estrelas entrarem
-    Animated.sequence([
-      Animated.delay(160),
-      Animated.parallel([
-        Animated.timing(taglineOp, { toValue: 1, duration: 500, useNativeDriver: true }),
-        Animated.timing(taglineY, { toValue: 0, duration: 500, useNativeDriver: true }),
-      ]),
-    ]).start();
-
     // Hero: entra logo após o header, com pacing cinematográfico
     Animated.sequence([
       Animated.delay(120),
@@ -116,7 +106,7 @@ export function TelaInicio({ navigation }: Props) {
         ),
       ),
     ]).start();
-  }, [headerOp, headerY, heroOp, heroY, secoesAnim, taglineOp, taglineY]);
+  }, [headerOp, headerY, heroOp, heroY, secoesAnim]);
 
   const nomeValido = nomeDigitado.trim().length >= MIN_TAMANHO_NOME;
 
@@ -188,16 +178,7 @@ export function TelaInicio({ navigation }: Props) {
           />
         </Animated.View>
 
-        <Animated.View
-          style={[
-            estilos.blocoTagline,
-            { opacity: taglineOp, transform: [{ translateY: taglineY }] },
-          ]}
-        >
-          <Text style={estilos.tagline}>
-            cuidado com o que você começa.
-          </Text>
-        </Animated.View>
+        <PerguntaDoMomento />
 
         {categoriasComJogos.map((cat, i) => (
           <SecaoCategoria
@@ -431,12 +412,8 @@ const estilos = StyleSheet.create({
     right: 0,
     top: 0,
   },
-  blocoTagline: {
-    paddingBottom: espacamento.xxl,
-    paddingTop: espacamento.sm,
-  },
   header: {
-    paddingBottom: espacamento.xl,
+    paddingBottom: espacamento.sm,
     paddingHorizontal: espacamento.lg,
     paddingTop: espacamento.sm,
   },
@@ -496,7 +473,7 @@ const estilos = StyleSheet.create({
   scrollConteudo: {
     paddingBottom: espacamento.xxl + espacamento.lg,
     paddingHorizontal: espacamento.lg,
-    paddingTop: espacamento.lg,
+    paddingTop: espacamento.xs,
   },
   seloEmBreve: {
     backgroundColor: 'rgba(255,255,255,0.14)',
@@ -511,14 +488,6 @@ const estilos = StyleSheet.create({
     fontSize: tipografia.tamanhoLegenda,
     fontWeight: tipografia.pesoExtraBold,
     letterSpacing: tipografia.spacingLabel,
-  },
-  tagline: {
-    color: cores.textoSecundario,
-    fontSize: 20,
-    fontWeight: '300',
-    letterSpacing: 0.15,
-    lineHeight: 28,
-    opacity: 0.85,
   },
   tela: {
     backgroundColor: cores.fundo,
@@ -537,23 +506,25 @@ const estilos = StyleSheet.create({
 
   // ─── Category sections ─────────────────────────────────────────────────────
   secao: {
-    marginBottom: espacamento.xl,
+    marginBottom: espacamento.xxl,
   },
   secaoCabecalho: {
-    gap: 3,
-    marginBottom: espacamento.md,
+    gap: 7,
+    marginBottom: 20,
   },
   secaoLabel: {
     color: cores.texto,
     fontSize: tipografia.tamanhoCorpoMaior,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: 0.1,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0,
+    lineHeight: 24,
   },
   secaoSublabel: {
     color: cores.textoMudo,
     fontSize: tipografia.tamanhoLegenda,
     fontWeight: tipografia.pesoRegular,
-    letterSpacing: 0.2,
+    letterSpacing: 0.3,
+    lineHeight: 18,
   },
   // Breaks out of the scrollConteudo horizontal padding to reach screen edges
   listaHorizontal: {
@@ -562,7 +533,7 @@ const estilos = StyleSheet.create({
   listaHorizontalConteudo: {
     gap: espacamento.md,
     paddingHorizontal: espacamento.lg,
-    paddingVertical: 4,
+    paddingVertical: 10,
   },
   cardHorizontalWrapper: {
     width: LARGURA_CARD_HORIZONTAL,

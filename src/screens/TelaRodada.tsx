@@ -32,6 +32,7 @@ import {
   PALETA_AVATARES,
   cores,
   espacamento,
+  familias,
   raio,
   tipografia,
 } from '@/theme/colors';
@@ -197,7 +198,7 @@ export function TelaRodada({ estado, roomCode, jogoId, jogadorId, jogadores: lis
           }
         >
           <Text style={estilos.legendaHistorico}>
-            DICAS ({dicasDaRodadaAtual.length}/{ordem.length})
+            dicas ({dicasDaRodadaAtual.length}/{ordem.length})
           </Text>
 
           {dicasDaRodadaAtual.length === 0 ? (
@@ -219,7 +220,7 @@ export function TelaRodada({ estado, roomCode, jogoId, jogadorId, jogadores: lis
         {eMinhaVez && (
           <View style={estilos.blocoInput}>
             <View style={estilos.inputCabecalho}>
-              <Text style={estilos.inputLabel}>SUA DICA</Text>
+              <Text style={estilos.inputLabel}>sua dica</Text>
               <Text
                 style={[
                   estilos.contador,
@@ -279,10 +280,10 @@ function Cabecalho({
     <View
       style={[estilos.cabecalho, eMinhaVez && estilos.cabecalhoMinhaVez]}
     >
-      <Text style={estilos.legendaRodada}>RODADA {rodada}</Text>
+      <Text style={estilos.legendaRodada}>rodada {rodada}</Text>
       {eMinhaVez ? (
         <>
-          <Text style={estilos.tituloMinhaVez}>SUA VEZ</Text>
+          <Text style={estilos.tituloMinhaVez}>sua vez</Text>
           <Text style={estilos.subtituloMinhaVez}>
             solta uma dica sobre a palavra
           </Text>
@@ -300,7 +301,7 @@ function Cabecalho({
         </>
       ) : (
         <>
-          <Text style={estilos.legendaVez}>VEZ DE</Text>
+          <Text style={estilos.legendaVez}>vez de</Text>
           <Text style={estilos.nomeDaVez}>{nomeDaVez ?? '...'}</Text>
           <Text style={estilos.subtitulo}>preste atenção na dica dele...</Text>
           {!timer.semLimite && (
@@ -645,10 +646,10 @@ const estilos = StyleSheet.create({
     justifyContent: 'space-between',
   },
   inputLabel: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
   },
   itemDica: {
     alignItems: 'flex-start',
@@ -694,23 +695,23 @@ const estilos = StyleSheet.create({
     borderColor: cores.acento,
   },
   legendaHistorico: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
     marginBottom: espacamento.sm,
   },
   legendaRodada: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
   },
   legendaVez: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
     marginTop: espacamento.sm,
   },
   nomeDaVez: {
@@ -750,9 +751,9 @@ const estilos = StyleSheet.create({
   },
   tituloMinhaVez: {
     color: cores.textoSobrePrimaria,
+    fontFamily: familias.serifDisplay,
     fontSize: 36,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.spacingTitulo,
+    letterSpacing: 0,
     marginTop: espacamento.xs,
   },
   vazio: {

@@ -1,6 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState } from 'react';
 import {
+  Animated,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -28,7 +29,7 @@ import type {
 } from '@/games/mr-white/types';
 import { observarJogadores } from '@/services/roomService';
 import { criarAcao, despacharAcao } from '@/services/gameActions';
-import { cores, espacamento, raio } from '@/theme/colors';
+import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type EstadoMrWhite = GameState<MrWhitePublicState, MrWhitePrivateState>;
 
@@ -84,18 +85,121 @@ export function TelaPalpiteMrWhite({
   }
 
   if (!souEu) {
-    return (
-      <SafeAreaView style={[estilos.tela, estilos.centralizada]}>
-        <IndicadorConexao />
-        <BarraAcoesJogo />
-        <Text style={estilos.legenda}>MR WHITE DESCOBERTO</Text>
-        <Text style={estilos.titulo}>{nomeAdivinhando}</Text>
-        <Text style={estilos.subtitulo}>
-          está tentando adivinhar a palavra dos civis...
-        </Text>
-      </SafeAreaView>
-    );
+    return <TelaEspera nomeAdivinhando={nomeAdivinhando} />;
   }
+
+  return <TelaConfronto palpite={palpite} enviando={enviando} onChangePalpite={setPalpite} onEnviar={aoEnviar} />;
+}
+
+// ─── Vista dos civis: testemunhando o confronto ──────────────────────────────
+
+function TelaEspera({ nomeAdivinhando }: { nomeAdivinhando: string }) {
+  const labelOpacidade = useRef(new Animated.Value(0)).current;
+  const labelY = useRef(new Animated.Value(8)).current;
+  const hairlineOpacidade = useRef(new Animated.Value(0)).current;
+  const nomeOpacidade = useRef(new Animated.Value(0)).current;
+  const nomeEscala = useRef(new Animated.Value(0.88)).current;
+  const subtextoOpacidade = useRef(new Animated.Value(0)).current;
+  const subtextoY = useRef(new Animated.Value(6)).current;
+  const respiracao = useRef(new Animated.Value(1)).current;
+  const animRef = useRef<Animated.CompositeAnimation | null>(null);
+
+  useEffect(() => {
+    // 3-beat cinematic reveal, depois respiração lenta no subtexto
+    const entrada = Animated.parallel([
+      Animated.parallel([
+        Animated.timing(labelOpacidade, { toValue: 1, duration: 480, useNativeDriver: true }),
+        Animated.timing(labelY, { toValue: 0, duration: 480, useNativeDriver: true }),
+      ]),
+      Animated.sequence([
+        Animated.delay(220),
+        Animated.timing(hairlineOpacidade, { toValue: 0.4, duration: 500, useNativeDriver: true }),
+      ]),
+      Animated.sequence([
+        Animated.delay(380),
+        Animated.parallel([
+          Animated.timing(nomeOpacidade, { toValue: 1, duration: 420, useNativeDriver: true }),
+          Animated.spring(nomeEscala, { toValue: 1, useNativeDriver: true, tension: 52, friction: 7 }),
+        ]),
+      ]),
+      Animated.sequence([
+        Animated.delay(700),
+        Animated.parallel([
+          Animated.timing(subtextoOpacidade, { toValue: 1, duration: 480, useNativeDriver: true }),
+          Animated.timing(subtextoY, { toValue: 0, duration: 480, useNativeDriver: true }),
+        ]),
+      ]),
+    ]);
+
+    animRef.current = entrada;
+    animRef.current.start(() => {
+      animRef.current = Animated.loop(
+        Animated.sequence([
+          Animated.timing(respiracao, { toValue: 0.38, duration: 2600, useNativeDriver: true }),
+          Animated.timing(respiracao, { toValue: 1, duration: 2600, useNativeDriver: true }),
+        ]),
+      );
+      animRef.current.start();
+    });
+
+    return () => { animRef.current?.stop(); };
+  }, [labelOpacidade, labelY, hairlineOpacidade, nomeOpacidade, nomeEscala, subtextoOpacidade, subtextoY, respiracao]);
+
+  return (
+    <SafeAreaView style={[estilos.tela, estilos.espera]}>
+      <IndicadorConexao />
+      <BarraAcoesJogo />
+      <View style={estilos.esperaBloco}>
+        <Animated.Text
+          style={[
+            estilos.esperaLabel,
+            { opacity: labelOpacidade, transform: [{ translateY: labelY }] },
+          ]}
+        >
+          ele ainda tem uma chance.
+        </Animated.Text>
+        <Animated.View style={[estilos.hairline, { opacity: hairlineOpacidade }]} />
+        <Animated.Text
+          style={[
+            estilos.esperaNome,
+            { opacity: nomeOpacidade, transform: [{ scale: nomeEscala }] },
+          ]}
+        >
+          {nomeAdivinhando}
+        </Animated.Text>
+        <Animated.Text
+          style={[
+            estilos.esperaSubtexto,
+            { opacity: Animated.multiply(subtextoOpacidade, respiracao) },
+            { transform: [{ translateY: subtextoY }] },
+          ]}
+        >
+          tentando adivinhar a palavra.
+        </Animated.Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+// ─── Vista do Mr White: o confronto final ────────────────────────────────────
+
+interface TelaConfrontoProps {
+  palpite: string;
+  enviando: boolean;
+  onChangePalpite: (v: string) => void;
+  onEnviar: () => void;
+}
+
+function TelaConfronto({ palpite, enviando, onChangePalpite, onEnviar }: TelaConfrontoProps) {
+  const opacidadeIntro = useRef(new Animated.Value(0)).current;
+  const yIntro = useRef(new Animated.Value(16)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacidadeIntro, { toValue: 1, duration: 560, useNativeDriver: true }),
+      Animated.timing(yIntro, { toValue: 0, duration: 560, useNativeDriver: true }),
+    ]).start();
+  }, [opacidadeIntro, yIntro]);
 
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
@@ -105,58 +209,133 @@ export function TelaPalpiteMrWhite({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={estilos.flex}
       >
-        <View style={estilos.cabecalho}>
-          <Text style={estilos.legenda}>VOCÊ FOI DESCOBERTO</Text>
-          <Text style={estilos.titulo}>última chance!</Text>
-          <Text style={estilos.subtitulo}>
-            adivinha qual era a palavra dos civis. acertou, vira o jogo!
-          </Text>
-        </View>
+        <Animated.View
+          style={[
+            estilos.introWrapper,
+            { opacity: opacidadeIntro, transform: [{ translateY: yIntro }] },
+          ]}
+        >
+          <View style={estilos.cabecalho}>
+            <Text style={estilos.confrontoLegenda}>você foi descoberto.</Text>
+            <Text style={estilos.confrontoTitulo}>qual é a palavra?</Text>
+            <Text style={estilos.confrontoSubtitulo}>acerte e o jogo vira.</Text>
+          </View>
 
-        <View style={estilos.corpo}>
-          <Text style={estilos.rotulo}>seu palpite</Text>
-          <TextInput
-            value={palpite}
-            onChangeText={setPalpite}
-            placeholder="digita a palavra..."
-            placeholderTextColor={cores.textoMudo}
-            autoCapitalize="words"
-            autoCorrect={false}
-            maxLength={40}
-            style={estilos.input}
-            autoFocus
-          />
-        </View>
+          <View style={estilos.corpo}>
+            <TextInput
+              value={palpite}
+              onChangeText={onChangePalpite}
+              placeholder="a palavra era..."
+              placeholderTextColor={cores.textoMudo}
+              autoCapitalize="words"
+              autoCorrect={false}
+              maxLength={40}
+              style={estilos.input}
+              autoFocus
+            />
+          </View>
 
-        <View style={estilos.rodape}>
-          <BotaoPrimario
-            titulo="é essa palavra!"
-            carregando={enviando}
-            disabled={palpite.trim().length === 0 || enviando}
-            onPress={aoEnviar}
-          />
-        </View>
+          <View style={estilos.rodape}>
+            <BotaoPrimario
+              titulo={enviando ? 'enviando...' : 'é essa palavra!'}
+              carregando={enviando}
+              disabled={palpite.trim().length === 0 || enviando}
+              onPress={onEnviar}
+            />
+          </View>
+        </Animated.View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const estilos = StyleSheet.create({
-  cabecalho: {
-    padding: espacamento.lg,
-  },
-  centralizada: {
-    alignItems: 'center',
-    gap: espacamento.md,
-    justifyContent: 'center',
-    padding: espacamento.lg,
-  },
-  corpo: {
+  // ── Shared ──
+  tela: {
+    backgroundColor: cores.fundo,
     flex: 1,
-    paddingHorizontal: espacamento.lg,
   },
   flex: {
     flex: 1,
+  },
+
+  // ── Civil: espera ──
+  espera: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  esperaBloco: {
+    alignItems: 'center',
+    gap: espacamento.md,
+    paddingHorizontal: espacamento.lg,
+  },
+  esperaLabel: {
+    color: cores.textoMudo,
+    fontFamily: familias.serifItalico,
+    fontSize: tipografia.tamanhoLegenda,
+    letterSpacing: 0.3,
+    textAlign: 'center',
+  },
+  hairline: {
+    backgroundColor: cores.borda,
+    height: 1,
+    width: 48,
+  },
+  esperaNome: {
+    color: cores.acento,
+    fontFamily: familias.serifDisplay,
+    fontSize: tipografia.tamanhoTituloGrande,
+    letterSpacing: 0,
+    lineHeight: 44,
+    textAlign: 'center',
+  },
+  esperaSubtexto: {
+    color: cores.textoSecundario,
+    fontFamily: familias.serifItalico,
+    fontSize: tipografia.tamanhoCorpoMenor,
+    letterSpacing: 0.2,
+    lineHeight: 22,
+    textAlign: 'center',
+  },
+
+  // ── Mr White: confronto ──
+  introWrapper: {
+    flex: 1,
+  },
+  cabecalho: {
+    alignItems: 'center',
+    paddingHorizontal: espacamento.lg,
+    paddingTop: espacamento.xl,
+    paddingBottom: espacamento.lg,
+  },
+  confrontoLegenda: {
+    color: cores.textoMudo,
+    fontFamily: familias.serifItalico,
+    fontSize: tipografia.tamanhoLegenda,
+    letterSpacing: 0.3,
+    textAlign: 'center',
+  },
+  confrontoTitulo: {
+    color: cores.texto,
+    fontFamily: familias.serifDisplay,
+    fontSize: tipografia.tamanhoTituloGrande,
+    letterSpacing: 0,
+    lineHeight: 44,
+    marginTop: espacamento.sm,
+    textAlign: 'center',
+  },
+  confrontoSubtitulo: {
+    color: cores.textoSecundario,
+    fontFamily: familias.serifItalico,
+    fontSize: tipografia.tamanhoCorpoMenor,
+    letterSpacing: 0.2,
+    marginTop: espacamento.sm,
+    textAlign: 'center',
+  },
+  corpo: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: espacamento.lg,
   },
   input: {
     backgroundColor: cores.superficie,
@@ -164,43 +343,13 @@ const estilos = StyleSheet.create({
     borderRadius: raio.md,
     borderWidth: 1,
     color: cores.texto,
-    fontSize: 22,
+    fontFamily: familias.serifDisplay,
+    fontSize: 28,
     paddingHorizontal: espacamento.md,
     paddingVertical: espacamento.md,
     textAlign: 'center',
   },
-  legenda: {
-    color: cores.primaria,
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 2,
-  },
   rodape: {
     padding: espacamento.lg,
-  },
-  rotulo: {
-    color: cores.textoSecundario,
-    fontSize: 13,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    marginBottom: espacamento.sm,
-    textTransform: 'uppercase',
-  },
-  subtitulo: {
-    color: cores.textoSecundario,
-    fontSize: 16,
-    marginTop: espacamento.sm,
-    textAlign: 'center',
-  },
-  tela: {
-    backgroundColor: cores.fundo,
-    flex: 1,
-  },
-  titulo: {
-    color: cores.texto,
-    fontSize: 32,
-    fontWeight: '900',
-    marginTop: espacamento.sm,
-    textAlign: 'center',
   },
 });
