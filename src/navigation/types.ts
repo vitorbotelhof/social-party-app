@@ -25,6 +25,13 @@ export type RootStackParamList = {
     totalRodadas: number;
     modo: 'classico' | 'sincero';
   };
+  ConfiguracaoLocalNaPontaDaLingua: undefined;
+  JogoLocalNaPontaDaLingua: {
+    jogadores: { id: string; nome: string }[];
+    duracaoSegundos: 45 | 60 | 90;
+    rodadasPorJogador: number;
+    dificuldade: 'facil' | 'medio' | 'dificil' | 'todas';
+  };
 };
 
 declare global {

@@ -92,6 +92,8 @@ export function TelaSelecaoDinamica({ navigation, route }: Props) {
     if (id === 'local') {
       if (jogoId === 'most-likely-to') {
         navigation.navigate('ConfiguracaoLocalMostLikely');
+      } else if (jogoId === 'na-ponta-da-lingua') {
+        navigation.navigate('ConfiguracaoLocalNaPontaDaLingua');
       } else {
         navigation.navigate('ConfiguracaoLocal');
       }

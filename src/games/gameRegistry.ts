@@ -83,6 +83,42 @@ export interface DefinicaoJogo {
 
 export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
   {
+    id: 'na-ponta-da-lingua',
+    nome: 'Na Ponta da Língua',
+    slogan: 'a palavra está ali. as proibidas não deixam sair.',
+    descricao:
+      'Você precisa fazer o grupo adivinhar uma palavra — mas as mais óbvias para explicá-la estão proibidas. O tempo corre. O improviso começa. O grupo observa.',
+    cover: require('../../assets/games/mr-white/cover.png'),
+    minJogadores: 2,
+    maxJogadores: 10,
+    tempoMedio: '20-40 min',
+    intensidade: 3,
+    disponivel: true,
+    supportsLocal: true,
+    supportsRealtime: false,
+    socialTags: ['pressão', 'improviso', 'caos'],
+    categorias: ['tensao_misterio'],
+    destaque: true,
+    ordemNaCategoria: 2,
+    instrucoes: {
+      objetivo:
+        'Fazer o grupo adivinhar a palavra secreta sem usar nenhuma das cinco palavras proibidas. O tempo está sempre correndo — e o improviso é o único caminho.',
+      passos: [
+        'Na sua vez, pegue o celular e veja a palavra secreta com as cinco proibidas. Não mostre para ninguém.',
+        'Quando estiver pronto, inicie o timer e comece a descrever a palavra — qualquer coisa, menos as proibidas.',
+        'O grupo tenta adivinhar enquanto você explica. Se alguém acertar, o ponto é seu.',
+        'Se usar uma palavra proibida, o grupo pode gritar "proibida!" — a rodada termina sem ponto.',
+        'Se o tempo esgotar antes de acertarem, a rodada passa sem ponto.',
+        'Após todos jogarem a mesma quantidade de rodadas, o placar é revelado.',
+      ],
+      dicas: [
+        'Evite sinônimos óbvios — o grupo conhece as armadilhas tão bem quanto você.',
+        'Quanto menos tempo restar, mais tende a sair o que não deveria. Respire.',
+        'Metáforas, sons, gestos, histórias — qualquer coisa funciona menos as proibidas.',
+      ],
+    },
+  },
+  {
     id: 'mrwhite',
     nome: 'Mr White',
     slogan: 'todo mundo tem a mesma palavra. menos um.',
