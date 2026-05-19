@@ -25,13 +25,12 @@ export function RootNavigator() {
       initialRouteName="Intro"
       screenOptions={{
         headerStyle: { backgroundColor: cores.fundo },
-        // Back button na cor primária (roxo vibrante);
-        // título mantém off-white via headerTitleStyle.
         headerTintColor: cores.primaria,
         headerTitleStyle: {
           color: cores.texto,
           fontWeight: '700',
         },
+        headerBackTitleVisible: false,
         headerShadowVisible: false,
         contentStyle: { backgroundColor: cores.fundo },
         animation: 'slide_from_right',
@@ -76,7 +75,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="EntrarSala"
         component={TelaEntrarSala}
-        options={{ title: 'Entrar' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Lobby"

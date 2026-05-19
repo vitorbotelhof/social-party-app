@@ -57,9 +57,8 @@ export function TelaCarregamento({ mensagem }: Props) {
         <Animated.View
           style={{ opacity: opacidade, transform: [{ scale: escala }] }}
         >
-          <Logo tamanho={96} />
+          <Logo tamanho={120} />
         </Animated.View>
-        <Text style={estilos.marca}>entre nós</Text>
         {mensagem && <Text style={estilos.mensagem}>{mensagem}</Text>}
       </View>
     </SafeAreaView>
@@ -72,12 +71,6 @@ const estilos = StyleSheet.create({
     flex: 1,
     gap: espacamento.lg,
     justifyContent: 'center',
-  },
-  marca: {
-    color: cores.texto,
-    fontSize: 22,
-    fontWeight: tipografia.pesoLeve,
-    letterSpacing: 1,
   },
   mensagem: {
     color: cores.textoSecundario,

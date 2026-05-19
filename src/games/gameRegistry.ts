@@ -1,3 +1,62 @@
+export type CategoriaEmocional =
+  | 'tensao_misterio'
+  | 'revelacoes_caos'
+  | 'quem_voces_sao'
+  | 'conversa_profunda'
+  | 'casal_intimidade'
+  | 'festa_barulho'
+  | 'humor_absurdo'
+  | 'votacao_exposicao';
+
+export interface CategoriaMeta {
+  id: CategoriaEmocional;
+  label: string;
+  sublabel: string;
+}
+
+export const CATEGORIAS_EMOCIONAIS: ReadonlyArray<CategoriaMeta> = [
+  {
+    id: 'tensao_misterio',
+    label: 'tensão & mistério',
+    sublabel: 'para quando a desconfiança está no ar',
+  },
+  {
+    id: 'revelacoes_caos',
+    label: 'revelações & caos',
+    sublabel: 'para confissões que não têm volta',
+  },
+  {
+    id: 'quem_voces_sao',
+    label: 'quem vocês são',
+    sublabel: 'para descobrir o que o grupo realmente pensa',
+  },
+  {
+    id: 'conversa_profunda',
+    label: 'conversa profunda',
+    sublabel: 'para quando a noite pede mais que risada',
+  },
+  {
+    id: 'casal_intimidade',
+    label: 'casal & intimidade',
+    sublabel: 'para dois que querem se conhecer melhor',
+  },
+  {
+    id: 'festa_barulho',
+    label: 'festa & barulho',
+    sublabel: 'para quando a energia está lá em cima',
+  },
+  {
+    id: 'humor_absurdo',
+    label: 'humor & absurdo',
+    sublabel: 'para rir até não conseguir mais',
+  },
+  {
+    id: 'votacao_exposicao',
+    label: 'votação & exposição',
+    sublabel: 'para colocar o grupo em evidência',
+  },
+];
+
 export interface DefinicaoJogo {
   id: string;
   nome: string;
@@ -12,6 +71,9 @@ export interface DefinicaoJogo {
   supportsLocal: boolean;
   supportsRealtime: boolean;
   socialTags: string[];
+  categorias: [CategoriaEmocional, ...CategoriaEmocional[]];
+  destaque?: boolean;
+  ordemNaCategoria?: number;
   instrucoes: {
     objetivo: string;
     passos: string[];
@@ -35,6 +97,9 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     supportsLocal: true,
     supportsRealtime: true,
     socialTags: ['tensão', 'bluff', 'impostor'],
+    categorias: ['tensao_misterio'],
+    destaque: true,
+    ordemNaCategoria: 1,
     instrucoes: {
       objetivo:
         'Os civis precisam descobrir e eliminar o Mr White antes que ele descubra a palavra secreta. Já o Mr White precisa se passar por civil, observar as pistas e adivinhar a palavra para vencer no susto.',
@@ -68,6 +133,8 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     supportsLocal: false,
     supportsRealtime: true,
     socialTags: ['party', 'revelações', 'caos'],
+    categorias: ['quem_voces_sao'],
+    ordemNaCategoria: 1,
     instrucoes: {
       objetivo:
         'Descobrir como o grupo realmente enxerga cada pessoa. Não há vencedor formal — o prêmio é a risada coletiva e as revelações inesperadas sobre os amigos.',
@@ -100,6 +167,8 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     supportsLocal: true,
     supportsRealtime: true,
     socialTags: ['drinking', 'confissões', 'caos'],
+    categorias: ['revelacoes_caos'],
+    ordemNaCategoria: 1,
     instrucoes: {
       objetivo:
         'Conhecer melhor o grupo através das confissões. Não existe vencedor: o legal é descobrir histórias escondidas e segredos que ninguém imaginava — sempre com respeito a quem não quer responder.',
@@ -132,6 +201,8 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     supportsLocal: true,
     supportsRealtime: false,
     socialTags: ['desafio', 'confissões', 'caos'],
+    categorias: ['revelacoes_caos'],
+    ordemNaCategoria: 2,
     instrucoes: {
       objetivo:
         'Quebrar o gelo e arrancar histórias e momentos memoráveis do grupo. Não há vencedor: a graça está em escolher entre se expor com a verdade ou topar o desafio.',
@@ -165,6 +236,8 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     supportsLocal: false,
     supportsRealtime: true,
     socialTags: ['drama', 'tensão', 'votação'],
+    categorias: ['votacao_exposicao'],
+    ordemNaCategoria: 1,
     instrucoes: {
       objetivo:
         'Descobrir o que o grupo realmente pensa sem ninguém precisar se expor. As perguntas vão do elogio à zoeira pesada, e o resultado anônimo gera as melhores reações da noite.',
@@ -183,3 +256,24 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     },
   },
 ];
+
+export function jogosPorCategoria(): Record<CategoriaEmocional, DefinicaoJogo[]> {
+  const resultado = {} as Record<CategoriaEmocional, DefinicaoJogo[]>;
+
+  for (const cat of CATEGORIAS_EMOCIONAIS) {
+    resultado[cat.id] = [];
+  }
+
+  for (const jogo of JOGOS) {
+    const primaria = jogo.categorias[0];
+    resultado[primaria].push(jogo);
+  }
+
+  for (const cat of CATEGORIAS_EMOCIONAIS) {
+    resultado[cat.id].sort(
+      (a, b) => (a.ordemNaCategoria ?? 999) - (b.ordemNaCategoria ?? 999),
+    );
+  }
+
+  return resultado;
+}

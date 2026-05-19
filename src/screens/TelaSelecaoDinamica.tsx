@@ -111,6 +111,7 @@ export function TelaSelecaoDinamica({ navigation, route }: Props) {
         hitSlop={12}
         style={({ pressed }) => [
           estilos.botaoVoltar,
+          { top: insets.top + espacamento.md },
           pressed && estilos.botaoVoltarPressionado,
         ]}
       >
@@ -218,7 +219,6 @@ const estilos = StyleSheet.create({
     height: 40,
     justifyContent: 'center',
     left: espacamento.lg,
-    marginTop: espacamento.md,
     position: 'absolute',
     width: 40,
     zIndex: 10,

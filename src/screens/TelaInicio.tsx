@@ -18,7 +18,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BotaoPrimario } from '@/components';
-import { JOGOS, type DefinicaoJogo } from '@/games/gameRegistry';
+import { HeroJogo } from '@/components/HeroJogo';
+import {
+  CATEGORIAS_EMOCIONAIS,
+  JOGOS,
+  jogosPorCategoria,
+  type CategoriaMeta,
+  type DefinicaoJogo,
+} from '@/games/gameRegistry';
 import type { RootStackParamList } from '@/navigation/types';
 import { obterOuCriarJogador, salvarNome } from '@/services/jogadorLocal';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
@@ -26,15 +33,23 @@ import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 type Props = NativeStackScreenProps<RootStackParamList, 'Inicio'>;
 
 const MIN_TAMANHO_NOME = 2;
-const ALTURA_CARD = 272;
-const STAGGER_MS = 85;
-// Noir warm: topo claro, base carvão quente (não preto puro)
+const ALTURA_CARD = 216;
+const LARGURA_CARD_HORIZONTAL = 152;
+const STAGGER_SECAO_MS = 70;
+
+// Compact card gradient — fade starts at 50% since text footprint is small
 const GRADIENTE_CARD: [string, string, string, string] = [
-  'rgba(0,0,0,0)',
-  'rgba(0,0,0,0)',
-  'rgba(10,6,2,0.64)',
-  'rgba(10,6,2,0.97)',
+  'rgba(14,11,8,0)',
+  'rgba(14,11,8,0)',
+  'rgba(14,11,8,0.68)',
+  'rgba(14,11,8,0.97)',
 ];
+
+// Computed once — static catalog data grouped by primary category
+const catalogoPorCategoria = jogosPorCategoria();
+const categoriasComJogos = CATEGORIAS_EMOCIONAIS.filter(
+  (cat) => catalogoPorCategoria[cat.id].length > 0,
+);
 
 
 export function TelaInicio({ navigation }: Props) {
@@ -42,10 +57,14 @@ export function TelaInicio({ navigation }: Props) {
   const headerY = useRef(new Animated.Value(10)).current;
   const taglineOp = useRef(new Animated.Value(0)).current;
   const taglineY = useRef(new Animated.Value(10)).current;
-  const cardsAnim = useMemo(
-    () => JOGOS.map(() => ({ op: new Animated.Value(0), y: new Animated.Value(24) })),
+  const heroOp = useRef(new Animated.Value(0)).current;
+  const heroY = useRef(new Animated.Value(20)).current;
+  const secoesAnim = useMemo(
+    () => categoriasComJogos.map(() => ({ op: new Animated.Value(0), y: new Animated.Value(20) })),
     [],
   );
+
+  const jogoDeDestaque = JOGOS.find((j) => j.destaque) ?? JOGOS[0]!;
 
   const [jogador, setJogador] = useState<{ id: string; nome: string | null } | null>(null);
   const [mostrarModalNome, setMostrarModalNome] = useState(false);
@@ -75,17 +94,29 @@ export function TelaInicio({ navigation }: Props) {
       ]),
     ]).start();
 
-    // Cards: entram deliberadamente após a atmosfera se estabelecer
-    Animated.stagger(
-      STAGGER_MS,
-      cardsAnim.map((anim) =>
-        Animated.parallel([
-          Animated.timing(anim.op, { toValue: 1, duration: 440, useNativeDriver: true }),
-          Animated.timing(anim.y, { toValue: 0, duration: 440, useNativeDriver: true }),
-        ]),
+    // Hero: entra logo após o header, com pacing cinematográfico
+    Animated.sequence([
+      Animated.delay(120),
+      Animated.parallel([
+        Animated.timing(heroOp, { toValue: 1, duration: 520, useNativeDriver: true }),
+        Animated.timing(heroY, { toValue: 0, duration: 520, useNativeDriver: true }),
+      ]),
+    ]).start();
+
+    // Seções: entram em cascata após o hero se estabelecer
+    Animated.sequence([
+      Animated.delay(260),
+      Animated.stagger(
+        STAGGER_SECAO_MS,
+        secoesAnim.map((anim) =>
+          Animated.parallel([
+            Animated.timing(anim.op, { toValue: 1, duration: 420, useNativeDriver: true }),
+            Animated.timing(anim.y, { toValue: 0, duration: 420, useNativeDriver: true }),
+          ]),
+        ),
       ),
-    ).start();
-  }, [cardsAnim, headerOp, headerY, taglineOp, taglineY]);
+    ]).start();
+  }, [headerOp, headerY, heroOp, heroY, secoesAnim, taglineOp, taglineY]);
 
   const nomeValido = nomeDigitado.trim().length >= MIN_TAMANHO_NOME;
 
@@ -149,6 +180,15 @@ export function TelaInicio({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <Animated.View
+          style={{ opacity: heroOp, transform: [{ translateY: heroY }] }}
+        >
+          <HeroJogo
+            jogo={jogoDeDestaque}
+            onPress={() => aoEscolherJogo(jogoDeDestaque)}
+          />
+        </Animated.View>
+
+        <Animated.View
           style={[
             estilos.blocoTagline,
             { opacity: taglineOp, transform: [{ translateY: taglineY }] },
@@ -159,19 +199,14 @@ export function TelaInicio({ navigation }: Props) {
           </Text>
         </Animated.View>
 
-        {JOGOS.map((jogo, i) => (
-          <Animated.View
-            key={jogo.id}
-            style={{
-              opacity: cardsAnim[i]!.op,
-              transform: [{ translateY: cardsAnim[i]!.y }],
-            }}
-          >
-            <CardJogo
-              jogo={jogo}
-              onPress={() => aoEscolherJogo(jogo)}
-            />
-          </Animated.View>
+        {categoriasComJogos.map((cat, i) => (
+          <SecaoCategoria
+            key={cat.id}
+            meta={cat}
+            jogos={catalogoPorCategoria[cat.id]}
+            anim={secoesAnim[i]!}
+            onEscolher={aoEscolherJogo}
+          />
         ))}
       </ScrollView>
 
@@ -223,6 +258,43 @@ export function TelaInicio({ navigation }: Props) {
   );
 }
 
+// ─── SecaoCategoria ──────────────────────────────────────────────────────────
+
+interface SecaoCategoriaProps {
+  meta: CategoriaMeta;
+  jogos: DefinicaoJogo[];
+  anim: { op: Animated.Value; y: Animated.Value };
+  onEscolher: (jogo: DefinicaoJogo) => void;
+}
+
+function SecaoCategoria({ meta, jogos, anim, onEscolher }: SecaoCategoriaProps) {
+  return (
+    <Animated.View
+      style={[estilos.secao, { opacity: anim.op, transform: [{ translateY: anim.y }] }]}
+    >
+      <View style={estilos.secaoCabecalho}>
+        <Text style={estilos.secaoLabel}>{meta.label}</Text>
+        <Text style={estilos.secaoSublabel}>{meta.sublabel}</Text>
+      </View>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={estilos.listaHorizontal}
+        contentContainerStyle={estilos.listaHorizontalConteudo}
+      >
+        {jogos.map((jogo) => (
+          <View key={jogo.id} style={estilos.cardHorizontalWrapper}>
+            <CardJogo jogo={jogo} onPress={() => onEscolher(jogo)} />
+          </View>
+        ))}
+      </ScrollView>
+    </Animated.View>
+  );
+}
+
+// ─── CardJogo ────────────────────────────────────────────────────────────────
+
 interface CardJogoProps {
   jogo: DefinicaoJogo;
   onPress: () => void;
@@ -273,26 +345,14 @@ function CardJogo({ jogo, onPress }: CardJogoProps) {
         >
           <LinearGradient
             colors={GRADIENTE_CARD}
-            locations={[0, 0.3, 0.62, 1]}
+            locations={[0, 0.5, 0.72, 1]}
             style={estilos.gradiente}
           />
 
           <View style={estilos.blocoBottom}>
-            <Text style={estilos.cardNome}>{jogo.nome}</Text>
-            <Text style={estilos.cardSlogan} numberOfLines={2}>
+            <Text style={estilos.cardNome} numberOfLines={2}>{jogo.nome}</Text>
+            <Text style={estilos.cardSlogan} numberOfLines={1}>
               {jogo.slogan}
-            </Text>
-            {jogo.socialTags.length > 0 && (
-              <View style={estilos.chips}>
-                {jogo.socialTags.map((cat) => (
-                  <View key={cat} style={estilos.chip}>
-                    <Text style={estilos.chipTexto}>{cat}</Text>
-                  </View>
-                ))}
-              </View>
-            )}
-            <Text style={estilos.metadados}>
-              {jogo.minJogadores}–{jogo.maxJogadores} jogadores · {jogo.tempoMedio}
             </Text>
           </View>
 
@@ -311,9 +371,9 @@ function CardJogo({ jogo, onPress }: CardJogoProps) {
 
 const estilos = StyleSheet.create({
   blocoBottom: {
-    gap: 6,
-    paddingBottom: espacamento.lg,
-    paddingHorizontal: espacamento.md + 4,
+    gap: 3,
+    paddingBottom: espacamento.md - 2,
+    paddingHorizontal: 10,
     paddingTop: 0,
   },
   botaoEntrar: {
@@ -333,7 +393,7 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoSemibold,
   },
   cardAtivo: {
-    borderColor: 'rgba(160, 82, 45, 0.5)',
+    borderColor: 'rgba(160, 82, 45, 0.45)',
     borderWidth: 1,
   },
   cardImagem: {
@@ -341,53 +401,28 @@ const estilos = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   cardImagemRaio: {
-    borderRadius: raio.xl,
+    borderRadius: raio.lg,
   },
   cardNome: {
     color: cores.textoSobrePrimaria,
     fontFamily: familias.serifDisplay,
-    fontSize: 26,
-    letterSpacing: 0.2,
-    lineHeight: 32,
+    fontSize: 15,
+    letterSpacing: 0.1,
+    lineHeight: 20,
   },
   cardPressavel: {
-    borderRadius: raio.xl,
+    borderRadius: raio.lg,
     overflow: 'hidden',
   },
   cardSlogan: {
-    color: 'rgba(245,238,228,0.80)',
-    fontSize: 14,
-    fontWeight: tipografia.pesoMedio,
-    lineHeight: 20,
+    color: 'rgba(245,238,228,0.60)',
+    fontSize: 11,
+    fontWeight: tipografia.pesoRegular,
+    lineHeight: 15,
   },
   cardWrapper: {
-    borderRadius: raio.xl,
-    marginBottom: 28,
-  },
-  chip: {
-    borderColor: 'rgba(245,230,210,0.22)',
-    borderRadius: raio.pill,
-    borderWidth: 1,
-    paddingHorizontal: espacamento.sm + 2,
-    paddingVertical: 3,
-  },
-  chipTexto: {
-    color: 'rgba(245,230,210,0.55)',
-    fontSize: 11,
-    fontWeight: tipografia.pesoMedio,
-    letterSpacing: 0.5,
-  },
-  chips: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: espacamento.xs,
-    marginTop: 2,
-  },
-  metadados: {
-    color: 'rgba(245,230,210,0.35)',
-    fontSize: 11,
-    letterSpacing: 0.3,
-    marginTop: 6,
+    borderRadius: raio.lg,
+    marginBottom: 0,
   },
   gradiente: {
     bottom: 0,
@@ -498,5 +533,38 @@ const estilos = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
+  },
+
+  // ─── Category sections ─────────────────────────────────────────────────────
+  secao: {
+    marginBottom: espacamento.xl,
+  },
+  secaoCabecalho: {
+    gap: 3,
+    marginBottom: espacamento.md,
+  },
+  secaoLabel: {
+    color: cores.texto,
+    fontSize: tipografia.tamanhoCorpoMaior,
+    fontWeight: tipografia.pesoBold,
+    letterSpacing: 0.1,
+  },
+  secaoSublabel: {
+    color: cores.textoMudo,
+    fontSize: tipografia.tamanhoLegenda,
+    fontWeight: tipografia.pesoRegular,
+    letterSpacing: 0.2,
+  },
+  // Breaks out of the scrollConteudo horizontal padding to reach screen edges
+  listaHorizontal: {
+    marginHorizontal: -espacamento.lg,
+  },
+  listaHorizontalConteudo: {
+    gap: espacamento.md,
+    paddingHorizontal: espacamento.lg,
+    paddingVertical: 4,
+  },
+  cardHorizontalWrapper: {
+    width: LARGURA_CARD_HORIZONTAL,
   },
 });

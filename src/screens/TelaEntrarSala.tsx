@@ -6,12 +6,13 @@ import {
   Animated,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BotaoPrimario } from '@/components';
 import type { RootStackParamList } from '@/navigation/types';
@@ -21,13 +22,14 @@ import {
 } from '@/services/jogadorLocal';
 import { entrarNaSala } from '@/services/roomService';
 import { RoomServiceError } from '@/types/room';
-import { cores, espacamento, raio } from '@/theme/colors';
+import { cores, espacamento, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EntrarSala'>;
 
 const TAMANHO_CODIGO = 4;
 
 export function TelaEntrarSala({ navigation }: Props) {
+  const insets = useSafeAreaInsets();
   const [codigo, setCodigo] = useState('');
   const [nome, setNome] = useState('');
   const [jogadorId, setJogadorId] = useState<string | null>(null);
@@ -101,6 +103,18 @@ export function TelaEntrarSala({ navigation }: Props) {
 
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
+      <Pressable
+        onPress={() => navigation.goBack()}
+        hitSlop={12}
+        style={({ pressed }) => [
+          estilos.botaoVoltar,
+          { top: insets.top + espacamento.md },
+          pressed && estilos.botaoVoltarPressionado,
+        ]}
+      >
+        <Text style={estilos.botaoVoltarIcone}>←</Text>
+      </Pressable>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={estilos.flex}
@@ -163,6 +177,26 @@ export function TelaEntrarSala({ navigation }: Props) {
 }
 
 const estilos = StyleSheet.create({
+  botaoVoltar: {
+    alignItems: 'center',
+    backgroundColor: cores.superficie,
+    borderRadius: raio.pill,
+    height: 40,
+    justifyContent: 'center',
+    left: espacamento.lg,
+    position: 'absolute',
+    width: 40,
+    zIndex: 10,
+  },
+  botaoVoltarIcone: {
+    color: cores.texto,
+    fontSize: 20,
+    fontWeight: tipografia.pesoBold,
+    lineHeight: 22,
+  },
+  botaoVoltarPressionado: {
+    opacity: 0.6,
+  },
   campoBloco: {
     gap: espacamento.sm,
     marginTop: espacamento.lg,
@@ -170,6 +204,7 @@ const estilos = StyleSheet.create({
   conteudo: {
     flex: 1,
     padding: espacamento.lg,
+    paddingTop: espacamento.lg + 40 + espacamento.md,
   },
   flex: {
     flex: 1,
