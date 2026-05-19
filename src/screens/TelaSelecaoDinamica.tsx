@@ -90,7 +90,11 @@ export function TelaSelecaoDinamica({ navigation, route }: Props) {
   async function aoEscolher(id: OpcaoDinamica['id']) {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (id === 'local') {
-      navigation.navigate('ConfiguracaoLocal');
+      if (jogoId === 'most-likely-to') {
+        navigation.navigate('ConfiguracaoLocalMostLikely');
+      } else {
+        navigation.navigate('ConfiguracaoLocal');
+      }
     } else if (id === 'realtime') {
       if (jogoId === 'mrwhite' && !(await tutorialFoiVisto('mrwhite'))) {
         navigation.navigate('Tutorial', { jogoId });

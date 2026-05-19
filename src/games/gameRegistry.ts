@@ -130,7 +130,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     tempoMedio: '10-20 min',
     intensidade: 2,
     disponivel: true,
-    supportsLocal: false,
+    supportsLocal: true,
     supportsRealtime: true,
     socialTags: ['party', 'revelações', 'caos'],
     categorias: ['quem_voces_sao'],

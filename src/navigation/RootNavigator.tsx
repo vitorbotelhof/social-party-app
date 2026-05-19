@@ -7,6 +7,8 @@ import { GameScreenMostLikely } from '@/screens/GameScreenMostLikely';
 import { TelaCadastroJogadores } from '@/screens/TelaCadastroJogadores';
 import { TelaConfiguracaoJogo } from '@/screens/TelaConfiguracaoJogo';
 import { TelaConfiguracaoLocal } from '@/screens/TelaConfiguracaoLocal';
+import { TelaConfiguracaoLocalMostLikely } from '@/screens/TelaConfiguracaoLocalMostLikely';
+import { TelaJogoLocalMostLikely } from '@/screens/TelaJogoLocalMostLikely';
 import { TelaConfiguracaoMostLikely } from '@/screens/TelaConfiguracaoMostLikely';
 import { TelaCriarSala } from '@/screens/TelaCriarSala';
 import { TelaDetalhesJogo } from '@/screens/TelaDetalhesJogo';
@@ -152,6 +154,20 @@ export function RootNavigator() {
         name="ConfiguracaoLocal"
         component={TelaConfiguracaoLocal}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ConfiguracaoLocalMostLikely"
+        component={TelaConfiguracaoLocalMostLikely}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="JogoLocalMostLikely"
+        component={TelaJogoLocalMostLikely}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 400,
+        }}
       />
     </Stack.Navigator>
   );

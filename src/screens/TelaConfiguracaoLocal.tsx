@@ -19,6 +19,7 @@ import { LISTA_CATEGORIAS } from '@/games/mr-white/categorias';
 import type {
   CategoriaId,
   Dificuldade,
+  DificuldadeParPalavras,
   OpcoesMrWhite,
 } from '@/games/mr-white/types';
 import type { RootStackParamList } from '@/navigation/types';
@@ -27,7 +28,7 @@ import {
   getJogadoresLocais,
   inicializarJogoLocal,
 } from '@/services/jogoLocal';
-import { cores, espacamento, raio, tipografia } from '@/theme/colors';
+import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ConfiguracaoLocal'>;
 
@@ -37,23 +38,40 @@ const ROTULOS_DIFICULDADE: Record<Dificuldade, string> = {
   dificil: 'Difícil',
 };
 
+const PROXIMIDADE: { valor: DificuldadeParPalavras; rotulo: string }[] = [
+  { valor: 'leve', rotulo: 'Fácil' },
+  { valor: 'media', rotulo: 'Médio' },
+  { valor: 'hard', rotulo: 'Difícil' },
+  { valor: 'insana', rotulo: 'Insano' },
+];
+
 const MIN_MR_WHITES = 1;
 const MAX_MR_WHITES = 3;
 const MIN_JOGADORES = 3;
 const MAX_JOGADORES = 12;
 const MIN_TAMANHO_NOME = 2;
 
+/** Divide array em pares para o grid 2 colunas. */
+function emPares<T>(arr: T[]): [T, T | null][] {
+  const resultado: [T, T | null][] = [];
+  for (let i = 0; i < arr.length; i += 2) {
+    resultado.push([arr[i]!, arr[i + 1] ?? null]);
+  }
+  return resultado;
+}
+
 export function TelaConfiguracaoLocal({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [categoriaId, setCategoriaId] = useState<CategoriaId>('comidas');
   const [dificuldade, setDificuldade] = useState<Dificuldade>('medio');
+  const [modoDualWord, setModoDualWord] = useState(false);
+  const [dificuldadePar, setDificuldadePar] = useState<DificuldadeParPalavras>('media');
   const [numMrWhites, setNumMrWhites] = useState(1);
   const [nomes, setNomes] = useState<string[]>([]);
   const [novoNome, setNovoNome] = useState('');
   const [iniciando, setIniciando] = useState(false);
 
   useEffect(() => {
-    // Se voltou de "jogar de novo", usa a lista da partida anterior.
     const anteriores = getJogadoresLocais();
     if (anteriores.length > 0) {
       setNomes(anteriores.map((j) => j.nome));
@@ -70,6 +88,15 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
     nomes.length < MAX_JOGADORES &&
     !nomes.some((n) => n.toLowerCase() === nomeLimpo.toLowerCase());
   const podeIniciar = nomes.length >= MIN_JOGADORES && !iniciando;
+
+  function sortearCategoria() {
+    const disponiveis = LISTA_CATEGORIAS.filter((c) => c.id !== categoriaId);
+    const sorteada = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+    if (sorteada) {
+      setCategoriaId(sorteada.id);
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+  }
 
   function aoAdicionar() {
     if (!podeAdicionar) return;
@@ -100,13 +127,15 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
       dificuldade,
       numeroMrWhites: numMrWhites,
       duracaoTurnoSegundos: 60,
-      modoDualWord: false,
-      dificuldadePar: 'media',
+      modoDualWord,
+      dificuldadePar,
     };
     inicializarJogoLocal('mrwhite', jogadores, opcoes);
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     navigation.replace('JogoLocal');
   }
+
+  const categoriaAtiva = LISTA_CATEGORIAS.find((c) => c.id === categoriaId);
 
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
@@ -121,7 +150,9 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
       >
         <Text style={estilos.botaoVoltarIcone}>←</Text>
       </Pressable>
+
       <BadgeUmCelular />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={estilos.flex}
@@ -132,96 +163,152 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          {/* ─── Cabeçalho ─── */}
           <View style={estilos.cabecalho}>
             <Text style={estilos.legenda}>📱 UM CELULAR</Text>
             <Text style={estilos.tituloPagina}>como vai ser?</Text>
-            <Text style={estilos.subtitulo}>
-              offline · passando de mão em mão
-            </Text>
+            <Text style={estilos.subtitulo}>offline · passando de mão em mão</Text>
           </View>
 
-          <Section titulo="Jogo">
-            <View style={estilos.chipsLinha}>
-              <View style={[estilos.chip, estilos.chipAtivo]}>
-                <Text style={[estilos.chipTexto, estilos.chipTextoAtivo]}>
-                  🕵️ Mr White
-                </Text>
-              </View>
-            </View>
-            <Text style={estilos.ajuda}>mais jogos em breve.</Text>
-          </Section>
-
+          {/* ─── Categoria ─── */}
           <Section titulo="Categoria">
-            <View style={estilos.chipsLinha}>
-              {LISTA_CATEGORIAS.map((c) => {
-                const ativo = c.id === categoriaId;
-                return (
-                  <Pressable
-                    key={c.id}
-                    onPress={() => setCategoriaId(c.id)}
-                    style={[estilos.chip, ativo && estilos.chipAtivo]}
-                  >
-                    <Text
-                      style={[
-                        estilos.chipTexto,
-                        ativo && estilos.chipTextoAtivo,
-                      ]}
-                    >
-                      {c.emoji} {c.nome}
-                    </Text>
-                  </Pressable>
-                );
-              })}
+            {/* Seleção ativa em destaque */}
+            {categoriaAtiva && (
+              <View style={estilos.categoriaAtivaBadge}>
+                <Text style={estilos.categoriaAtivaEmoji}>{categoriaAtiva.emoji}</Text>
+                <Text style={estilos.categoriaAtivaTexto}>{categoriaAtiva.nome}</Text>
+              </View>
+            )}
+
+            {/* Grid 2 colunas */}
+            <View style={estilos.categoriaGrid}>
+              {emPares(LISTA_CATEGORIAS).map(([a, b], i) => (
+                <View key={i} style={estilos.categoriaLinha}>
+                  <CategoriaCard
+                    categoria={a}
+                    ativo={a.id === categoriaId}
+                    onPress={() => setCategoriaId(a.id)}
+                  />
+                  {b ? (
+                    <CategoriaCard
+                      categoria={b}
+                      ativo={b.id === categoriaId}
+                      onPress={() => setCategoriaId(b.id)}
+                    />
+                  ) : (
+                    <View style={estilos.categoriaCardVazio} />
+                  )}
+                </View>
+              ))}
             </View>
+
+            {/* Sortear */}
+            <Pressable
+              onPress={sortearCategoria}
+              style={({ pressed }) => [
+                estilos.botaoSortear,
+                pressed && estilos.botaoSortearPressionado,
+              ]}
+            >
+              <Text style={estilos.botaoSortearTexto}>sortear categoria</Text>
+            </Pressable>
           </Section>
 
-          <Section titulo="Dificuldade">
+          {/* ─── Modo de Jogo ─── */}
+          <Section titulo="Modo">
             <View style={estilos.linhaSegmentos}>
-              {(Object.keys(ROTULOS_DIFICULDADE) as Dificuldade[]).map((d) => {
-                const ativo = d === dificuldade;
-                return (
-                  <Pressable
-                    key={d}
-                    onPress={() => setDificuldade(d)}
-                    style={[
-                      estilos.segmento,
-                      ativo && estilos.segmentoAtivo,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        estilos.segmentoTexto,
-                        ativo && estilos.segmentoTextoAtivo,
-                      ]}
-                    >
-                      {ROTULOS_DIFICULDADE[d]}
-                    </Text>
-                  </Pressable>
-                );
-              })}
+              <Pressable
+                onPress={() => setModoDualWord(false)}
+                style={[estilos.segmento, !modoDualWord && estilos.segmentoAtivo]}
+              >
+                <Text style={[estilos.segmentoTexto, !modoDualWord && estilos.segmentoTextoAtivo]}>
+                  Clássico
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setModoDualWord(true)}
+                style={[estilos.segmento, modoDualWord && estilos.segmentoAtivo]}
+              >
+                <Text style={[estilos.segmentoTexto, modoDualWord && estilos.segmentoTextoAtivo]}>
+                  Dual Word
+                </Text>
+              </Pressable>
             </View>
+            <Text style={estilos.ajuda}>
+              {modoDualWord
+                ? 'mr white recebe palavra parecida — mais difícil de desmascarar.'
+                : 'mr white não recebe palavra — deve blefar do zero.'}
+            </Text>
           </Section>
 
+          {/* ─── Proximidade (só no Dual Word) ─── */}
+          {modoDualWord && (
+            <Section titulo="Proximidade das Palavras">
+              <View style={estilos.linhaSegmentos}>
+                {PROXIMIDADE.map(({ valor, rotulo }) => {
+                  const ativo = valor === dificuldadePar;
+                  return (
+                    <Pressable
+                      key={valor}
+                      onPress={() => setDificuldadePar(valor)}
+                      style={[estilos.segmento, ativo && estilos.segmentoAtivo]}
+                    >
+                      <Text style={[estilos.segmentoTexto, ativo && estilos.segmentoTextoAtivo]}>
+                        {rotulo}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              <Text style={estilos.ajuda}>
+                {dificuldadePar === 'leve' && 'palavras bem diferentes — fácil de perceber'}
+                {dificuldadePar === 'media' && 'alguma semelhança — ambiguidade moderada'}
+                {dificuldadePar === 'hard' && 'muito próximas — leitura social necessária'}
+                {dificuldadePar === 'insana' && 'quase a mesma coisa — paranoia total'}
+              </Text>
+            </Section>
+          )}
+
+          {/* ─── Dificuldade (só no Clássico) ─── */}
+          {!modoDualWord && (
+            <Section titulo="Dificuldade">
+              <View style={estilos.linhaSegmentos}>
+                {(Object.keys(ROTULOS_DIFICULDADE) as Dificuldade[]).map((d) => {
+                  const ativo = d === dificuldade;
+                  return (
+                    <Pressable
+                      key={d}
+                      onPress={() => setDificuldade(d)}
+                      style={[estilos.segmento, ativo && estilos.segmentoAtivo]}
+                    >
+                      <Text style={[estilos.segmentoTexto, ativo && estilos.segmentoTextoAtivo]}>
+                        {ROTULOS_DIFICULDADE[d]}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+              <Text style={estilos.ajuda}>quão parecidas são as pistas do impostor com as dos civis.</Text>
+            </Section>
+          )}
+
+          {/* ─── Impostores ─── */}
           <Section titulo="Impostores">
             <View style={estilos.controleNumero}>
               <Pressable
-                onPress={() =>
-                  setNumMrWhites((n) => Math.max(MIN_MR_WHITES, n - 1))
-                }
-                style={estilos.botaoNumero}
+                onPress={() => setNumMrWhites((n) => Math.max(MIN_MR_WHITES, n - 1))}
+                style={[estilos.botaoNumero, numMrWhites <= MIN_MR_WHITES && estilos.botaoNumeroDesabilitado]}
                 disabled={numMrWhites <= MIN_MR_WHITES}
               >
-                <Text style={estilos.botaoNumeroTexto}>−</Text>
+                <Text style={[estilos.botaoNumeroTexto, numMrWhites <= MIN_MR_WHITES && estilos.botaoNumeroTextoDesabilitado]}>−</Text>
               </Pressable>
               <Text style={estilos.valorNumero}>{numMrWhites}</Text>
               <Pressable
-                onPress={() =>
-                  setNumMrWhites((n) => Math.min(MAX_MR_WHITES, n + 1))
-                }
-                style={estilos.botaoNumero}
+                onPress={() => setNumMrWhites((n) => Math.min(MAX_MR_WHITES, n + 1))}
+                style={[estilos.botaoNumero, numMrWhites >= MAX_MR_WHITES && estilos.botaoNumeroDesabilitado]}
                 disabled={numMrWhites >= MAX_MR_WHITES}
               >
-                <Text style={estilos.botaoNumeroTexto}>+</Text>
+                <Text style={[estilos.botaoNumeroTexto, numMrWhites >= MAX_MR_WHITES && estilos.botaoNumeroTextoDesabilitado]}>+</Text>
               </Pressable>
             </View>
             <Text style={estilos.ajuda}>
@@ -229,6 +316,7 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
             </Text>
           </Section>
 
+          {/* ─── Jogadores ─── */}
           <Section titulo={`Jogadores (${nomes.length}/${MAX_JOGADORES})`}>
             <View style={estilos.entradaBloco}>
               <TextInput
@@ -305,6 +393,35 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
   );
 }
 
+// ─── Sub-componentes ───────────────────────────────────────────────────────────
+
+interface CategoriaCardProps {
+  categoria: { id: CategoriaId; emoji: string; nome: string };
+  ativo: boolean;
+  onPress: () => void;
+}
+
+function CategoriaCard({ categoria, ativo, onPress }: CategoriaCardProps) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        estilos.categoriaCard,
+        ativo && estilos.categoriaCardAtivo,
+        pressed && !ativo && estilos.categoriaCardPressionado,
+      ]}
+    >
+      <Text style={estilos.categoriaCardEmoji}>{categoria.emoji}</Text>
+      <Text
+        style={[estilos.categoriaCardNome, ativo && estilos.categoriaCardNomeAtivo]}
+        numberOfLines={1}
+      >
+        {categoria.nome}
+      </Text>
+    </Pressable>
+  );
+}
+
 function Section({
   titulo,
   children,
@@ -319,6 +436,8 @@ function Section({
     </View>
   );
 }
+
+// ─── Estilos ──────────────────────────────────────────────────────────────────
 
 const estilos = StyleSheet.create({
   ajuda: {
@@ -354,14 +473,40 @@ const estilos = StyleSheet.create({
     borderColor: cores.borda,
     borderRadius: raio.md,
     borderWidth: 1,
-    height: 48,
+    height: 52,
     justifyContent: 'center',
-    width: 56,
+    width: 60,
+  },
+  botaoNumeroDesabilitado: {
+    opacity: 0.35,
   },
   botaoNumeroTexto: {
     color: cores.texto,
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '700',
+  },
+  botaoNumeroTextoDesabilitado: {
+    color: cores.textoMudo,
+  },
+  botaoSortear: {
+    alignItems: 'center',
+    borderColor: cores.acento,
+    borderRadius: raio.pill,
+    borderWidth: 1,
+    marginTop: espacamento.md,
+    paddingHorizontal: espacamento.lg,
+    paddingVertical: espacamento.sm + 2,
+    alignSelf: 'center',
+  },
+  botaoSortearPressionado: {
+    backgroundColor: 'rgba(201, 137, 58, 0.12)',
+    transform: [{ scale: 0.97 }],
+  },
+  botaoSortearTexto: {
+    color: cores.acento,
+    fontSize: 14,
+    fontWeight: tipografia.pesoSemibold,
+    letterSpacing: 0.4,
   },
   botaoVoltar: {
     alignItems: 'center',
@@ -388,32 +533,68 @@ const estilos = StyleSheet.create({
   },
   cabecalho: {
     marginBottom: espacamento.lg,
-    marginTop: espacamento.xl, // espaço pro back + badge
+    marginTop: espacamento.xl,
   },
-  chip: {
+  categoriaAtivaBadge: {
+    alignItems: 'center',
+    backgroundColor: cores.superficieElevada,
+    borderColor: cores.acento,
+    borderRadius: raio.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: espacamento.sm,
+    marginBottom: espacamento.md,
+    paddingHorizontal: espacamento.md,
+    paddingVertical: espacamento.sm + 2,
+  },
+  categoriaAtivaEmoji: {
+    fontSize: 22,
+  },
+  categoriaAtivaTexto: {
+    color: cores.acento,
+    fontFamily: familias.serifDisplay,
+    fontSize: tipografia.tamanhoSubtitulo,
+    letterSpacing: 0,
+  },
+  categoriaCard: {
+    alignItems: 'center',
     backgroundColor: cores.superficie,
     borderColor: cores.borda,
-    borderRadius: raio.pill,
+    borderRadius: raio.md,
     borderWidth: 1,
-    paddingHorizontal: espacamento.md,
-    paddingVertical: espacamento.sm,
+    flex: 1,
+    gap: espacamento.xs,
+    paddingHorizontal: espacamento.sm,
+    paddingVertical: espacamento.md,
   },
-  chipAtivo: {
-    backgroundColor: cores.primaria,
-    borderColor: cores.primaria,
+  categoriaCardAtivo: {
+    backgroundColor: 'rgba(201, 137, 58, 0.1)',
+    borderColor: cores.acento,
   },
-  chipsLinha: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  categoriaCardEmoji: {
+    fontSize: 24,
+  },
+  categoriaCardNome: {
+    color: cores.textoSecundario,
+    fontSize: 12,
+    fontWeight: tipografia.pesoSemibold,
+    textAlign: 'center',
+  },
+  categoriaCardNomeAtivo: {
+    color: cores.acento,
+  },
+  categoriaCardPressionado: {
+    opacity: 0.7,
+  },
+  categoriaCardVazio: {
+    flex: 1,
+  },
+  categoriaGrid: {
     gap: espacamento.sm,
   },
-  chipTexto: {
-    color: cores.textoSecundario,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  chipTextoAtivo: {
-    color: cores.textoSobrePrimaria,
+  categoriaLinha: {
+    flexDirection: 'row',
+    gap: espacamento.sm,
   },
   controleNumero: {
     alignItems: 'center',
@@ -519,9 +700,9 @@ const estilos = StyleSheet.create({
   },
   sectionTitulo: {
     color: cores.textoSecundario,
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
-    letterSpacing: 1.5,
+    letterSpacing: 1.8,
     marginBottom: espacamento.md,
     textTransform: 'uppercase',
   },
@@ -563,9 +744,9 @@ const estilos = StyleSheet.create({
   },
   valorNumero: {
     color: cores.primaria,
-    fontSize: 40,
-    fontWeight: '900',
-    minWidth: 48,
+    fontFamily: familias.serifDisplay,
+    fontSize: 44,
+    minWidth: 56,
     textAlign: 'center',
   },
   vazio: {

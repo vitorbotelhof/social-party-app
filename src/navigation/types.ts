@@ -19,6 +19,12 @@ export type RootStackParamList = {
   CadastroJogadores: { jogoId: GameId; opcoes: unknown };
   JogoLocal: undefined;
   ConfiguracaoLocal: undefined;
+  ConfiguracaoLocalMostLikely: undefined;
+  JogoLocalMostLikely: {
+    jogadores: { id: string; nome: string }[];
+    totalRodadas: number;
+    modo: 'classico' | 'sincero';
+  };
 };
 
 declare global {
