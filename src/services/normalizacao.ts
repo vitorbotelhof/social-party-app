@@ -18,6 +18,15 @@ export function normalizarEstadoPublico(pub: unknown): Record<string, unknown> {
     mrWhiteIdsRevelados: base.mrWhiteIdsRevelados ?? [],
     prazoTurnoEm: base.prazoTurnoEm ?? null,
     duracaoTurnoSegundos: base.duracaoTurnoSegundos ?? 60,
+    // ── Mr White multi-round ──────────────────────────────────────────────
+    ordemAtiva: base.ordemAtiva ?? base.ordemJogadores ?? [],
+    rodadaVotacao: base.rodadaVotacao ?? 1,
+    ultimoEliminadoId: base.ultimoEliminadoId ?? null,
+    ultimoEliminadoEraMrWhite: base.ultimoEliminadoEraMrWhite ?? null,
+    prazoProximaRodadaEm: base.prazoProximaRodadaEm ?? null,
+    mrWhitesEliminados: base.mrWhitesEliminados ?? 0,
+    civilsEliminados: base.civilsEliminados ?? 0,
+    modoJogo: base.modoJogo ?? 'classico',
     // ── Most Likely To ────────────────────────────────────────────────────
     resultados: base.resultados ?? [],
     indicesPromptUsados: base.indicesPromptUsados ?? [],

@@ -110,6 +110,8 @@ export function TelaJogoLocal() {
         return <FaseVotacaoLocal estado={estado} jogadores={jogadores} />;
       case 'palpite_final':
         return <FasePalpiteLocal estado={estado} jogadores={jogadores} />;
+      case 'entre_rodadas':
+        return null;
       case 'finalizado':
         return (
           <FaseResultadoLocal

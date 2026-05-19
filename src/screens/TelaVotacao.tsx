@@ -56,8 +56,13 @@ export function TelaVotacao({ estado, roomCode, jogoId, jogadorId, jogadores }: 
   const meuVoto = estado.estadoPublico.votos[jogadorId] ?? null;
   const votos = estado.estadoPublico.votos;
   const totalVotos = Object.keys(votos).length;
-  const total = estado.estadoPublico.ordemJogadores.length;
+  const ordemAtiva = estado.estadoPublico.ordemAtiva.length > 0
+    ? estado.estadoPublico.ordemAtiva
+    : estado.estadoPublico.ordemJogadores;
+  const eliminadosIds = new Set(estado.estadoPublico.eliminadosIds);
+  const total = ordemAtiva.length;
   const todosVotaram = totalVotos >= total;
+  const rodadaVotacao = estado.estadoPublico.rodadaVotacao ?? 1;
 
   // Defensive: se todos votaram mas a fase não avançou (race do RTDB),
   // o primeiro cliente a detectar força a resolução depois de ~10s.
@@ -66,7 +71,10 @@ export function TelaVotacao({ estado, roomCode, jogoId, jogadorId, jogadores }: 
     const stuckSinceRef = { atual: null as number | null };
     const id = setInterval(() => {
       const e = estadoRef.current;
-      const t = e.estadoPublico.ordemJogadores.length;
+      const ord = e.estadoPublico.ordemAtiva.length > 0
+        ? e.estadoPublico.ordemAtiva
+        : e.estadoPublico.ordemJogadores;
+      const t = ord.length;
       const a = Object.keys(e.estadoPublico.votos).length;
       const travado = a >= t && e.estadoPublico.subFase === 'votando';
       if (!travado) {
@@ -143,13 +151,21 @@ export function TelaVotacao({ estado, roomCode, jogoId, jogadorId, jogadores }: 
       <BarraAcoesJogo />
       <View style={estilos.cabecalho}>
         <View style={estilos.cabecalhoLinha}>
-          <Text style={estilos.legenda}>votação</Text>
+          <Text style={estilos.legenda}>
+            votação{rodadaVotacao > 1 ? ` · rodada ${rodadaVotacao}` : ''}
+          </Text>
           <Text style={estilos.contador}>
             {totalVotos} de {total} votaram
           </Text>
         </View>
         <Text style={estilos.titulo}>quem é o mr white?</Text>
-        <Text style={estilos.subtitulo}>vota em quem tá suspeito</Text>
+        <Text style={estilos.subtitulo}>
+          {rodadaVotacao >= 3
+            ? 'você já sabe quem está mentindo.'
+            : rodadaVotacao >= 2
+              ? 'cada voto tem peso agora.'
+              : 'vota em quem tá suspeito.'}
+        </Text>
       </View>
 
       <ScrollView
@@ -157,7 +173,7 @@ export function TelaVotacao({ estado, roomCode, jogoId, jogadorId, jogadores }: 
         contentContainerStyle={estilos.scrollConteudo}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={estilos.rotuloSecao}>dicas desta rodada</Text>
+        <Text style={estilos.rotuloSecao}>evidências desta rodada</Text>
         <View style={estilos.blocoDicas}>
           {pistasDaRodada.length === 0 ? (
             <Text style={estilos.dicasVazio}>nenhuma dica registrada.</Text>
@@ -173,10 +189,10 @@ export function TelaVotacao({ estado, roomCode, jogoId, jogadorId, jogadores }: 
         </View>
 
         <Text style={[estilos.rotuloSecao, estilos.rotuloSecaoEspaco]}>
-          quem vocês vão eliminar?
+          {rodadaVotacao >= 2 ? 'quem precisa sair?' : 'quem vocês vão eliminar?'}
         </Text>
         <View style={estilos.cards}>
-          {jogadores.map((j) => {
+          {jogadores.filter((j) => !eliminadosIds.has(j.id)).map((j) => {
             const ehVoce = j.id === jogadorId;
             const ehSelecionado = selecionado === j.id;
             const ehMeuVoto = meuVoto === j.id;
@@ -208,6 +224,7 @@ export function TelaVotacao({ estado, roomCode, jogoId, jogadorId, jogadores }: 
         todosVotaram={todosVotaram}
         enviando={enviando}
         onConfirmar={aoConfirmar}
+        rodadaVotacao={rodadaVotacao}
       />
     </SafeAreaView>
   );
@@ -345,6 +362,7 @@ interface RodapeAcaoProps {
   todosVotaram: boolean;
   enviando: boolean;
   onConfirmar: () => void;
+  rodadaVotacao: number;
 }
 
 function RodapeAcao({
@@ -356,6 +374,7 @@ function RodapeAcao({
   todosVotaram,
   enviando,
   onConfirmar,
+  rodadaVotacao,
 }: RodapeAcaoProps) {
   if (meuVoto) {
     return <RodapeEspera totalVotos={totalVotos} total={total} todosVotaram={todosVotaram} />;
@@ -365,7 +384,9 @@ function RodapeAcao({
     return (
       <View style={estilos.rodape}>
         <Text style={estilos.rodapeDica}>
-          toca em quem tá suspeito
+          {rodadaVotacao >= 2
+            ? 'quem você acha que está mentindo?'
+            : 'toca em quem tá suspeito'}
         </Text>
       </View>
     );

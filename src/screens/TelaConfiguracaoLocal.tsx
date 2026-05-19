@@ -100,6 +100,8 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
       dificuldade,
       numeroMrWhites: numMrWhites,
       duracaoTurnoSegundos: 60,
+      modoDualWord: false,
+      dificuldadePar: 'media',
     };
     inicializarJogoLocal('mrwhite', jogadores, opcoes);
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

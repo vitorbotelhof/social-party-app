@@ -13,10 +13,65 @@ export type ModoMostLikely = 'classico' | 'sincero';
 
 export type EnergiaPrompt = 'leve' | 'medio' | 'intenso';
 
+/**
+ * Categorias temáticas para curadoria, decks futuros e recommendation engine.
+ * Ignoradas pelo engine — usadas apenas para discovery e editorial.
+ */
+export type CategoriaPrompt =
+  | 'cotidiano'
+  | 'digital_life'
+  | 'brasil_contemporaneo'
+  | 'relacionamentos'
+  | 'dating'
+  | 'vida_adulta'
+  | 'psicologia_social'
+  | 'caos_social'
+  | 'viagem'
+  | 'festa'
+  | 'trabalho'
+  | 'cinematografico';
+
 export interface Prompt {
   id: string;
   texto: string;
   energia: EnergiaPrompt;
+
+  /**
+   * Tags semânticas para curadoria, decks temáticos e discovery futuro.
+   * Exemplos: 'brasil', 'genz', 'dating', 'unanimidade', 'cinematografico'
+   */
+  tags?: string[];
+
+  /**
+   * Categoria temática principal — para decks curados e editorial.
+   * Um prompt pode ser taggado em múltiplos temas, mas pertence a uma categoria.
+   */
+  categoria?: CategoriaPrompt;
+
+  /**
+   * 1–10. Potencial de gerar votação unânime ou quase.
+   * 8+ = o grupo quase sempre converge em uma pessoa.
+   * Usado para calibrar sequência e garantir pelo menos 1 momento de unanimidade por sessão.
+   */
+  potencialUnanimidade?: number;
+
+  /**
+   * 1–10. Grau de exposição emocional do nomeado.
+   * 7+ = o reveal cria silêncio antes da risada.
+   */
+  vulnerabilidade?: number;
+
+  /**
+   * 1–10. Probabilidade de gerar debate coletivo, protestos, gritos.
+   * 8+ = o grupo explode após o reveal.
+   */
+  caos?: number;
+
+  /**
+   * 1–10. Intensidade social geral do prompt.
+   * Combina revelação + reação + identificação.
+   */
+  intensidadeSocial?: number;
 }
 
 export interface OpcoesMostLikely {

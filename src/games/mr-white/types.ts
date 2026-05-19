@@ -67,6 +67,16 @@ export interface OpcoesMrWhite {
   numeroMrWhites: number;
   /** Tempo de cada turno de dica em segundos. `0` = sem limite. */
   duracaoTurnoSegundos: number;
+  /**
+   * Modo clássico: Mr White não recebe palavra.
+   * Modo dual-word: Mr White recebe palavra semanticamente próxima.
+   */
+  modoDualWord: boolean;
+  /**
+   * Proximidade semântica do par — só relevante no modo dual-word.
+   * Controla o quão parecidas são as palavras do Mr White e dos civis.
+   */
+  dificuldadePar: DificuldadeParPalavras;
 }
 
 /**
@@ -78,6 +88,7 @@ export type SubFaseMrWhite =
   | 'dando_dicas'
   | 'votando'
   | 'palpite_final'
+  | 'entre_rodadas'
   | 'finalizado';
 
 export type ResultadoFinal = 'civis' | 'mrwhite' | null;
@@ -128,6 +139,32 @@ export interface MrWhitePublicState {
   vencedor: ResultadoFinal;
   palavraRevelada: string | null;
   mrWhiteIdsRevelados: PlayerId[];
+
+  // ── Multi-round fields ────────────────────────────────────────────────────
+
+  /** Ordem de turnos do round atual — ordemJogadores sem eliminados, rotacionada entre rounds. */
+  ordemAtiva: PlayerId[];
+
+  /** Índice do ciclo de eliminação atual (1-indexed). */
+  rodadaVotacao: number;
+
+  /** Último jogador eliminado — para o reveal em entre_rodadas. */
+  ultimoEliminadoId: PlayerId | null;
+
+  /** Role do último eliminado — público após a eliminação. */
+  ultimoEliminadoEraMrWhite: boolean | null;
+
+  /** Timestamp Unix (ms) para auto-avançar de entre_rodadas → dando_dicas. */
+  prazoProximaRodadaEm: number | null;
+
+  /** Quantos Mr Whites foram eliminados até agora. */
+  mrWhitesEliminados: number;
+
+  /** Quantos civis foram eliminados até agora. */
+  civilsEliminados: number;
+
+  /** Modo de jogo ativo — derivado de OpcoesMrWhite.modoDualWord. */
+  modoJogo: 'classico' | 'dual-word';
 }
 
 export interface MrWhitePrivateState {
@@ -140,4 +177,5 @@ export type MrWhiteAction =
   | (GameAction<{ texto: string }> & { tipo: 'enviar_pista' })
   | (GameAction<{ alvoId: PlayerId }> & { tipo: 'votar' })
   | (GameAction<{ palavra: string }> & { tipo: 'palpite_final' })
-  | (GameAction<Record<string, never>> & { tipo: 'forcar_resolucao_votacao' });
+  | (GameAction<Record<string, never>> & { tipo: 'forcar_resolucao_votacao' })
+  | (GameAction<Record<string, never>> & { tipo: 'avancar_proxima_rodada' });

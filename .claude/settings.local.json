@@ -44,7 +44,10 @@
       "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"spring physics stagger sequence reveal\" --domain ux)",
       "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"social deduction game tension reveal dramatic\" --design-system -f markdown)",
       "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"intimate reveal hold interaction suspense dramatic\" --domain ux)",
-      "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"social party game reveal animation mobile\" --design-system -f markdown)"
+      "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"social party game reveal animation mobile\" --design-system -f markdown)",
+      "Bash(python3 skills/ui-ux-pro-max/scripts/search.py \"social deduction thriller suspense paranoia dark intimate cinematic\" --design-system -p \"Mr White\")",
+      "Bash(python3 src/ui-ux-pro-max/scripts/search.py \"social deduction thriller suspense paranoia dark intimate cinematic\" --design-system -p \"Mr White\")",
+      "Bash(python3 src/ui-ux-pro-max/scripts/search.py \"animation reveal suspense timing tension emotional pacing\" --domain ux -n 10)"
     ]
   }
 }

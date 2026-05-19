@@ -15,6 +15,7 @@ import { LISTA_CATEGORIAS } from '@/games/mr-white/categorias';
 import type {
   CategoriaId,
   Dificuldade,
+  DificuldadeParPalavras,
   OpcoesMrWhite,
 } from '@/games/mr-white/types';
 import type { RootStackParamList } from '@/navigation/types';
@@ -28,6 +29,13 @@ const ROTULOS_DIFICULDADE: Record<Dificuldade, string> = {
   facil: 'Fácil',
   medio: 'Médio',
   dificil: 'Difícil',
+};
+
+const ROTULOS_DIFICULDADE_PAR: Record<DificuldadeParPalavras, { rotulo: string; descricao: string }> = {
+  leve: { rotulo: 'Fácil', descricao: 'palavras bem diferentes' },
+  media: { rotulo: 'Médio', descricao: 'alguma semelhança' },
+  hard: { rotulo: 'Difícil', descricao: 'muito próximas' },
+  insana: { rotulo: 'Insano', descricao: 'quase a mesma coisa' },
 };
 
 const MIN_MR_WHITES = 1;
@@ -47,8 +55,17 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
   const [dificuldade, setDificuldade] = useState<Dificuldade>('medio');
   const [numMrWhites, setNumMrWhites] = useState(1);
   const [duracaoTurno, setDuracaoTurno] = useState(60);
+  const [modoDualWord, setModoDualWord] = useState(false);
+  const [dificuldadePar, setDificuldadePar] = useState<DificuldadeParPalavras>('media');
   const [iniciando, setIniciando] = useState(false);
   const [mostrarContagem, setMostrarContagem] = useState(false);
+
+  function sortearCategoria() {
+    const atual = categoriaId;
+    const disponiveis = LISTA_CATEGORIAS.filter((c) => c.id !== atual);
+    const sorteada = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+    if (sorteada) setCategoriaId(sorteada.id);
+  }
 
   async function aoIniciar() {
     const opcoes: OpcoesMrWhite = {
@@ -56,6 +73,8 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
       dificuldade,
       numeroMrWhites: numMrWhites,
       duracaoTurnoSegundos: duracaoTurno,
+      modoDualWord,
+      dificuldadePar,
     };
     setIniciando(true);
     try {
@@ -108,7 +127,60 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
               );
             })}
           </View>
+          <Pressable onPress={sortearCategoria} style={estilos.botaoAleatorio}>
+            <Text style={estilos.botaoAleatorioTexto}>sortear categoria</Text>
+          </Pressable>
         </Section>
+
+        <Section titulo="Modo de Jogo">
+          <View style={estilos.linhaSegmentos}>
+            <Pressable
+              onPress={() => setModoDualWord(false)}
+              style={[estilos.segmento, !modoDualWord && estilos.segmentoAtivo]}
+            >
+              <Text style={[estilos.segmentoTexto, !modoDualWord && estilos.segmentoTextoAtivo]}>
+                Clássico
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setModoDualWord(true)}
+              style={[estilos.segmento, modoDualWord && estilos.segmentoAtivo]}
+            >
+              <Text style={[estilos.segmentoTexto, modoDualWord && estilos.segmentoTextoAtivo]}>
+                Dual Word
+              </Text>
+            </Pressable>
+          </View>
+          <Text style={estilos.ajuda}>
+            {modoDualWord
+              ? 'mr white recebe palavra parecida — mais difícil de desmascarar.'
+              : 'mr white não recebe palavra — deve blefar do zero.'}
+          </Text>
+        </Section>
+
+        {modoDualWord && (
+          <Section titulo="Proximidade das Palavras">
+            <View style={estilos.linhaSegmentos}>
+              {(Object.keys(ROTULOS_DIFICULDADE_PAR) as DificuldadeParPalavras[]).map((d) => {
+                const ativo = d === dificuldadePar;
+                return (
+                  <Pressable
+                    key={d}
+                    onPress={() => setDificuldadePar(d)}
+                    style={[estilos.segmento, ativo && estilos.segmentoAtivo]}
+                  >
+                    <Text style={[estilos.segmentoTexto, ativo && estilos.segmentoTextoAtivo]}>
+                      {ROTULOS_DIFICULDADE_PAR[d].rotulo}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <Text style={estilos.ajuda}>
+              {ROTULOS_DIFICULDADE_PAR[dificuldadePar].descricao}
+            </Text>
+          </Section>
+        )}
 
         <Section titulo="Dificuldade">
           <View style={estilos.linhaSegmentos}>
@@ -263,6 +335,18 @@ const estilos = StyleSheet.create({
   },
   chipTextoAtivo: {
     color: cores.textoSobrePrimaria,
+  },
+  botaoAleatorio: {
+    alignItems: 'center',
+    marginTop: espacamento.md,
+    paddingVertical: espacamento.sm,
+  },
+  botaoAleatorioTexto: {
+    color: cores.acento,
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textDecorationLine: 'underline',
   },
   chipsLinha: {
     flexDirection: 'row',

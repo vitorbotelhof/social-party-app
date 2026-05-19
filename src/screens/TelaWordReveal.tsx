@@ -238,13 +238,29 @@ export function TelaWordReveal({
                         { transform: [{ scale: escalaPalavra }] },
                       ]}
                     >
-                      {ehMrWhite ? (
+                      {ehMrWhite && !meuEstado.palavraSecreta ? (
                         <>
                           <Text style={estilos.tituloMrWhite}>
                             {'você é\no mr white.'}
                           </Text>
                           <Text style={estilos.subtextoMrWhite}>
                             não tem palavra.{'\n'}descubra a dos outros.
+                          </Text>
+                        </>
+                      ) : ehMrWhite && meuEstado.palavraSecreta ? (
+                        <>
+                          <Text style={estilos.labelMrWhiteDual}>
+                            você é o mr white.
+                          </Text>
+                          <Text
+                            style={estilos.palavraDual}
+                            adjustsFontSizeToFit
+                            numberOfLines={1}
+                          >
+                            {meuEstado.palavraSecreta}
+                          </Text>
+                          <Text style={estilos.subtextoMrWhite}>
+                            sua palavra é parecida.{'\n'}não é a mesma.
                           </Text>
                         </>
                       ) : (
@@ -471,12 +487,27 @@ const estilos = StyleSheet.create({
     color: cores.texto,
     fontWeight: tipografia.pesoSemibold,
   },
+  labelMrWhiteDual: {
+    color: COR_PERIGO,
+    fontFamily: familias.serifItalico,
+    fontSize: tipografia.tamanhoLegenda,
+    letterSpacing: 0.3,
+    marginBottom: espacamento.xs,
+    textAlign: 'center',
+  },
   labelPalavra: {
     color: 'rgba(255, 255, 255, 0.4)',
     fontFamily: familias.serifItalico,
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: 0.3,
     marginBottom: espacamento.xs,
+    textAlign: 'center',
+  },
+  palavraDual: {
+    color: COR_PERIGO,
+    fontFamily: familias.serifDisplay,
+    fontSize: 48,
+    letterSpacing: 0,
     textAlign: 'center',
   },
   legendaVez: {

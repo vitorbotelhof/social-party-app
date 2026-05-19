@@ -445,7 +445,7 @@ function BannerVitoria({ ehVitoriaMrWhite }: { ehVitoriaMrWhite: boolean }) {
     >
       <Particulas />
       <Text style={estilos.bannerTitulo}>
-        {ehVitoriaMrWhite ? 'mr white venceu' : 'civis venceram'}
+        {ehVitoriaMrWhite ? 'o impostor escapou.' : 'o grupo sobreviveu.'}
       </Text>
     </Animated.View>
   );
@@ -622,10 +622,10 @@ const estilos = StyleSheet.create({
     position: 'relative',
   },
   bannerCivis: {
-    backgroundColor: '#064E3B',
+    backgroundColor: '#0F3D2B',
   },
   bannerMrWhite: {
-    backgroundColor: '#3B0764',
+    backgroundColor: '#3D0F0F',
   },
   bannerTitulo: {
     color: cores.textoSobrePrimaria,
@@ -685,7 +685,7 @@ const estilos = StyleSheet.create({
     marginTop: espacamento.sm,
   },
   nomeMrWhite: {
-    color: cores.acento,
+    color: cores.erro,
     fontSize: 44,
     fontWeight: tipografia.pesoBlack,
     letterSpacing: tipografia.spacingTitulo,

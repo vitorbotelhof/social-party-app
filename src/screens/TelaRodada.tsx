@@ -103,7 +103,9 @@ export function TelaRodada({ estado, roomCode, jogoId, jogadorId, jogadores: lis
     [listaJogadores],
   );
 
-  const ordem = estado.estadoPublico.ordemJogadores;
+  const ordem = estado.estadoPublico.ordemAtiva.length > 0
+    ? estado.estadoPublico.ordemAtiva
+    : estado.estadoPublico.ordemJogadores;
   const indiceTurno = estado.estadoPublico.indiceTurno;
   const pistas = estado.estadoPublico.pistas;
   const jogadorDaVezId = ordem[indiceTurno] ?? null;
@@ -118,6 +120,18 @@ export function TelaRodada({ estado, roomCode, jogoId, jogadorId, jogadores: lis
     () => pistas.filter((p) => p.rodada === estado.rodada),
     [pistas, estado.rodada],
   );
+
+  const pistasAnteriores = useMemo(
+    () => pistas.filter((p) => p.rodada < estado.rodada),
+    [pistas, estado.rodada],
+  );
+
+  const rodadasAnteriores = useMemo(
+    () => [...new Set(pistasAnteriores.map((p) => p.rodada))].sort((a, b) => a - b),
+    [pistasAnteriores],
+  );
+
+  const ehMultiRodada = estado.rodada > 1;
 
   function nomeDe(id: PlayerId): string {
     return jogadores[id]?.nome ?? '...';
@@ -197,13 +211,14 @@ export function TelaRodada({ estado, roomCode, jogoId, jogadorId, jogadores: lis
             scrollRef.current?.scrollToEnd({ animated: true })
           }
         >
+          {/* Current round clues */}
           <Text style={estilos.legendaHistorico}>
-            dicas ({dicasDaRodadaAtual.length}/{ordem.length})
+            evidências ({dicasDaRodadaAtual.length}/{ordem.length})
           </Text>
 
           {dicasDaRodadaAtual.length === 0 ? (
             <Text style={estilos.vazio}>
-              ainda não chegou nenhuma dica nesta rodada.
+              {ehMultiRodada ? 'silêncio. ninguém falou ainda.' : 'ainda não chegou nenhuma dica nesta rodada.'}
             </Text>
           ) : (
             dicasDaRodadaAtual.map((p, i) => (
@@ -212,9 +227,32 @@ export function TelaRodada({ estado, roomCode, jogoId, jogadorId, jogadores: lis
                 pista={p}
                 nome={nomeDe(p.jogadorId)}
                 ehVoce={p.jogadorId === jogadorId}
+                historico={false}
               />
             ))
           )}
+
+          {/* Historical clues from previous rounds — social memory */}
+          {ehMultiRodada && rodadasAnteriores.map((rodNum) => (
+            <View key={rodNum}>
+              <View style={estilos.separadorRodada}>
+                <View style={estilos.separadorLinha} />
+                <Text style={estilos.separadorTexto}>rodada {rodNum}</Text>
+                <View style={estilos.separadorLinha} />
+              </View>
+              {pistas
+                .filter((p) => p.rodada === rodNum)
+                .map((p, i) => (
+                  <ItemDica
+                    key={`hist-${p.jogadorId}-${rodNum}-${i}`}
+                    pista={p}
+                    nome={nomeDe(p.jogadorId)}
+                    ehVoce={p.jogadorId === jogadorId}
+                    historico
+                  />
+                ))}
+            </View>
+          ))}
         </ScrollView>
 
         {eMinhaVez && (
@@ -285,7 +323,11 @@ function Cabecalho({
         <>
           <Text style={estilos.tituloMinhaVez}>sua vez</Text>
           <Text style={estilos.subtituloMinhaVez}>
-            solta uma dica sobre a palavra
+            {rodada >= 3
+              ? 'cada palavra conta agora.'
+              : rodada >= 2
+                ? 'o grupo está analisando tudo.'
+                : 'solta uma dica sobre a palavra'}
           </Text>
           {tempoEsgotadoVisivel ? (
             <Text style={estilos.tempoEsgotado}>⏱ tempo esgotado!</Text>
@@ -303,7 +345,13 @@ function Cabecalho({
         <>
           <Text style={estilos.legendaVez}>vez de</Text>
           <Text style={estilos.nomeDaVez}>{nomeDaVez ?? '...'}</Text>
-          <Text style={estilos.subtitulo}>preste atenção na dica dele...</Text>
+          <Text style={estilos.subtitulo}>
+            {rodada >= 3
+              ? 'analise cada palavra.'
+              : rodada >= 2
+                ? 'essa dica pode condenar ou salvar.'
+                : 'preste atenção na dica dele...'}
+          </Text>
           {!timer.semLimite && (
             <View style={estilos.barraProgresso}>
               <View
@@ -425,10 +473,12 @@ function ItemDica({
   pista,
   nome,
   ehVoce,
+  historico = false,
 }: {
   pista: PistaDada;
   nome: string;
   ehVoce: boolean;
+  historico?: boolean;
 }) {
   const op = useRef(new Animated.Value(0)).current;
   const ty = useRef(new Animated.Value(16)).current;
@@ -456,6 +506,7 @@ function ItemDica({
       style={[
         estilos.itemDica,
         ehVoce && estilos.itemDicaVoce,
+        historico && estilos.itemDicaHistorico,
         { opacity: op, transform: [{ translateY: ty }] },
       ]}
     >
@@ -762,5 +813,28 @@ const estilos = StyleSheet.create({
     fontStyle: 'italic',
     marginTop: espacamento.md,
     textAlign: 'center',
+  },
+  itemDicaHistorico: {
+    opacity: 0.5,
+    borderColor: cores.borda,
+  },
+  separadorRodada: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: espacamento.sm,
+    marginTop: espacamento.lg,
+    marginBottom: espacamento.xs,
+  },
+  separadorLinha: {
+    flex: 1,
+    height: 1,
+    backgroundColor: cores.borda,
+  },
+  separadorTexto: {
+    color: cores.textoMudo,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: tipografia.spacingLegenda,
+    textTransform: 'uppercase',
   },
 });

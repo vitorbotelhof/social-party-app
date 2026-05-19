@@ -9,10 +9,12 @@ import { CATEGORIAS } from '@/games/mr-white/categorias';
 import type {
   CategoriaId,
   Dificuldade,
+  DificuldadeParPalavras,
   MrWhiteAction,
   MrWhitePrivateState,
   MrWhitePublicState,
   OpcoesMrWhite,
+  ParPalavras,
 } from '@/games/mr-white/types';
 import { embaralhar, sortearUm } from '@/utils/random';
 
@@ -23,10 +25,15 @@ const OPCOES_PADRAO: OpcoesMrWhite = {
   dificuldade: 'medio',
   numeroMrWhites: 1,
   duracaoTurnoSegundos: 60,
+  modoDualWord: false,
+  dificuldadePar: 'media',
 };
 
 const MAX_MR_WHITES = 3;
 const DURACOES_VALIDAS = new Set([0, 30, 60, 90]);
+
+// 12 segundos: 4.5s de overlay (apurando+eliminado) + 7.5s na TelaEntreRodadas.
+const DURACAO_ENTRE_RODADAS_MS = 12000;
 
 function calcularPrazoTurno(
   duracaoSegundos: number,
@@ -42,6 +49,22 @@ function ehCategoriaValida(valor: unknown): valor is CategoriaId {
 
 function ehDificuldadeValida(valor: unknown): valor is Dificuldade {
   return valor === 'facil' || valor === 'medio' || valor === 'dificil';
+}
+
+function ehDificuldadeParValida(valor: unknown): valor is DificuldadeParPalavras {
+  return valor === 'leve' || valor === 'media' || valor === 'hard' || valor === 'insana';
+}
+
+/** Dificuldades de par aceitas para cada nível de dificuldade no modo clássico. */
+const PARES_POR_DIFICULDADE: Record<Dificuldade, DificuldadeParPalavras[]> = {
+  facil: ['leve'],
+  medio: ['leve', 'media'],
+  dificil: ['leve', 'media', 'hard', 'insana'],
+};
+
+function filtrarPares(palavras: ParPalavras[], niveis: DificuldadeParPalavras[]): ParPalavras[] {
+  const filtrado = palavras.filter((p) => !p.dificuldade || niveis.includes(p.dificuldade));
+  return filtrado.length > 0 ? filtrado : palavras;
 }
 
 function normalizarOpcoes(opcoes: unknown, totalJogadores: number): OpcoesMrWhite {
@@ -65,7 +88,11 @@ function normalizarOpcoes(opcoes: unknown, totalJogadores: number): OpcoesMrWhit
   const duracaoTurnoSegundos = DURACOES_VALIDAS.has(duracaoSolicitada)
     ? duracaoSolicitada
     : OPCOES_PADRAO.duracaoTurnoSegundos;
-  return { categoriaId, dificuldade, numeroMrWhites, duracaoTurnoSegundos };
+  const modoDualWord = o.modoDualWord === true;
+  const dificuldadePar = ehDificuldadeParValida(o.dificuldadePar)
+    ? o.dificuldadePar
+    : OPCOES_PADRAO.dificuldadePar;
+  return { categoriaId, dificuldade, numeroMrWhites, duracaoTurnoSegundos, modoDualWord, dificuldadePar };
 }
 
 /** Normaliza texto para comparar palpites (remove acentos, espaços e case). */
@@ -74,6 +101,36 @@ const RE_ACENTOS = new RegExp('[\\u0300-\\u036f]', 'g');
 
 function normalizarPalavra(s: string): string {
   return s.normalize('NFD').replace(RE_ACENTOS, '').toLowerCase().trim();
+}
+
+/**
+ * Rotaciona a ordem ativa removendo eliminados e movendo o primeiro para o fim.
+ * Apenas no round 2 (rodadaVotacao === 1 sendo concluída) evita Mr White na
+ * primeira posição. A partir do round 3 não há restrição.
+ */
+function rotacionarOrdemAtiva(
+  ordemAtual: PlayerId[],
+  eliminadosIds: PlayerId[],
+  mrWhiteIds: Set<PlayerId>,
+  rodadaVotacao: number,
+): PlayerId[] {
+  const ativos = ordemAtual.filter((id) => !eliminadosIds.includes(id));
+  if (ativos.length === 0) return ativos;
+
+  // Rotação simples: primeiro vai para o fim.
+  const rotacionada = [...ativos.slice(1), ativos[0]!];
+
+  // Apenas no primeiro round de transição evita Mr White abrindo.
+  if (rodadaVotacao <= 1 && rotacionada.length > 1 && mrWhiteIds.has(rotacionada[0]!)) {
+    const idxCivil = rotacionada.findIndex((id) => !mrWhiteIds.has(id));
+    if (idxCivil > 0) {
+      const copia = [...rotacionada];
+      [copia[0], copia[idxCivil]] = [copia[idxCivil]!, copia[0]!];
+      return copia;
+    }
+  }
+
+  return rotacionada;
 }
 
 class MrWhiteEngine extends GameEngine<
@@ -98,7 +155,13 @@ class MrWhiteEngine extends GameEngine<
   ): MrWhiteState {
     const config = normalizarOpcoes(opcoes, jogadores.length);
     const categoria = CATEGORIAS[config.categoriaId];
-    const par = sortearUm(categoria.palavras);
+
+    // No modo dual-word filtra pelos níveis de proximidade semântica escolhidos;
+    // no modo clássico filtra pela dificuldade geral da partida.
+    const niveisPermitidos = config.modoDualWord
+      ? [config.dificuldadePar]
+      : PARES_POR_DIFICULDADE[config.dificuldade];
+    const par = sortearUm(filtrarPares(categoria.palavras, niveisPermitidos));
 
     const idsEmbaralhados = embaralhar(jogadores.map((j) => j.id));
     const mrWhiteIds = new Set(
@@ -110,7 +173,10 @@ class MrWhiteEngine extends GameEngine<
       const ehMrWhite = mrWhiteIds.has(j.id);
       estadosPrivados[j.id] = {
         ehMrWhite,
-        palavraSecreta: ehMrWhite ? null : par.civis,
+        // Modo dual-word: Mr White recebe palavra "undercover"; modo clássico: nenhuma.
+        palavraSecreta: ehMrWhite
+          ? (config.modoDualWord ? (par.undercover ?? null) : null)
+          : par.civis,
       };
     }
 
@@ -133,6 +199,7 @@ class MrWhiteEngine extends GameEngine<
         duracaoTurnoSegundos: config.duracaoTurnoSegundos,
         prazoTurnoEm: null,
         ordemJogadores: ordemTurnos,
+        ordemAtiva: ordemTurnos,
         idsPorAntiguidade: [...jogadores]
           .sort((a, b) => a.entrouEm - b.entrouEm)
           .map((j) => j.id),
@@ -148,6 +215,14 @@ class MrWhiteEngine extends GameEngine<
         // Guardamos a palavra desde já, mas a UI só revela no fim.
         palavraRevelada: par.civis,
         mrWhiteIdsRevelados: [],
+        // Multi-round
+        rodadaVotacao: 1,
+        ultimoEliminadoId: null,
+        ultimoEliminadoEraMrWhite: null,
+        prazoProximaRodadaEm: null,
+        mrWhitesEliminados: 0,
+        civilsEliminados: 0,
+        modoJogo: config.modoDualWord ? 'dual-word' : 'classico',
       },
       estadosPrivados,
       vencedorIds: [],
@@ -183,6 +258,8 @@ class MrWhiteEngine extends GameEngine<
         );
       case 'forcar_resolucao_votacao':
         return this.tratarForcarResolucaoVotacao(estado, acao.em);
+      case 'avancar_proxima_rodada':
+        return this.tratarAvancarProximaRodada(estado, acao.em);
     }
   }
 
@@ -192,7 +269,8 @@ class MrWhiteEngine extends GameEngine<
   ): MrWhiteState {
     const { estadoPublico } = estado;
     if (estadoPublico.subFase !== 'votando') return estado;
-    const total = estadoPublico.ordemJogadores.length;
+    // Usa ordemAtiva (jogadores que ainda estão no jogo) como total esperado.
+    const total = estadoPublico.ordemAtiva.length || estadoPublico.ordemJogadores.length;
     if (Object.keys(estadoPublico.votos).length < total) return estado;
     return this.resolverVotacao(estado, estadoPublico.votos, em);
   }
@@ -243,7 +321,8 @@ class MrWhiteEngine extends GameEngine<
     const { estadoPublico } = estado;
     if (estadoPublico.subFase !== 'dando_dicas') return estado;
 
-    const esperadoId = estadoPublico.ordemJogadores[estadoPublico.indiceTurno];
+    // Usa ordemAtiva — apenas jogadores ainda no jogo têm vez.
+    const esperadoId = estadoPublico.ordemAtiva[estadoPublico.indiceTurno];
     if (esperadoId !== jogadorId) return estado;
 
     // Texto vazio = jogador passou (auto-skip do timer).
@@ -255,8 +334,7 @@ class MrWhiteEngine extends GameEngine<
       { jogadorId, texto: textoFinal, rodada: estado.rodada },
     ];
     const proximoIndice = estadoPublico.indiceTurno + 1;
-    const acabouRodada =
-      proximoIndice >= estadoPublico.ordemJogadores.length;
+    const acabouRodada = proximoIndice >= estadoPublico.ordemAtiva.length;
 
     if (acabouRodada) {
       return {
@@ -276,7 +354,7 @@ class MrWhiteEngine extends GameEngine<
 
     return {
       ...estado,
-      jogadorAtualId: estadoPublico.ordemJogadores[proximoIndice] ?? null,
+      jogadorAtualId: estadoPublico.ordemAtiva[proximoIndice] ?? null,
       estadoPublico: {
         ...estadoPublico,
         pistas,
@@ -298,8 +376,13 @@ class MrWhiteEngine extends GameEngine<
     if (eleitorId === alvoId) return estado;
     if (estadoPublico.votos[eleitorId]) return estado;
 
+    // Eliminados não votam e não podem ser votados.
+    const ativosSet = new Set(estadoPublico.ordemAtiva);
+    if (ativosSet.size > 0 && !ativosSet.has(eleitorId)) return estado;
+    if (ativosSet.size > 0 && !ativosSet.has(alvoId)) return estado;
+
     const votos = { ...estadoPublico.votos, [eleitorId]: alvoId };
-    const totalEsperado = estadoPublico.ordemJogadores.length;
+    const totalEsperado = estadoPublico.ordemAtiva.length || estadoPublico.ordemJogadores.length;
     const todosVotaram = Object.keys(votos).length === totalEsperado;
 
     if (!todosVotaram) {
@@ -344,24 +427,42 @@ class MrWhiteEngine extends GameEngine<
       estado.estadosPrivados[eliminadoId]?.ehMrWhite ?? false;
     const eliminadosIds = [...estado.estadoPublico.eliminadosIds, eliminadoId];
 
+    // Atualiza contadores de eliminados.
+    const mrWhitesEliminados =
+      estado.estadoPublico.mrWhitesEliminados + (eraMrWhite ? 1 : 0);
+    const civilsEliminados =
+      estado.estadoPublico.civilsEliminados + (eraMrWhite ? 0 : 1);
+
+    // Estado intermediário com eliminação aplicada.
+    const estadoEliminado: MrWhiteState = {
+      ...estado,
+      estadoPublico: {
+        ...estado.estadoPublico,
+        votos,
+        eliminadosIds,
+        ultimoEliminadoId: eliminadoId,
+        ultimoEliminadoEraMrWhite: eraMrWhite,
+        mrWhitesEliminados,
+        civilsEliminados,
+      },
+      atualizadoEm: em,
+    };
+
     if (eraMrWhite) {
       // Mr White descoberto: ele tem direito a um palpite final.
       return {
-        ...estado,
+        ...estadoEliminado,
         fase: 'playing',
         estadoPublico: {
-          ...estado.estadoPublico,
-          votos,
-          eliminadosIds,
+          ...estadoEliminado.estadoPublico,
           jogadorAdivinhandoId: eliminadoId,
           subFase: 'palpite_final',
         },
-        atualizadoEm: em,
       };
     }
 
-    // Civil eliminado → Mr White vence imediatamente.
-    return this.finalizarPartida(estado, 'mrwhite', votos, eliminadosIds, em);
+    // Civil eliminado → verificar win condition, continuar ou encerrar.
+    return this.verificarWinOuContinuar(estadoEliminado, em);
   }
 
   private tratarPalpiteFinal(
@@ -379,35 +480,124 @@ class MrWhiteEngine extends GameEngine<
 
     const alvo = estadoPublico.palavraRevelada ?? '';
     const acertou = normalizarPalavra(palpiteLimpo) === normalizarPalavra(alvo);
-    const vencedor = acertou ? 'mrwhite' : 'civis';
 
-    const finalizado = this.finalizarPartida(
-      estado,
-      vencedor,
-      estadoPublico.votos,
-      estadoPublico.eliminadosIds,
-      em,
-    );
-    return {
-      ...finalizado,
+    // Aplica o resultado do palpite ao estado antes de decidir o destino.
+    const estadoComPalpite: MrWhiteState = {
+      ...estado,
       estadoPublico: {
-        ...finalizado.estadoPublico,
+        ...estadoPublico,
         palpiteFinal: palpiteLimpo,
         palpiteCorreto: acertou,
       },
+    };
+
+    if (acertou) {
+      // Mr White adivinha a palavra → vitória imediata do Mr White.
+      return this.finalizarPartida(estadoComPalpite, 'mrwhite', em);
+    }
+
+    // Errou: Mr White já está em eliminadosIds (adicionado em resolverVotacao).
+    // Verificar win condition com o estado atual.
+    return this.verificarWinOuContinuar(estadoComPalpite, em);
+  }
+
+  /**
+   * Verifica as win conditions após uma eliminação.
+   * - Todos os Mr Whites mortos → civis vencem.
+   * - Mr Whites vivos >= civis vivos → Mr White vence.
+   * - Caso contrário → entra em entre_rodadas para o próximo ciclo.
+   */
+  private verificarWinOuContinuar(
+    estado: MrWhiteState,
+    em: number,
+  ): MrWhiteState {
+    const mrWhiteIds = this.getMrWhiteIds(estado);
+    const { eliminadosIds, ordemJogadores } = estado.estadoPublico;
+
+    const mrWhitesVivos = mrWhiteIds.filter(
+      (id) => !eliminadosIds.includes(id),
+    ).length;
+    const civilsVivos = ordemJogadores.filter(
+      (id) => !mrWhiteIds.includes(id) && !eliminadosIds.includes(id),
+    ).length;
+
+    if (mrWhitesVivos === 0) {
+      return this.finalizarPartida(estado, 'civis', em);
+    }
+    if (mrWhitesVivos >= civilsVivos) {
+      return this.finalizarPartida(estado, 'mrwhite', em);
+    }
+
+    return this.entrarEntreRodadas(estado, em);
+  }
+
+  /**
+   * Transição para entre_rodadas: pausa dramática antes do próximo ciclo.
+   * Reset de votos acontece apenas em avancar_proxima_rodada.
+   */
+  private entrarEntreRodadas(estado: MrWhiteState, em: number): MrWhiteState {
+    return {
+      ...estado,
+      fase: 'playing',
+      jogadorAtualId: null,
+      estadoPublico: {
+        ...estado.estadoPublico,
+        subFase: 'entre_rodadas',
+        prazoProximaRodadaEm: em + DURACAO_ENTRE_RODADAS_MS,
+        prazoTurnoEm: null,
+        jogadorAdivinhandoId: null,
+      },
+      atualizadoEm: em,
+    };
+  }
+
+  /**
+   * Avança para o próximo ciclo de dicas após entre_rodadas.
+   * - Remove eliminados da ordemAtiva.
+   * - Rotaciona a ordem para variar quem abre.
+   * - Reseta votos e indiceTurno.
+   * - Incrementa rodada e rodadaVotacao.
+   */
+  private tratarAvancarProximaRodada(
+    estado: MrWhiteState,
+    em: number,
+  ): MrWhiteState {
+    const { estadoPublico } = estado;
+    if (estadoPublico.subFase !== 'entre_rodadas') return estado;
+
+    const mrWhiteIds = new Set(this.getMrWhiteIds(estado));
+    const novaOrdemAtiva = rotacionarOrdemAtiva(
+      estadoPublico.ordemAtiva,
+      estadoPublico.eliminadosIds,
+      mrWhiteIds,
+      estadoPublico.rodadaVotacao,
+    );
+
+    return {
+      ...estado,
+      fase: 'playing',
+      rodada: estado.rodada + 1,
+      jogadorAtualId: novaOrdemAtiva[0] ?? null,
+      estadoPublico: {
+        ...estadoPublico,
+        subFase: 'dando_dicas',
+        ordemAtiva: novaOrdemAtiva,
+        indiceTurno: 0,
+        votos: {},
+        rodadaVotacao: estadoPublico.rodadaVotacao + 1,
+        prazoProximaRodadaEm: null,
+        prazoTurnoEm: calcularPrazoTurno(estadoPublico.duracaoTurnoSegundos, em),
+      },
+      atualizadoEm: em,
     };
   }
 
   private finalizarPartida(
     estado: MrWhiteState,
     vencedor: 'civis' | 'mrwhite',
-    votos: Record<PlayerId, PlayerId>,
-    eliminadosIds: PlayerId[],
     em: number,
   ): MrWhiteState {
-    const mrWhiteIds = Object.entries(estado.estadosPrivados)
-      .filter(([, p]) => p.ehMrWhite)
-      .map(([id]) => id);
+    const mrWhiteIds = this.getMrWhiteIds(estado);
     const vencedorIds =
       vencedor === 'mrwhite'
         ? mrWhiteIds
@@ -421,15 +611,22 @@ class MrWhiteEngine extends GameEngine<
       jogadorAtualId: null,
       estadoPublico: {
         ...estado.estadoPublico,
-        votos,
-        eliminadosIds,
         subFase: 'finalizado',
         vencedor,
         mrWhiteIdsRevelados: mrWhiteIds,
+        prazoProximaRodadaEm: null,
+        prazoTurnoEm: null,
       },
       vencedorIds,
       atualizadoEm: em,
     };
+  }
+
+  /** Retorna os IDs de todos os Mr Whites a partir do estado privado. */
+  private getMrWhiteIds(estado: MrWhiteState): PlayerId[] {
+    return Object.entries(estado.estadosPrivados)
+      .filter(([, p]) => p.ehMrWhite)
+      .map(([id]) => id);
   }
 
   private ordemSemMrWhiteNoComeco(

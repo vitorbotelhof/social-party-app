@@ -9,6 +9,7 @@ import type {
   MrWhitePublicState,
 } from '@/games/mr-white/types';
 import type { RootStackParamList } from '@/navigation/types';
+import { TelaEntreRodadas } from '@/screens/TelaEntreRodadas';
 import { TelaPalpiteMrWhite } from '@/screens/TelaPalpiteMrWhite';
 import { TelaResultado } from '@/screens/TelaResultado';
 import { TelaRodada } from '@/screens/TelaRodada';
@@ -28,11 +29,13 @@ type EtapaTransicao =
   | { tipo: 'apurando' }
   | { tipo: 'empate'; nomeEliminado: string | null }
   | { tipo: 'descoberto'; nomeMrWhite: string | null }
+  | { tipo: 'eliminado'; nomeEliminado: string | null; eraMrWhite: boolean | null }
   | null;
 
 const MS_APURANDO = 2000;
 const MS_EMPATE = 1500;
 const MS_DESCOBERTO = 3000;
+const MS_ELIMINADO = 2500;
 
 export function GameScreen({ navigation, route }: Props) {
   const { roomCode, jogoId, jogadorId } = route.params;
@@ -105,6 +108,10 @@ export function GameScreen({ navigation, route }: Props) {
         : null;
       sequencia.push({ tipo: 'descoberto', nomeMrWhite });
     }
+    if (sub === 'entre_rodadas') {
+      const eraMrWhite = estado.estadoPublico.ultimoEliminadoEraMrWhite;
+      sequencia.push({ tipo: 'eliminado', nomeEliminado, eraMrWhite });
+    }
 
     setTransicao(sequencia[0] ?? null);
     let acumulado = 0;
@@ -116,7 +123,9 @@ export function GameScreen({ navigation, route }: Props) {
           ? MS_APURANDO
           : etapa?.tipo === 'empate'
             ? MS_EMPATE
-            : MS_DESCOBERTO;
+            : etapa?.tipo === 'eliminado'
+              ? MS_ELIMINADO
+              : MS_DESCOBERTO;
       acumulado += ms;
       const proxima = sequencia[i + 1] ?? null;
       const id = setTimeout(() => setTransicao(proxima), acumulado);
@@ -156,6 +165,8 @@ export function GameScreen({ navigation, route }: Props) {
       return <TelaVotacao {...props} jogadores={jogadores} />;
     case 'palpite_final':
       return <TelaPalpiteMrWhite {...props} />;
+    case 'entre_rodadas':
+      return <TelaEntreRodadas {...props} jogadores={jogadores} />;
     case 'finalizado':
       return <TelaResultado {...props} />;
   }
@@ -365,6 +376,37 @@ function OverlayTransicao({
         </View>
       )}
 
+      {etapa.tipo === 'eliminado' && (
+        <View style={estilosOverlay.bloco}>
+          <Animated.Text
+            style={[
+              estilosOverlay.labelDescoberto,
+              { opacity: labelOpacidade, transform: [{ translateY: labelY }] },
+            ]}
+          >
+            {etapa.eraMrWhite ? 'o mr white era' : 'o inocente era'}
+          </Animated.Text>
+          <Animated.View style={[estilosOverlay.hairline, { opacity: hairlineOpacidade }]} />
+          <Animated.Text
+            style={[
+              estilosOverlay.nomeDestaque,
+              etapa.eraMrWhite && estilosOverlay.nomeEliminadoMrWhite,
+              { opacity: nomeOpacidade, transform: [{ scale: nomeEscala }] },
+            ]}
+          >
+            {etapa.nomeEliminado ?? '...'}
+          </Animated.Text>
+          <Animated.Text
+            style={[
+              estilosOverlay.subtextoFinal,
+              { opacity: subtextoOpacidade, transform: [{ translateY: subtextoY }] },
+            ]}
+          >
+            {etapa.eraMrWhite ? 'mas o jogo ainda não acabou.' : 'o jogo ainda não acabou.'}
+          </Animated.Text>
+        </View>
+      )}
+
       {etapa.tipo === 'descoberto' && (
         <View style={estilosOverlay.bloco}>
           <Animated.Text
@@ -446,6 +488,9 @@ const estilosOverlay = StyleSheet.create({
   nomeEmpate: {
     fontSize: tipografia.tamanhoSubtituloGrande,
     lineHeight: 32,
+  },
+  nomeEliminadoMrWhite: {
+    color: cores.erro,
   },
   overlay: {
     alignItems: 'center',
