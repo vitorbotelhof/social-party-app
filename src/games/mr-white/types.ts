@@ -14,16 +14,40 @@ export type CategoriaId =
   | 'profissoes'
   | 'objetos'
   | 'sentimentos'
-  | 'aplicativos';
+  | 'aplicativos'
+  | 'relacionamentos'
+  | 'dating'
+  | 'vida_adulta'
+  | 'internet'
+  | 'caos_social'
+  | 'psicologia_social';
+
+/**
+ * Dificuldade intrínseca do par de palavras.
+ * Determina o quão próximas semanticamente são as palavras e o quanto
+ * as descrições dos civis e do Mr White se sobrepõem.
+ *
+ * leve   — pares claramente distintos; Mr White tem trabalho duro
+ * media  — proximidade conceitual moderada; descrições ambíguas possíveis
+ * hard   — pares muito próximos; leitura social necessária para distinguir
+ * insana — limiar quase imperceptível; o grupo entra em paranoia total
+ */
+export type DificuldadeParPalavras = 'leve' | 'media' | 'hard' | 'insana';
 
 export interface ParPalavras {
   /** Palavra entregue à maioria dos jogadores (os civis). */
   civis: string;
   /**
-   * Palavra alternativa (para variante "Undercover" futura).
-   * No modo Mr White clássico não é usada — o Mr White não recebe palavra.
+   * Palavra alternativa entregue ao Mr White na variante "com palavra similar".
+   * No modo clássico o Mr White não recebe palavra — este campo é ignorado.
+   * Na variante futura, o Mr White recebe esta palavra e deve blefar
+   * descrevendo um conceito levemente diferente.
    */
   undercover: string;
+  /** Dificuldade intrínseca do par. Usado para filtragem futura por modo/deck. */
+  dificuldade?: DificuldadeParPalavras;
+  /** Tags semânticas para curadoria, decks temáticos e discovery futuro. */
+  tags?: string[];
 }
 
 export interface Categoria {

@@ -129,7 +129,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     maxJogadores: 10,
     tempoMedio: '10-20 min',
     intensidade: 2,
-    disponivel: false,
+    disponivel: true,
     supportsLocal: false,
     supportsRealtime: true,
     socialTags: ['party', 'revelações', 'caos'],

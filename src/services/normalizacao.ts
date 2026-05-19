@@ -7,15 +7,23 @@ export function normalizarEstadoPublico(pub: unknown): Record<string, unknown> {
   >;
   return {
     ...base,
+    // ── campos compartilhados ──────────────────────────────────────────────
     ordemJogadores: base.ordemJogadores ?? [],
+    votos: base.votos ?? {},
+    // ── Mr White ──────────────────────────────────────────────────────────
     idsPorAntiguidade: base.idsPorAntiguidade ?? [],
     jogadoresQueViram: base.jogadoresQueViram ?? [],
     pistas: base.pistas ?? [],
-    votos: base.votos ?? {},
     eliminadosIds: base.eliminadosIds ?? [],
     mrWhiteIdsRevelados: base.mrWhiteIdsRevelados ?? [],
     prazoTurnoEm: base.prazoTurnoEm ?? null,
     duracaoTurnoSegundos: base.duracaoTurnoSegundos ?? 60,
+    // ── Most Likely To ────────────────────────────────────────────────────
+    resultados: base.resultados ?? [],
+    indicesPromptUsados: base.indicesPromptUsados ?? [],
+    vencedorRodadaAtual: base.vencedorRodadaAtual ?? null,
+    foiEmpate: base.foiEmpate ?? false,
+    rodadaIniciadaEm: base.rodadaIniciadaEm ?? 0,
   };
 }
 
