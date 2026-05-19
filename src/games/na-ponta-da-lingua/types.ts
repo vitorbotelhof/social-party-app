@@ -10,7 +10,16 @@ export type CategoriaIdNPL =
   | 'festas'
   | 'relacionamentos'
   | 'lugares'
-  | 'brasil';
+  | 'brasil'
+  | 'traumas_millennials'
+  | 'memes_br'
+  | 'vida_adulta'
+  | 'date_ruim'
+  | 'escritorio'
+  | 'universidade'
+  | 'carnaval'
+  | 'reality_shows'
+  | 'celebridades_br';
 
 export type DificuldadeNPL = 'facil' | 'medio' | 'dificil';
 
@@ -35,10 +44,10 @@ export interface OpoesNPL {
  * NOT stored in engine state. Drives all visual escalation.
  *
  * Thresholds:
- *   calmo    → 100% – 60%  — clean, controlled
- *   pressao  → 60%  – 30%  — subtle warmth, timer pulses
- *   panico   → 30%  – 10%  — shake starts, vignette, heavy pulse
- *   colapso  → 10%  – 0%   — maximum — shake, dark vignette, flicker
+ *   calmo    → 100%–60%  — clean, controlled
+ *   pressao  → 60%–30%  — subtle warmth, timer pulses
+ *   panico   → 30%–10%  — shake starts, vignette, heavy pulse
+ *   colapso  → 10%–0%   — maximum — shake, dark vignette, flicker
  */
 export type IntensidadeVisual = 'calmo' | 'pressao' | 'panico' | 'colapso';
 
@@ -52,12 +61,17 @@ export function calcularIntensidade(pct: number): IntensidadeVisual {
 export type ResultadoRodada = 'acertou' | 'passou' | 'tempo_esgotado';
 
 export type SubFaseNPL =
-  | 'preparando'      // current player about to see card; others face away
-  | 'jogando'         // timer running; player describing
-  | 'acertou'         // group guessed correctly — brief reveal
-  | 'passou'          // player passed or time ran out
-  | 'entre_rodadas'   // scoreboard moment; next player preps
-  | 'finalizado';     // all rounds complete
+  | 'preparando'    // current player about to start; others face away
+  | 'jogando'       // timer running; player cycling through multiple words
+  | 'resumo_turno'  // timer ended; full-turn summary (all words shown)
+  | 'entre_rodadas' // cumulative scoreboard; next player preps
+  | 'finalizado';   // all turns complete
+
+/** One word outcome within a single continuous turn. */
+export interface HistoricoTurnoItem {
+  palavra: string;
+  resultado: 'acertou' | 'passou';
+}
 
 export interface HistoricoRodada {
   rodada: number;
@@ -74,6 +88,10 @@ export interface NPLPublicState {
   duracaoSegundos: number;
   rodadasPorJogador: number;
 
+  /** Stored so card-selection can use the right pool at action time. */
+  dificuldade: DificuldadeNPL | 'todas';
+  categorias: CategoriaIdNPL[] | 'todas';
+
   /** Current index into ordemJogadores */
   indiceTurno: number;
   /** Shuffled order; cycles through for each round per player */
@@ -88,15 +106,18 @@ export interface NPLPublicState {
   /** Unix ms when current turn expires */
   prazoTurnoEm: number | null;
 
-  /** Points: playerId → count of correct guesses */
+  /** Accumulated correct-guess counts per player across all turns */
   pontos: Record<PlayerId, number>;
 
   historico: HistoricoRodada[];
-
-  ultimoResultado: ResultadoRodada | null;
-  ultimaPalavra: string | null;
-
   cartasUsadas: string[];
+
+  // ── Per-turn tracking — reset at the start of every new turn ──────────
+  acertosTurnoAtual: number;
+  passousTurnoAtual: number;
+  streakTurnoAtual: number;
+  melhorStreakTurnoAtual: number;
+  historicoTurnoAtual: HistoricoTurnoItem[];
 }
 
 /**

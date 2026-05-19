@@ -47,7 +47,20 @@
       "Bash(python3 /Users/vitorfreitas/social-party-app/docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"social party game reveal animation mobile\" --design-system -f markdown)",
       "Bash(python3 skills/ui-ux-pro-max/scripts/search.py \"social deduction thriller suspense paranoia dark intimate cinematic\" --design-system -p \"Mr White\")",
       "Bash(python3 src/ui-ux-pro-max/scripts/search.py \"social deduction thriller suspense paranoia dark intimate cinematic\" --design-system -p \"Mr White\")",
-      "Bash(python3 src/ui-ux-pro-max/scripts/search.py \"animation reveal suspense timing tension emotional pacing\" --domain ux -n 10)"
+      "Bash(python3 src/ui-ux-pro-max/scripts/search.py \"animation reveal suspense timing tension emotional pacing\" --domain ux -n 10)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"social party game frenetic pressure word game dark premium\" --design-system -f markdown)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"frenetic animation card transition momentum streak\" --domain ux)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"card swipe transition performance touch button large\" --stack react-native)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"party game social chaos momentum collective Brazilian mobile dark\" --design-system -f markdown)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"collective momentum feedback haptic animation social energy\" --domain ux)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/scripts/search.py \"competitive party game social tension team rivalry pressure dark\" --design-system -p \"Na Ponta da Lingua Sprint 3\")",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/scripts/search.py \"social party game thriller dark cinematic premium tension\" --design-system -f markdown)",
+      "Bash(python3 docs/ai-skills/ui-ux-pro-max-skill/scripts/search.py \"social party game thriller dark cinematic\" --design-system)",
+      "Bash(xargs -I {} basename {})",
+      "Bash(awk '{print $5}')",
+      "Bash(xargs ls -t)",
+      "Bash(ls -lt ~/Downloads/*.png ~/Downloads/*.jpg 2>/dev/null | head -5)",
+      "Bash(mkdir -p /Users/vitorfreitas/social-party-app/assets/games/na-ponta-da-lingua && cp \"/Users/vitorfreitas/Downloads/ChatGPT Image May 19, 2026, 06_26_12 PM.png\" /Users/vitorfreitas/social-party-app/assets/games/na-ponta-da-lingua/cover.png)"
     ]
   }
 }

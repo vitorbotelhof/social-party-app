@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/navigation/types';
 import { GameScreen } from '@/screens/GameScreen';
 import { GameScreenMostLikely } from '@/screens/GameScreenMostLikely';
+import { GameScreenNaPontaDaLingua } from '@/screens/GameScreenNaPontaDaLingua';
 import { TelaCadastroJogadores } from '@/screens/TelaCadastroJogadores';
 import { TelaConfiguracaoJogo } from '@/screens/TelaConfiguracaoJogo';
 import { TelaConfiguracaoLocal } from '@/screens/TelaConfiguracaoLocal';
@@ -42,6 +43,10 @@ function GameScreenGateway({
         onVoltar={() => navigation.navigate('SelecaoJogo')}
       />
     );
+  }
+
+  if (jogoId === 'na-ponta-da-lingua') {
+    return <GameScreenNaPontaDaLingua route={route} navigation={navigation} />;
   }
 
   return <GameScreen route={route} navigation={navigation} />;

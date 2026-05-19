@@ -10,11 +10,11 @@ import type {
   Carta,
   CategoriaIdNPL,
   DificuldadeNPL,
+  HistoricoTurnoItem,
   NPLAction,
   NPLPrivateState,
   NPLPublicState,
   OpoesNPL,
-  ResultadoRodada,
 } from '@/games/na-ponta-da-lingua/types';
 import { embaralhar, sortearUm } from '@/utils/random';
 
@@ -60,7 +60,6 @@ function selecionarCarta(
       (dificuldade === 'todas' || c.dificuldade === dificuldade) &&
       (categorias === 'todas' || categorias.includes(c.categoria)),
   );
-  // Fallback: ignore used restriction when pool empty.
   const fonte = pool.length > 0 ? pool : CARTAS.filter(
     (c) =>
       (dificuldade === 'todas' || c.dificuldade === dificuldade) &&
@@ -73,12 +72,22 @@ function estadosPrivadosVazios(jogadores: Player[]): Record<PlayerId, NPLPrivate
   return Object.fromEntries(jogadores.map((j) => [j.id, { carta: null }]));
 }
 
+function perTurnoVazio() {
+  return {
+    acertosTurnoAtual: 0,
+    passousTurnoAtual: 0,
+    streakTurnoAtual: 0,
+    melhorStreakTurnoAtual: 0,
+    historicoTurnoAtual: [] as HistoricoTurnoItem[],
+  };
+}
+
 class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, NPLAction> {
   readonly config: GameConfig = {
     id: 'na-ponta-da-lingua',
     nome: 'Na Ponta da Língua',
     descricao:
-      'Faça o grupo adivinhar a palavra sem usar as proibidas. O tempo está acabando.',
+      'Faça o grupo adivinhar o máximo de palavras possível no tempo. As proibidas não perdoam.',
     minJogadores: 2,
     maxJogadores: 10,
     tempoDeRodadaSegundos: 60,
@@ -99,6 +108,8 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
         anfitriaoId,
         duracaoSegundos: config.duracaoSegundos,
         rodadasPorJogador: config.rodadasPorJogador,
+        dificuldade: config.dificuldade,
+        categorias: config.categorias,
         indiceTurno: 0,
         ordemJogadores,
         turnosJogados: 0,
@@ -107,9 +118,8 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
         prazoTurnoEm: null,
         pontos: Object.fromEntries(ordemJogadores.map((id) => [id, 0])),
         historico: [],
-        ultimoResultado: null,
-        ultimaPalavra: null,
         cartasUsadas: [],
+        ...perTurnoVazio(),
       },
       estadosPrivados: estadosPrivadosVazios(jogadores),
       vencedorIds: [],
@@ -123,11 +133,11 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
       case 'pronto':
         return this.tratarPronto(estado, acao.jogadorId, acao.em);
       case 'acertou':
-        return this.tratarFimTurno(estado, 'acertou', acao.em);
+        return this.tratarAcertou(estado, acao.em);
       case 'passou':
-        return this.tratarFimTurno(estado, 'passou', acao.em);
+        return this.tratarPassou(estado, acao.em);
       case 'tempo_esgotado':
-        return this.tratarFimTurno(estado, 'tempo_esgotado', acao.em);
+        return this.tratarTempoEsgotado(estado, acao.em);
       case 'avancar':
         return this.tratarAvancar(estado, acao.em);
     }
@@ -151,90 +161,151 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
 
     const carta = selecionarCarta(
       estadoPublico.cartasUsadas,
-      estadoPublico.subFase === 'preparando' ? 'todas' : 'todas', // filtered by opcoes stored in config
-      'todas',
+      estadoPublico.dificuldade,
+      estadoPublico.categorias,
     );
-
     const prazoTurnoEm = em + estadoPublico.duracaoSegundos * 1000;
-
-    // Reveal carta only to current player.
-    const novosPrivados = {
-      ...estado.estadosPrivados,
-      [jogadorId]: { carta },
-    };
 
     return {
       ...estado,
-      estadosPrivados: novosPrivados,
+      estadosPrivados: {
+        ...estado.estadosPrivados,
+        [jogadorId]: { carta },
+      },
       estadoPublico: {
         ...estadoPublico,
         subFase: 'jogando',
         turnoIniciadoEm: em,
         prazoTurnoEm,
         cartasUsadas: [...estadoPublico.cartasUsadas, carta.id],
+        ...perTurnoVazio(),
       },
       atualizadoEm: em,
     };
   }
 
-  private tratarFimTurno(estado: NPLState, resultado: ResultadoRodada, em: number): NPLState {
+  /**
+   * Word guessed correctly.
+   * Stays in `jogando` — draws next card into private state.
+   */
+  private tratarAcertou(estado: NPLState, em: number): NPLState {
     const { estadoPublico } = estado;
     if (estadoPublico.subFase !== 'jogando') return estado;
 
     const jogadorAtualId = estadoPublico.ordemJogadores[estadoPublico.indiceTurno]!;
     const cartaAtual = estado.estadosPrivados[jogadorAtualId]?.carta;
-    const duracaoMs = estadoPublico.turnoIniciadoEm != null ? em - estadoPublico.turnoIniciadoEm : 0;
+
+    const novoStreak = estadoPublico.streakTurnoAtual + 1;
+    const novoMelhorStreak = Math.max(novoStreak, estadoPublico.melhorStreakTurnoAtual);
+    const novoHistorico: HistoricoTurnoItem[] = cartaAtual
+      ? [...estadoPublico.historicoTurnoAtual, { palavra: cartaAtual.palavra, resultado: 'acertou' }]
+      : estadoPublico.historicoTurnoAtual;
+
+    const novaCartasUsadas = [...estadoPublico.cartasUsadas];
+    const proximaCarta = selecionarCarta(
+      novaCartasUsadas,
+      estadoPublico.dificuldade,
+      estadoPublico.categorias,
+    );
+    novaCartasUsadas.push(proximaCarta.id);
 
     const novosPontos = { ...estadoPublico.pontos };
-    if (resultado === 'acertou') {
-      novosPontos[jogadorAtualId] = (novosPontos[jogadorAtualId] ?? 0) + 1;
-    }
-
-    const registroHistorico = cartaAtual
-      ? {
-          rodada: estado.rodada,
-          jogadorId: jogadorAtualId,
-          carta: { palavra: cartaAtual.palavra, proibidas: [...cartaAtual.proibidas] },
-          resultado,
-          duracaoMs,
-        }
-      : null;
-
-    const subFase = resultado === 'acertou' ? 'acertou' : 'passou';
+    novosPontos[jogadorAtualId] = (novosPontos[jogadorAtualId] ?? 0) + 1;
 
     return {
       ...estado,
+      estadosPrivados: {
+        ...estado.estadosPrivados,
+        [jogadorAtualId]: { carta: proximaCarta },
+      },
       estadoPublico: {
         ...estadoPublico,
-        subFase,
         pontos: novosPontos,
-        ultimoResultado: resultado,
-        ultimaPalavra: cartaAtual?.palavra ?? null,
-        historico: registroHistorico
-          ? [...estadoPublico.historico, registroHistorico]
-          : estadoPublico.historico,
+        cartasUsadas: novaCartasUsadas,
+        acertosTurnoAtual: estadoPublico.acertosTurnoAtual + 1,
+        streakTurnoAtual: novoStreak,
+        melhorStreakTurnoAtual: novoMelhorStreak,
+        historicoTurnoAtual: novoHistorico,
       },
       atualizadoEm: em,
     };
   }
 
+  /**
+   * Word passed.
+   * Stays in `jogando` — draws next card into private state.
+   */
+  private tratarPassou(estado: NPLState, em: number): NPLState {
+    const { estadoPublico } = estado;
+    if (estadoPublico.subFase !== 'jogando') return estado;
+
+    const jogadorAtualId = estadoPublico.ordemJogadores[estadoPublico.indiceTurno]!;
+    const cartaAtual = estado.estadosPrivados[jogadorAtualId]?.carta;
+
+    const novoHistorico: HistoricoTurnoItem[] = cartaAtual
+      ? [...estadoPublico.historicoTurnoAtual, { palavra: cartaAtual.palavra, resultado: 'passou' }]
+      : estadoPublico.historicoTurnoAtual;
+
+    const novaCartasUsadas = [...estadoPublico.cartasUsadas];
+    const proximaCarta = selecionarCarta(
+      novaCartasUsadas,
+      estadoPublico.dificuldade,
+      estadoPublico.categorias,
+    );
+    novaCartasUsadas.push(proximaCarta.id);
+
+    return {
+      ...estado,
+      estadosPrivados: {
+        ...estado.estadosPrivados,
+        [jogadorAtualId]: { carta: proximaCarta },
+      },
+      estadoPublico: {
+        ...estadoPublico,
+        cartasUsadas: novaCartasUsadas,
+        passousTurnoAtual: estadoPublico.passousTurnoAtual + 1,
+        streakTurnoAtual: 0,
+        historicoTurnoAtual: novoHistorico,
+      },
+      atualizadoEm: em,
+    };
+  }
+
+  /**
+   * Timer fired — turn ends. Transition to `resumo_turno`.
+   */
+  private tratarTempoEsgotado(estado: NPLState, em: number): NPLState {
+    const { estadoPublico } = estado;
+    if (estadoPublico.subFase !== 'jogando') return estado;
+
+    return {
+      ...estado,
+      estadoPublico: {
+        ...estadoPublico,
+        subFase: 'resumo_turno',
+        prazoTurnoEm: null,
+        streakTurnoAtual: 0,
+      },
+      atualizadoEm: em,
+    };
+  }
+
+  /**
+   * Player advances from `resumo_turno` → next player's `preparando` or `finalizado`.
+   */
   private tratarAvancar(estado: NPLState, em: number): NPLState {
     const { estadoPublico } = estado;
-    const subFaseAtual = estadoPublico.subFase;
-    if (subFaseAtual !== 'acertou' && subFaseAtual !== 'passou') return estado;
+    if (estadoPublico.subFase !== 'resumo_turno') return estado;
 
     const turnosJogados = estadoPublico.turnosJogados + 1;
     if (turnosJogados >= estadoPublico.totalTurnos) {
       return this.finalizarPartida(estado, turnosJogados, em);
     }
 
-    // Advance to next player in rotation.
     const proximoIndice = (estadoPublico.indiceTurno + 1) % estadoPublico.ordemJogadores.length;
     const proximoJogadorId = estadoPublico.ordemJogadores[proximoIndice]!;
-    const proximaRodada =
-      estado.rodada + (proximoIndice === 0 ? 1 : 0);
+    const proximaRodada = estado.rodada + (proximoIndice === 0 ? 1 : 0);
 
-    // Clear private state for previous player.
     const novosPrivados = { ...estado.estadosPrivados };
     const jogadorAnteriorId = estadoPublico.ordemJogadores[estadoPublico.indiceTurno]!;
     novosPrivados[jogadorAnteriorId] = { carta: null };
@@ -251,8 +322,7 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
         turnosJogados,
         turnoIniciadoEm: null,
         prazoTurnoEm: null,
-        ultimoResultado: null,
-        ultimaPalavra: null,
+        ...perTurnoVazio(),
       },
       atualizadoEm: em,
     };

@@ -1,13 +1,14 @@
 import type { Carta } from '@/games/na-ponta-da-lingua/types';
 
 /**
- * 120 cartas — Na Ponta da Língua.
+ * 228 cartas — Na Ponta da Língua.
  *
- * As palavras proibidas são exatamente as mais óbvias e naturais
- * para descrever a palavra-alvo. Sem elas, o jogador precisa improvisar.
+ * As palavras proibidas bloqueiam os CAMINHOS COGNITIVOS NATURAIS —
+ * não apenas sinônimos óbvios, mas os atalhos mentais que você usaria
+ * nos primeiros 5 segundos. O objetivo é travar o cérebro.
  *
- * Regra de ouro das proibidas: se você fosse explicar a palavra em 5
- * segundos, essas são as 5 primeiras que sairiam pela boca.
+ * Regra de ouro: se você fosse explicar a palavra em 5 segundos,
+ * essas são as 5 primeiras rotas que seu cérebro tentaria.
  */
 export const CARTAS: ReadonlyArray<Carta> = [
 
@@ -31,7 +32,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'ib03',
     palavra: 'Stories',
-    proibidas: ['Instagram', 'foto', 'publicar', '24 horas', 'desaparecer'],
+    proibidas: ['Instagram', 'foto', 'vídeo', 'publicar', 'expirar'],
     categoria: 'internet_br',
     dificuldade: 'facil',
   },
@@ -94,7 +95,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'ib12',
     palavra: 'Stalkar',
-    proibidas: ['ver', 'perfil', 'foto', 'olhar', 'redes'],
+    proibidas: ['espreitar', 'perfil', 'foto', 'bisbilhotar', 'visualizar'],
     categoria: 'internet_br',
     dificuldade: 'medio',
   },
@@ -154,7 +155,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'co08',
     palavra: 'Reunião inútil',
-    proibidas: ['trabalho', 'reunião', 'empresa', 'chato', 'conversa'],
+    proibidas: ['trabalho', 'zoom', 'empresa', 'perder', 'desnecessária'],
     categoria: 'cotidiano',
     dificuldade: 'medio',
   },
@@ -168,7 +169,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'co10',
     palavra: 'Procrastinar',
-    proibidas: ['deixar', 'amanhã', 'atrasar', 'fazer', 'preguiça'],
+    proibidas: ['deixar', 'amanhã', 'postergar', 'preguiça', 'depois'],
     categoria: 'cotidiano',
     dificuldade: 'medio',
   },
@@ -249,7 +250,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'cm09',
     palavra: 'Guaraná Antarctica',
-    proibidas: ['refrigerante', 'bebida', 'verde', 'doce', 'gaseificado'],
+    proibidas: ['refrigerante', 'bebida', 'verde', 'nacional', 'doce'],
     categoria: 'comida',
     dificuldade: 'medio',
   },
@@ -330,7 +331,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'cp08',
     palavra: 'Sertanejo universitário',
-    proibidas: ['dupla', 'música', 'amor', 'chapéu', 'universidade'],
+    proibidas: ['dupla', 'música', 'amor', 'chapéu', 'rodeio'],
     categoria: 'cultura_pop',
     dificuldade: 'medio',
   },
@@ -369,7 +370,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'ob01',
     palavra: 'Chinelo',
-    proibidas: ['pé', 'sandália', 'borracha', 'usar', 'calçado'],
+    proibidas: ['pé', 'sandália', 'Havaianas', 'borracha', 'chinelada'],
     categoria: 'objetos',
     dificuldade: 'facil',
   },
@@ -545,7 +546,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'ft01',
     palavra: 'Aniversário surpresa',
-    proibidas: ['parabéns', 'bolo', 'vela', 'presente', 'surpresa'],
+    proibidas: ['parabéns', 'bolo', 'vela', 'presente', 'esconder'],
     categoria: 'festas',
     dificuldade: 'facil',
   },
@@ -608,7 +609,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'ft10',
     palavra: 'Pré-balada',
-    proibidas: ['preparar', 'arranjar', 'roupa', 'espelho', 'sair'],
+    proibidas: ['roupa', 'espelho', 'maquiar', 'animado', 'sair'],
     categoria: 'festas',
     dificuldade: 'medio',
   },
@@ -633,7 +634,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'rl01',
     palavra: 'Crush',
-    proibidas: ['gostar', 'nervoso', 'sentir', 'pessoa', 'olhar'],
+    proibidas: ['gostar', 'apaixonar', 'nervoso', 'coração', 'tremer'],
     categoria: 'relacionamentos',
     dificuldade: 'facil',
   },
@@ -689,7 +690,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'rl09',
     palavra: 'Declaração por mensagem',
-    proibidas: ['mandar', 'texto', 'coração', 'mensagem', 'sentir'],
+    proibidas: ['mandar', 'texto', 'coração', 'mensagem', 'coragem'],
     categoria: 'relacionamentos',
     dificuldade: 'medio',
   },
@@ -710,7 +711,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'rl12',
     palavra: 'Parceiro casual',
-    proibidas: ['ficar', 'íntimo', 'sem', 'comprometimento', 'relação'],
+    proibidas: ['ficar', 'eventual', 'amizade', 'benefícios', 'casual'],
     categoria: 'relacionamentos',
     dificuldade: 'dificil',
   },
@@ -791,7 +792,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'lg11',
     palavra: 'Periferia',
-    proibidas: ['bairro', 'longe', 'ônibus', 'subúrbio', 'cidade'],
+    proibidas: ['bairro', 'longe', 'ônibus', 'subúrbio', 'quebrada'],
     categoria: 'lugares',
     dificuldade: 'medio',
   },
@@ -809,7 +810,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'br01',
     palavra: 'Jeitinho brasileiro',
-    proibidas: ['problema', 'solução', 'criativo', 'jeito', 'improviso'],
+    proibidas: ['problema', 'solução', 'criativo', 'improviso', 'malandro'],
     categoria: 'brasil',
     dificuldade: 'dificil',
   },
@@ -844,7 +845,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'br06',
     palavra: 'Reunião de condomínio',
-    proibidas: ['vizinho', 'prédio', 'barulho', 'reclamar', 'reunir'],
+    proibidas: ['vizinho', 'prédio', 'barulho', 'reclamar', 'ata'],
     categoria: 'brasil',
     dificuldade: 'medio',
   },
@@ -865,7 +866,7 @@ export const CARTAS: ReadonlyArray<Carta> = [
   {
     id: 'br09',
     palavra: 'Malandragem',
-    proibidas: ['esperto', 'enganar', 'rua', 'charme', 'viver'],
+    proibidas: ['esperto', 'enganar', 'charme', 'pilantra', 'astúcia'],
     categoria: 'brasil',
     dificuldade: 'dificil',
   },
@@ -890,6 +891,798 @@ export const CARTAS: ReadonlyArray<Carta> = [
     categoria: 'brasil',
     dificuldade: 'medio',
   },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // TRAUMAS MILLENNIALS — 12 cartas
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'tm01',
+    palavra: 'Fotolog',
+    proibidas: ['perfil', 'foto', 'internet', 'postar', 'scrap'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'tm02',
+    palavra: 'MSN Messenger',
+    proibidas: ['mensagem', 'online', 'chat', 'computador', 'emoticon'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'tm03',
+    palavra: 'Disquete',
+    proibidas: ['salvar', 'arquivo', 'computador', 'plástico', 'dados'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'tm04',
+    palavra: '"Você foi desconectado"',
+    proibidas: ['internet', 'cair', 'conexão', 'online', 'discagem'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'tm05',
+    palavra: 'Tamagotchi',
+    proibidas: ['virtual', 'bicho', 'cuidar', 'morrer', 'tecla'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'tm06',
+    palavra: 'Lan house',
+    proibidas: ['computador', 'internet', 'jogar', 'hora', 'locação'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'tm07',
+    palavra: 'Celular tijolão',
+    proibidas: ['Nokia', 'pesado', 'antigo', 'botão', 'resistente'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'tm08',
+    palavra: 'CD riscado',
+    proibidas: ['música', 'chiado', 'travar', 'disco', 'arranhado'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'tm09',
+    palavra: 'Esperar resultado do ENEM',
+    proibidas: ['vestibular', 'nota', 'ansiedade', 'resultado', 'aprovado'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'tm10',
+    palavra: 'Fita VHS',
+    proibidas: ['vídeo', 'rebobinar', 'cassete', 'assistir', 'preto'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'tm11',
+    palavra: 'Disco de vinil',
+    proibidas: ['música', 'girar', 'agulha', 'toca-discos', 'LP'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'tm12',
+    palavra: 'Orkut',
+    proibidas: ['rede', 'perfil', 'social', 'Google', 'depoimento'],
+    categoria: 'traumas_millennials',
+    dificuldade: 'medio',
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // MEMES BR — 12 cartas
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'mb01',
+    palavra: '"É nóis"',
+    proibidas: ['nós', 'expressão', 'gíria', 'certo', 'acordo'],
+    categoria: 'memes_br',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'mb02',
+    palavra: '"Tô na correria"',
+    proibidas: ['ocupado', 'correndo', 'pressa', 'tempo', 'desculpa'],
+    categoria: 'memes_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'mb03',
+    palavra: '"Partiu"',
+    proibidas: ['vamos', 'ir', 'sair', 'embora', 'agora'],
+    categoria: 'memes_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'mb04',
+    palavra: '"Falou e disse"',
+    proibidas: ['certo', 'concordar', 'encerrar', 'assunto', 'combinado'],
+    categoria: 'memes_br',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'mb05',
+    palavra: '"Vai que cola"',
+    proibidas: ['tentar', 'funcionar', 'esperança', 'tentativa', 'talvez'],
+    categoria: 'memes_br',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'mb06',
+    palavra: 'Saudade',
+    proibidas: ['falta', 'sentir', 'lembrar', 'ausência', 'nostalgia'],
+    categoria: 'memes_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'mb07',
+    palavra: '"Bom dia família do WhatsApp"',
+    proibidas: ['mensagem', 'grupo', 'manhã', 'compartilhar', 'corrente'],
+    categoria: 'memes_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'mb08',
+    palavra: '"Misericórdia"',
+    proibidas: ['nordeste', 'exclamação', 'espanto', 'Deus', 'surpresa'],
+    categoria: 'memes_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'mb09',
+    palavra: '"Me poupa"',
+    proibidas: ['cansar', 'parar', 'chato', 'deixar', 'suficiente'],
+    categoria: 'memes_br',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'mb10',
+    palavra: '"Eita"',
+    proibidas: ['surpresa', 'nordestino', 'exclamação', 'caramba', 'espanto'],
+    categoria: 'memes_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'mb11',
+    palavra: '"Já ganhou"',
+    proibidas: ['garantido', 'certo', 'vencer', 'automático', 'seguro'],
+    categoria: 'memes_br',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'mb12',
+    palavra: '"Péssimo dia para ser [X]"',
+    proibidas: ['dia', 'azar', 'irônico', 'situação', 'frase'],
+    categoria: 'memes_br',
+    dificuldade: 'dificil',
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // VIDA ADULTA — 12 cartas
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'va01',
+    palavra: 'Conta de luz cara',
+    proibidas: ['energia', 'pagar', 'boleto', 'mês', 'choque'],
+    categoria: 'vida_adulta',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'va02',
+    palavra: 'Acordar com dor nas costas',
+    proibidas: ['manhã', 'dor', 'velho', 'coluna', 'levantar'],
+    categoria: 'vida_adulta',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'va03',
+    palavra: 'Imposto de renda',
+    proibidas: ['declarar', 'governo', 'pagar', 'restituição', 'tributo'],
+    categoria: 'vida_adulta',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'va04',
+    palavra: 'Reunião às 8 da manhã',
+    proibidas: ['cedo', 'trabalho', 'chefe', 'acordar', 'zoom'],
+    categoria: 'vida_adulta',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'va05',
+    palavra: 'Plano de saúde que não cobre nada',
+    proibidas: ['médico', 'consulta', 'negar', 'autorizar', 'cobrir'],
+    categoria: 'vida_adulta',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'va06',
+    palavra: 'Preço do aluguel',
+    proibidas: ['caro', 'morar', 'mês', 'contrato', 'apartamento'],
+    categoria: 'vida_adulta',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'va07',
+    palavra: 'Dormir às 22h numa sexta',
+    proibidas: ['cansado', 'cedo', 'sono', 'sexta', 'envelhelecer'],
+    categoria: 'vida_adulta',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'va08',
+    palavra: '"Isso não é bom pro coração"',
+    proibidas: ['saúde', 'médico', 'preocupar', 'estresse', 'coração'],
+    categoria: 'vida_adulta',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'va09',
+    palavra: 'Conserto de carro',
+    proibidas: ['mecânico', 'caro', 'oficina', 'problema', 'quebrar'],
+    categoria: 'vida_adulta',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'va10',
+    palavra: 'Ligar pro SAC',
+    proibidas: ['esperar', 'musiquinha', 'atendente', 'resolver', 'paciência'],
+    categoria: 'vida_adulta',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'va11',
+    palavra: '"Tenho que acordar cedo amanhã"',
+    proibidas: ['sono', 'amanhã', 'trabalho', 'cedo', 'dormir'],
+    categoria: 'vida_adulta',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'va12',
+    palavra: 'Taxa de condomínio',
+    proibidas: ['prédio', 'mensalidade', 'pagar', 'morar', 'síndico'],
+    categoria: 'vida_adulta',
+    dificuldade: 'medio',
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // DATE RUIM — 12 cartas
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'dr01',
+    palavra: 'Chegou uma hora atrasado',
+    proibidas: ['esperar', 'atraso', 'horário', 'desrespeito', 'pontual'],
+    categoria: 'date_ruim',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'dr02',
+    palavra: 'Ficou no celular o tempo todo',
+    proibidas: ['tela', 'ignorar', 'distraído', 'atenção', 'desligar'],
+    categoria: 'date_ruim',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'dr03',
+    palavra: 'Falou do ex durante o jantar',
+    proibidas: ['ex', 'antigo', 'namorado', 'passado', 'saudade'],
+    categoria: 'date_ruim',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'dr04',
+    palavra: 'Foto do perfil enganosa',
+    proibidas: ['foto', 'diferente', 'mentira', 'aparecer', 'real'],
+    categoria: 'date_ruim',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'dr05',
+    palavra: 'Conta separada no primeiro encontro',
+    proibidas: ['pagar', 'dividir', 'dinheiro', 'metade', 'nota'],
+    categoria: 'date_ruim',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'dr06',
+    palavra: 'Não perguntou nada sobre você',
+    proibidas: ['egoísta', 'falar', 'interesse', 'perguntar', 'ignorar'],
+    categoria: 'date_ruim',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'dr07',
+    palavra: 'Levou a mãe junto',
+    proibidas: ['mãe', 'inesperado', 'familiar', 'acompanhar', 'terceiro'],
+    categoria: 'date_ruim',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'dr08',
+    palavra: 'Silêncio constrangedor',
+    proibidas: ['calado', 'vazio', 'constrangimento', 'conversa', 'pausa'],
+    categoria: 'date_ruim',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'dr09',
+    palavra: 'Deu um selinho e foi embora',
+    proibidas: ['beijo', 'tchau', 'rápido', 'sair', 'despedir'],
+    categoria: 'date_ruim',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'dr10',
+    palavra: '"Depois eu te mando mensagem"',
+    proibidas: ['ghosting', 'sumir', 'mentira', 'esperar', 'promessa'],
+    categoria: 'date_ruim',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'dr11',
+    palavra: 'Restaurante estava fechado',
+    proibidas: ['fechado', 'lugar', 'planejar', 'frustração', 'plano'],
+    categoria: 'date_ruim',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'dr12',
+    palavra: 'Encontrou o ex no mesmo lugar',
+    proibidas: ['ex', 'coincidência', 'azar', 'encontrar', 'local'],
+    categoria: 'date_ruim',
+    dificuldade: 'dificil',
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // ESCRITÓRIO — 12 cartas
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'es01',
+    palavra: 'Planilha de Excel com 40 abas',
+    proibidas: ['Excel', 'aba', 'célula', 'fórmula', 'organizar'],
+    categoria: 'escritorio',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'es02',
+    palavra: 'E-mail marcado como urgente',
+    proibidas: ['email', 'urgente', 'responder', 'prazo', 'prioridade'],
+    categoria: 'escritorio',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'es03',
+    palavra: '"Podemos alinhar isso?"',
+    proibidas: ['reunião', 'combinar', 'conversar', 'agenda', 'falar'],
+    categoria: 'escritorio',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'es04',
+    palavra: 'Confraternização de fim de ano',
+    proibidas: ['festa', 'empresa', 'natal', 'obrigatório', 'amigo'],
+    categoria: 'escritorio',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'es05',
+    palavra: 'Impressora travada',
+    proibidas: ['imprimir', 'papel', 'travar', 'atolamento', 'erro'],
+    categoria: 'escritorio',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'es06',
+    palavra: 'Ar-condicionado no máximo',
+    proibidas: ['frio', 'temperatura', 'reclamar', 'casaco', 'gelo'],
+    categoria: 'escritorio',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'es07',
+    palavra: '"Me copia nesse e-mail"',
+    proibidas: ['incluir', 'cópia', 'ciente', 'CC', 'saber'],
+    categoria: 'escritorio',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'es08',
+    palavra: 'Reunião que podia ser um e-mail',
+    proibidas: ['inútil', 'tempo', 'desnecessário', 'zoom', 'pauta'],
+    categoria: 'escritorio',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'es09',
+    palavra: 'Cafezinho das 10h',
+    proibidas: ['café', 'pausa', 'conversa', 'rotina', 'manhã'],
+    categoria: 'escritorio',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'es10',
+    palavra: 'Hora extra não paga',
+    proibidas: ['trabalhar', 'mais', 'receber', 'injusto', 'tarde'],
+    categoria: 'escritorio',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'es11',
+    palavra: 'Colega que aquece comida fedorenta',
+    proibidas: ['cheiro', 'microondas', 'comida', 'incomoda', 'cozinha'],
+    categoria: 'escritorio',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'es12',
+    palavra: 'Sistema caindo na hora da entrega',
+    proibidas: ['sistema', 'travar', 'cair', 'prazo', 'servidor'],
+    categoria: 'escritorio',
+    dificuldade: 'medio',
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // UNIVERSIDADE — 12 cartas
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'un01',
+    palavra: 'Semana de provas',
+    proibidas: ['estudar', 'cafeína', 'sono', 'nervoso', 'madrugada'],
+    categoria: 'universidade',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'un02',
+    palavra: 'Trabalho em grupo onde um faz tudo',
+    proibidas: ['grupo', 'sozinho', 'injusto', 'apresentação', 'nota'],
+    categoria: 'universidade',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'un03',
+    palavra: 'RU',
+    proibidas: ['comida', 'bandejão', 'fila', 'barato', 'almoço'],
+    categoria: 'universidade',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'un04',
+    palavra: 'Trote universitário',
+    proibidas: ['calouro', 'novato', 'humilhar', 'primeiro', 'ritual'],
+    categoria: 'universidade',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'un05',
+    palavra: 'Professor que cancela na última hora',
+    proibidas: ['cancelar', 'aula', 'falta', 'aviso', 'surpresa'],
+    categoria: 'universidade',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'un06',
+    palavra: 'TCC',
+    proibidas: ['monografia', 'defesa', 'pesquisa', 'orientador', 'apresentar'],
+    categoria: 'universidade',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'un07',
+    palavra: 'Greve na faculdade',
+    proibidas: ['parar', 'aula', 'protesto', 'sindicato', 'professor'],
+    categoria: 'universidade',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'un08',
+    palavra: 'Crédito insuficiente para se formar',
+    proibidas: ['crédito', 'disciplina', 'faltar', 'diploma', 'semestre'],
+    categoria: 'universidade',
+    dificuldade: 'dificil',
+  },
+  {
+    id: 'un09',
+    palavra: 'Festa de república',
+    proibidas: ['casa', 'estudante', 'noite', 'morar', 'bagunça'],
+    categoria: 'universidade',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'un10',
+    palavra: 'Estágio não remunerado',
+    proibidas: ['trabalhar', 'grátis', 'experiência', 'empresa', 'aprender'],
+    categoria: 'universidade',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'un11',
+    palavra: 'Cursinho pré-vestibular',
+    proibidas: ['preparar', 'intensivo', 'estudar', 'aprovação', 'redação'],
+    categoria: 'universidade',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'un12',
+    palavra: 'Colar na prova',
+    proibidas: ['trapaça', 'esconder', 'nota', 'cola', 'professor'],
+    categoria: 'universidade',
+    dificuldade: 'medio',
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // CARNAVAL — 12 cartas
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'cv01',
+    palavra: 'Camarote',
+    proibidas: ['VIP', 'famoso', 'cerveja', 'vista', 'espaço'],
+    categoria: 'carnaval',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'cv02',
+    palavra: 'Abadá',
+    proibidas: ['bloco', 'roupa', 'colorido', 'identificação', 'carnaval'],
+    categoria: 'carnaval',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'cv03',
+    palavra: 'Axé music',
+    proibidas: ['baiana', 'ritmo', 'dançar', 'agitar', 'Salvador'],
+    categoria: 'carnaval',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cv04',
+    palavra: 'Escola de samba',
+    proibidas: ['desfile', 'sambódromo', 'passarela', 'alas', 'Rio'],
+    categoria: 'carnaval',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cv05',
+    palavra: 'Bloco de rua',
+    proibidas: ['fantasia', 'multidão', 'rua', 'música', 'percussão'],
+    categoria: 'carnaval',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cv06',
+    palavra: 'Trio elétrico',
+    proibidas: ['caminhão', 'cima', 'ao vivo', 'Bahia', 'multidão'],
+    categoria: 'carnaval',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'cv07',
+    palavra: 'Confete no cabelo',
+    proibidas: ['colorido', 'festival', 'tirar', 'grudar', 'papel'],
+    categoria: 'carnaval',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cv08',
+    palavra: 'Pierrot',
+    proibidas: ['fantasia', 'clássico', 'branco', 'palhaço', 'rosto'],
+    categoria: 'carnaval',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'cv09',
+    palavra: 'Ressaca de carnaval',
+    proibidas: ['segunda', 'cansado', 'festa', 'exausto', 'retorno'],
+    categoria: 'carnaval',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cv10',
+    palavra: 'Rei Momo',
+    proibidas: ['coroar', 'tradição', 'personagem', 'rei', 'abertura'],
+    categoria: 'carnaval',
+    dificuldade: 'dificil',
+  },
+  {
+    id: 'cv11',
+    palavra: 'Passista',
+    proibidas: ['samba', 'quadril', 'escola', 'dançar', 'sensual'],
+    categoria: 'carnaval',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'cv12',
+    palavra: 'Marchinhas de carnaval',
+    proibidas: ['música', 'antiga', 'cantoria', 'letra', 'divertida'],
+    categoria: 'carnaval',
+    dificuldade: 'medio',
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // REALITY SHOWS — 12 cartas
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'rs01',
+    palavra: 'Paredão do BBB',
+    proibidas: ['votar', 'berlinda', 'eliminar', 'salvar', 'preferido'],
+    categoria: 'reality_shows',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'rs02',
+    palavra: 'A Fazenda',
+    proibidas: ['peões', 'fazendeiro', 'roça', 'poder', 'Record'],
+    categoria: 'reality_shows',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'rs03',
+    palavra: 'MasterChef Brasil',
+    proibidas: ['cozinhar', 'avental', 'eliminação', 'prato', 'avaliação'],
+    categoria: 'reality_shows',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'rs04',
+    palavra: 'Casamento às Cegas',
+    proibidas: ['casar', 'desconhecido', 'pod', 'conhecer', 'amor'],
+    categoria: 'reality_shows',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'rs05',
+    palavra: 'No Limite',
+    proibidas: ['sobrevivência', 'praia', 'tribo', 'fome', 'desafio'],
+    categoria: 'reality_shows',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'rs06',
+    palavra: 'The Voice Brasil',
+    proibidas: ['cantar', 'virar', 'talento', 'cadeira', 'audição'],
+    categoria: 'reality_shows',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'rs07',
+    palavra: 'Ilha Record',
+    proibidas: ['ilha', 'casal', 'prova', 'prêmio', 'desafio'],
+    categoria: 'reality_shows',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'rs08',
+    palavra: 'Shark Tank Brasil',
+    proibidas: ['investidor', 'negócio', 'proposta', 'dinheiro', 'pitch'],
+    categoria: 'reality_shows',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'rs09',
+    palavra: 'Hell\'s Kitchen Brasil',
+    proibidas: ['cozinha', 'gritar', 'serviço', 'brigada', 'chef'],
+    categoria: 'reality_shows',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'rs10',
+    palavra: 'Dancing Brasil',
+    proibidas: ['dança', 'celebridade', 'eliminação', 'profissional', 'ritmo'],
+    categoria: 'reality_shows',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'rs11',
+    palavra: 'Domingão do Huck',
+    proibidas: ['domingo', 'Globo', 'apresentador', 'quadro', 'jogo'],
+    categoria: 'reality_shows',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'rs12',
+    palavra: 'Programa do Ratinho',
+    proibidas: ['SBT', 'polêmico', 'popular', 'auditório', 'apresentador'],
+    categoria: 'reality_shows',
+    dificuldade: 'medio',
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // CELEBRIDADES BR — 12 cartas
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'cb01',
+    palavra: 'Xuxa Meneghel',
+    proibidas: ['loura', 'apresentadora', 'baixinhos', 'dançarina', 'Globo'],
+    categoria: 'celebridades_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cb02',
+    palavra: 'Ivete Sangalo',
+    proibidas: ['baiana', 'carnaval', 'cantora', 'animada', 'festival'],
+    categoria: 'celebridades_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cb03',
+    palavra: 'Anitta',
+    proibidas: ['funkeira', 'internacional', 'sensual', 'hit', 'clipe'],
+    categoria: 'celebridades_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cb04',
+    palavra: 'Zeca Pagodinho',
+    proibidas: ['samba', 'pagode', 'cerveja', 'tranquilo', 'Brahma'],
+    categoria: 'celebridades_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cb05',
+    palavra: 'Roberto Carlos',
+    proibidas: ['Rei', 'balada', 'eterno', 'cantor', 'imensidão'],
+    categoria: 'celebridades_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cb06',
+    palavra: 'Silvio Santos',
+    proibidas: ['SBT', 'domingo', 'auditório', 'patrão', 'vendedor'],
+    categoria: 'celebridades_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cb07',
+    palavra: 'Paulo Gustavo',
+    proibidas: ['humor', 'mãe', 'ator', 'engraçado', 'série'],
+    categoria: 'celebridades_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cb08',
+    palavra: 'Marília Mendonça',
+    proibidas: ['sertanejo', 'sofrência', 'traição', 'voz', 'saudade'],
+    categoria: 'celebridades_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cb09',
+    palavra: 'Luan Santana',
+    proibidas: ['sertanejo', 'jovem', 'sucesso', 'show', 'fã'],
+    categoria: 'celebridades_br',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'cb10',
+    palavra: 'Pabllo Vittar',
+    proibidas: ['drag', 'LGBT', 'axé', 'transformação', 'artista'],
+    categoria: 'celebridades_br',
+    dificuldade: 'facil',
+  },
+  {
+    id: 'cb11',
+    palavra: 'MC Kevinho',
+    proibidas: ['funk', 'carioca', 'dança', 'hit', 'agito'],
+    categoria: 'celebridades_br',
+    dificuldade: 'medio',
+  },
+  {
+    id: 'cb12',
+    palavra: 'Fernanda Montenegro',
+    proibidas: ['atriz', 'teatro', 'Globo', 'drama', 'clássica'],
+    categoria: 'celebridades_br',
+    dificuldade: 'dificil',
+  },
 ];
 
-export const TOTAL_CARTAS = CARTAS.length; // 120
+export const TOTAL_CARTAS = CARTAS.length; // 228

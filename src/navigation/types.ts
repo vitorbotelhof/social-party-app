@@ -31,6 +31,8 @@ export type RootStackParamList = {
     duracaoSegundos: 45 | 60 | 90;
     rodadasPorJogador: number;
     dificuldade: 'facil' | 'medio' | 'dificil' | 'todas';
+    modoJogo: 'individual' | 'todos_juntos' | 'time_vs_time';
+    times?: { nomeA: string; idsA: string[]; nomeB: string; idsB: string[] };
   };
 };
 

@@ -1,6 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -38,6 +38,12 @@ const DIFICULDADES: { valor: 'facil' | 'medio' | 'dificil' | 'todas'; rotulo: st
   { valor: 'dificil', rotulo: 'Difícil' },
 ];
 
+const MODOS: { valor: 'todos_juntos' | 'individual' | 'time_vs_time'; rotulo: string; descricao: string }[] = [
+  { valor: 'todos_juntos', rotulo: 'Todos juntos', descricao: 'grupo todo responde. máximo de caos.' },
+  { valor: 'time_vs_time', rotulo: 'Time vs Time', descricao: 'dois times. roubo. gritaria.' },
+  { valor: 'individual', rotulo: 'Solo', descricao: '1 explica, 1 responde. mais focado.' },
+];
+
 export function TelaConfiguracaoLocalNaPontaDaLingua({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   const [nomes, setNomes] = useState<string[]>([]);
@@ -45,13 +51,41 @@ export function TelaConfiguracaoLocalNaPontaDaLingua({ navigation }: Props) {
   const [duracao, setDuracao] = useState<45 | 60 | 90>(60);
   const [rodadasPorJogador, setRodadasPorJogador] = useState(3);
   const [dificuldade, setDificuldade] = useState<'facil' | 'medio' | 'dificil' | 'todas'>('todas');
+  const [modoJogo, setModoJogo] = useState<'todos_juntos' | 'individual' | 'time_vs_time'>('todos_juntos');
+  const [timesA, setTimesA] = useState<number[]>([]);
+  const [timesB, setTimesB] = useState<number[]>([]);
 
   const nomeLimpo = novoNome.trim();
   const podeAdicionar =
     nomeLimpo.length >= MIN_NOME &&
     nomes.length < MAX_JOGADORES &&
     !nomes.some((n) => n.toLowerCase() === nomeLimpo.toLowerCase());
-  const podeIniciar = nomes.length >= MIN_JOGADORES;
+
+  const podeIniciarTvT = modoJogo === 'time_vs_time'
+    ? timesA.length >= 2 && timesB.length >= 2
+    : true;
+  const podeIniciar = nomes.length >= MIN_JOGADORES && podeIniciarTvT;
+
+  useEffect(() => {
+    if (modoJogo !== 'time_vs_time') return;
+    const a: number[] = [];
+    const b: number[] = [];
+    nomes.forEach((_, i) => { if (i % 2 === 0) a.push(i); else b.push(i); });
+    setTimesA(a);
+    setTimesB(b);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nomes.length, modoJogo]);
+
+  function moverJogador(idx: number) {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (timesA.includes(idx)) {
+      setTimesA((a) => a.filter((i) => i !== idx));
+      setTimesB((b) => [...b, idx].sort((x, y) => x - y));
+    } else {
+      setTimesB((b) => b.filter((i) => i !== idx));
+      setTimesA((a) => [...a, idx].sort((x, y) => x - y));
+    }
+  }
 
   function aoAdicionar() {
     if (!podeAdicionar) return;
@@ -69,11 +103,19 @@ export function TelaConfiguracaoLocalNaPontaDaLingua({ navigation }: Props) {
     if (!podeIniciar) return;
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     const jogadores = nomes.map((nome, i) => ({ id: `local-${i}`, nome }));
+    const times = modoJogo === 'time_vs_time' ? {
+      nomeA: 'Time A',
+      idsA: timesA.map((i) => `local-${i}`),
+      nomeB: 'Time B',
+      idsB: timesB.map((i) => `local-${i}`),
+    } : undefined;
     navigation.replace('JogoLocalNaPontaDaLingua', {
       jogadores,
       duracaoSegundos: duracao,
       rodadasPorJogador,
       dificuldade,
+      modoJogo,
+      times,
     });
   }
 
@@ -176,6 +218,71 @@ export function TelaConfiguracaoLocalNaPontaDaLingua({ navigation }: Props) {
             </Text>
           </Section>
 
+          {/* ─── Modo de jogo ─── */}
+          <Section titulo="Modo de jogo" subtitulo={modoJogo === 'time_vs_time' ? 'rivalidade máxima' : undefined}>
+            <View style={estilos.linhaSegmentos}>
+              {MODOS.map(({ valor, rotulo }) => (
+                <Pressable
+                  key={valor}
+                  onPress={() => { setModoJogo(valor); void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                  style={[estilos.segmento, modoJogo === valor && estilos.segmentoAtivo]}
+                >
+                  <Text style={[estilos.segmentoTexto, modoJogo === valor && estilos.segmentoTextoAtivo]}>
+                    {rotulo}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+            <Text style={estilos.ajuda}>{MODOS.find((m) => m.valor === modoJogo)?.descricao}</Text>
+          </Section>
+
+          {/* ─── Divisão dos times (TvT) ─── */}
+          {modoJogo === 'time_vs_time' && nomes.length >= 2 && (
+            <Section titulo="Divisão dos times">
+              <View style={estilos.timesGrid}>
+                <View style={estilos.timeColunaContainer}>
+                  <Text style={estilos.timeLabel}>Time A</Text>
+                  {timesA.length === 0
+                    ? <Text style={estilos.timeVazio}>vazio</Text>
+                    : timesA.map((i) => (
+                      <Pressable
+                        key={i}
+                        onPress={() => moverJogador(i)}
+                        style={({ pressed }) => [estilos.timeJogadorItem, estilos.timeJogadorA, pressed && { opacity: 0.6 }]}
+                      >
+                        <Text style={estilos.timeJogadorNome} numberOfLines={1}>{nomes[i]}</Text>
+                        <Text style={estilos.timeMoverTexto}>→ B</Text>
+                      </Pressable>
+                    ))
+                  }
+                </View>
+                <View style={estilos.timeDivisorVertical} />
+                <View style={estilos.timeColunaContainer}>
+                  <Text style={estilos.timeLabel}>Time B</Text>
+                  {timesB.length === 0
+                    ? <Text style={estilos.timeVazio}>vazio</Text>
+                    : timesB.map((i) => (
+                      <Pressable
+                        key={i}
+                        onPress={() => moverJogador(i)}
+                        style={({ pressed }) => [estilos.timeJogadorItem, estilos.timeJogadorB, pressed && { opacity: 0.6 }]}
+                      >
+                        <Text style={estilos.timeMoverTexto}>A ←</Text>
+                        <Text style={estilos.timeJogadorNome} numberOfLines={1}>{nomes[i]}</Text>
+                      </Pressable>
+                    ))
+                  }
+                </View>
+              </View>
+              <Text style={estilos.ajuda}>toque num jogador para trocar de time.</Text>
+              {(timesA.length < 2 || timesB.length < 2) && (
+                <Text style={[estilos.ajuda, { color: 'rgba(232,106,90,0.8)', marginTop: 4 }]}>
+                  mínimo 2 por time.
+                </Text>
+              )}
+            </Section>
+          )}
+
           {/* ─── Jogadores ─── */}
           <Section titulo={`Jogadores (${nomes.length}/${MAX_JOGADORES})`}>
             <View style={estilos.entradaBloco}>
@@ -244,10 +351,13 @@ export function TelaConfiguracaoLocalNaPontaDaLingua({ navigation }: Props) {
   );
 }
 
-function Section({ titulo, children }: { titulo: string; children: React.ReactNode }) {
+function Section({ titulo, subtitulo, children }: { titulo: string; subtitulo?: string; children: React.ReactNode }) {
   return (
     <View style={estilos.section}>
-      <Text style={estilos.sectionTitulo}>{titulo}</Text>
+      <View style={estilos.sectionHeader}>
+        <Text style={estilos.sectionTitulo}>{titulo}</Text>
+        {subtitulo && <Text style={estilos.sectionSubtitulo}>{subtitulo}</Text>}
+      </View>
       {children}
     </View>
   );
@@ -284,7 +394,19 @@ const estilos = StyleSheet.create({
   scroll: { flex: 1 },
   scrollConteudo: { padding: espacamento.lg },
   section: { marginBottom: espacamento.xl },
-  sectionTitulo: { color: cores.textoSecundario, fontSize: 12, fontWeight: '700', letterSpacing: 1.8, marginBottom: espacamento.md, textTransform: 'uppercase' },
+  sectionHeader: { alignItems: 'baseline', flexDirection: 'row', gap: espacamento.sm, marginBottom: espacamento.md },
+  sectionTitulo: { color: cores.textoSecundario, fontSize: 12, fontWeight: '700', letterSpacing: 1.8, textTransform: 'uppercase' },
+  sectionSubtitulo: { color: cores.acento, fontSize: 11, fontStyle: 'italic', letterSpacing: 0.3 },
+  timesGrid: { flexDirection: 'row', gap: 0 },
+  timeColunaContainer: { flex: 1, gap: espacamento.sm },
+  timeLabel: { color: cores.textoMudo, fontSize: 11, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase', textAlign: 'center', marginBottom: 2 },
+  timeDivisorVertical: { backgroundColor: cores.borda, marginHorizontal: espacamento.sm, width: 1 },
+  timeJogadorItem: { alignItems: 'center', borderRadius: raio.sm, borderWidth: 1, flexDirection: 'row', gap: espacamento.xs, paddingHorizontal: espacamento.sm, paddingVertical: espacamento.sm },
+  timeJogadorA: { backgroundColor: 'rgba(201,137,58,0.08)', borderColor: 'rgba(201,137,58,0.3)' },
+  timeJogadorB: { backgroundColor: 'rgba(160,82,45,0.08)', borderColor: 'rgba(160,82,45,0.3)' },
+  timeJogadorNome: { color: cores.texto, flex: 1, fontSize: 13, fontWeight: '600' },
+  timeMoverTexto: { color: cores.textoMudo, fontSize: 11 },
+  timeVazio: { color: cores.textoMudo, fontSize: 12, fontStyle: 'italic', textAlign: 'center', paddingVertical: espacamento.sm },
   segmento: { alignItems: 'center', backgroundColor: cores.superficie, borderColor: cores.borda, borderRadius: raio.md, borderWidth: 1, flex: 1, paddingVertical: espacamento.md },
   segmentoAtivo: { backgroundColor: cores.acento, borderColor: cores.acento },
   segmentoTexto: { color: cores.textoSecundario, fontSize: 15, fontWeight: '600' },
