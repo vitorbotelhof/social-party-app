@@ -661,7 +661,8 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
       setFase('fim');
       return;
     }
-    setIndiceTurno((i) => i + 1);
+    // Não incrementa indiceTurno aqui — incrementa ao confirmar FaseEntre,
+    // para que proximoJogador exibido coincida com jogadorAtual em FasePreparo.
     setFase('entre');
   }
 
@@ -757,7 +758,10 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
           pontosTimeA={pontosTimeA}
           pontosTimeB={pontosTimeB}
           historico={historico}
-          onPronto={() => setFase('preparo')}
+          onPronto={() => {
+            setIndiceTurno((i) => i + 1);
+            setFase('preparo');
+          }}
         />
       )}
       </Animated.View>
