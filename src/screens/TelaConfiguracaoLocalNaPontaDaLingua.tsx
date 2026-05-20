@@ -31,11 +31,12 @@ const DURACOES: { valor: 45 | 60 | 90; rotulo: string; descricao: string }[] = [
   { valor: 90, rotulo: '90s', descricao: 'mais fôlego.' },
 ];
 
-const DIFICULDADES: { valor: 'facil' | 'medio' | 'dificil' | 'todas'; rotulo: string }[] = [
+const DIFICULDADES: { valor: 'facil' | 'medio' | 'dificil' | 'colapso' | 'todas'; rotulo: string; descricao?: string }[] = [
   { valor: 'todas', rotulo: 'Todas' },
   { valor: 'facil', rotulo: 'Fácil' },
   { valor: 'medio', rotulo: 'Médio' },
   { valor: 'dificil', rotulo: 'Difícil' },
+  { valor: 'colapso', rotulo: 'Colapso', descricao: 'o cérebro para de funcionar.' },
 ];
 
 const MODOS: { valor: 'todos_juntos' | 'individual' | 'time_vs_time'; rotulo: string; descricao: string }[] = [
@@ -50,7 +51,7 @@ export function TelaConfiguracaoLocalNaPontaDaLingua({ navigation }: Props) {
   const [novoNome, setNovoNome] = useState('');
   const [duracao, setDuracao] = useState<45 | 60 | 90>(60);
   const [rodadasPorJogador, setRodadasPorJogador] = useState(3);
-  const [dificuldade, setDificuldade] = useState<'facil' | 'medio' | 'dificil' | 'todas'>('todas');
+  const [dificuldade, setDificuldade] = useState<'facil' | 'medio' | 'dificil' | 'colapso' | 'todas'>('todas');
   const [modoJogo, setModoJogo] = useState<'todos_juntos' | 'individual' | 'time_vs_time'>('todos_juntos');
   const [timesA, setTimesA] = useState<number[]>([]);
   const [timesB, setTimesB] = useState<number[]>([]);
@@ -214,6 +215,7 @@ export function TelaConfiguracaoLocalNaPontaDaLingua({ navigation }: Props) {
               {dificuldade === 'dificil' ? 'palavras que exigem muita criatividade.' :
                dificuldade === 'facil' ? 'para esquentar o grupo.' :
                dificuldade === 'medio' ? 'desconfortável de um jeito bom.' :
+               dificuldade === 'colapso' ? 'o cérebro para de funcionar.' :
                'mistura de tudo. o app decide.'}
             </Text>
           </Section>

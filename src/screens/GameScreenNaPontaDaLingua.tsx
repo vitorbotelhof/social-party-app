@@ -11,6 +11,7 @@
  */
 
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import * as Haptics from 'expo-haptics';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
@@ -203,8 +204,17 @@ export function GameScreenNaPontaDaLingua({ navigation, route }: Props) {
           tempoRestanteMs={tempoRestanteMs}
           intensidade={intensidade}
           acertosTurno={pub.acertosTurnoAtual}
-          onAcertou={() => { void tocarAcerto(); despachar('acertou'); }}
-          onPassou={() => { void tocarFalha(); despachar('passou'); }}
+          onAcertou={() => {
+            void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            void tocarAcerto();
+            despachar('acertou');
+          }}
+          onPassou={() => {
+            // Medium impact — dismissal, not a hit
+            void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            void tocarFalha();
+            despachar('passou');
+          }}
         />
       );
 

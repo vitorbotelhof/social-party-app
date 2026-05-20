@@ -5,18 +5,15 @@ import type {
   Player,
   PlayerId,
 } from '@/engine/types';
-import { CARTAS } from '@/games/na-ponta-da-lingua/prompts';
+import { selecionarCartaInteligente } from '@/games/na-ponta-da-lingua/cardSelection';
 import type {
-  Carta,
-  CategoriaIdNPL,
-  DificuldadeNPL,
   HistoricoTurnoItem,
   NPLAction,
   NPLPrivateState,
   NPLPublicState,
   OpoesNPL,
 } from '@/games/na-ponta-da-lingua/types';
-import { embaralhar, sortearUm } from '@/utils/random';
+import { embaralhar } from '@/utils/random';
 
 type NPLState = GameState<NPLPublicState, NPLPrivateState>;
 
@@ -39,7 +36,7 @@ function normalizarOpcoes(opcoes: unknown): OpoesNPL {
     Math.min(10, Number.isFinite(o.rodadasPorJogador) ? Number(o.rodadasPorJogador) : OPCOES_PADRAO.rodadasPorJogador),
   );
   const dificuldade =
-    o.dificuldade === 'facil' || o.dificuldade === 'medio' || o.dificuldade === 'dificil' || o.dificuldade === 'todas'
+    o.dificuldade === 'facil' || o.dificuldade === 'medio' || o.dificuldade === 'dificil' || o.dificuldade === 'colapso' || o.dificuldade === 'todas'
       ? o.dificuldade
       : OPCOES_PADRAO.dificuldade;
   const categorias =
@@ -49,24 +46,7 @@ function normalizarOpcoes(opcoes: unknown): OpoesNPL {
   return { duracaoSegundos, rodadasPorJogador, dificuldade, categorias };
 }
 
-function selecionarCarta(
-  usadas: string[],
-  dificuldade: DificuldadeNPL | 'todas',
-  categorias: CategoriaIdNPL[] | 'todas',
-): Carta {
-  const pool = CARTAS.filter(
-    (c) =>
-      !usadas.includes(c.id) &&
-      (dificuldade === 'todas' || c.dificuldade === dificuldade) &&
-      (categorias === 'todas' || categorias.includes(c.categoria)),
-  );
-  const fonte = pool.length > 0 ? pool : CARTAS.filter(
-    (c) =>
-      (dificuldade === 'todas' || c.dificuldade === dificuldade) &&
-      (categorias === 'todas' || categorias.includes(c.categoria)),
-  );
-  return sortearUm(fonte.length > 0 ? fonte : [...CARTAS]);
-}
+// ─── State helpers ────────────────────────────────────────────────────────────
 
 function estadosPrivadosVazios(jogadores: Player[]): Record<PlayerId, NPLPrivateState> {
   return Object.fromEntries(jogadores.map((j) => [j.id, { carta: null }]));
@@ -81,6 +61,8 @@ function perTurnoVazio() {
     historicoTurnoAtual: [] as HistoricoTurnoItem[],
   };
 }
+
+// ─── Engine ───────────────────────────────────────────────────────────────────
 
 class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, NPLAction> {
   readonly config: GameConfig = {
@@ -159,10 +141,12 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
     const jogadorAtual = estadoPublico.ordemJogadores[estadoPublico.indiceTurno];
     if (jogadorId !== jogadorAtual) return estado;
 
-    const carta = selecionarCarta(
+    const carta = selecionarCartaInteligente(
       estadoPublico.cartasUsadas,
       estadoPublico.dificuldade,
       estadoPublico.categorias,
+      estadoPublico.turnosJogados,
+      estadoPublico.totalTurnos,
     );
     const prazoTurnoEm = em + estadoPublico.duracaoSegundos * 1000;
 
@@ -185,8 +169,8 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
   }
 
   /**
-   * Word guessed correctly.
-   * Stays in `jogando` — draws next card into private state.
+   * Palavra acertada — permanece em `jogando`, sorteia próxima carta.
+   * A seleção inteligente usa o cartasUsadas atualizado como contexto.
    */
   private tratarAcertou(estado: NPLState, em: number): NPLState {
     const { estadoPublico } = estado;
@@ -202,10 +186,12 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
       : estadoPublico.historicoTurnoAtual;
 
     const novaCartasUsadas = [...estadoPublico.cartasUsadas];
-    const proximaCarta = selecionarCarta(
+    const proximaCarta = selecionarCartaInteligente(
       novaCartasUsadas,
       estadoPublico.dificuldade,
       estadoPublico.categorias,
+      estadoPublico.turnosJogados,
+      estadoPublico.totalTurnos,
     );
     novaCartasUsadas.push(proximaCarta.id);
 
@@ -232,8 +218,7 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
   }
 
   /**
-   * Word passed.
-   * Stays in `jogando` — draws next card into private state.
+   * Palavra passada — permanece em `jogando`, sorteia próxima carta.
    */
   private tratarPassou(estado: NPLState, em: number): NPLState {
     const { estadoPublico } = estado;
@@ -247,10 +232,12 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
       : estadoPublico.historicoTurnoAtual;
 
     const novaCartasUsadas = [...estadoPublico.cartasUsadas];
-    const proximaCarta = selecionarCarta(
+    const proximaCarta = selecionarCartaInteligente(
       novaCartasUsadas,
       estadoPublico.dificuldade,
       estadoPublico.categorias,
+      estadoPublico.turnosJogados,
+      estadoPublico.totalTurnos,
     );
     novaCartasUsadas.push(proximaCarta.id);
 
@@ -272,7 +259,7 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
   }
 
   /**
-   * Timer fired — turn ends. Transition to `resumo_turno`.
+   * Timer esgotado → `resumo_turno`.
    */
   private tratarTempoEsgotado(estado: NPLState, em: number): NPLState {
     const { estadoPublico } = estado;
@@ -291,7 +278,7 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
   }
 
   /**
-   * Player advances from `resumo_turno` → next player's `preparando` or `finalizado`.
+   * Avança de `resumo_turno` → próximo `preparando` ou `finalizado`.
    */
   private tratarAvancar(estado: NPLState, em: number): NPLState {
     const { estadoPublico } = estado;

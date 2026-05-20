@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { CARTAS } from '@/games/na-ponta-da-lingua/prompts';
+import { selecionarCartaInteligente } from '@/games/na-ponta-da-lingua/cardSelection';
 import {
   inicializarAudio,
   liberarAudio,
@@ -25,7 +25,7 @@ import {
   tocarRoubo,
 } from '@/games/na-ponta-da-lingua/audioEngine';
 import { calcularIntensidade } from '@/games/na-ponta-da-lingua/types';
-import type { Carta, HistoricoTurnoItem, IntensidadeVisual } from '@/games/na-ponta-da-lingua/types';
+import type { Carta, DificuldadeNPL, HistoricoTurnoItem, IntensidadeVisual } from '@/games/na-ponta-da-lingua/types';
 import type { RootStackParamList } from '@/navigation/types';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
@@ -93,16 +93,6 @@ const BG_PROIBIDA: Record<IntensidadeVisual, string> = {
 
 // ─── Utilitários ──────────────────────────────────────────────────────────────
 
-function selecionarCartaLocal(usadas: string[], dificuldade: string): Carta {
-  const pool = CARTAS.filter(
-    (c) => !usadas.includes(c.id) && (dificuldade === 'todas' || c.dificuldade === dificuldade),
-  );
-  const fonte = pool.length > 0
-    ? pool
-    : CARTAS.filter((c) => dificuldade === 'todas' || c.dificuldade === dificuldade);
-  const lista = fonte.length > 0 ? fonte : [...CARTAS];
-  return lista[Math.floor(Math.random() * lista.length)]!;
-}
 
 function escolher<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]!;
@@ -559,7 +549,13 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
   const jogadorAtual = jogadores[indiceTurno % jogadores.length]!;
 
   function sortearProxima(): Carta {
-    const carta = selecionarCartaLocal(cartasUsadasRef.current, dificuldade);
+    const carta = selecionarCartaInteligente(
+      cartasUsadasRef.current,
+      dificuldade as DificuldadeNPL | 'todas',
+      'todas',
+      turnosJogados,
+      totalTurnos,
+    );
     cartasUsadasRef.current = [...cartasUsadasRef.current, carta.id];
     return carta;
   }
@@ -1140,21 +1136,24 @@ function FaseJogando({
       streakRef.current = 0;
       passadosRef.current += 1;
       setStreakAtual(0);
-      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      // Medium impact — dismissal feel, not a hit
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       void tocarFalha();
     }
 
-    // Exit: slide left + fade
+    // acertou exits LEFT (forward), passou exits RIGHT (discarded back)
+    const exitX = resultado === 'acertou' ? -SCREEN_W * 0.6 : SCREEN_W * 0.6;
+    const enterX = resultado === 'acertou' ? SCREEN_W * 0.6 : -SCREEN_W * 0.6;
+
     Animated.parallel([
-      Animated.timing(cardSlideX, { toValue: -SCREEN_W * 0.6, duration: 110, useNativeDriver: true }),
+      Animated.timing(cardSlideX, { toValue: exitX, duration: 110, useNativeDriver: true }),
       Animated.timing(cardOp, { toValue: 0, duration: 90, useNativeDriver: true }),
     ]).start(() => {
       const novaCarta = sortearProxima();
       cartaRef.current = novaCarta;
       setCartaAtual(novaCarta);
-      cardSlideX.setValue(SCREEN_W * 0.6);
+      cardSlideX.setValue(enterX);
       cardOp.setValue(0);
-      // Enter: slide from right
       Animated.parallel([
         Animated.timing(cardSlideX, { toValue: 0, duration: 160, useNativeDriver: true }),
         Animated.timing(cardOp, { toValue: 1, duration: 140, useNativeDriver: true }),
