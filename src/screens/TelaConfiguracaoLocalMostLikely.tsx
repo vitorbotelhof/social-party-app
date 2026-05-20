@@ -1,6 +1,6 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -15,6 +15,11 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { BadgeUmCelular, BotaoPrimario } from '@/components';
 import type { RootStackParamList } from '@/navigation/types';
+import {
+  carregarGrupoRecente,
+  salvarGrupoRecente,
+} from '@/services/grupoRecente';
+import { assegurarSessaoIniciada } from '@/session/sessionStore';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ConfiguracaoLocalMostLikely'>;
@@ -31,6 +36,16 @@ export function TelaConfiguracaoLocalMostLikely({ navigation }: Props) {
   const [novoNome, setNovoNome] = useState('');
   const [totalRodadas, setTotalRodadas] = useState(8);
   const [modo, setModo] = useState<'classico' | 'sincero'>('classico');
+  const [grupoEraRecente, setGrupoEraRecente] = useState(false);
+
+  useEffect(() => {
+    void carregarGrupoRecente().then((salvos) => {
+      if (salvos && salvos.length >= 2) {
+        setNomes(salvos);
+        setGrupoEraRecente(true);
+      }
+    });
+  }, []);
 
   const nomeLimpo = novoNome.trim();
   const podeAdicionar =
@@ -54,7 +69,9 @@ export function TelaConfiguracaoLocalMostLikely({ navigation }: Props) {
   function aoComecar() {
     if (!podeIniciar) return;
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    void salvarGrupoRecente(nomes);
     const jogadores = nomes.map((nome, i) => ({ id: `local-${i}`, nome }));
+    assegurarSessaoIniciada(jogadores, 'most-likely-to');
     navigation.replace('JogoLocalMostLikely', { jogadores, totalRodadas, modo });
   }
 
@@ -117,6 +134,19 @@ export function TelaConfiguracaoLocalMostLikely({ navigation }: Props) {
                 <Text style={estilos.botaoAdicionarTexto}>+</Text>
               </Pressable>
             </View>
+
+            {grupoEraRecente && nomes.length > 0 && (
+              <View style={estilos.grupoRecente}>
+                <Text style={estilos.grupoRecenteTexto}>vocês de novo?</Text>
+                <Pressable
+                  onPress={() => { setNomes([]); setGrupoEraRecente(false); }}
+                  hitSlop={12}
+                  accessibilityLabel="Limpar grupo"
+                >
+                  <Text style={estilos.grupoRecenteLimpar}>trocar grupo</Text>
+                </Pressable>
+              </View>
+            )}
 
             {nomes.length === 0 ? (
               <Text style={estilos.vazio}>
@@ -292,6 +322,26 @@ const estilos = StyleSheet.create({
     letterSpacing: 0.3,
   },
 
+  grupoRecente: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: espacamento.sm,
+    paddingHorizontal: 2,
+  },
+  grupoRecenteTexto: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    fontStyle: 'italic',
+  },
+  grupoRecenteLimpar: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    fontWeight: tipografia.pesoSemibold,
+    textDecorationLine: 'underline',
+  },
   entradaBloco: { flexDirection: 'row', gap: espacamento.sm },
   input: {
     backgroundColor: cores.superficie,

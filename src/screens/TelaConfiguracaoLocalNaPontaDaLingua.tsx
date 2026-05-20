@@ -16,6 +16,11 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { BadgeUmCelular, BotaoPrimario } from '@/components';
 import type { CategoriaIdNPL } from '@/games/na-ponta-da-lingua/types';
 import type { RootStackParamList } from '@/navigation/types';
+import {
+  carregarGrupoRecente,
+  salvarGrupoRecente,
+} from '@/services/grupoRecente';
+import { assegurarSessaoIniciada } from '@/session/sessionStore';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ConfiguracaoLocalNaPontaDaLingua'>;
@@ -83,6 +88,7 @@ export function TelaConfiguracaoLocalNaPontaDaLingua({ navigation }: Props) {
   const [timesB, setTimesB] = useState<number[]>([]);
   // Categorias colapsadas por padrão — onboarding invisível
   const [expandirCategorias, setExpandirCategorias] = useState(false);
+  const [grupoEraRecente, setGrupoEraRecente] = useState(false);
 
   const nomeLimpo = novoNome.trim();
   const podeAdicionar =
@@ -95,6 +101,15 @@ export function TelaConfiguracaoLocalNaPontaDaLingua({ navigation }: Props) {
     : true;
   const categoriaValida = categoriasSelecionadas === 'todas' || categoriasSelecionadas.length >= 3;
   const podeIniciar = nomes.length >= MIN_JOGADORES && podeIniciarTvT && categoriaValida;
+
+  useEffect(() => {
+    void carregarGrupoRecente().then((salvos) => {
+      if (salvos && salvos.length >= 2) {
+        setNomes(salvos);
+        setGrupoEraRecente(true);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (modoJogo !== 'time_vs_time') return;
@@ -132,7 +147,9 @@ export function TelaConfiguracaoLocalNaPontaDaLingua({ navigation }: Props) {
   function aoComecar() {
     if (!podeIniciar) return;
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    void salvarGrupoRecente(nomes);
     const jogadores = nomes.map((nome, i) => ({ id: `local-${i}`, nome }));
+    assegurarSessaoIniciada(jogadores, 'na-ponta-da-lingua');
     const times = modoJogo === 'time_vs_time' ? {
       nomeA: 'Time A',
       idsA: timesA.map((i) => `local-${i}`),
@@ -215,6 +232,19 @@ export function TelaConfiguracaoLocalNaPontaDaLingua({ navigation }: Props) {
                 <Text style={estilos.botaoAdicionarTexto}>+</Text>
               </Pressable>
             </View>
+
+            {grupoEraRecente && nomes.length > 0 && (
+              <View style={estilos.grupoRecente}>
+                <Text style={estilos.grupoRecenteTexto}>vocês de novo?</Text>
+                <Pressable
+                  onPress={() => { setNomes([]); setGrupoEraRecente(false); }}
+                  hitSlop={12}
+                  accessibilityLabel="Limpar grupo"
+                >
+                  <Text style={estilos.grupoRecenteLimpar}>trocar grupo</Text>
+                </Pressable>
+              </View>
+            )}
 
             {nomes.length === 0 ? (
               <Text style={estilos.vazio}>comece pelo seu nome. os outros entram depois.</Text>
@@ -517,6 +547,28 @@ const estilos = StyleSheet.create({
     letterSpacing: 0.2,
   },
   sectionSubtitulo: { color: cores.textoMudo, fontFamily: familias.sans, fontSize: 11, letterSpacing: 0.3 },
+
+  // Grupo recente
+  grupoRecente: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: espacamento.sm,
+    paddingHorizontal: 2,
+  },
+  grupoRecenteTexto: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    fontStyle: 'italic',
+  },
+  grupoRecenteLimpar: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    fontWeight: tipografia.pesoSemibold,
+    textDecorationLine: 'underline',
+  },
 
   // Jogadores
   entradaBloco: { flexDirection: 'row', gap: espacamento.sm },

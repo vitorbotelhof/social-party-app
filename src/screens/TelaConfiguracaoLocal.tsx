@@ -23,11 +23,12 @@ import type {
   OpcoesMrWhite,
 } from '@/games/mr-white/types';
 import type { RootStackParamList } from '@/navigation/types';
-import { carregarNome } from '@/services/jogadorLocal';
 import {
-  getJogadoresLocais,
-  inicializarJogoLocal,
-} from '@/services/jogoLocal';
+  carregarGrupoRecente,
+  salvarGrupoRecente,
+} from '@/services/grupoRecente';
+import { inicializarJogoLocal } from '@/services/jogoLocal';
+import { assegurarSessaoIniciada } from '@/session/sessionStore';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ConfiguracaoLocal'>;
@@ -69,15 +70,14 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
   const [nomes, setNomes] = useState<string[]>([]);
   const [novoNome, setNovoNome] = useState('');
   const [iniciando, setIniciando] = useState(false);
+  const [grupoEraRecente, setGrupoEraRecente] = useState(false);
 
   useEffect(() => {
-    const anteriores = getJogadoresLocais();
-    if (anteriores.length > 0) {
-      setNomes(anteriores.map((j) => j.nome));
-      return;
-    }
-    void carregarNome().then((nome) => {
-      if (nome) setNomes((atual) => (atual.length === 0 ? [nome] : atual));
+    void carregarGrupoRecente().then((salvos) => {
+      if (salvos && salvos.length >= 2) {
+        setNomes(salvos);
+        setGrupoEraRecente(true);
+      }
     });
   }, []);
 
@@ -112,6 +112,7 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
   function aoComecar() {
     if (!podeIniciar) return;
     setIniciando(true);
+    void salvarGrupoRecente(nomes);
     const agora = Date.now();
     const jogadores: Player[] = nomes.map((nome, i) => ({
       id: `local-${i}`,
@@ -121,6 +122,7 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
       estaConectado: true,
       entrouEm: agora + i,
     }));
+    assegurarSessaoIniciada(jogadores, 'mrwhite');
     const opcoes: OpcoesMrWhite = {
       categoriaId,
       dificuldade,
@@ -197,6 +199,19 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
               </Pressable>
             </View>
 
+            {grupoEraRecente && nomes.length > 0 && (
+              <View style={estilos.grupoRecente}>
+                <Text style={estilos.grupoRecenteTexto}>vocês de novo?</Text>
+                <Pressable
+                  onPress={() => { setNomes([]); setGrupoEraRecente(false); }}
+                  hitSlop={12}
+                  accessibilityLabel="Limpar grupo"
+                >
+                  <Text style={estilos.grupoRecenteLimpar}>trocar grupo</Text>
+                </Pressable>
+              </View>
+            )}
+
             {nomes.length === 0 ? (
               <Text style={estilos.vazio}>
                 comece pelo seu nome. os outros entram depois.
@@ -210,7 +225,6 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
                     </View>
                     <Text style={estilos.itemNome} numberOfLines={1}>
                       {nome}
-                      {i === 0 ? ' (você)' : ''}
                     </Text>
                     <Pressable
                       onPress={() => aoRemover(i)}
@@ -526,6 +540,28 @@ const estilos = StyleSheet.create({
     fontFamily: familias.sans,
     fontSize: 11,
     letterSpacing: 0.3,
+  },
+
+  // ── Grupo recente — memória leve, anfitrião social ──
+  grupoRecente: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: espacamento.sm,
+    paddingHorizontal: 2,
+  },
+  grupoRecenteTexto: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    fontStyle: 'italic',
+  },
+  grupoRecenteLimpar: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    fontWeight: tipografia.pesoSemibold,
+    textDecorationLine: 'underline',
   },
 
   // ── Jogadores: primeiro e em destaque ──

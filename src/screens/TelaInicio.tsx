@@ -1,7 +1,8 @@
+import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   ImageBackground,
@@ -15,10 +16,11 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BotaoPrimario } from '@/components';
 import { HeroJogo } from '@/components/HeroJogo';
+import { Logo } from '@/components/Logo';
 import {
   CATEGORIAS_EMOCIONAIS,
   JOGOS,
@@ -29,6 +31,9 @@ import {
 } from '@/games/gameRegistry';
 import type { RootStackParamList } from '@/navigation/types';
 import { obterOuCriarJogador, salvarNome } from '@/services/jogadorLocal';
+import { tutorialFoiVisto } from '@/services/tutorial';
+import { getSessaoAtual } from '@/session/sessionStore';
+import type { TemperaturaEmocional } from '@/session/types';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Inicio'>;
@@ -61,6 +66,8 @@ const vibesComJogo = new Set(
 // ─── Tela principal ───────────────────────────────────────────────────────────
 
 export function TelaInicio({ navigation }: Props) {
+  const insets = useSafeAreaInsets();
+
   // ── Animações de entrada
   const headerOp = useRef(new Animated.Value(0)).current;
   const headerY = useRef(new Animated.Value(10)).current;
@@ -75,6 +82,19 @@ export function TelaInicio({ navigation }: Props) {
 
   // ── Vibe navigation — o coração da home
   const [vibeAtiva, setVibeAtiva] = useState<CategoriaEmocional | null>(null);
+
+  // ── Temperatura da sessão — atualiza ao voltar para a home
+  const [temperatura, setTemperatura] = useState<TemperaturaEmocional>('frio');
+  useFocusEffect(
+    useCallback(() => {
+      setTemperatura(getSessaoAtual()?.temperatura ?? 'frio');
+    }, []),
+  );
+
+  // ── Bottom sheet de seleção de modo
+  const [jogoSelecionado, setJogoSelecionado] = useState<DefinicaoJogo | null>(null);
+  const sheetY = useRef(new Animated.Value(500)).current;
+  const overlayOp = useRef(new Animated.Value(0)).current;
 
   // ── Carrega jogador ao montar
   useEffect(() => {
@@ -135,6 +155,8 @@ export function TelaInicio({ navigation }: Props) {
     }
   }
 
+  // ── Sheet: abrir / fechar / navegar ─────────────────────────────────────────
+
   function aoEscolherJogo(jogo: DefinicaoJogo) {
     if (!jogo.disponivel) return;
     if (!jogador?.nome) {
@@ -142,7 +164,69 @@ export function TelaInicio({ navigation }: Props) {
       return;
     }
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    navigation.navigate('SelecaoDinamica', { jogoId: jogo.id });
+    setJogoSelecionado(jogo);
+    sheetY.setValue(500);
+    overlayOp.setValue(0);
+    Animated.parallel([
+      Animated.spring(sheetY, {
+        toValue: 0,
+        useNativeDriver: true,
+        speed: 18,
+        bounciness: 4,
+      }),
+      Animated.timing(overlayOp, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }
+
+  function fecharSheet() {
+    Animated.parallel([
+      Animated.timing(sheetY, {
+        toValue: 500,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(overlayOp, {
+        toValue: 0,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setJogoSelecionado(null));
+  }
+
+  async function aoEscolherModo(id: 'local' | 'realtime' | 'entrar') {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const jogoId = jogoSelecionado?.id;
+    // Fecha o sheet imediatamente — a transição de navegação cobre o dismiss
+    setJogoSelecionado(null);
+
+    if (id === 'local') {
+      if (jogoId === 'most-likely-to') {
+        navigation.navigate('ConfiguracaoLocalMostLikely');
+      } else if (jogoId === 'na-ponta-da-lingua') {
+        navigation.navigate('ConfiguracaoLocalNaPontaDaLingua');
+      } else {
+        navigation.navigate('ConfiguracaoLocal');
+      }
+    } else if (id === 'realtime') {
+      if (jogoId === 'mrwhite' && !(await tutorialFoiVisto('mrwhite'))) {
+        navigation.navigate('Tutorial', { jogoId });
+        return;
+      }
+      if (jogoId) navigation.navigate('CriarSala', { jogoId });
+    } else {
+      navigation.navigate('EntrarSala');
+    }
+  }
+
+  function aoVerDetalhesDoJogo() {
+    if (!jogoSelecionado) return;
+    const { id } = jogoSelecionado;
+    setJogoSelecionado(null);
+    navigation.navigate('DetalhesJogo', { jogoId: id });
   }
 
   function aoEntrarPartida() {
@@ -170,7 +254,13 @@ export function TelaInicio({ navigation }: Props) {
         ]}
       >
         <View style={estilos.headerLinha}>
-          <Text style={estilos.marca}>entre nós</Text>
+          <View style={estilos.marcaContainer}>
+            <Logo tamanho={28} />
+            <Text style={estilos.marca}>entre nós</Text>
+            {temperatura !== 'frio' && (
+              <IndicadorTemperatura temperatura={temperatura} />
+            )}
+          </View>
           <Pressable
             onPress={aoEntrarPartida}
             style={({ pressed }) => [
@@ -212,6 +302,75 @@ export function TelaInicio({ navigation }: Props) {
           )}
         </Animated.View>
       </ScrollView>
+
+      {/* ── Sheet de seleção de modo ── */}
+      <Modal
+        visible={!!jogoSelecionado}
+        transparent
+        animationType="none"
+        statusBarTranslucent
+        onRequestClose={fecharSheet}
+      >
+        <View style={estilos.sheetContainer}>
+          {/* Overlay — toque para fechar */}
+          <Pressable style={StyleSheet.absoluteFillObject} onPress={fecharSheet}>
+            <Animated.View
+              style={[StyleSheet.absoluteFillObject, estilos.sheetOverlay, { opacity: overlayOp }]}
+            />
+          </Pressable>
+
+          {/* Sheet em si */}
+          <Animated.View
+            style={[estilos.sheet, { transform: [{ translateY: sheetY }] }]}
+          >
+            {/* Handle */}
+            <View style={estilos.sheetHandle} />
+
+            {/* Nome do jogo */}
+            <Text style={estilos.sheetNomeJogo}>{jogoSelecionado?.nome}</Text>
+
+            {/* Opções */}
+            <View style={estilos.sheetOpcoes}>
+              {jogoSelecionado?.supportsLocal && (
+                <SheetOpcao
+                  titulo="passando de mão em mão"
+                  descricao="um celular, o grupo todo. cada um pega na sua vez."
+                  primaria
+                  onPress={() => void aoEscolherModo('local')}
+                />
+              )}
+              {jogoSelecionado?.supportsRealtime && (
+                <SheetOpcao
+                  titulo="cada um com o seu"
+                  descricao="todo mundo com celular. papéis separados, segredos na tela."
+                  primaria
+                  onPress={() => void aoEscolherModo('realtime')}
+                />
+              )}
+              <SheetOpcao
+                titulo="entrar numa sala"
+                descricao="alguém já começou. só entrar com o código."
+                primaria={false}
+                onPress={() => void aoEscolherModo('entrar')}
+              />
+            </View>
+
+            {/* Link para detalhes */}
+            <Pressable
+              onPress={aoVerDetalhesDoJogo}
+              style={({ pressed }) => [
+                estilos.sheetLinkDetalhes,
+                pressed && { opacity: 0.5 },
+              ]}
+            >
+              <Text style={estilos.sheetLinkDetalhesTexto}>como funciona →</Text>
+            </Pressable>
+
+            {/* Safe area */}
+            <View style={{ height: Math.max(insets.bottom, espacamento.md) }} />
+          </Animated.View>
+        </View>
+      </Modal>
 
       {/* ── Modal de nome ── */}
       <Modal
@@ -258,6 +417,86 @@ export function TelaInicio({ navigation }: Props) {
         </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
+  );
+}
+
+
+// ─── IndicadorTemperatura ─────────────────────────────────────────────────────
+
+const TEMP_VISUAL: Record<Exclude<TemperaturaEmocional, 'frio'>, { cor: string; rotulo: string }> = {
+  morno:   { cor: '#FFBE0B', rotulo: 'esquentando' },
+  quente:  { cor: '#FF7A7F', rotulo: 'quente' },
+  colapso: { cor: cores.primaria, rotulo: 'caos' },
+};
+
+function IndicadorTemperatura({ temperatura }: { temperatura: TemperaturaEmocional }) {
+  if (temperatura === 'frio') return null;
+  const { cor, rotulo } = TEMP_VISUAL[temperatura];
+  return (
+    <View style={estilos.tempIndicador}>
+      <View style={[estilos.tempPonto, { backgroundColor: cor }]} />
+      <Text style={[estilos.tempRotulo, { color: cor }]}>{rotulo}</Text>
+    </View>
+  );
+}
+
+// ─── SheetOpcao ───────────────────────────────────────────────────────────────
+// Opção de modo dentro do bottom sheet.
+// Primárias: borda sutil + ponto colorido. Secundária: mais discreta.
+
+interface SheetOpcaoProps {
+  titulo: string;
+  descricao: string;
+  primaria: boolean;
+  onPress: () => void;
+}
+
+function SheetOpcao({ titulo, descricao, primaria, onPress }: SheetOpcaoProps) {
+  const escala = useRef(new Animated.Value(1)).current;
+
+  return (
+    <Animated.View style={{ transform: [{ scale: escala }] }}>
+      <Pressable
+        onPress={onPress}
+        onPressIn={() =>
+          Animated.spring(escala, {
+            toValue: 0.97,
+            useNativeDriver: true,
+            speed: 40,
+            bounciness: 0,
+          }).start()
+        }
+        onPressOut={() =>
+          Animated.spring(escala, {
+            toValue: 1,
+            useNativeDriver: true,
+            speed: 30,
+            bounciness: 6,
+          }).start()
+        }
+        style={[estilos.sheetOpcao, primaria && estilos.sheetOpcaoPrimaria]}
+        accessibilityRole="button"
+        accessibilityLabel={titulo}
+      >
+        {primaria && <View style={estilos.sheetPonto} />}
+        <View style={estilos.sheetOpcaoTextos}>
+          <Text
+            style={[
+              estilos.sheetOpcaoTitulo,
+              !primaria && estilos.sheetOpcaoTituloSec,
+            ]}
+          >
+            {titulo}
+          </Text>
+          <Text style={estilos.sheetOpcaoDesc}>{descricao}</Text>
+        </View>
+        <Text
+          style={[estilos.sheetSeta, !primaria && estilos.sheetSetaSec]}
+        >
+          →
+        </Text>
+      </Pressable>
+    </Animated.View>
   );
 }
 
@@ -584,6 +823,11 @@ const estilos = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  marcaContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: espacamento.sm,
+  },
   marca: {
     color: cores.texto,
     fontFamily: familias.sans,
@@ -591,6 +835,25 @@ const estilos = StyleSheet.create({
     fontWeight: '600' as const,
     letterSpacing: -0.2,
   },
+  // Indicador de temperatura — ponto + palavra, invisível quando frio
+  tempIndicador: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
+    marginLeft: 2,
+  },
+  tempPonto: {
+    borderRadius: 4,
+    height: 6,
+    width: 6,
+  },
+  tempRotulo: {
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
+  },
+
   botaoEntrar: {
     backgroundColor: cores.superficieElevada,
     borderColor: cores.borda,
@@ -928,5 +1191,103 @@ const estilos = StyleSheet.create({
     fontSize: 18,
     fontWeight: tipografia.pesoMedio,
     padding: espacamento.md,
+  },
+
+  // ── Bottom sheet de seleção de modo ──
+  sheetContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  sheetOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+  },
+  sheet: {
+    backgroundColor: cores.superficie,
+    borderTopLeftRadius: raio.xl,
+    borderTopRightRadius: raio.xl,
+    paddingHorizontal: espacamento.lg,
+    paddingTop: espacamento.md,
+  },
+  sheetHandle: {
+    alignSelf: 'center',
+    backgroundColor: cores.borda,
+    borderRadius: 2,
+    height: 4,
+    marginBottom: espacamento.lg,
+    width: 36,
+  },
+  sheetNomeJogo: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
+    marginBottom: espacamento.md,
+  },
+  sheetOpcoes: {
+    gap: espacamento.sm,
+  },
+  sheetOpcao: {
+    alignItems: 'center',
+    backgroundColor: cores.superficieElevada,
+    borderColor: cores.borda,
+    borderRadius: raio.lg,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: espacamento.md,
+    paddingHorizontal: espacamento.md,
+    paddingVertical: espacamento.md,
+  },
+  sheetOpcaoPrimaria: {
+    borderColor: 'rgba(255, 90, 95, 0.28)',
+  },
+  sheetPonto: {
+    backgroundColor: cores.primaria,
+    borderRadius: 4,
+    height: 8,
+    opacity: 0.75,
+    width: 8,
+  },
+  sheetOpcaoTextos: {
+    flex: 1,
+    gap: 2,
+  },
+  sheetOpcaoTitulo: {
+    color: cores.texto,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpo,
+    fontWeight: tipografia.pesoBold,
+    letterSpacing: -0.1,
+  },
+  sheetOpcaoTituloSec: {
+    color: cores.textoSecundario,
+    fontWeight: tipografia.pesoSemibold,
+  },
+  sheetOpcaoDesc: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCaption,
+    lineHeight: 17,
+  },
+  sheetSeta: {
+    color: cores.primaria,
+    fontFamily: familias.sans,
+    fontSize: 18,
+    fontWeight: tipografia.pesoBold,
+  },
+  sheetSetaSec: {
+    color: cores.textoMudo,
+    fontWeight: tipografia.pesoRegular,
+  },
+  sheetLinkDetalhes: {
+    alignItems: 'center',
+    marginTop: espacamento.lg,
+    paddingVertical: espacamento.sm,
+  },
+  sheetLinkDetalhesTexto: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    letterSpacing: 0.2,
   },
 });

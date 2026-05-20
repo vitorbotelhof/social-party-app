@@ -144,7 +144,7 @@ export const estiloProibida: TextStyle = {
   letterSpacing: tipografia.spacingNormal,
 };
 
-/** Countdown timer — display mono-weight, sem serif. */
+/** Timer de jogo — display mono-weight, sem serif. */
 export const estiloTimer: TextStyle = {
   fontFamily: familias.sans,
   fontSize: tipografia.tamanhoDisplay,

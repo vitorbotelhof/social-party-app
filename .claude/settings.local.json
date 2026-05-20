@@ -71,7 +71,9 @@
       "Bash(perl -pi -e \"s|// Vencedor: serifDisplay \\\\+ âmbar — identidade revelada|// Vencedor: sans bold — identidade revelada|g\" /Users/vitorfreitas/social-party-app/src/screens/TelaRevealMostLikely.tsx)",
       "Bash(awk -F: '{sum+=$2} END{print sum \" occurrences across files\"}')",
       "Bash(awk -F: '{sum+=$2} END{print sum \" total\"}')",
-      "Bash(sort -t: -k1,1 -k2,2n)"
+      "Bash(sort -t: -k1,1 -k2,2n)",
+      "Bash(identify /Users/vitorfreitas/social-party-app/assets/logo.png)",
+      "Bash(sips -g all /Users/vitorfreitas/social-party-app/assets/logo.png)"
     ]
   }
 }

@@ -23,6 +23,7 @@ import {
   BotaoSecundario,
   TelaCarregamento,
 } from '@/components';
+import { FeedbackSessao } from '@/components/FeedbackSessao';
 import type { GameState, Player, PlayerId } from '@/engine/types';
 import type {
   MrWhitePrivateState,
@@ -37,6 +38,7 @@ import {
   observarEstadoLocal,
   resetarJogoLocal,
 } from '@/services/jogoLocal';
+import { processarResultadoMrWhite } from '@/session/mrWhiteAdapter';
 import {
   PALETA_AVATARES,
   cores,
@@ -328,22 +330,31 @@ function EtapaRevelarPalavra({
       >
         {segurando ? (
           <View style={estilos.centroFlexInterno}>
-            {/* Mesma estrutura visual para civil e mr white — diferença só semântica */}
-            <Text style={estilos.legendaPalavraReveal}>sua palavra</Text>
-            <Text
-              style={estilos.palavraReveal}
-              adjustsFontSizeToFit
-              numberOfLines={1}
-            >
-              {ehMrWhite && !palavra ? 'improvise.' : (palavra ?? '')}
-            </Text>
-            <Text style={estilos.instrucaoMemorize}>
-              {ehMrWhite && !palavra
-                ? 'descubra a dos outros.'
-                : ehMrWhite
-                  ? 'a palavra dos outros é diferente.'
-                  : 'memorize e solte quando terminar.'}
-            </Text>
+            {ehMrWhite ? (
+              <>
+                <Text style={estilos.legendaPalavraReveal}>seu papel</Text>
+                <Text style={estilos.palavraRevealMrWhite} adjustsFontSizeToFit numberOfLines={1}>
+                  mr white
+                </Text>
+                <Text style={estilos.instrucaoMemorize}>
+                  você não tem palavra — improvise e descubra a dos outros.
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text style={estilos.legendaPalavraReveal}>sua palavra</Text>
+                <Text
+                  style={estilos.palavraReveal}
+                  adjustsFontSizeToFit
+                  numberOfLines={1}
+                >
+                  {palavra ?? ''}
+                </Text>
+                <Text style={estilos.instrucaoMemorize}>
+                  memorize e solte quando terminar.
+                </Text>
+              </>
+            )}
           </View>
         ) : (
           <View style={estilos.centroFlexInterno}>
@@ -842,6 +853,7 @@ function FaseResultadoLocal({
   aoJogarDeNovo: () => void;
 }) {
   const [etapa, setEtapa] = useState<number>(ETAPA_RESULTADO.REVELANDO);
+  const adaptadorChamado = useRef(false);
 
   const venc = estado.estadoPublico.vencedor;
   const ehVitoriaMrWhite = venc === 'mrwhite';
@@ -862,9 +874,30 @@ function FaseResultadoLocal({
             : Haptics.NotificationFeedbackType.Success,
         );
       }, TEMPOS_RESULTADO.BANNER),
-      setTimeout(() => setEtapa(ETAPA_RESULTADO.CONTEUDO), TEMPOS_RESULTADO.CONTEUDO),
+      setTimeout(() => {
+        setEtapa(ETAPA_RESULTADO.CONTEUDO);
+        // Processa o resultado na sessão — uma única vez
+        if (!adaptadorChamado.current) {
+          adaptadorChamado.current = true;
+          const votos = estado.estadoPublico.votos;
+          const contagem: Record<PlayerId, number> = {};
+          for (const alvo of Object.values(votos)) {
+            contagem[alvo] = (contagem[alvo] ?? 0) + 1;
+          }
+          processarResultadoMrWhite({
+            mrWhiteIds: estado.estadoPublico.mrWhiteIdsRevelados,
+            vencedor: ehVitoriaMrWhite ? 'mrwhite' : 'civis',
+            rodadasVotacao: estado.estadoPublico.rodadaVotacao,
+            palpiteCorreto: estado.estadoPublico.palpiteCorreto,
+            totalJogadores: jogadores.length,
+            rodadaFinal: estado.rodada,
+            votosFinais: contagem,
+          });
+        }
+      }, TEMPOS_RESULTADO.CONTEUDO),
     ];
     return () => timers.forEach(clearTimeout);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ehVitoriaMrWhite]);
 
   if (etapa < ETAPA_RESULTADO.LEGENDA) {
@@ -979,6 +1012,7 @@ function FaseResultadoLocal({
 
       {etapa >= ETAPA_RESULTADO.CONTEUDO && (
         <View style={estilos.rodape}>
+          <FeedbackSessao jogoId="mrwhite" />
           <BotaoPrimario
             titulo="jogar de novo com o mesmo grupo"
             onPress={aoJogarDeNovo}
@@ -1548,6 +1582,14 @@ const estilos = StyleSheet.create({
     color: cores.texto,
     fontSize: 56,
     fontWeight: tipografia.pesoExtraBold,
+    letterSpacing: tipografia.spacingApertado,
+    textAlign: 'center',
+    width: '100%',
+  },
+  palavraRevealMrWhite: {
+    color: cores.primaria,
+    fontSize: 48,
+    fontWeight: tipografia.pesoBlack,
     letterSpacing: tipografia.spacingApertado,
     textAlign: 'center',
     width: '100%',

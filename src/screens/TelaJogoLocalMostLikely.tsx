@@ -10,16 +10,17 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { FeedbackSessao } from '@/components/FeedbackSessao';
 import { PROMPTS } from '@/games/most-likely-to/prompts';
 import type { EnergiaPrompt, ModoMostLikely } from '@/games/most-likely-to/types';
 import type { RootStackParamList } from '@/navigation/types';
+import { processarResultadoMLT } from '@/session/mltAdapter';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'JogoLocalMostLikely'>;
 
 type Fase =
   | 'prompt'
-  | 'contagem'
   | 'apontando'
   | 'selecionar'
   | 'reveal'
@@ -62,7 +63,6 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
   const [rodadaAtual, setRodadaAtual] = useState(1);
   const [promptTexto, setPromptTexto] = useState('');
   const [indicesUsados, setIndicesUsados] = useState<number[]>([]);
-  const [contagem, setContagem] = useState(3);
   const [vencedorId, setVencedorId] = useState<string | null>(null);
   const [foiEmpate, setFoiEmpate] = useState(false);
   const [resultados, setResultados] = useState<ResultadoRodada[]>([]);
@@ -70,8 +70,6 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
   const [posRevealAtivo, setPosRevealAtivo] = useState(false);
 
   const promptOp = useRef(new Animated.Value(0)).current;
-  const contagemOp = useRef(new Animated.Value(0)).current;
-  const contagemScale = useRef(new Animated.Value(0.7)).current;
   const nomeOp = useRef(new Animated.Value(0)).current;
   const nomeScale = useRef(new Animated.Value(0.85)).current;
   const cristalizacaoOp = useRef(new Animated.Value(0)).current;
@@ -86,34 +84,7 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ─── Iniciar Contagem ─────────────────────────────────────────────────────
-
-  function iniciarContagem() {
-    setFase('contagem');
-    setContagem(3);
-    baterContagem(3);
-  }
-
-  function baterContagem(n: number) {
-    contagemOp.setValue(0);
-    contagemScale.setValue(0.7);
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    Animated.parallel([
-      Animated.timing(contagemOp, { toValue: 1, duration: 180, useNativeDriver: true }),
-      Animated.spring(contagemScale, { toValue: 1, speed: 20, bounciness: 8, useNativeDriver: true }),
-    ]).start(() => {
-      setTimeout(() => {
-        Animated.timing(contagemOp, { toValue: 0, duration: 160, useNativeDriver: true }).start(() => {
-          if (n > 1) {
-            setContagem(n - 1);
-            baterContagem(n - 1);
-          } else {
-            irParaApontando();
-          }
-        });
-      }, 500);
-    });
-  }
+  // ─── Apontando ────────────────────────────────────────────────────────────
 
   function irParaApontando() {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -211,7 +182,7 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
   }
 
   function sairLimpo() {
-    navigation.replace('SelecaoDinamica', { jogoId: 'most-likely-to' });
+    navigation.navigate('Inicio');
   }
 
   // ─── Renders por fase ─────────────────────────────────────────────────────
@@ -234,11 +205,7 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
 
       {/* Conteúdo por fase */}
       {fase === 'prompt' && (
-        <FasePrompt promptTexto={promptTexto} promptOp={promptOp} onPress={iniciarContagem} />
-      )}
-
-      {fase === 'contagem' && (
-        <FaseContagem contagem={contagem} contagemOp={contagemOp} contagemScale={contagemScale} />
+        <FasePrompt promptTexto={promptTexto} promptOp={promptOp} onPress={irParaApontando} />
       )}
 
       {fase === 'apontando' && (
@@ -293,29 +260,6 @@ function FasePrompt({
         <Text style={estilos.toque}>toque para começar</Text>
       </Animated.View>
     </Pressable>
-  );
-}
-
-function FaseContagem({
-  contagem,
-  contagemOp,
-  contagemScale,
-}: {
-  contagem: number;
-  contagemOp: Animated.Value;
-  contagemScale: Animated.Value;
-}) {
-  return (
-    <View style={estilos.faseTela}>
-      <Animated.Text
-        style={[
-          estilos.contagemNumero,
-          { opacity: contagemOp, transform: [{ scale: contagemScale }] },
-        ]}
-      >
-        {contagem}
-      </Animated.Text>
-    </View>
   );
 }
 
@@ -461,6 +405,33 @@ function FaseResultado({
   onSair: () => void;
   insets: { top: number; bottom: number };
 }) {
+  const adaptadorChamado = useRef(false);
+
+  // Processa o resultado na sessão uma única vez ao montar
+  useEffect(() => {
+    if (adaptadorChamado.current) return;
+    adaptadorChamado.current = true;
+
+    const contagemId = new Map<string, number>();
+    for (const r of resultados) {
+      if (r.vencedorId) {
+        contagemId.set(r.vencedorId, (contagemId.get(r.vencedorId) ?? 0) + 1);
+      }
+    }
+    let julgadoMax = 0;
+    let julgadoMaisVezes: string | null = null;
+    for (const [id, n] of contagemId) {
+      if (n > julgadoMax) { julgadoMax = n; julgadoMaisVezes = id; }
+    }
+    processarResultadoMLT({
+      totalRodadas: resultados.length,
+      unanimidades: resultados.filter((r) => r.vencedorId !== null).length,
+      julgadoMaisVezes: julgadoMaisVezes as string | null,
+      rodadasComEmpate: resultados.filter((r) => r.vencedorId === null).length,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const contagem = new Map<string, number>();
   for (const r of resultados) {
     if (r.vencedorId) {
@@ -499,6 +470,8 @@ function FaseResultado({
           );
         })}
       </View>
+
+      <FeedbackSessao jogoId="most-likely-to" />
 
       <Pressable onPress={onSair} style={({ pressed }) => [estilos.resultadoSair, pressed && { opacity: 0.6 }]}>
         <Text style={estilos.resultadoSairTexto}>jogar de novo →</Text>
@@ -541,13 +514,6 @@ const estilos = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: espacamento.lg,
     paddingVertical: espacamento.sm,
-  },
-  contagemNumero: {
-    color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
-    fontSize: 140,
-    letterSpacing: -4,
-    textAlign: 'center',
   },
   empateBtn: {
     borderColor: cores.borda,

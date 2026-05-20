@@ -262,3 +262,31 @@ export function getJogosCompletos(): JogoSessao[] {
   if (!sessao) return [];
   return sessao.jogosDaSessao.filter((j) => j.finalizadoEm !== null);
 }
+
+// ─── Conveniência ─────────────────────────────────────────────────────────────
+
+/**
+ * Garante que a sessão está inicializada e registra o início de um jogo.
+ *
+ * Se não houver sessão ativa, cria uma nova com os jogadores fornecidos.
+ * Se já houver, apenas registra o novo jogo — sem reset de dados.
+ *
+ * Chamado pelos fluxos de configuração local antes de iniciar o jogo.
+ */
+export function assegurarSessaoIniciada(
+  jogadores: Array<{ id: string; nome: string }>,
+  jogoId: GameId,
+): void {
+  if (!sessaoAtual) {
+    const players: Player[] = jogadores.map((j, i) => ({
+      id: j.id as PlayerId,
+      nome: j.nome,
+      papelSecreto: null,
+      ehAnfitriao: i === 0,
+      estaConectado: true,
+      entrouEm: Date.now() + i,
+    }));
+    iniciarSessao(players);
+  }
+  registrarJogoIniciado(jogoId);
+}

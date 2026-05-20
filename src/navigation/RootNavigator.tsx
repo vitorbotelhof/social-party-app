@@ -20,7 +20,6 @@ import { TelaInicio } from '@/screens/TelaInicio';
 import { TelaIntro } from '@/screens/TelaIntro';
 import { TelaJogoLocal } from '@/screens/TelaJogoLocal';
 import { TelaLobby } from '@/screens/TelaLobby';
-import { TelaSelecaoDinamica } from '@/screens/TelaSelecaoDinamica';
 import { TelaSelecaoJogo } from '@/screens/TelaSelecaoJogo';
 import { TelaTutorial } from '@/screens/TelaTutorial';
 import { cores } from '@/theme/colors';
@@ -39,7 +38,7 @@ function GameScreenGateway({
         roomCode={roomCode}
         jogoId={jogoId}
         jogadorId={jogadorId}
-        onJogarDeNovo={() => navigation.navigate('SelecaoDinamica', { jogoId })}
+        onJogarDeNovo={() => navigation.navigate('Inicio')}
         onVoltar={() => navigation.navigate('SelecaoJogo')}
       />
     );
@@ -102,11 +101,6 @@ export function RootNavigator() {
       <Stack.Screen
         name="DetalhesJogo"
         component={TelaDetalhesJogo}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="SelecaoDinamica"
-        component={TelaSelecaoDinamica}
         options={{ headerShown: false }}
       />
       <Stack.Screen

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { FeedbackSessao } from '@/components/FeedbackSessao';
 import { selecionarCartaInteligente } from '@/games/na-ponta-da-lingua/cardSelection';
 import {
   inicializarAudio,
@@ -27,6 +28,7 @@ import {
 import { calcularIntensidade } from '@/games/na-ponta-da-lingua/types';
 import type { Carta, DificuldadeNPL, HistoricoTurnoItem, IntensidadeVisual } from '@/games/na-ponta-da-lingua/types';
 import type { RootStackParamList } from '@/navigation/types';
+import { processarResultadoNPL } from '@/session/nplAdapter';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 const SCREEN_W = Dimensions.get('window').width;
@@ -667,7 +669,7 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
   }
 
   function sairLimpo() {
-    navigation.replace('SelecaoDinamica', { jogoId: 'na-ponta-da-lingua' });
+    navigation.navigate('Inicio');
   }
 
   if (fase === 'fim') {
@@ -1836,6 +1838,7 @@ function FaseFim({
   onSair: () => void;
   insets: { top: number; bottom: number };
 }) {
+  const adaptadorChamado = useRef(false);
   const isTvT = modoJogo === 'time_vs_time';
   const totalAcertos = historico.reduce((acc, t) => acc + t.acertos, 0);
   const totalPalavras = historico.reduce((acc, t) => acc + t.acertos + t.passados, 0);
@@ -1859,6 +1862,30 @@ function FaseFim({
   const destaquesOp = useRef(new Animated.Value(0)).current;
   const rankingOp = useRef(new Animated.Value(0)).current;
   const aftermathOp = useRef(new Animated.Value(0)).current;
+
+  // Processa resultado na sessão — uma única vez ao montar
+  useEffect(() => {
+    if (adaptadorChamado.current) return;
+    adaptadorChamado.current = true;
+
+    const totalPalavrasTotal = historico.reduce((acc, t) => acc + t.acertos + t.passados, 0);
+    const totalAcertosTotal = historico.reduce((acc, t) => acc + t.acertos, 0);
+
+    // Jogador com mais pontos = mais acertos
+    let maisAcertosId: string | null = null;
+    let maiorPontos = -1;
+    for (const [id, pts] of Object.entries(pontos)) {
+      if (pts > maiorPontos) { maiorPontos = pts; maisAcertosId = id; }
+    }
+
+    processarResultadoNPL({
+      totalTurnos: historico.length,
+      melhorStreak: melhorStreakColetivo,
+      jogadorMaisAcertos: maisAcertosId as string | null,
+      taxaAcerto: totalPalavrasTotal > 0 ? totalAcertosTotal / totalPalavrasTotal : 0,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     Animated.timing(identidadeOp, { toValue: 1, duration: 280, useNativeDriver: true }).start();
@@ -1971,6 +1998,8 @@ function FaseFim({
           </View>
         ))}
       </Animated.View>
+
+      <FeedbackSessao jogoId="na-ponta-da-lingua" />
 
       <Pressable
         onPress={onSair}
