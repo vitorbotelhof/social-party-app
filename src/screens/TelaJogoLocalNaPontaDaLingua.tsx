@@ -469,7 +469,7 @@ function gerarObservacaoEntre(
 // ─── Componente principal ─────────────────────────────────────────────────────
 
 export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
-  const { jogadores, duracaoSegundos, rodadasPorJogador, dificuldade, modoJogo, times } = route.params;
+  const { jogadores, duracaoSegundos, rodadasPorJogador, dificuldade, categorias, modoJogo, times } = route.params;
   const insets = useSafeAreaInsets();
   const duracaoMs = duracaoSegundos * 1000;
   const totalTurnos = jogadores.length * rodadasPorJogador;
@@ -552,7 +552,7 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
     const carta = selecionarCartaInteligente(
       cartasUsadasRef.current,
       dificuldade as DificuldadeNPL | 'todas',
-      'todas',
+      categorias,
       turnosJogados,
       totalTurnos,
     );
@@ -791,8 +791,8 @@ function FasePreparo({
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(op, { toValue: 1, duration: 480, useNativeDriver: true }),
-      Animated.timing(nomeY, { toValue: 0, duration: 480, useNativeDriver: true }),
+      Animated.timing(op, { toValue: 1, duration: 260, useNativeDriver: true }),
+      Animated.timing(nomeY, { toValue: 0, duration: 260, useNativeDriver: true }),
     ]).start();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -875,6 +875,18 @@ function FaseJogando({
   const [streakAtual, setStreakAtual] = useState(0);
   const [acertosDisplay, setAcertosDisplay] = useState(0);
 
+  // ── Condições especiais da carta atual ────────────────────────────────────
+  const [proibidasOcultas, setProibidasOcultas] = useState(
+    () => cartaAtual.condicao === 'proibidas_ocultas',
+  );
+  const [surtoAtivo, setSurtoAtivo] = useState(
+    () => cartaAtual.condicao === 'surto',
+  );
+  const [colapsoVisualExtra, setColapsoVisualExtra] = useState(
+    () => (cartaAtual.condicao === 'colapso_visual' ? 0.3 : 0),
+  );
+  const proibidasTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const terminouRef = useRef(false);
   const isTransitioningRef = useRef(false);
   const startRef = useRef(Date.now());
@@ -908,7 +920,12 @@ function FaseJogando({
 
   useEffect(() => {
     void iniciarDrone();
-    return () => { void pararDrone(); };
+    // Aplica condição da carta inicial (sorteada no useState)
+    aplicarCondicaoCarta(cartaRef.current);
+    return () => {
+      void pararDrone();
+      if (proibidasTimerRef.current) clearTimeout(proibidasTimerRef.current);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -918,8 +935,10 @@ function FaseJogando({
 
   const pct = tempoRestanteMs / duracaoMs;
   // Session escalation: pressure kicks in earlier in later rounds
-  const pctVisual = Math.max(0, pct - progressaoSessao * 0.12);
-  const intensidadeVisual = calcularIntensidade(pctVisual);
+  // colapso_visual cards add extra offset to make UI collapse sooner
+  const pctVisual = Math.max(0, pct - progressaoSessao * 0.12 - colapsoVisualExtra);
+  // surto cards force colapso intensity from the very first second
+  const intensidadeVisual: IntensidadeVisual = surtoAtivo ? 'colapso' : calcularIntensidade(pctVisual);
   const corTimer = COR_TIMER[intensidadeVisual];
   const segundosExibidos = Math.ceil(tempoRestanteMs / 1000);
 
@@ -1021,7 +1040,7 @@ function FaseJogando({
 
     Animated.timing(vignetteOp, {
       toValue: OPACIDADE_VIGNETTE[nivel],
-      duration: nivel === 'colapso' ? 400 : 1200,
+      duration: nivel === 'colapso' ? 400 : 600,
       useNativeDriver: true,
     }).start();
 
@@ -1031,7 +1050,7 @@ function FaseJogando({
     };
     Animated.timing(proibidasInvasaoY, {
       toValue: invasaoTargets[nivel],
-      duration: nivel === 'colapso' ? 700 : 1400,
+      duration: nivel === 'colapso' ? 700 : 700,
       useNativeDriver: true,
     }).start();
 
@@ -1044,15 +1063,15 @@ function FaseJogando({
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       pulsoRef.current = Animated.loop(
         Animated.sequence([
-          Animated.timing(palavraScale, { toValue: 1.02, duration: 800, useNativeDriver: true }),
-          Animated.timing(palavraScale, { toValue: 1.0, duration: 800, useNativeDriver: true }),
+          Animated.timing(palavraScale, { toValue: 1.02, duration: 320, useNativeDriver: true }),
+          Animated.timing(palavraScale, { toValue: 1.0, duration: 320, useNativeDriver: true }),
         ]),
       );
       pulsoRef.current.start();
       respiracaoRef.current = Animated.loop(
         Animated.sequence([
-          Animated.timing(respiracaoOp, { toValue: 0.97, duration: 1200, useNativeDriver: true }),
-          Animated.timing(respiracaoOp, { toValue: 1.0, duration: 1200, useNativeDriver: true }),
+          Animated.timing(respiracaoOp, { toValue: 0.97, duration: 500, useNativeDriver: true }),
+          Animated.timing(respiracaoOp, { toValue: 1.0, duration: 500, useNativeDriver: true }),
         ]),
       );
       respiracaoRef.current.start();
@@ -1101,6 +1120,34 @@ function FaseJogando({
       Animated.timing(timerScale, { toValue: 0.93, duration: 100, useNativeDriver: true }),
       Animated.timing(timerScale, { toValue: 1.0, duration: 80, useNativeDriver: true }),
     ]).start();
+  }
+
+  function aplicarCondicaoCarta(carta: Carta) {
+    const condicao = carta.condicao;
+
+    // Limpa timer anterior de proibidas_ocultas se existir
+    if (proibidasTimerRef.current) {
+      clearTimeout(proibidasTimerRef.current);
+      proibidasTimerRef.current = null;
+    }
+
+    setProibidasOcultas(condicao === 'proibidas_ocultas');
+    setSurtoAtivo(condicao === 'surto');
+    setColapsoVisualExtra(condicao === 'colapso_visual' ? 0.3 : 0);
+
+    if (condicao === 'relampago') {
+      // Rouba 15s do tempo restante avançando o ponto de início
+      startRef.current = Math.min(
+        startRef.current - 15_000,
+        Date.now() - Math.max(0, duracaoMs - 1000), // garante pelo menos 1s restante
+      );
+    }
+
+    if (condicao === 'proibidas_ocultas') {
+      proibidasTimerRef.current = setTimeout(() => {
+        setProibidasOcultas(false);
+      }, 10_000);
+    }
   }
 
   function iniciarShake(amplitude: number) {
@@ -1152,6 +1199,7 @@ function FaseJogando({
       const novaCarta = sortearProxima();
       cartaRef.current = novaCarta;
       setCartaAtual(novaCarta);
+      aplicarCondicaoCarta(novaCarta);
       cardSlideX.setValue(enterX);
       cardOp.setValue(0);
       Animated.parallel([
@@ -1222,14 +1270,18 @@ function FaseJogando({
             { transform: [{ scale: proibidasPulse }, { translateY: proibidasInvasaoY }] },
           ]}
         >
-          {cartaAtual.proibidas.map((p, i) => (
-            <ProibidaItem
-              key={`${cartaAtual.id}-${i}`}
-              palavra={p}
-              index={i}
-              intensidade={intensidadeVisual}
-            />
-          ))}
+          {proibidasOcultas ? (
+            <Text style={estilos.proibidasOcultasTexto}>proibidas ocultas por 10s…</Text>
+          ) : (
+            cartaAtual.proibidas.map((p, i) => (
+              <ProibidaItem
+                key={`${cartaAtual.id}-${i}`}
+                palavra={p}
+                index={i}
+                intensidade={intensidadeVisual}
+              />
+            ))
+          )}
         </Animated.View>
       </Animated.View>
 
@@ -1281,18 +1333,8 @@ function ProibidaItem({
     breatheY.setValue(0);
 
     if (intensidade === 'pressao') {
-      // Individual organic breathing — each word at a different phase, very subtle
-      const delay = index * 220;
-      const t = setTimeout(() => {
-        breatheRef.current = Animated.loop(
-          Animated.sequence([
-            Animated.timing(breatheY, { toValue: -1.8, duration: 1600 + index * 180, useNativeDriver: true }),
-            Animated.timing(breatheY, { toValue: 1.8, duration: 1600 + index * 180, useNativeDriver: true }),
-          ]),
-        );
-        breatheRef.current.start();
-      }, delay);
-      return () => clearTimeout(t);
+      // Pressao: breatheY fica em 0 — proibidas ficam estáticas, sem float atmosférico
+      return undefined;
     }
 
     if (intensidade === 'panico') {
@@ -1376,43 +1418,43 @@ function FaseRoubo({
   const btnScale = useRef(new Animated.Value(0.85)).current;
 
   useEffect(() => {
-    // Silêncio → fade in escuro
-    Animated.timing(fundoOp, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+    // Entrada direta — sem silêncio atmosférico
+    Animated.timing(fundoOp, { toValue: 1, duration: 240, useNativeDriver: true }).start();
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     void tocarRoubo();
 
     // "tempo." aparece
     const t1 = setTimeout(() => {
-      Animated.timing(tempoOp, { toValue: 1, duration: 700, useNativeDriver: true }).start();
-    }, 600);
+      Animated.timing(tempoOp, { toValue: 1, duration: 240, useNativeDriver: true }).start();
+    }, 200);
 
     // palavra revelada
     const t2 = setTimeout(() => {
-      Animated.timing(palavraOp, { toValue: 1, duration: 600, useNativeDriver: true }).start();
-    }, 1400);
+      Animated.timing(palavraOp, { toValue: 1, duration: 240, useNativeDriver: true }).start();
+    }, 500);
 
     // time adversário pode roubar
     const t3 = setTimeout(() => {
       setRouboFase('reveal');
-      Animated.timing(teamOp, { toValue: 1, duration: 500, useNativeDriver: true }).start();
-    }, 2000);
+      Animated.timing(teamOp, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+    }, 700);
 
     // countdown começa
     const t4 = setTimeout(() => {
       setRouboFase('countdown');
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       Animated.parallel([
-        Animated.timing(contagemOp, { toValue: 1, duration: 300, useNativeDriver: true }),
+        Animated.timing(contagemOp, { toValue: 1, duration: 220, useNativeDriver: true }),
         Animated.spring(contagemScale, { toValue: 1, friction: 6, useNativeDriver: true }),
       ]).start();
-      // botão aparece ligeiramente depois
+      // botão aparece logo após
       setTimeout(() => {
         Animated.parallel([
-          Animated.timing(btnOp, { toValue: 1, duration: 400, useNativeDriver: true }),
+          Animated.timing(btnOp, { toValue: 1, duration: 200, useNativeDriver: true }),
           Animated.spring(btnScale, { toValue: 1, friction: 5, useNativeDriver: true }),
         ]).start();
-      }, 600);
-    }, 2800);
+      }, 200);
+    }, 900);
 
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1562,12 +1604,12 @@ function FaseTurnoSummary({
 
   useEffect(() => {
     if (!ehColapsoTotal) return;
-    Animated.timing(silencioOp, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+    Animated.timing(silencioOp, { toValue: 1, duration: 260, useNativeDriver: true }).start();
     const t = setTimeout(() => {
-      Animated.timing(silencioOp, { toValue: 0, duration: 400, useNativeDriver: true }).start(() => {
+      Animated.timing(silencioOp, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
         setSilencioAtivo(false);
       });
-    }, 1600);
+    }, 800);
     return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -1590,12 +1632,12 @@ function FaseTurnoSummary({
   const botaoDelay = Math.max(2200, comentarioDelay + 700);
 
   useEffect(() => {
-    Animated.timing(tituloOp, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+    Animated.timing(tituloOp, { toValue: 1, duration: 220, useNativeDriver: true }).start();
     const t1 = setTimeout(() => {
-      Animated.timing(comentarioOp, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+      Animated.timing(comentarioOp, { toValue: 1, duration: 260, useNativeDriver: true }).start();
     }, comentarioDelay);
     const t2 = setTimeout(() => {
-      Animated.timing(botaoOp, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+      Animated.timing(botaoOp, { toValue: 1, duration: 200, useNativeDriver: true }).start();
     }, botaoDelay);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1807,7 +1849,7 @@ function FaseFim({
   const taxa = totalPalavras > 0 ? Math.round((totalAcertos / totalPalavras) * 100) : 0;
   const identidade = detectarIdentidade(historico);
 
-  // Pacing cinematográfico — revelação lenta, contemplativa
+  // Social momentum — revelação rápida, conteúdo disponível imediatamente
   const identidadeOp = useRef(new Animated.Value(0)).current;
   const tituloOp = useRef(new Animated.Value(0)).current;
   const destaquesOp = useRef(new Animated.Value(0)).current;
@@ -1815,20 +1857,19 @@ function FaseFim({
   const aftermathOp = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Identidade aparece primeiro — abre a sessão com diagnóstico
-    Animated.timing(identidadeOp, { toValue: 1, duration: 900, useNativeDriver: true }).start();
+    Animated.timing(identidadeOp, { toValue: 1, duration: 280, useNativeDriver: true }).start();
     const t0 = setTimeout(() => {
-      Animated.timing(tituloOp, { toValue: 1, duration: 700, useNativeDriver: true }).start();
-    }, 1100);
+      Animated.timing(tituloOp, { toValue: 1, duration: 260, useNativeDriver: true }).start();
+    }, 300);
     const t1 = setTimeout(() => {
-      Animated.timing(aftermathOp, { toValue: 1, duration: 600, useNativeDriver: true }).start();
-    }, 1900);
+      Animated.timing(aftermathOp, { toValue: 1, duration: 240, useNativeDriver: true }).start();
+    }, 600);
     const t2 = setTimeout(() => {
-      Animated.timing(destaquesOp, { toValue: 1, duration: 500, useNativeDriver: true }).start();
-    }, 2600);
+      Animated.timing(destaquesOp, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+    }, 900);
     const t3 = setTimeout(() => {
-      Animated.timing(rankingOp, { toValue: 1, duration: 400, useNativeDriver: true }).start();
-    }, 3400);
+      Animated.timing(rankingOp, { toValue: 1, duration: 200, useNativeDriver: true }).start();
+    }, 1200);
     return () => { clearTimeout(t0); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -1955,14 +1996,14 @@ const estilos = StyleSheet.create({
   },
   silencioTexto: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 40,
     letterSpacing: -1,
     textAlign: 'center',
   },
   silencioSub: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 15,
     textAlign: 'center',
     marginTop: espacamento.xs,
@@ -1978,7 +2019,7 @@ const estilos = StyleSheet.create({
   botaoSairTexto: { color: cores.textoMudo, fontSize: 28, lineHeight: 30 },
   progresso: {
     color: cores.textoMudo,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 16,
     letterSpacing: 0.5,
   },
@@ -2030,14 +2071,14 @@ const estilos = StyleSheet.create({
   },
   preparoNome: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 44,
     letterSpacing: -1,
     textAlign: 'center',
   },
   preparoTutorial: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 14,
     lineHeight: 22,
     marginTop: espacamento.sm,
@@ -2045,7 +2086,7 @@ const estilos = StyleSheet.create({
   },
   preparoInstrucao: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 16,
     lineHeight: 24,
     marginTop: espacamento.md,
@@ -2133,12 +2174,13 @@ const estilos = StyleSheet.create({
   },
   palavraPrincipal: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 52,
     letterSpacing: -1.5,
     marginBottom: espacamento.xl,
     textAlign: 'center',
   },
+  proibidasOcultasTexto: { color: cores.textoMudo, fontSize: 14, fontStyle: 'italic', textAlign: 'center', paddingVertical: espacamento.lg },
   proibidasBloco: { alignSelf: 'stretch', gap: espacamento.xs },
   proibidaItem: {
     borderLeftWidth: 3,
@@ -2200,28 +2242,28 @@ const estilos = StyleSheet.create({
   },
   rouboTempoTexto: {
     color: cores.textoMudo,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 22,
     letterSpacing: -0.5,
     textAlign: 'center',
   },
   rouboPalavra: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 44,
     letterSpacing: -1.5,
     textAlign: 'center',
   },
   rouboTimeTexto: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 17,
     lineHeight: 26,
     textAlign: 'center',
   },
   rouboContagem: {
     color: cores.primaria,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 72,
     letterSpacing: -3,
     textAlign: 'center',
@@ -2243,7 +2285,7 @@ const estilos = StyleSheet.create({
   },
   rouboConfirmado: {
     color: cores.sucesso,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 28,
     letterSpacing: -0.5,
     textAlign: 'center',
@@ -2260,7 +2302,7 @@ const estilos = StyleSheet.create({
   },
   resumoTitulo: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 36,
     letterSpacing: -0.5,
     marginBottom: espacamento.xs,
@@ -2325,7 +2367,7 @@ const estilos = StyleSheet.create({
   },
   resumoComentario: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 17,
     lineHeight: 26,
     textAlign: 'center',
@@ -2358,7 +2400,7 @@ const estilos = StyleSheet.create({
   },
   tvtTime: { alignItems: 'center', flex: 1 },
   tvtTimeNome: { color: cores.textoMudo, fontSize: 11, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase' },
-  tvtTimePontos: { color: cores.acento, fontFamily: familias.serifDisplay, fontSize: 36, lineHeight: 42 },
+  tvtTimePontos: { color: cores.acento, fontFamily: familias.sans, fontWeight: '800' as const, fontSize: 36, lineHeight: 42 },
   tvtVs: { color: cores.borda, fontSize: 14, fontWeight: '700', letterSpacing: 1 },
 
   // Entre
@@ -2374,7 +2416,7 @@ const estilos = StyleSheet.create({
   },
   entreObservacaoTexto: {
     color: 'rgba(232,106,90,0.85)',
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 14,
     lineHeight: 20,
     textAlign: 'center',
@@ -2442,7 +2484,7 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoSemibold,
     marginLeft: espacamento.sm,
   },
-  entrePontos: { color: cores.acento, fontFamily: familias.serifDisplay, fontSize: 22 },
+  entrePontos: { color: cores.acento, fontFamily: familias.sans, fontWeight: '800' as const, fontSize: 22 },
   entreRodape: { alignItems: 'center' },
   entreProximo: {
     color: cores.primaria,
@@ -2478,7 +2520,7 @@ const estilos = StyleSheet.create({
     borderColor: 'rgba(201,137,58,0.4)',
   },
   tvtTimeNomeFim: { color: cores.textoMudo, fontSize: 11, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase' },
-  tvtTimePontosFim: { color: cores.acento, fontFamily: familias.serifDisplay, fontSize: 40, lineHeight: 48 },
+  tvtTimePontosFim: { color: cores.acento, fontFamily: familias.sans, fontWeight: '800' as const, fontSize: 40, lineHeight: 48 },
   tvtVsFim: { alignSelf: 'center', color: cores.textoMudo, fontSize: 13, fontWeight: '700', letterSpacing: 1, paddingHorizontal: espacamento.sm },
 
   // Fim — identidade do grupo + aftermath
@@ -2489,7 +2531,7 @@ const estilos = StyleSheet.create({
   },
   fimIdentidadeFrase: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 22,
     letterSpacing: -0.3,
     lineHeight: 30,
@@ -2502,7 +2544,7 @@ const estilos = StyleSheet.create({
   },
   fimAftermathTexto: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 15,
     lineHeight: 22,
     textAlign: 'center',
@@ -2512,7 +2554,7 @@ const estilos = StyleSheet.create({
   fimTela: { alignItems: 'center', paddingHorizontal: espacamento.lg },
   fimTitulo: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 30,
     marginBottom: espacamento.xs,
     textAlign: 'center',
@@ -2537,7 +2579,7 @@ const estilos = StyleSheet.create({
     width: '100%',
   },
   fimStat: { alignItems: 'center', flex: 1, gap: 2 },
-  fimStatNumero: { color: cores.texto, fontFamily: familias.serifDisplay, fontSize: 28 },
+  fimStatNumero: { color: cores.texto, fontFamily: familias.sans, fontWeight: '800' as const, fontSize: 28 },
   fimStatLabel: { color: cores.textoMudo, fontSize: tipografia.tamanhoMicro, letterSpacing: 0.5 },
   fimStatDivisor: { backgroundColor: cores.borda, width: 1 },
   fimMomento: {
@@ -2559,7 +2601,7 @@ const estilos = StyleSheet.create({
   },
   fimMomentoTexto: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 20,
     lineHeight: 28,
     letterSpacing: -0.3,
@@ -2575,7 +2617,7 @@ const estilos = StyleSheet.create({
   },
   fimDestaqueTexto: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 15,
     lineHeight: 22,
   },
@@ -2603,7 +2645,7 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoSemibold,
     marginLeft: espacamento.sm,
   },
-  fimRankingPontos: { color: cores.acento, fontFamily: familias.serifDisplay, fontSize: 22 },
+  fimRankingPontos: { color: cores.acento, fontFamily: familias.sans, fontWeight: '800' as const, fontSize: 22 },
   fimSair: {
     borderColor: cores.primaria,
     borderRadius: raio.pill,

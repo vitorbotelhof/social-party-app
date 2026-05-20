@@ -246,7 +246,8 @@ const estilos = StyleSheet.create({
   },
   aberturaTexto: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
+    fontWeight: '500' as const,
     fontSize: tipografia.tamanhoSubtituloGrande,
     lineHeight: 32,
     textAlign: 'center',
@@ -265,10 +266,10 @@ const estilos = StyleSheet.create({
     marginBottom: espacamento.sm,
     textTransform: 'uppercase',
   },
-  // Nome do mais nomeado — serifDisplay, âmbar, impacto
+  // Nome do mais nomeado — sans bold, impacto
   destaqueNome: {
     color: cores.acento,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     letterSpacing: 0,
     lineHeight: 44,
@@ -316,7 +317,7 @@ const estilos = StyleSheet.create({
   // Trait — italico, muted — como memória, não conquista
   retratoTrait: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     lineHeight: 20,
   },
@@ -332,7 +333,7 @@ const estilos = StyleSheet.create({
   },
   destaqueStat: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     lineHeight: 20,
   },
@@ -341,7 +342,7 @@ const estilos = StyleSheet.create({
   },
   destaqueStatPrompt: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
   },
 
   // Ações
@@ -371,7 +372,7 @@ const estilos = StyleSheet.create({
   },
   botaoPrimarioTexto: {
     color: cores.textoSobrePrimaria,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpo,
   },
   botaoSecundario: {
@@ -380,7 +381,7 @@ const estilos = StyleSheet.create({
   },
   botaoSecundarioTexto: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
   },
 });

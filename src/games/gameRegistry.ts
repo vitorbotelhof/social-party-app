@@ -10,8 +10,9 @@ export type CategoriaEmocional =
 
 export interface CategoriaMeta {
   id: CategoriaEmocional;
-  label: string;
-  sublabel: string;
+  label: string;       // vibe statement — frase longa, usada no header do bloco
+  sublabel: string;    // contexto curto e pontiagudo
+  labelCurto: string;  // etiqueta do chip — 2-4 palavras
 }
 
 export const CATEGORIAS_EMOCIONAIS: ReadonlyArray<CategoriaMeta> = [
@@ -19,41 +20,49 @@ export const CATEGORIAS_EMOCIONAIS: ReadonlyArray<CategoriaMeta> = [
     id: 'tensao_misterio',
     label: 'quando ninguém confia em ninguém',
     sublabel: 'alguém está mentindo. ou não.',
-  },
-  {
-    id: 'revelacoes_caos',
-    label: 'quando alguém vai contar tudo',
-    sublabel: 'sem filtro. sem volta.',
-  },
-  {
-    id: 'quem_voces_sao',
-    label: 'quando o grupo se vê como realmente é',
-    sublabel: 'o que ninguém falou em voz alta.',
-  },
-  {
-    id: 'conversa_profunda',
-    label: 'quando a noite pede honestidade',
-    sublabel: 'mais lento. mais real.',
-  },
-  {
-    id: 'casal_intimidade',
-    label: 'quando são só vocês dois',
-    sublabel: 'intimidade que incomoda, do jeito bom.',
-  },
-  {
-    id: 'festa_barulho',
-    label: 'quando ninguém consegue ficar sério',
-    sublabel: 'o grupo está entregue.',
-  },
-  {
-    id: 'humor_absurdo',
-    label: 'quando o absurdo já virou regra',
-    sublabel: 'controle? nunca foi uma opção.',
+    labelCurto: 'ninguém confia',
   },
   {
     id: 'votacao_exposicao',
     label: 'quando alguém vai estar no centro',
     sublabel: 'o grupo decide. você aguenta.',
+    labelCurto: 'você no centro',
+  },
+  {
+    id: 'quem_voces_sao',
+    label: 'quando o grupo se vê como realmente é',
+    sublabel: 'o que ninguém falou em voz alta.',
+    labelCurto: 'quem vocês são',
+  },
+  {
+    id: 'revelacoes_caos',
+    label: 'quando alguém vai contar tudo',
+    sublabel: 'sem filtro. sem volta.',
+    labelCurto: 'contar tudo',
+  },
+  {
+    id: 'festa_barulho',
+    label: 'quando ninguém consegue ficar sério',
+    sublabel: 'o grupo está entregue.',
+    labelCurto: 'pura bagunça',
+  },
+  {
+    id: 'conversa_profunda',
+    label: 'quando a noite pede honestidade',
+    sublabel: 'mais lento. mais real.',
+    labelCurto: 'conversa real',
+  },
+  {
+    id: 'humor_absurdo',
+    label: 'quando o absurdo já virou regra',
+    sublabel: 'controle? nunca foi uma opção.',
+    labelCurto: 'absurdo total',
+  },
+  {
+    id: 'casal_intimidade',
+    label: 'quando são só vocês dois',
+    sublabel: 'intimidade que incomoda, do jeito bom.',
+    labelCurto: 'só vocês dois',
   },
 ];
 

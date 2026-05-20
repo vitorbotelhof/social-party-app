@@ -33,7 +33,7 @@ void carregarPreferenciaSom();
 const navegacaoRef = createNavigationContainerRef<RootStackParamList>();
 
 const temaNavegacao = {
-  dark: true,
+  dark: false,
   colors: {
     background: cores.fundo,
     border: cores.borda,
@@ -118,7 +118,7 @@ export default function App() {
           void restaurarPartidaSeNecessario();
         }}
       >
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
         <RootNavigator />
       </NavigationContainer>
     </SafeAreaProvider>

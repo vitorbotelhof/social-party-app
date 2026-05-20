@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
-import { cores, espacamento, familias } from '@/theme/colors';
+import { cores, espacamento, tipografia } from '@/theme/colors';
 
-// Each phrase is a whisper directed at the group — not a description of the app.
-// Lowercase, ambiguous, intimate. Rotates hourly so it feels alive across sessions.
+// Frases diretas e sociais — curtas, provocativas, sem atmosphera pesada
 const PERGUNTAS = [
   'cuidado com o que você começa.',
   'a noite ainda está começando?',
@@ -25,24 +24,24 @@ function perguntaDaHora(): string {
 
 export function PerguntaDoMomento() {
   const opacidade = useRef(new Animated.Value(0)).current;
-  const posicaoY = useRef(new Animated.Value(10)).current;
+  const posicaoY = useRef(new Animated.Value(8)).current;
 
   // Computed once on mount — stable within the session even if an hour boundary passes
   const pergunta = useMemo(() => perguntaDaHora(), []);
 
   useEffect(() => {
-    // Enters after the Hero has had time to land — deliberate delay creates weight
+    // Delay curto: deixa o Hero pousar antes, não prolonga contemplação
     Animated.sequence([
-      Animated.delay(220),
+      Animated.delay(120),
       Animated.parallel([
         Animated.timing(opacidade, {
           toValue: 1,
-          duration: 640,
+          duration: 240,
           useNativeDriver: true,
         }),
         Animated.timing(posicaoY, {
           toValue: 0,
-          duration: 640,
+          duration: 240,
           useNativeDriver: true,
         }),
       ]),
@@ -68,19 +67,19 @@ const estilos = StyleSheet.create({
     paddingBottom: espacamento.xxl,
     paddingTop: espacamento.md,
   },
-  // Thin hairline anchors the element without adding visual noise
+  // Hairline: âncora visual discreta
   linha: {
     backgroundColor: cores.borda,
+    borderRadius: 1,
     height: 1,
-    opacity: 0.6,
-    width: 32,
+    width: 28,
   },
   pergunta: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
-    fontSize: 20,
-    letterSpacing: 0.2,
+    fontFamily: undefined, // herda System
+    fontSize: tipografia.tamanhoSubtitulo,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: -0.2,
     lineHeight: 28,
-    opacity: 0.9,
   },
 });

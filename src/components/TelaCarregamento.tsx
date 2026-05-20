@@ -9,21 +9,23 @@ interface Props {
   mensagem?: string;
 }
 
-const DURACAO_PULSO = 900;
+// 600ms: vivo sem ser ansioso. Antes era 900ms (contemplativo).
+const DURACAO_PULSO = 600;
 
 /**
- * Tela de loading com a logo "entre nós" pulsando suavemente.
+ * Loading state com logo pulsando.
+ * Escala reduzida (0.95↔1.03) — subtil, social, não dramatizado.
  */
 export function TelaCarregamento({ mensagem }: Props) {
-  const escala = useRef(new Animated.Value(0.9)).current;
-  const opacidade = useRef(new Animated.Value(0.7)).current;
+  const escala = useRef(new Animated.Value(0.95)).current;
+  const opacidade = useRef(new Animated.Value(0.6)).current;
 
   useEffect(() => {
     const animacao = Animated.loop(
       Animated.sequence([
         Animated.parallel([
           Animated.timing(escala, {
-            toValue: 1.06,
+            toValue: 1.03,
             duration: DURACAO_PULSO,
             useNativeDriver: true,
           }),
@@ -35,12 +37,12 @@ export function TelaCarregamento({ mensagem }: Props) {
         ]),
         Animated.parallel([
           Animated.timing(escala, {
-            toValue: 0.9,
+            toValue: 0.95,
             duration: DURACAO_PULSO,
             useNativeDriver: true,
           }),
           Animated.timing(opacidade, {
-            toValue: 0.7,
+            toValue: 0.6,
             duration: DURACAO_PULSO,
             useNativeDriver: true,
           }),
@@ -57,7 +59,7 @@ export function TelaCarregamento({ mensagem }: Props) {
         <Animated.View
           style={{ opacity: opacidade, transform: [{ scale: escala }] }}
         >
-          <Logo tamanho={120} />
+          <Logo tamanho={80} />
         </Animated.View>
         {mensagem && <Text style={estilos.mensagem}>{mensagem}</Text>}
       </View>
@@ -69,12 +71,14 @@ const estilos = StyleSheet.create({
   centro: {
     alignItems: 'center',
     flex: 1,
-    gap: espacamento.lg,
+    gap: espacamento.md,
     justifyContent: 'center',
   },
   mensagem: {
-    color: cores.textoSecundario,
-    fontSize: tipografia.tamanhoCorpoMenor,
+    color: cores.textoMudo,
+    fontSize: tipografia.tamanhoCaption,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
   },
   tela: {
     backgroundColor: cores.fundo,

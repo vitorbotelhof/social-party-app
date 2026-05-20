@@ -1,262 +1,410 @@
 # ENTRE NÓS — CORE CONTEXT
 
-## Product Identity
+Entre Nós
+Core Product Context
+1. O Que É o Entre Nós
 
-Entre Nós is a premium mobile-first social experience platform centered on real-world human interaction.
+O Entre Nós NÃO é:
 
-Tagline:
-"Jogos sociais para momentos reais."
+um catálogo de minigames
+um app de trivia
+um party game tradicional
+um SaaS gamificado
+uma coleção de “joguinhos”
 
-The platform is not a "casual party game app". It is a social-first lifestyle platform built around human connection, social tension, vulnerability, laughter, intimacy, and chaos between people who are physically together.
+O Entre Nós É:
 
-The product emotion:
-something is about to happen between these people.
+uma plataforma de experiências sociais presenciais.
 
-Core emotional pillars:
+O produto existe para:
 
-* tensão social
-* mistério
-* cumplicidade
-* vulnerabilidade
-* caos controlado
-* conexão presencial
-* energia noturna
-* revelação
+desbloquear interação humana
+facilitar caos social saudável
+criar memória coletiva
+acelerar intimidade
+gerar histórias compartilhadas
+transformar grupos em experiências emocionais vivas
 
----
+O app:
 
-## What the Product Feels Like
+media energia social entre pessoas reais.
+2. O Problema Humano
 
-Emotional references:
+O Entre Nós resolve:
 
-* poker — silêncio carregado, olhares, blefe
-* filme noir — luz baixa, sombra dramática, tensão
-* bar de jazz sofisticado — madeira escura, âmbar, conversa íntima
-* jantar entre amigos — calor, caos, revelações
-* fotografia analógica — imperfeição quente, profundidade
-* vinho tinto — temperatura, sofisticação, lentidão intencional
+a superficialidade dos encontros modernos.
 
-The product should never feel like:
+Hoje:
 
-* um app de gaming
-* um produto tech / AI startup
-* um dashboard multiplayer
-* uma plataforma web3
-* um app neon cyberpunk
+grupos ficam presos no celular
+conversas morrem rápido
+existe ansiedade social
+o “gelo inicial” dura demais
+muita gente quer conexão mas não sabe como criar
 
----
+O produto funciona como:
 
-## Product Vision
+facilitador social
+regulador de energia do ambiente
+catalisador emocional
+acelerador de interação humana
+3. A Filosofia Central
+O app deve desaparecer no momento certo.
 
-Build the leading mobile social experience platform for in-person interactions.
+A melhor sessão do Entre Nós é aquela em que:
 
-Long-term vision:
+as pessoas esquecem da interface
+começam a olhar umas para as outras
+entram em caos social
+criam piadas internas
+geram memória coletiva
 
-* centenas de jogos sociais
-* motor modular de multiplayer
-* social graph entre amigos reais
-* infraestrutura de festas e encontros
-* marca premium de lifestyle social
-* plataforma, não produto único
+O foco principal nunca é:
 
-Games are built on top of reusable multiplayer and social engines.
+a tela.
 
-The product should feel closer in quality and care to:
+O foco principal sempre é:
 
-* Spotify — browsing, discovery, catalog
-* Netflix — cinematic hierarchy, emotional cards
-* Apple Music — premium, intimate atmosphere
+o grupo.
+4. O Produto NÃO Deve Parecer
 
-NOT aesthetically like those products — similar in product quality and emotional intentionality.
+❌ app gamer neon
+❌ experiência contemplativa
+❌ thriller psicológico constante
+❌ clube de jazz noir
+❌ produto corporativo
+❌ SaaS social
+❌ app de produtividade gamificado
+❌ quiz educativo
+❌ catálogo de jogos baratos
 
----
+5. O Produto Deve Parecer
 
-## Branding
+✅ energia social viva
+✅ caos organizado
+✅ interação humana espontânea
+✅ humor brasileiro inteligente
+✅ objeto social premium
+✅ experiência tátil
+✅ rápido
+✅ humano
+✅ divertido
+✅ memorável
+✅ replayable
 
-Visual identity:
+6. O Grande Insight do Produto
 
-* dark mode first
-* warm dark surfaces — madeira escura, sépia, couro
-* premium cinematic aesthetic
-* emotional minimalism
-* atmosfera social noturna
-* elegante e humano
+O Entre Nós não cria:
 
-Avoid:
+gameplay.
 
-* cold blue-purple surfaces
-* gamer neon aesthetics
-* cyberpunk visuals
-* AI startup color palettes (purple→pink gradients)
-* childish UI
-* generic startup visuals
+Ele cria:
 
-Color palette:
+estados emocionais compartilhados.
 
-* preto sépia aquecido (#0C0A09)
-* carvão quente (#111009)
-* madeira escura (#1A1614)
-* couro escuro (#221E1B)
-* bordeaux / vinho (#9B2335)
-* âmbar / cobre (#B85C2A)
-* dourado sépia (#8B6914)
-* off-white quente (#F0EAE0)
+Cada jogo ativa:
 
-Typography:
+paranoia
+julgamento
+improviso
+vulnerabilidade
+caos
+intimidade
+vergonha social
+rivalidade leve
+colapso coletivo
 
-* sans-serif moderno para UI e corpo
-* serif editorial (Playfair Display) para momentos de alto impacto emocional
+O verdadeiro produto é:
 
-UI feeling:
-"algo interessante está prestes a acontecer entre essas pessoas."
+a transformação emocional do grupo ao longo da sessão.
+7. Estrutura Emocional do Ecossistema
+Mr White
 
----
+Emoção principal:
 
-## UX Philosophy
+paranoia social.
+Most Likely To
 
-Core UX principles:
+Emoção principal:
 
-* ultra low onboarding friction
-* mobile-first multiplayer
-* instant social engagement
-* fast room creation
-* minimal clicks
-* high emotional pacing
-* social reactions > complex mechanics
+julgamento social divertido.
+Na Ponta da Língua
 
-Correct hierarchy:
+Emoção principal:
 
-**emoção → intenção social → logística**
+colapso cognitivo coletivo.
+Jogos íntimos
 
-Never: logística → emoção
+Emoção principal:
 
-The app should maximize:
+vulnerabilidade progressiva.
+8. Filosofia de Sessão
 
-* velocidade do primeiro riso
-* replayability
-* densidade de interação social
-* momentos virais
-* conversa no mundo real
+O Entre Nós não é estruturado em:
 
----
+partidas.
 
-## Game-First Philosophy
+O produto é estruturado em:
 
-The game is always the primary entry point.
+sessões sociais.
 
-Users should always think about:
-1. que experiência social querem ter
-2. qual jogo querem jogar
-3. como o grupo vai jogar
-4. configurações da sessão
-5. gameplay
+Toda sessão possui:
 
-Users should never need to think about:
-* infraestrutura realtime
-* sistemas de sala
-* conceitos técnicos de multiplayer
+energia
+ritmo
+progressão emocional
+memória coletiva
+identidade própria
 
-before selecting a game.
+O produto deve:
 
-Multiplayer infrastructure is invisible to the user.
+entender a vibe do grupo
+modular intensidade
+sugerir energia
+facilitar transições emocionais
+9. Curadoria de Energia
 
----
+O usuário não escolhe apenas:
 
-## Technical Stack
+jogos.
 
-Frontend:
+Ele escolhe:
 
-* Expo
-* React Native
-* TypeScript
+a energia social da sessão.
 
-Architecture goals:
+Exemplos:
 
-* modular
-* reusable
-* multiplayer-first
-* realtime-first
-* scalable social systems
+quebra-gelo
+caos
+paranoia
+date
+intimidade
+festa
+vergonha alheia
+viagem
+after
+destruição psicológica
 
----
+No futuro:
+o app deve recomendar:
 
-## Core Architecture
+jogos
+intensidade
+pacing
+sequência ideal da noite
 
-The platform is built as a modular social multiplayer engine.
+baseado:
 
-Core systems (validated or in progress):
+no grupo
+no contexto
+na energia da sessão
+10. Público-Alvo Real
 
-* Room Engine
-* Voting Engine
-* Hidden Role Engine
-* Timer Engine
-* Presence System
+O core audience é:
 
-Systems intentionally NOT abstracted yet:
+jovens adultos socialmente ativos.
 
-* Prompt Engine (future)
-* Reveal Engine (future)
-* Reaction Engine (future)
+Principalmente:
 
-Only abstract systems after repeated validated patterns.
+20–35 anos
+brasileiros
+grupos de amigos
+dates
+viagens
+bares
+apartamentos
+churrascos
+pós-festa
+faculdade
+coworking
+casa de praia
+11. Contexto Real de Uso
 
----
+O produto precisa funcionar:
 
-## Initial Game Priorities
+alcoolizado
+cansado
+em ambiente barulhento
+com pouca luz
+em grupo grande
+em grupo bagunçado
+rapidamente
+sem onboarding longo
+12. Princípios de UX
 
-1. Mr White — hidden role, social tension, blefe
-2. Most Likely To — votação social, vulnerabilidade
-3. Eu Nunca — revelação, caos social
+O app deve:
 
-These games validate:
+iniciar rápido
+ensinar jogando
+reduzir fricção
+maximizar reação humana
+minimizar setup
+O app NÃO deve:
+exigir leitura longa
+exigir tutorial
+exigir concentração contínua
+exigir atenção exclusiva
+13. Filosofia de Interface
 
-* realtime multiplayer
-* social voting
-* hidden roles
-* prompt systems
-* reactions
-* vulnerability loops
+A interface existe para:
 
----
+acelerar energia social.
 
-## Non-Negotiable Rules
+Toda decisão visual deve responder:
 
-* premium UI only
-* dark mode first — warm dark, not cold dark
-* no gamer aesthetics
-* no cyberpunk aesthetics
-* no cold blue-purple surfaces
-* no AI startup color palette
-* reusable abstractions only
-* multiplayer-first architecture
-* avoid duplicated logic
-* optimize for replayability
-* optimize for social interaction density
-* optimize for low onboarding friction
+“isso melhora a interação entre pessoas reais?”
 
----
+Se não:
+remover.
 
-## AI Development Instructions
+14. O Verdadeiro Moat do Produto
 
-Always prioritize:
+O diferencial do Entre Nós NÃO é:
 
-* modularity
-* reusable systems
-* scalability
-* low complexity
-* clean abstractions
-* multiplayer stability
-* emotional product quality
+UI bonita
+motion design
+estética cinematográfica
+tecnologia
 
-Do not:
+O verdadeiro moat é:
 
-* create isolated game logic
-* tightly couple UI and game logic
-* duplicate systems
-* overengineer early
-* build speculative engines before validated need
-* apply cold blue-purple color palettes
-* use gamer-style neon glow effects
+engenharia emocional de dinâmica social.
 
-Always think platform-first, not game-first.
-Always think emotion-first, not infrastructure-first.
+O produto entende:
+
+ritmo de grupo
+caos
+tensão
+intimidade
+improviso
+memória coletiva
+15. Social-First Product
+
+O Entre Nós é:
+
+social-first.
+
+Não:
+screen-first.
+
+O celular:
+
+facilita
+organiza
+provoca
+acelera
+
+Mas:
+
+a experiência acontece entre pessoas.
+16. O App Como Host Invisível
+
+O app deve agir como:
+
+um host social inteligente.
+
+Ele:
+
+observa
+reage
+comenta
+acelera
+provoca
+
+Mas nunca:
+
+domina a experiência
+compete com o grupo
+rouba atenção demais
+17. Filosofia de Conteúdo
+
+O conteúdo deve:
+
+soar humano
+soar brasileiro
+soar espontâneo
+soar conversável
+
+Evitar:
+
+tom corporativo
+tom gamer
+tom cult
+humor forçado
+IA “engraçadinha”
+linguagem excessivamente internet
+18. Replayability
+
+A retenção do produto NÃO vem de:
+
+grind
+progressão artificial
+ranking global
+
+Ela vem de:
+
+novas histórias sociais emergentes.
+
+O app deve gerar:
+
+inside jokes
+caos memorável
+traições engraçadas
+momentos absurdos
+frases inesquecíveis
+19. Compartilhamento
+
+O compartilhamento ideal não é:
+
+“olha meu score”.
+
+É:
+
+“olha o que aconteceu ontem.”
+
+O produto deve incentivar:
+
+prints
+dossiês
+resumos da sessão
+rankings engraçados
+callbacks sociais
+20. O Dossiê do Caos
+
+Ao final da sessão:
+o app deve gerar:
+
+memória coletiva compartilhável.
+
+Exemplos:
+
+quem mais colapsou
+quem mais foi julgado
+rodada mais absurda
+maior clutch
+momento da noite
+identidade do grupo
+21. Filosofia de Longo Prazo
+
+O Entre Nós deve evoluir para:
+
+a principal plataforma de experiências sociais presenciais do Brasil.
+
+Não apenas:
+“um app de jogos”.
+
+Mas:
+
+facilitador de encontros
+arquitetura de energia social
+motor de memória coletiva
+ritual contemporâneo de grupo
+22. Princípio Final
+
+O sucesso do produto NÃO é:
+
+“os usuários passaram muito tempo olhando para a tela.”
+
+O sucesso real é:
+
+“o app criou uma noite que as pessoas vão lembrar por anos.”

@@ -42,7 +42,7 @@ export function CartaoJogador({ jogador, estado = 'normal' }: Props) {
           {jogador.nome}
         </Text>
         {desconectado ? (
-          <Text style={estilos.tagDesconectado}>📵 SEM SINAL</Text>
+          <Text style={estilos.tagDesconectado}>SEM SINAL</Text>
         ) : (
           <>
             {estado === 'voce' && <Text style={estilos.tagVoce}>VOCÊ</Text>}
@@ -82,22 +82,26 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
     width: TAMANHO_AVATAR,
   },
+  avatarDesconectado: {
+    opacity: 0.45,
+  },
   avatarTexto: {
-    color: cores.textoSobrePrimaria,
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: tipografia.pesoExtraBold,
   },
+  // Badge: usa nova primary, sem hardcode de sienna
   badgeHost: {
-    backgroundColor: 'rgba(160, 82, 45, 0.15)',
+    backgroundColor: 'rgba(255, 90, 95, 0.09)',
     borderColor: cores.primaria,
     borderRadius: raio.sm,
     borderWidth: 1,
     paddingHorizontal: espacamento.sm,
-    paddingVertical: 4,
+    paddingVertical: 3,
   },
   badgeHostTexto: {
     color: cores.primaria,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: tipografia.pesoExtraBold,
     letterSpacing: 1,
   },
@@ -107,39 +111,35 @@ const estilos = StyleSheet.create({
     flexDirection: 'row',
     gap: espacamento.sm,
   },
+  // Card: superfície branca com borda quente e sombra sutil
   cartao: {
     alignItems: 'center',
     backgroundColor: cores.superficie,
     borderColor: cores.borda,
     borderRadius: raio.lg,
     borderWidth: 1,
+    elevation: 1,
     flexDirection: 'row',
     gap: espacamento.md,
     paddingHorizontal: espacamento.md,
     paddingVertical: espacamento.md,
+    shadowColor: '#161616',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
   },
+  // "Você": destaque da borda com primaria
   cartaoVoce: {
-    borderColor: cores.acento,
+    borderColor: cores.primaria,
     borderWidth: 1.5,
   },
+  // "Votado": destaque mais forte
   cartaoVotado: {
     borderColor: cores.primaria,
     borderWidth: 2,
   },
   cartaoDesconectado: {
-    opacity: 0.55,
-  },
-  avatarDesconectado: {
     opacity: 0.5,
-  },
-  nomeDesconectado: {
-    color: cores.textoMudo,
-  },
-  tagDesconectado: {
-    color: cores.alerta,
-    fontSize: 11,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: 1,
   },
   nome: {
     color: cores.texto,
@@ -147,16 +147,25 @@ const estilos = StyleSheet.create({
     fontSize: tipografia.tamanhoCorpoMaior,
     fontWeight: tipografia.pesoSemibold,
   },
-  tagVoce: {
-    color: cores.acento,
-    fontSize: 11,
+  nomeDesconectado: {
+    color: cores.textoMudo,
+  },
+  tagDesconectado: {
+    color: cores.alerta,
+    fontSize: 10,
     fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: 1,
+    letterSpacing: 0.8,
+  },
+  tagVoce: {
+    color: cores.primaria,
+    fontSize: 10,
+    fontWeight: tipografia.pesoExtraBold,
+    letterSpacing: 0.8,
   },
   tagVotado: {
     color: cores.primaria,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: 1,
+    letterSpacing: 0.8,
   },
 });

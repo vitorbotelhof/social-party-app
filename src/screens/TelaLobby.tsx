@@ -146,14 +146,14 @@ export function TelaLobby({ navigation, route }: Props) {
 const estilos = StyleSheet.create({
   aguardando: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     marginBottom: espacamento.md,
     textAlign: 'center',
   },
   fraseCabecalho: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: 0.2,
     marginTop: espacamento.sm,

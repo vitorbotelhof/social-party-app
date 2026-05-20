@@ -37,7 +37,7 @@ export function ContagemRegressiva({ aoTerminar }: Props) {
       }),
       Animated.timing(opacidade, {
         toValue: 1,
-        duration: 200,
+        duration: 180,
         useNativeDriver: true,
       }),
     ]).start();
@@ -49,6 +49,7 @@ export function ContagemRegressiva({ aoTerminar }: Props) {
   const ehGo = indice === SEQUENCIA.length - 1;
 
   return (
+    // Fundo papel quente — não mais preto cinematográfico
     <View style={estilos.tela}>
       <Animated.Text
         style={[
@@ -66,9 +67,10 @@ export function ContagemRegressiva({ aoTerminar }: Props) {
 }
 
 const estilos = StyleSheet.create({
+  // Papel quente — grande número preto é mais legível que branco no preto
   tela: {
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: cores.fundo,
     flex: 1,
     justifyContent: 'center',
   },
@@ -76,7 +78,7 @@ const estilos = StyleSheet.create({
     color: cores.primaria,
     fontSize: 72,
     fontWeight: tipografia.pesoBlack,
-    letterSpacing: tipografia.spacingTitulo,
+    letterSpacing: -1,
     textAlign: 'center',
   },
   textoNumero: {

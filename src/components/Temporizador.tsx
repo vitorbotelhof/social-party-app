@@ -15,6 +15,11 @@ const ESPESSURA = 8;
 /**
  * Anel circular de progresso com número no centro.
  * Componente apresentacional: o tick fica com o pai (`setInterval`).
+ *
+ * Cores:
+ *   Normal  → conversa (azul) — fluxo tranquilo
+ *   Acabando → primaria (vermelho) — urgência social
+ * Track → borda quente (visível no novo fundo claro)
  */
 export function Temporizador({
   segundosTotais,
@@ -32,19 +37,21 @@ export function Temporizador({
   return (
     <View style={[estilos.wrapper, { width: tamanho, height: tamanho }]}>
       <Svg width={tamanho} height={tamanho}>
+        {/* Track: borda quente — visível no fundo papel */}
         <Circle
           cx={centro}
           cy={centro}
           r={raioCirculo}
-          stroke={cores.superficie}
+          stroke={cores.borda}
           strokeWidth={ESPESSURA}
           fill="none"
         />
+        {/* Progress: azul calmo → vermelho urgente */}
         <Circle
           cx={centro}
           cy={centro}
           r={raioCirculo}
-          stroke={acabando ? cores.primaria : cores.acento}
+          stroke={acabando ? cores.primaria : cores.conversa}
           strokeWidth={ESPESSURA}
           fill="none"
           strokeDasharray={circunferencia}
@@ -62,7 +69,9 @@ export function Temporizador({
         >
           {Math.max(0, Math.ceil(segundosRestantes))}
         </Text>
-        <Text style={estilos.unidade}>seg</Text>
+        <Text style={[estilos.unidade, acabando && estilos.unidadeAcabando]}>
+          seg
+        </Text>
       </View>
     </View>
   );
@@ -88,6 +97,9 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoBold,
     letterSpacing: 1.5,
     marginTop: -4,
+  },
+  unidadeAcabando: {
+    color: cores.primaria,
   },
   wrapper: {
     alignItems: 'center',

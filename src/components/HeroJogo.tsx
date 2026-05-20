@@ -4,16 +4,19 @@ import { useRef } from 'react';
 import { Animated, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { DefinicaoJogo } from '@/games/gameRegistry';
-import { cores, espacamento, familias, tipografia } from '@/theme/colors';
+import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
-const ALTURA_HERO = 500;
+// Social Energy Card — não poster de cinema.
+// 300px: conteúdo presente sem dominar a tela.
+const ALTURA_HERO = 300;
 
-// Gradient heavier at bottom — top 38% stays fully exposed for cinematic impact
+// Overlay quente — imagem respira no topo, texto legível embaixo.
+// Gradient começa em 38% (não 0%) — cover art visível, não sepultada.
 const GRADIENTE_HERO: [string, string, string, string] = [
-  'rgba(14,11,8,0)',
-  'rgba(14,11,8,0)',
-  'rgba(14,11,8,0.72)',
-  'rgba(14,11,8,0.97)',
+  'rgba(22,14,10,0)',
+  'rgba(22,14,10,0.18)',
+  'rgba(22,14,10,0.70)',
+  'rgba(22,14,10,0.92)',
 ];
 
 interface Props {
@@ -28,7 +31,7 @@ export function HeroJogo({ jogo, onPress }: Props) {
     Animated.spring(escala, {
       toValue: 0.985,
       useNativeDriver: true,
-      speed: 40,
+      speed: 50,
       bounciness: 0,
     }).start();
   }
@@ -37,8 +40,8 @@ export function HeroJogo({ jogo, onPress }: Props) {
     Animated.spring(escala, {
       toValue: 1,
       useNativeDriver: true,
-      speed: 30,
-      bounciness: 4,
+      speed: 40,
+      bounciness: 3,
     }).start();
   }
 
@@ -64,12 +67,26 @@ export function HeroJogo({ jogo, onPress }: Props) {
             style={estilos.gradiente}
           />
 
+          {/* Badge de destaque — contexto social, não decoração */}
+          {jogo.destaque && (
+            <View style={estilos.badgeWrap}>
+              <View style={estilos.badge}>
+                <Text style={estilos.badgeTexto}>FAVORITO</Text>
+              </View>
+            </View>
+          )}
+
           <View style={estilos.conteudo}>
             <Text style={estilos.nome}>{jogo.nome}</Text>
-            <Text style={estilos.slogan} numberOfLines={2}>
+            <Text style={estilos.slogan} numberOfLines={1}>
               {jogo.slogan}
             </Text>
-            <Text style={estilos.cta}>jogar  →</Text>
+            {/* CTA explícito — não texto passivo */}
+            <View style={estilos.ctaRow}>
+              <View style={estilos.ctaBotao}>
+                <Text style={estilos.ctaTexto}>jogar agora</Text>
+              </View>
+            </View>
           </View>
         </ImageBackground>
       </Pressable>
@@ -78,12 +95,18 @@ export function HeroJogo({ jogo, onPress }: Props) {
 }
 
 const estilos = StyleSheet.create({
-  // Full-bleed: breaks out of the ScrollView's horizontal padding
+  // Card format: flutuante no scroll, não poster colado na tela
   container: {
-    marginBottom: espacamento.xl + 4,
-    marginHorizontal: -espacamento.lg,
+    borderRadius: 20,
+    elevation: 4,
+    marginBottom: espacamento.xl,
+    shadowColor: '#161616',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.10,
+    shadowRadius: 16,
   },
   pressavel: {
+    borderRadius: 20,
     overflow: 'hidden',
   },
   imagem: {
@@ -97,30 +120,65 @@ const estilos = StyleSheet.create({
     right: 0,
     top: 0,
   },
+
+  // Badge — identidade do jogo, posição discreta
+  badgeWrap: {
+    left: espacamento.md,
+    position: 'absolute',
+    top: espacamento.md,
+  },
+  badge: {
+    backgroundColor: cores.primaria,
+    borderRadius: raio.pill,
+    paddingHorizontal: espacamento.sm + 2,
+    paddingVertical: 4,
+  },
+  badgeTexto: {
+    color: '#FFFFFF',
+    fontFamily: familias.sans,
+    fontSize: 10,
+    fontWeight: '700' as const,
+    letterSpacing: 0.8,
+  },
+
+  // Conteúdo — compacto, direto ao ponto
   conteudo: {
-    gap: espacamento.sm - 2,
-    paddingBottom: espacamento.lg + espacamento.md,
-    paddingHorizontal: espacamento.lg,
+    gap: espacamento.xs,
+    paddingBottom: espacamento.md,
+    paddingHorizontal: espacamento.md,
   },
   nome: {
-    color: cores.textoSobrePrimaria,
-    fontFamily: familias.serifDisplay,
-    fontSize: 38,
-    letterSpacing: tipografia.letraSpacingTitulo,
-    lineHeight: 46,
+    color: '#FFFFFF',
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
+    fontSize: tipografia.tamanhoTitulo,  // 26px — legível, não cinematográfico
+    letterSpacing: -0.4,
+    lineHeight: 32,
   },
   slogan: {
-    color: 'rgba(245,240,235,0.68)',
+    color: 'rgba(255,255,255,0.68)',
     fontSize: tipografia.tamanhoCorpoMenor,
-    fontWeight: tipografia.pesoLeve,
-    letterSpacing: 0.15,
-    lineHeight: 22,
+    fontWeight: tipografia.pesoRegular,
+    letterSpacing: 0,
+    lineHeight: 20,
   },
-  cta: {
-    color: cores.acento,
-    fontSize: tipografia.tamanhoLegenda,
-    fontWeight: tipografia.pesoSemibold,
-    letterSpacing: 0.5,
+
+  // CTA: botão vermelho explícito — ação social clara
+  ctaRow: {
+    alignItems: 'flex-start',
     marginTop: espacamento.xs,
+  },
+  ctaBotao: {
+    backgroundColor: cores.primaria,
+    borderRadius: raio.pill,
+    paddingHorizontal: espacamento.md,
+    paddingVertical: 7,
+  },
+  ctaTexto: {
+    color: '#FFFFFF',
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCaption,
+    fontWeight: '700' as const,
+    letterSpacing: 0.1,
   },
 });

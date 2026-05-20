@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { tipografia } from '@/theme/colors';
+import { cores, raio, tipografia } from '@/theme/colors';
 
 /**
  * Badge discreto que aparece no canto superior direito das telas
@@ -14,25 +14,32 @@ export function BadgeUmCelular() {
       style={[estilos.badge, { top: insets.top + 8 }]}
       pointerEvents="none"
     >
-      <Text style={estilos.texto}>📱 1 celular</Text>
+      <Text style={estilos.texto}>1 celular</Text>
     </View>
   );
 }
 
 const estilos = StyleSheet.create({
+  // Light-mode badge — superficie com borda quente
   badge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderColor: 'rgba(255, 255, 255, 0.18)',
-    borderRadius: 12,
+    backgroundColor: cores.superficie,
+    borderColor: cores.borda,
+    borderRadius: raio.pill,
     borderWidth: 1,
     paddingHorizontal: 10,
     paddingVertical: 4,
     position: 'absolute',
     right: 16,
+    // Sombra sutil para flutuar sobre o conteúdo
+    elevation: 2,
+    shadowColor: '#161616',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
     zIndex: 100,
   },
   texto: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: cores.textoMudo,
     fontSize: 11,
     fontWeight: tipografia.pesoSemibold,
     letterSpacing: 0.3,

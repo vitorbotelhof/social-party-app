@@ -84,65 +84,14 @@ export function TelaConfiguracaoLocalMostLikely({ navigation }: Props) {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          {/* ─── Cabeçalho ─── */}
           <View style={estilos.cabecalho}>
-            <Text style={estilos.legenda}>📱 UM CELULAR</Text>
             <Text style={estilos.tituloPagina}>most likely to</Text>
             <Text style={estilos.subtitulo}>todos apontam juntos. sem filtro.</Text>
           </View>
 
-          {/* ─── Modo ─── */}
-          <Section titulo="Modo">
-            <View style={estilos.linhaSegmentos}>
-              <Pressable
-                onPress={() => setModo('classico')}
-                style={[estilos.segmento, modo === 'classico' && estilos.segmentoAtivo]}
-              >
-                <Text style={[estilos.segmentoTexto, modo === 'classico' && estilos.segmentoTextoAtivo]}>
-                  Clássico
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => setModo('sincero')}
-                style={[estilos.segmento, modo === 'sincero' && estilos.segmentoAtivo]}
-              >
-                <Text style={[estilos.segmentoTexto, modo === 'sincero' && estilos.segmentoTextoAtivo]}>
-                  Sincero
-                </Text>
-              </Pressable>
-            </View>
-            <Text style={estilos.ajuda}>
-              {modo === 'sincero'
-                ? 'perguntas mais intensas a partir da 4ª rodada.'
-                : 'perguntas divertidas e sem risco até o fim.'}
-            </Text>
-          </Section>
-
-          {/* ─── Rodadas ─── */}
-          <Section titulo="Rodadas">
-            <View style={estilos.controleNumero}>
-              <Pressable
-                onPress={() => { setTotalRodadas((n) => Math.max(MIN_RODADAS, n - 1)); void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-                disabled={totalRodadas <= MIN_RODADAS}
-                style={[estilos.botaoNumero, totalRodadas <= MIN_RODADAS && estilos.botaoNumeroDesabilitado]}
-              >
-                <Text style={estilos.botaoNumeroTexto}>−</Text>
-              </Pressable>
-              <Text style={estilos.valorNumero}>{totalRodadas}</Text>
-              <Pressable
-                onPress={() => { setTotalRodadas((n) => Math.min(MAX_RODADAS, n + 1)); void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
-                disabled={totalRodadas >= MAX_RODADAS}
-                style={[estilos.botaoNumero, totalRodadas >= MAX_RODADAS && estilos.botaoNumeroDesabilitado]}
-              >
-                <Text style={estilos.botaoNumeroTexto}>+</Text>
-              </Pressable>
-            </View>
-            <Text style={estilos.ajuda}>
-              {totalRodadas <= 5 ? 'rápido e direto.' : totalRodadas <= 10 ? 'ritmo ideal.' : 'noite longa.'}
-            </Text>
-          </Section>
-
-          {/* ─── Jogadores ─── */}
-          <Section titulo={`Jogadores (${nomes.length}/${MAX_JOGADORES})`}>
+          {/* ─── 1. Quem tá jogando? — PRIMEIRO ─── */}
+          <Section titulo="quem tá jogando?" subtitulo={`${nomes.length} de ${MAX_JOGADORES}`}>
             <View style={estilos.entradaBloco}>
               <TextInput
                 value={novoNome}
@@ -153,6 +102,7 @@ export function TelaConfiguracaoLocalMostLikely({ navigation }: Props) {
                 returnKeyType="done"
                 onSubmitEditing={aoAdicionar}
                 style={estilos.input}
+                accessibilityLabel="Nome do jogador"
               />
               <Pressable
                 onPress={aoAdicionar}
@@ -162,13 +112,16 @@ export function TelaConfiguracaoLocalMostLikely({ navigation }: Props) {
                   !podeAdicionar && estilos.botaoAdicionarDesabilitado,
                   pressed && podeAdicionar && estilos.botaoAdicionarPressionado,
                 ]}
+                accessibilityLabel="Adicionar jogador"
               >
                 <Text style={estilos.botaoAdicionarTexto}>+</Text>
               </Pressable>
             </View>
 
             {nomes.length === 0 ? (
-              <Text style={estilos.vazio}>nenhum jogador ainda.</Text>
+              <Text style={estilos.vazio}>
+                comece pelo seu nome. os outros entram depois.
+              </Text>
             ) : (
               <View style={estilos.lista}>
                 {nomes.map((nome, i) => (
@@ -180,7 +133,8 @@ export function TelaConfiguracaoLocalMostLikely({ navigation }: Props) {
                     <Pressable
                       onPress={() => aoRemover(i)}
                       hitSlop={12}
-                      style={({ pressed }) => [estilos.itemRemover, pressed && estilos.itemRemoverPressionado]}
+                      style={({ pressed }) => [estilos.itemRemover, pressed && { opacity: 0.5 }]}
+                      accessibilityLabel={`Remover ${nome}`}
                     >
                       <Text style={estilos.itemRemoverTexto}>×</Text>
                     </Pressable>
@@ -189,8 +143,65 @@ export function TelaConfiguracaoLocalMostLikely({ navigation }: Props) {
               </View>
             )}
           </Section>
+
+          {/* ─── 2. Que tipo de pergunta? — Modo ─── */}
+          <Section titulo="que tipo de pergunta?">
+            <View style={estilos.linhaSegmentos}>
+              <Pressable
+                onPress={() => setModo('classico')}
+                style={[estilos.segmento, modo === 'classico' && estilos.segmentoAtivo]}
+              >
+                <Text style={[estilos.segmentoTexto, modo === 'classico' && estilos.segmentoTextoAtivo]}>
+                  clássico
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setModo('sincero')}
+                style={[estilos.segmento, modo === 'sincero' && estilos.segmentoAtivo]}
+              >
+                <Text style={[estilos.segmentoTexto, modo === 'sincero' && estilos.segmentoTextoAtivo]}>
+                  sincero
+                </Text>
+              </Pressable>
+            </View>
+            <Text style={estilos.ajuda}>
+              {modo === 'sincero'
+                ? 'perguntas mais intensas a partir da 4ª rodada.'
+                : 'perguntas divertidas e sem risco até o fim.'}
+            </Text>
+          </Section>
+
+          {/* ─── 3. Quanto tempo? — Rodadas ─── */}
+          <Section titulo="quanto tempo?">
+            <View style={estilos.controleNumero}>
+              <Pressable
+                onPress={() => { setTotalRodadas((n) => Math.max(MIN_RODADAS, n - 1)); void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                disabled={totalRodadas <= MIN_RODADAS}
+                style={[estilos.botaoNumero, totalRodadas <= MIN_RODADAS && estilos.botaoNumeroDesabilitado]}
+                accessibilityLabel="Diminuir rodadas"
+              >
+                <Text style={estilos.botaoNumeroTexto}>−</Text>
+              </Pressable>
+              <View style={estilos.valorBloco}>
+                <Text style={estilos.valorNumero}>{totalRodadas}</Text>
+                <Text style={estilos.valorUnidade}>rodadas</Text>
+              </View>
+              <Pressable
+                onPress={() => { setTotalRodadas((n) => Math.min(MAX_RODADAS, n + 1)); void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                disabled={totalRodadas >= MAX_RODADAS}
+                style={[estilos.botaoNumero, totalRodadas >= MAX_RODADAS && estilos.botaoNumeroDesabilitado]}
+                accessibilityLabel="Aumentar rodadas"
+              >
+                <Text style={estilos.botaoNumeroTexto}>+</Text>
+              </Pressable>
+            </View>
+            <Text style={estilos.ajuda}>
+              {totalRodadas <= 5 ? 'sessão rápida e direta.' : totalRodadas <= 10 ? 'ritmo ideal para a maioria.' : 'noite longa — muita revelação.'}
+            </Text>
+          </Section>
         </ScrollView>
 
+        {/* ─── Rodapé fixo: ação principal ─── */}
         <View style={estilos.rodape}>
           <BotaoPrimario
             titulo="começa aí"
@@ -209,57 +220,22 @@ export function TelaConfiguracaoLocalMostLikely({ navigation }: Props) {
   );
 }
 
-function Section({ titulo, children }: { titulo: string; children: React.ReactNode }) {
+function Section({ titulo, subtitulo, children }: { titulo: string; subtitulo?: string; children: React.ReactNode }) {
   return (
     <View style={estilos.section}>
-      <Text style={estilos.sectionTitulo}>{titulo}</Text>
+      <View style={estilos.sectionHeader}>
+        <Text style={estilos.sectionTitulo}>{titulo}</Text>
+        {subtitulo && <Text style={estilos.sectionSubtitulo}>{subtitulo}</Text>}
+      </View>
       {children}
     </View>
   );
 }
 
 const estilos = StyleSheet.create({
-  ajuda: {
-    color: cores.textoMudo,
-    fontSize: 13,
-    marginTop: espacamento.sm,
-    textAlign: 'center',
-  },
-  botaoAdicionar: {
-    alignItems: 'center',
-    backgroundColor: cores.primaria,
-    borderRadius: raio.md,
-    height: 52,
-    justifyContent: 'center',
-    width: 52,
-  },
-  botaoAdicionarDesabilitado: { backgroundColor: cores.borda },
-  botaoAdicionarPressionado: {
-    backgroundColor: cores.primariaPressionada,
-    transform: [{ scale: 0.95 }],
-  },
-  botaoAdicionarTexto: {
-    color: cores.textoSobrePrimaria,
-    fontSize: 28,
-    fontWeight: tipografia.pesoBold,
-    lineHeight: 30,
-  },
-  botaoNumero: {
-    alignItems: 'center',
-    backgroundColor: cores.superficieElevada,
-    borderColor: cores.borda,
-    borderRadius: raio.md,
-    borderWidth: 1,
-    height: 52,
-    justifyContent: 'center',
-    width: 60,
-  },
-  botaoNumeroDesabilitado: { opacity: 0.35 },
-  botaoNumeroTexto: {
-    color: cores.texto,
-    fontSize: 26,
-    fontWeight: '700',
-  },
+  tela: { backgroundColor: cores.fundo, flex: 1 },
+  flex: { flex: 1 },
+
   botaoVoltar: {
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
@@ -273,37 +249,50 @@ const estilos = StyleSheet.create({
     width: 36,
     zIndex: 100,
   },
-  botaoVoltarIcone: {
+  botaoVoltarIcone: { color: cores.texto, fontSize: 18, fontWeight: tipografia.pesoBold, lineHeight: 20 },
+  botaoVoltarPressionado: { backgroundColor: 'rgba(255,255,255,0.14)', transform: [{ scale: 0.94 }] },
+
+  scroll: { flex: 1 },
+  scrollConteudo: { padding: espacamento.lg },
+
+  cabecalho: { marginBottom: espacamento.lg, marginTop: espacamento.xl },
+  tituloPagina: {
     color: cores.texto,
-    fontSize: 18,
-    fontWeight: tipografia.pesoBold,
-    lineHeight: 20,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
+    fontSize: 28,
+    letterSpacing: -0.2,
+    marginTop: espacamento.sm,
   },
-  botaoVoltarPressionado: {
-    backgroundColor: 'rgba(255, 255, 255, 0.14)',
-    transform: [{ scale: 0.94 }],
+  subtitulo: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpoMenor,
+    marginTop: espacamento.xs,
   },
-  cabecalho: {
-    marginBottom: espacamento.lg,
-    marginTop: espacamento.xl,
-  },
-  controleNumero: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: espacamento.lg,
-    justifyContent: 'center',
-  },
-  entradaBloco: {
+
+  section: { marginBottom: espacamento.xl },
+  sectionHeader: {
+    alignItems: 'baseline',
     flexDirection: 'row',
     gap: espacamento.sm,
+    marginBottom: espacamento.md,
   },
-  faltam: {
-    color: cores.textoMudo,
+  sectionTitulo: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
-    marginTop: espacamento.sm,
-    textAlign: 'center',
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.2,
   },
-  flex: { flex: 1 },
+  sectionSubtitulo: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: 11,
+    letterSpacing: 0.3,
+  },
+
+  entradaBloco: { flexDirection: 'row', gap: espacamento.sm },
   input: {
     backgroundColor: cores.superficie,
     borderColor: cores.borda,
@@ -311,10 +300,24 @@ const estilos = StyleSheet.create({
     borderWidth: 1,
     color: cores.texto,
     flex: 1,
+    fontFamily: familias.sans,
     fontSize: 17,
     paddingHorizontal: espacamento.md,
     paddingVertical: espacamento.md,
   },
+  botaoAdicionar: { alignItems: 'center', backgroundColor: cores.primaria, borderRadius: raio.md, height: 52, justifyContent: 'center', width: 52 },
+  botaoAdicionarDesabilitado: { backgroundColor: cores.borda },
+  botaoAdicionarPressionado: { backgroundColor: cores.primariaPressionada, transform: [{ scale: 0.95 }] },
+  botaoAdicionarTexto: { color: cores.textoSobrePrimaria, fontSize: 28, fontWeight: tipografia.pesoBold, lineHeight: 30 },
+  vazio: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    marginTop: espacamento.md,
+    paddingVertical: espacamento.sm,
+    textAlign: 'center',
+  },
+  lista: { marginTop: espacamento.md },
   item: {
     alignItems: 'center',
     backgroundColor: cores.superficie,
@@ -327,66 +330,13 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacamento.md,
     paddingVertical: espacamento.md,
   },
-  itemBolinha: {
-    alignItems: 'center',
-    backgroundColor: cores.fundoSecundario,
-    borderRadius: 16,
-    height: 32,
-    justifyContent: 'center',
-    width: 32,
-  },
-  itemNome: {
-    color: cores.texto,
-    flex: 1,
-    fontSize: tipografia.tamanhoCorpoMaior,
-    fontWeight: tipografia.pesoSemibold,
-  },
-  itemNumero: {
-    color: cores.textoSecundario,
-    fontSize: tipografia.tamanhoLegenda,
-    fontWeight: tipografia.pesoExtraBold,
-  },
-  itemRemover: {
-    alignItems: 'center',
-    height: 28,
-    justifyContent: 'center',
-    width: 28,
-  },
-  itemRemoverPressionado: { opacity: 0.5 },
-  itemRemoverTexto: {
-    color: cores.textoSecundario,
-    fontSize: 24,
-    fontWeight: tipografia.pesoBold,
-    lineHeight: 26,
-  },
-  legenda: {
-    color: cores.primaria,
-    fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
-  },
-  linhaSegmentos: {
-    flexDirection: 'row',
-    gap: espacamento.sm,
-  },
-  lista: { marginTop: espacamento.md },
-  rodape: {
-    borderTopColor: cores.borda,
-    borderTopWidth: 1,
-    padding: espacamento.lg,
-    paddingTop: espacamento.md,
-  },
-  scroll: { flex: 1 },
-  scrollConteudo: { padding: espacamento.lg },
-  section: { marginBottom: espacamento.xl },
-  sectionTitulo: {
-    color: cores.textoSecundario,
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1.8,
-    marginBottom: espacamento.md,
-    textTransform: 'uppercase',
-  },
+  itemBolinha: { alignItems: 'center', backgroundColor: cores.fundoSecundario, borderRadius: 16, height: 32, justifyContent: 'center', width: 32 },
+  itemNumero: { color: cores.textoSecundario, fontFamily: familias.sans, fontSize: tipografia.tamanhoLegenda, fontWeight: tipografia.pesoExtraBold },
+  itemNome: { color: cores.texto, flex: 1, fontFamily: familias.sans, fontSize: tipografia.tamanhoCorpoMaior, fontWeight: tipografia.pesoSemibold },
+  itemRemover: { alignItems: 'center', height: 28, justifyContent: 'center', width: 28 },
+  itemRemoverTexto: { color: cores.textoSecundario, fontSize: 24, fontWeight: tipografia.pesoBold, lineHeight: 26 },
+
+  linhaSegmentos: { flexDirection: 'row', gap: espacamento.sm },
   segmento: {
     alignItems: 'center',
     backgroundColor: cores.superficie,
@@ -396,44 +346,41 @@ const estilos = StyleSheet.create({
     flex: 1,
     paddingVertical: espacamento.md,
   },
-  segmentoAtivo: {
-    backgroundColor: cores.acento,
-    borderColor: cores.acento,
+  segmentoAtivo: { backgroundColor: cores.acento, borderColor: cores.acento },
+  segmentoTexto: { color: cores.textoSecundario, fontFamily: familias.sans, fontSize: 15, fontWeight: tipografia.pesoSemibold },
+  segmentoTextoAtivo: { color: cores.textoSobrePrimaria, fontWeight: tipografia.pesoBold },
+  ajuda: { color: cores.textoMudo, fontFamily: familias.sans, fontSize: 13, marginTop: espacamento.sm, textAlign: 'center' },
+
+  controleNumero: { alignItems: 'center', flexDirection: 'row', gap: espacamento.lg, justifyContent: 'center' },
+  botaoNumero: {
+    alignItems: 'center',
+    backgroundColor: cores.superficieElevada,
+    borderColor: cores.borda,
+    borderRadius: raio.md,
+    borderWidth: 1,
+    height: 52,
+    justifyContent: 'center',
+    width: 60,
   },
-  segmentoTexto: {
-    color: cores.textoSecundario,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  segmentoTextoAtivo: { color: cores.textoSobrePrimaria },
-  subtitulo: {
-    color: cores.textoSecundario,
-    fontSize: tipografia.tamanhoCorpoMenor,
-    marginTop: espacamento.xs,
-  },
-  tela: {
-    backgroundColor: cores.fundo,
-    flex: 1,
-  },
-  tituloPagina: {
-    color: cores.texto,
-    fontFamily: familias.serifDisplay,
-    fontSize: 32,
-    marginTop: espacamento.sm,
-  },
+  botaoNumeroDesabilitado: { opacity: 0.35 },
+  botaoNumeroTexto: { color: cores.texto, fontFamily: familias.sans, fontSize: 26, fontWeight: '700' },
+  valorBloco: { alignItems: 'center', minWidth: 72 },
   valorNumero: {
     color: cores.primaria,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 44,
-    minWidth: 56,
+    lineHeight: 50,
     textAlign: 'center',
   },
-  vazio: {
+  valorUnidade: {
     color: cores.textoMudo,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
-    fontStyle: 'italic',
-    marginTop: espacamento.md,
-    paddingVertical: espacamento.sm,
+    letterSpacing: 0.2,
     textAlign: 'center',
   },
+
+  rodape: { borderTopColor: cores.borda, borderTopWidth: 1, padding: espacamento.lg, paddingTop: espacamento.md },
+  faltam: { color: cores.textoMudo, fontFamily: familias.sans, fontSize: tipografia.tamanhoLegenda, marginTop: espacamento.sm, textAlign: 'center' },
 });

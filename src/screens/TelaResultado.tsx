@@ -55,10 +55,10 @@ const ETAPA = {
 
 const TEMPOS: Record<keyof typeof ETAPA, number> = {
   REVELANDO: 0,
-  LEGENDA_MR_WHITE: 1500,
-  NOME_MR_WHITE: 2500,
-  BANNER: 3500,
-  CONTEUDO: 4500,
+  LEGENDA_MR_WHITE: 200,
+  NOME_MR_WHITE: 400,
+  BANNER: 600,
+  CONTEUDO: 900,
 };
 
 export function TelaResultado({
@@ -286,12 +286,12 @@ function EsperandoAnfitriao({
       Animated.sequence([
         Animated.timing(pulso, {
           toValue: 1,
-          duration: 700,
+          duration: 280,
           useNativeDriver: true,
         }),
         Animated.timing(pulso, {
           toValue: 0.5,
-          duration: 700,
+          duration: 280,
           useNativeDriver: true,
         }),
       ]),
@@ -329,12 +329,12 @@ function FaseRevelando() {
       Animated.sequence([
         Animated.timing(pulso, {
           toValue: 1,
-          duration: 600,
+          duration: 240,
           useNativeDriver: true,
         }),
         Animated.timing(pulso, {
           toValue: 0.3,
-          duration: 600,
+          duration: 240,
           useNativeDriver: true,
         }),
       ]),
@@ -363,7 +363,7 @@ function BlocoLegendaMrWhite({
   useEffect(() => {
     Animated.timing(op, {
       toValue: visivel ? 1 : 0,
-      duration: 500,
+      duration: 220,
       useNativeDriver: true,
     }).start();
   }, [op, visivel]);
@@ -423,7 +423,7 @@ function BannerVitoria({ ehVitoriaMrWhite }: { ehVitoriaMrWhite: boolean }) {
     Animated.parallel([
       Animated.timing(op, {
         toValue: 1,
-        duration: 400,
+        duration: 220,
         useNativeDriver: true,
       }),
       Animated.spring(ty, {
@@ -472,7 +472,7 @@ function Particulas() {
     const animacoes = particulas.map((p) =>
       Animated.timing(p.anim, {
         toValue: 1,
-        duration: 1200,
+        duration: 360,
         useNativeDriver: true,
       }),
     );
@@ -524,14 +524,14 @@ function BlocoStagger({
     Animated.parallel([
       Animated.timing(op, {
         toValue: 1,
-        delay: indice * 180,
-        duration: 360,
+        delay: indice * 100,
+        duration: 220,
         useNativeDriver: true,
       }),
       Animated.timing(ty, {
         toValue: 0,
-        delay: indice * 180,
-        duration: 360,
+        delay: indice * 100,
+        duration: 220,
         useNativeDriver: true,
       }),
     ]).start();
@@ -622,14 +622,14 @@ const estilos = StyleSheet.create({
     position: 'relative',
   },
   bannerCivis: {
-    backgroundColor: '#0F3D2B',
+    backgroundColor: '#166534',  // deep emerald — celebratory, clearly green
   },
   bannerMrWhite: {
-    backgroundColor: '#3D0F0F',
+    backgroundColor: '#991B1B',  // deep ruby — intense, clearly red
   },
   bannerTitulo: {
     color: cores.textoSobrePrimaria,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTitulo,
     letterSpacing: 0,
     textAlign: 'center',
@@ -673,7 +673,7 @@ const estilos = StyleSheet.create({
   },
   legendaMrWhite: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: 0.2,
     marginTop: espacamento.xl,
@@ -729,7 +729,7 @@ const estilos = StyleSheet.create({
   },
   revelandoTexto: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoSubtitulo,
     letterSpacing: 0,
   },

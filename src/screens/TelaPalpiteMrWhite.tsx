@@ -101,49 +101,40 @@ function TelaEspera({ nomeAdivinhando }: { nomeAdivinhando: string }) {
   const nomeEscala = useRef(new Animated.Value(0.88)).current;
   const subtextoOpacidade = useRef(new Animated.Value(0)).current;
   const subtextoY = useRef(new Animated.Value(6)).current;
-  const respiracao = useRef(new Animated.Value(1)).current;
   const animRef = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
-    // 3-beat cinematic reveal, depois respiração lenta no subtexto
+    // Reveal rápido em cascata — social momentum, sem suspense cinematográfico
     const entrada = Animated.parallel([
       Animated.parallel([
-        Animated.timing(labelOpacidade, { toValue: 1, duration: 480, useNativeDriver: true }),
-        Animated.timing(labelY, { toValue: 0, duration: 480, useNativeDriver: true }),
+        Animated.timing(labelOpacidade, { toValue: 1, duration: 240, useNativeDriver: true }),
+        Animated.timing(labelY, { toValue: 0, duration: 240, useNativeDriver: true }),
       ]),
       Animated.sequence([
-        Animated.delay(220),
-        Animated.timing(hairlineOpacidade, { toValue: 0.4, duration: 500, useNativeDriver: true }),
+        Animated.delay(100),
+        Animated.timing(hairlineOpacidade, { toValue: 0.4, duration: 220, useNativeDriver: true }),
       ]),
       Animated.sequence([
-        Animated.delay(380),
+        Animated.delay(180),
         Animated.parallel([
-          Animated.timing(nomeOpacidade, { toValue: 1, duration: 420, useNativeDriver: true }),
+          Animated.timing(nomeOpacidade, { toValue: 1, duration: 220, useNativeDriver: true }),
           Animated.spring(nomeEscala, { toValue: 1, useNativeDriver: true, tension: 52, friction: 7 }),
         ]),
       ]),
       Animated.sequence([
-        Animated.delay(700),
+        Animated.delay(320),
         Animated.parallel([
-          Animated.timing(subtextoOpacidade, { toValue: 1, duration: 480, useNativeDriver: true }),
-          Animated.timing(subtextoY, { toValue: 0, duration: 480, useNativeDriver: true }),
+          Animated.timing(subtextoOpacidade, { toValue: 1, duration: 240, useNativeDriver: true }),
+          Animated.timing(subtextoY, { toValue: 0, duration: 240, useNativeDriver: true }),
         ]),
       ]),
     ]);
 
     animRef.current = entrada;
-    animRef.current.start(() => {
-      animRef.current = Animated.loop(
-        Animated.sequence([
-          Animated.timing(respiracao, { toValue: 0.38, duration: 2600, useNativeDriver: true }),
-          Animated.timing(respiracao, { toValue: 1, duration: 2600, useNativeDriver: true }),
-        ]),
-      );
-      animRef.current.start();
-    });
+    animRef.current.start();
 
     return () => { animRef.current?.stop(); };
-  }, [labelOpacidade, labelY, hairlineOpacidade, nomeOpacidade, nomeEscala, subtextoOpacidade, subtextoY, respiracao]);
+  }, [labelOpacidade, labelY, hairlineOpacidade, nomeOpacidade, nomeEscala, subtextoOpacidade, subtextoY]);
 
   return (
     <SafeAreaView style={[estilos.tela, estilos.espera]}>
@@ -170,8 +161,7 @@ function TelaEspera({ nomeAdivinhando }: { nomeAdivinhando: string }) {
         <Animated.Text
           style={[
             estilos.esperaSubtexto,
-            { opacity: Animated.multiply(subtextoOpacidade, respiracao) },
-            { transform: [{ translateY: subtextoY }] },
+            { opacity: subtextoOpacidade, transform: [{ translateY: subtextoY }] },
           ]}
         >
           tentando adivinhar a palavra.
@@ -196,8 +186,8 @@ function TelaConfronto({ palpite, enviando, onChangePalpite, onEnviar }: TelaCon
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(opacidadeIntro, { toValue: 1, duration: 560, useNativeDriver: true }),
-      Animated.timing(yIntro, { toValue: 0, duration: 560, useNativeDriver: true }),
+      Animated.timing(opacidadeIntro, { toValue: 1, duration: 260, useNativeDriver: true }),
+      Animated.timing(yIntro, { toValue: 0, duration: 260, useNativeDriver: true }),
     ]).start();
   }, [opacidadeIntro, yIntro]);
 
@@ -271,7 +261,7 @@ const estilos = StyleSheet.create({
   },
   esperaLabel: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: 0.3,
     textAlign: 'center',
@@ -283,7 +273,7 @@ const estilos = StyleSheet.create({
   },
   esperaNome: {
     color: cores.acento,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     letterSpacing: 0,
     lineHeight: 44,
@@ -291,7 +281,7 @@ const estilos = StyleSheet.create({
   },
   esperaSubtexto: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: 0.2,
     lineHeight: 22,
@@ -310,14 +300,14 @@ const estilos = StyleSheet.create({
   },
   confrontoLegenda: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: 0.3,
     textAlign: 'center',
   },
   confrontoTitulo: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     letterSpacing: 0,
     lineHeight: 44,
@@ -326,7 +316,7 @@ const estilos = StyleSheet.create({
   },
   confrontoSubtitulo: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: 0.2,
     marginTop: espacamento.sm,
@@ -343,7 +333,7 @@ const estilos = StyleSheet.create({
     borderRadius: raio.md,
     borderWidth: 1,
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 28,
     paddingHorizontal: espacamento.md,
     paddingVertical: espacamento.md,

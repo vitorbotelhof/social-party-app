@@ -230,63 +230,63 @@ function OverlayTransicao({
     animRef.current?.stop();
 
     const dicaEntrada = Animated.sequence([
-      Animated.delay(1100),
+      Animated.delay(180),
       Animated.timing(dicaOpacidade, {
         toValue: 0.55,
-        duration: 600,
+        duration: 220,
         useNativeDriver: true,
       }),
     ]);
 
     if (etapa.tipo === 'apurando') {
-      // One slow rise — then stillness. The silence is the tension.
+      // Snap direto — o grupo decidiu, sem suspense adicional
       animRef.current = Animated.parallel([
         Animated.parallel([
           Animated.timing(textoOpacidade, {
             toValue: 1,
-            duration: 720,
+            duration: 280,
             useNativeDriver: true,
           }),
           Animated.timing(textoY, {
             toValue: 0,
-            duration: 720,
+            duration: 280,
             useNativeDriver: true,
           }),
         ]),
         dicaEntrada,
       ]);
     } else {
-      // Three beats: context → identity → consequence
+      // Three beats: context → identity → consequence — comprimido
       animRef.current = Animated.parallel([
-        // Beat 1: label fades in from below
+        // Beat 1: label
         Animated.parallel([
           Animated.timing(labelOpacidade, {
             toValue: 1,
-            duration: 480,
+            duration: 240,
             useNativeDriver: true,
           }),
           Animated.timing(labelY, {
             toValue: 0,
-            duration: 480,
+            duration: 240,
             useNativeDriver: true,
           }),
         ]),
-        // Hairline: appears just after label
+        // Hairline
         Animated.sequence([
-          Animated.delay(220),
+          Animated.delay(100),
           Animated.timing(hairlineOpacidade, {
             toValue: 0.4,
-            duration: 500,
+            duration: 220,
             useNativeDriver: true,
           }),
         ]),
-        // Beat 2: name springs in — the reveal
+        // Beat 2: nome — o reveal
         Animated.sequence([
-          Animated.delay(380),
+          Animated.delay(160),
           Animated.parallel([
             Animated.timing(nomeOpacidade, {
               toValue: 1,
-              duration: 420,
+              duration: 220,
               useNativeDriver: true,
             }),
             Animated.spring(nomeEscala, {
@@ -297,18 +297,18 @@ function OverlayTransicao({
             }),
           ]),
         ]),
-        // Beat 3: consequence fades in quietly
+        // Beat 3: consequência
         Animated.sequence([
-          Animated.delay(700),
+          Animated.delay(280),
           Animated.parallel([
             Animated.timing(subtextoOpacidade, {
               toValue: 1,
-              duration: 480,
+              duration: 220,
               useNativeDriver: true,
             }),
             Animated.timing(subtextoY, {
               toValue: 0,
-              duration: 480,
+              duration: 220,
               useNativeDriver: true,
             }),
           ]),
@@ -447,7 +447,7 @@ function OverlayTransicao({
 const estilosOverlay = StyleSheet.create({
   apurandoTexto: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTitulo,
     letterSpacing: 0,
     lineHeight: 38,
@@ -461,7 +461,7 @@ const estilosOverlay = StyleSheet.create({
   dicaPular: {
     bottom: espacamento.xl,
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     position: 'absolute',
   },
@@ -472,14 +472,14 @@ const estilosOverlay = StyleSheet.create({
   },
   labelDescoberto: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: 0.3,
     textAlign: 'center',
   },
   nomeDestaque: {
     color: cores.acento,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     letterSpacing: 0,
     lineHeight: 44,
@@ -501,7 +501,7 @@ const estilosOverlay = StyleSheet.create({
   },
   subtextoFinal: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: 0.2,
     lineHeight: 22,
@@ -509,7 +509,7 @@ const estilosOverlay = StyleSheet.create({
   },
   tituloEmpate: {
     color: cores.alerta,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTitulo,
     letterSpacing: 0,
     textAlign: 'center',

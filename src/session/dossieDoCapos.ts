@@ -1,0 +1,181 @@
+/**
+ * Dossiê do Caos — resumo gerado ao fim da sessão.
+ *
+ * Gera até 4 destaques individuais e uma frase final que resume o grupo.
+ * Tom: host social direto, não teatral.
+ *
+ * Requires: pelo menos 1 jogo completo.
+ */
+
+import { getSessaoAtual } from './sessionStore';
+import { obterCallbackSimples } from './callbackEngine';
+import type {
+  DossieDoCapos,
+  DestaqueJogador,
+  SessaoJogador,
+  Momento,
+} from './types';
+import type { PlayerId } from '@/engine/types';
+
+// ─── Destaques individuais ────────────────────────────────────────────────────
+
+function destaqueVezesVotado(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort((a, b) => b.vezesVotado - a.vezesVotado)[0];
+  if (!top || top.vezesVotado < 2) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o mais suspeito',
+    descricao: `recebeu ${top.vezesVotado} votos na sessão`,
+  };
+}
+
+function destaqueClutch(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort((a, b) => b.clutchsMrWhite - a.clutchsMrWhite)[0];
+  if (!top || top.clutchsMrWhite < 1) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o escapista',
+    descricao: top.clutchsMrWhite === 1
+      ? 'foi mr white e adivinhou a palavra'
+      : `foi mr white ${top.clutchsMrWhite}x e adivinhou`,
+  };
+}
+
+function destaqueJulgado(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort((a, b) => b.vezesJulgado - a.vezesJulgado)[0];
+  if (!top || top.vezesJulgado < 2) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o grande julgado',
+    descricao: `foi o mais votado em ${top.vezesJulgado} rodadas`,
+  };
+}
+
+function destaquePontos(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort((a, b) => b.pontosTotais - a.pontosTotais)[0];
+  if (!top || top.pontosTotais < 5) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o mais afiado',
+    descricao: `${top.pontosTotais} pontos na ponta da língua`,
+  };
+}
+
+function destaqueColapso(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort((a, b) => b.colapsos - a.colapsos)[0];
+  if (!top || top.colapsos < 2) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o que travou',
+    descricao: `${top.colapsos} turnos com mais falhas que acertos`,
+  };
+}
+
+function gerarDestaquesJogadores(
+  jogadores: SessaoJogador[],
+  nomes: Map<PlayerId, string>,
+): DestaqueJogador[] {
+  const candidatos = [
+    destaqueVezesVotado(jogadores, nomes),
+    destaqueClutch(jogadores, nomes),
+    destaqueJulgado(jogadores, nomes),
+    destaquePontos(jogadores, nomes),
+    destaqueColapso(jogadores, nomes),
+  ].filter((d): d is DestaqueJogador => d !== null);
+
+  // Evita destacar a mesma pessoa duas vezes — mantém o primeiro destaque
+  const vistos = new Set<PlayerId>();
+  return candidatos
+    .filter((d) => {
+      if (vistos.has(d.jogadorId)) return false;
+      vistos.add(d.jogadorId);
+      return true;
+    })
+    .slice(0, 4);
+}
+
+// ─── Momento da sessão ────────────────────────────────────────────────────────
+
+const PRIORIDADE_MOMENTO: Record<string, number> = {
+  clutch: 100,
+  virada: 90,
+  unanimidade: 80,
+  sobrevivente: 70,
+  paranoia_total: 65,
+  revelacao: 60,
+  perfeito: 55,
+  julgamento: 50,
+  colapso_npl: 40,
+};
+
+function escolherMomentoDaSessao(momentos: Momento[]): Momento | null {
+  if (momentos.length === 0) return null;
+
+  return [...momentos].sort(
+    (a, b) =>
+      (PRIORIDADE_MOMENTO[b.tipo] ?? 0) - (PRIORIDADE_MOMENTO[a.tipo] ?? 0),
+  )[0];
+}
+
+// ─── Frase final ──────────────────────────────────────────────────────────────
+
+function gerarFraseFinal(sessao: ReturnType<typeof getSessaoAtual>): string {
+  if (!sessao) return 'sessão encerrada.';
+
+  // Tenta usar callback do dossiê
+  const callbackDossie = obterCallbackSimples('dossie', sessao);
+  if (callbackDossie) return callbackDossie;
+
+  // Fallback genérico
+  const jogos = sessao.jogosDaSessao.filter((j) => j.finalizadoEm !== null).length;
+  const min = Math.round((Date.now() - sessao.iniciadoEm) / 60000);
+  return `${jogos} ${jogos === 1 ? 'jogo' : 'jogos'} em ${min} minutos.`;
+}
+
+// ─── API pública ──────────────────────────────────────────────────────────────
+
+/**
+ * Gera o dossiê completo da sessão atual.
+ * Retorna null se não há sessão ou nenhum jogo completo.
+ */
+export function gerarDossie(): DossieDoCapos | null {
+  const sessao = getSessaoAtual();
+  if (!sessao) return null;
+
+  const jogosCompletos = sessao.jogosDaSessao.filter((j) => j.finalizadoEm !== null);
+  if (jogosCompletos.length === 0) return null;
+
+  const nomes = new Map(sessao.jogadores.map((j) => [j.id as PlayerId, j.nome]));
+  const duracaoMs = (sessao.finalizadoEm ?? Date.now()) - sessao.iniciadoEm;
+
+  return {
+    sessaoId: sessao.id,
+    duracaoMinutos: Math.round(duracaoMs / 60000),
+    totalJogos: jogosCompletos.length,
+    temperatura: sessao.temperatura,
+    grupoIdentidade: sessao.grupoIdentidade,
+    destaquesJogadores: gerarDestaquesJogadores(sessao.jogadores, nomes),
+    momentoDaSessao: escolherMomentoDaSessao(sessao.momentosMemoraveis),
+    fraseFinal: gerarFraseFinal(sessao),
+  };
+}

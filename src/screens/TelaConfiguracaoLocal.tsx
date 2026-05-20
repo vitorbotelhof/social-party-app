@@ -33,16 +33,16 @@ import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 type Props = NativeStackScreenProps<RootStackParamList, 'ConfiguracaoLocal'>;
 
 const ROTULOS_DIFICULDADE: Record<Dificuldade, string> = {
-  facil: 'Fácil',
-  medio: 'Médio',
-  dificil: 'Difícil',
+  facil: 'fácil',
+  medio: 'médio',
+  dificil: 'difícil',
 };
 
 const PROXIMIDADE: { valor: DificuldadeParPalavras; rotulo: string }[] = [
-  { valor: 'leve', rotulo: 'Fácil' },
-  { valor: 'media', rotulo: 'Médio' },
-  { valor: 'hard', rotulo: 'Difícil' },
-  { valor: 'insana', rotulo: 'Insano' },
+  { valor: 'leve', rotulo: 'leve' },
+  { valor: 'media', rotulo: 'médio' },
+  { valor: 'hard', rotulo: 'difícil' },
+  { valor: 'insana', rotulo: 'insano' },
 ];
 
 const MIN_MR_WHITES = 1;
@@ -51,7 +51,6 @@ const MIN_JOGADORES = 3;
 const MAX_JOGADORES = 12;
 const MIN_TAMANHO_NOME = 2;
 
-/** Divide array em pares para o grid 2 colunas. */
 function emPares<T>(arr: T[]): [T, T | null][] {
   const resultado: [T, T | null][] = [];
   for (let i = 0; i < arr.length; i += 2) {
@@ -163,16 +162,75 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* ─── Cabeçalho ─── */}
+          {/* ─── Cabeçalho — sem burocracia ─── */}
           <View style={estilos.cabecalho}>
-            <Text style={estilos.legenda}>📱 UM CELULAR</Text>
-            <Text style={estilos.tituloPagina}>como vai ser?</Text>
-            <Text style={estilos.subtitulo}>offline · passando de mão em mão</Text>
+            <Text style={estilos.tituloPagina}>mr white</Text>
+            <Text style={estilos.subtitulo}>montem o grupo, escolham o tema.</Text>
           </View>
 
-          {/* ─── Categoria ─── */}
-          <Section titulo="Categoria">
-            {/* Seleção ativa em destaque */}
+          {/* ─── 1. Quem tá jogando? — PRIMEIRO ─── */}
+          {/* A sessão começa aqui. Antes de qualquer configuração. */}
+          <Section titulo="quem tá jogando?" subtitulo={`${nomes.length} de ${MAX_JOGADORES}`}>
+            <View style={estilos.entradaBloco}>
+              <TextInput
+                value={novoNome}
+                onChangeText={setNovoNome}
+                placeholder="nome do jogador..."
+                placeholderTextColor={cores.textoMudo}
+                maxLength={20}
+                returnKeyType="done"
+                onSubmitEditing={aoAdicionar}
+                style={estilos.input}
+                accessibilityLabel="Nome do jogador"
+              />
+              <Pressable
+                onPress={aoAdicionar}
+                disabled={!podeAdicionar}
+                style={({ pressed }) => [
+                  estilos.botaoAdicionar,
+                  !podeAdicionar && estilos.botaoAdicionarDesabilitado,
+                  pressed && podeAdicionar && estilos.botaoAdicionarPressionado,
+                ]}
+                accessibilityLabel="Adicionar jogador"
+              >
+                <Text style={estilos.botaoAdicionarTexto}>+</Text>
+              </Pressable>
+            </View>
+
+            {nomes.length === 0 ? (
+              <Text style={estilos.vazio}>
+                comece pelo seu nome. os outros entram depois.
+              </Text>
+            ) : (
+              <View style={estilos.lista}>
+                {nomes.map((nome, i) => (
+                  <View key={`${nome}-${i}`} style={estilos.item}>
+                    <View style={estilos.itemBolinha}>
+                      <Text style={estilos.itemNumero}>{i + 1}</Text>
+                    </View>
+                    <Text style={estilos.itemNome} numberOfLines={1}>
+                      {nome}
+                      {i === 0 ? ' (você)' : ''}
+                    </Text>
+                    <Pressable
+                      onPress={() => aoRemover(i)}
+                      hitSlop={12}
+                      style={({ pressed }) => [
+                        estilos.itemRemover,
+                        pressed && estilos.itemRemoverPressionado,
+                      ]}
+                      accessibilityLabel={`Remover ${nome}`}
+                    >
+                      <Text style={estilos.itemRemoverTexto}>×</Text>
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            )}
+          </Section>
+
+          {/* ─── 2. Sobre o quê? — Categoria ─── */}
+          <Section titulo="sobre o quê?">
             {categoriaAtiva && (
               <View style={estilos.categoriaAtivaBadge}>
                 <Text style={estilos.categoriaAtivaEmoji}>{categoriaAtiva.emoji}</Text>
@@ -180,7 +238,6 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
               </View>
             )}
 
-            {/* Grid 2 colunas */}
             <View style={estilos.categoriaGrid}>
               {emPares(LISTA_CATEGORIAS).map(([a, b], i) => (
                 <View key={i} style={estilos.categoriaLinha}>
@@ -202,7 +259,6 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
               ))}
             </View>
 
-            {/* Sortear */}
             <Pressable
               onPress={sortearCategoria}
               style={({ pressed }) => [
@@ -214,15 +270,15 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
             </Pressable>
           </Section>
 
-          {/* ─── Modo de Jogo ─── */}
-          <Section titulo="Modo">
+          {/* ─── 3. Como funciona? — Modo ─── */}
+          <Section titulo="como funciona?">
             <View style={estilos.linhaSegmentos}>
               <Pressable
                 onPress={() => setModoDualWord(false)}
                 style={[estilos.segmento, !modoDualWord && estilos.segmentoAtivo]}
               >
                 <Text style={[estilos.segmentoTexto, !modoDualWord && estilos.segmentoTextoAtivo]}>
-                  Clássico
+                  clássico
                 </Text>
               </Pressable>
               <Pressable
@@ -230,7 +286,7 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
                 style={[estilos.segmento, modoDualWord && estilos.segmentoAtivo]}
               >
                 <Text style={[estilos.segmentoTexto, modoDualWord && estilos.segmentoTextoAtivo]}>
-                  Dual Word
+                  dual word
                 </Text>
               </Pressable>
             </View>
@@ -241,9 +297,9 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
             </Text>
           </Section>
 
-          {/* ─── Proximidade (só no Dual Word) ─── */}
+          {/* ─── 4. Quão parecidas? (só Dual Word) ─── */}
           {modoDualWord && (
-            <Section titulo="Proximidade das Palavras">
+            <Section titulo="quão parecidas as palavras?">
               <View style={estilos.linhaSegmentos}>
                 {PROXIMIDADE.map(({ valor, rotulo }) => {
                   const ativo = valor === dificuldadePar;
@@ -269,9 +325,9 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
             </Section>
           )}
 
-          {/* ─── Dificuldade (só no Clássico) ─── */}
+          {/* ─── 5. Que nível? (só Clássico) ─── */}
           {!modoDualWord && (
-            <Section titulo="Dificuldade">
+            <Section titulo="que nível?">
               <View style={estilos.linhaSegmentos}>
                 {(Object.keys(ROTULOS_DIFICULDADE) as Dificuldade[]).map((d) => {
                   const ativo = d === dificuldade;
@@ -292,13 +348,14 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
             </Section>
           )}
 
-          {/* ─── Impostores ─── */}
-          <Section titulo="Impostores">
+          {/* ─── 6. Quantos impostores? ─── */}
+          <Section titulo="quantos impostores?">
             <View style={estilos.controleNumero}>
               <Pressable
                 onPress={() => setNumMrWhites((n) => Math.max(MIN_MR_WHITES, n - 1))}
                 style={[estilos.botaoNumero, numMrWhites <= MIN_MR_WHITES && estilos.botaoNumeroDesabilitado]}
                 disabled={numMrWhites <= MIN_MR_WHITES}
+                accessibilityLabel="Diminuir impostores"
               >
                 <Text style={[estilos.botaoNumeroTexto, numMrWhites <= MIN_MR_WHITES && estilos.botaoNumeroTextoDesabilitado]}>−</Text>
               </Pressable>
@@ -307,6 +364,7 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
                 onPress={() => setNumMrWhites((n) => Math.min(MAX_MR_WHITES, n + 1))}
                 style={[estilos.botaoNumero, numMrWhites >= MAX_MR_WHITES && estilos.botaoNumeroDesabilitado]}
                 disabled={numMrWhites >= MAX_MR_WHITES}
+                accessibilityLabel="Aumentar impostores"
               >
                 <Text style={[estilos.botaoNumeroTexto, numMrWhites >= MAX_MR_WHITES && estilos.botaoNumeroTextoDesabilitado]}>+</Text>
               </Pressable>
@@ -315,65 +373,9 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
               quanto mais impostores, mais difícil para os civis.
             </Text>
           </Section>
-
-          {/* ─── Jogadores ─── */}
-          <Section titulo={`Jogadores (${nomes.length}/${MAX_JOGADORES})`}>
-            <View style={estilos.entradaBloco}>
-              <TextInput
-                value={novoNome}
-                onChangeText={setNovoNome}
-                placeholder="nome do jogador..."
-                placeholderTextColor={cores.textoMudo}
-                maxLength={20}
-                returnKeyType="done"
-                onSubmitEditing={aoAdicionar}
-                style={estilos.input}
-              />
-              <Pressable
-                onPress={aoAdicionar}
-                disabled={!podeAdicionar}
-                style={({ pressed }) => [
-                  estilos.botaoAdicionar,
-                  !podeAdicionar && estilos.botaoAdicionarDesabilitado,
-                  pressed && podeAdicionar && estilos.botaoAdicionarPressionado,
-                ]}
-              >
-                <Text style={estilos.botaoAdicionarTexto}>+</Text>
-              </Pressable>
-            </View>
-
-            {nomes.length === 0 ? (
-              <Text style={estilos.vazio}>
-                nenhum jogador ainda. comece adicionando seu nome.
-              </Text>
-            ) : (
-              <View style={estilos.lista}>
-                {nomes.map((nome, i) => (
-                  <View key={`${nome}-${i}`} style={estilos.item}>
-                    <View style={estilos.itemBolinha}>
-                      <Text style={estilos.itemNumero}>{i + 1}</Text>
-                    </View>
-                    <Text style={estilos.itemNome} numberOfLines={1}>
-                      {nome}
-                      {i === 0 ? ' (você)' : ''}
-                    </Text>
-                    <Pressable
-                      onPress={() => aoRemover(i)}
-                      hitSlop={12}
-                      style={({ pressed }) => [
-                        estilos.itemRemover,
-                        pressed && estilos.itemRemoverPressionado,
-                      ]}
-                    >
-                      <Text style={estilos.itemRemoverTexto}>×</Text>
-                    </Pressable>
-                  </View>
-                ))}
-              </View>
-            )}
-          </Section>
         </ScrollView>
 
+        {/* ─── Rodapé fixo: ação principal ─── */}
         <View style={estilos.rodape}>
           <BotaoPrimario
             titulo="começa aí"
@@ -393,7 +395,7 @@ export function TelaConfiguracaoLocal({ navigation }: Props) {
   );
 }
 
-// ─── Sub-componentes ───────────────────────────────────────────────────────────
+// ─── Sub-componentes ──────────────────────────────────────────────────────────
 
 interface CategoriaCardProps {
   categoria: { id: CategoriaId; emoji: string; nome: string };
@@ -410,6 +412,8 @@ function CategoriaCard({ categoria, ativo, onPress }: CategoriaCardProps) {
         ativo && estilos.categoriaCardAtivo,
         pressed && !ativo && estilos.categoriaCardPressionado,
       ]}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: ativo }}
     >
       <Text style={estilos.categoriaCardEmoji}>{categoria.emoji}</Text>
       <Text
@@ -422,16 +426,22 @@ function CategoriaCard({ categoria, ativo, onPress }: CategoriaCardProps) {
   );
 }
 
+// Section: labels conversacionais — não rótulos de formulário
 function Section({
   titulo,
+  subtitulo,
   children,
 }: {
   titulo: string;
+  subtitulo?: string;
   children: React.ReactNode;
 }) {
   return (
     <View style={estilos.section}>
-      <Text style={estilos.sectionTitulo}>{titulo}</Text>
+      <View style={estilos.sectionHeader}>
+        <Text style={estilos.sectionTitulo}>{titulo}</Text>
+        {subtitulo && <Text style={estilos.sectionSubtitulo}>{subtitulo}</Text>}
+      </View>
       {children}
     </View>
   );
@@ -440,74 +450,13 @@ function Section({
 // ─── Estilos ──────────────────────────────────────────────────────────────────
 
 const estilos = StyleSheet.create({
-  ajuda: {
-    color: cores.textoMudo,
-    fontSize: 13,
-    marginTop: espacamento.sm,
-    textAlign: 'center',
+  tela: {
+    backgroundColor: cores.fundo,
+    flex: 1,
   },
-  botaoAdicionar: {
-    alignItems: 'center',
-    backgroundColor: cores.primaria,
-    borderRadius: raio.md,
-    height: 52,
-    justifyContent: 'center',
-    width: 52,
-  },
-  botaoAdicionarDesabilitado: {
-    backgroundColor: cores.borda,
-  },
-  botaoAdicionarPressionado: {
-    backgroundColor: cores.primariaPressionada,
-    transform: [{ scale: 0.95 }],
-  },
-  botaoAdicionarTexto: {
-    color: cores.textoSobrePrimaria,
-    fontSize: 28,
-    fontWeight: tipografia.pesoBold,
-    lineHeight: 30,
-  },
-  botaoNumero: {
-    alignItems: 'center',
-    backgroundColor: cores.superficieElevada,
-    borderColor: cores.borda,
-    borderRadius: raio.md,
-    borderWidth: 1,
-    height: 52,
-    justifyContent: 'center',
-    width: 60,
-  },
-  botaoNumeroDesabilitado: {
-    opacity: 0.35,
-  },
-  botaoNumeroTexto: {
-    color: cores.texto,
-    fontSize: 26,
-    fontWeight: '700',
-  },
-  botaoNumeroTextoDesabilitado: {
-    color: cores.textoMudo,
-  },
-  botaoSortear: {
-    alignItems: 'center',
-    borderColor: cores.acento,
-    borderRadius: raio.pill,
-    borderWidth: 1,
-    marginTop: espacamento.md,
-    paddingHorizontal: espacamento.lg,
-    paddingVertical: espacamento.sm + 2,
-    alignSelf: 'center',
-  },
-  botaoSortearPressionado: {
-    backgroundColor: 'rgba(201, 137, 58, 0.12)',
-    transform: [{ scale: 0.97 }],
-  },
-  botaoSortearTexto: {
-    color: cores.acento,
-    fontSize: 14,
-    fontWeight: tipografia.pesoSemibold,
-    letterSpacing: 0.4,
-  },
+  flex: { flex: 1 },
+
+  // ── Voltar ──
   botaoVoltar: {
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
@@ -531,88 +480,59 @@ const estilos = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.14)',
     transform: [{ scale: 0.94 }],
   },
+
+  // ── Scroll ──
+  scroll: { flex: 1 },
+  scrollConteudo: { padding: espacamento.lg },
+
+  // ── Cabeçalho: contexto do jogo, não título de formulário ──
   cabecalho: {
     marginBottom: espacamento.lg,
     marginTop: espacamento.xl,
   },
-  categoriaAtivaBadge: {
-    alignItems: 'center',
-    backgroundColor: cores.superficieElevada,
-    borderColor: cores.acento,
-    borderRadius: raio.md,
-    borderWidth: 1,
+  tituloPagina: {
+    color: cores.texto,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
+    fontSize: 28,
+    letterSpacing: -0.2,
+    marginTop: espacamento.sm,
+  },
+  subtitulo: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpoMenor,
+    marginTop: espacamento.xs,
+  },
+
+  // ── Section: conversacional, não burocrática ──
+  section: { marginBottom: espacamento.xl },
+  sectionHeader: {
+    alignItems: 'baseline',
     flexDirection: 'row',
     gap: espacamento.sm,
     marginBottom: espacamento.md,
-    paddingHorizontal: espacamento.md,
-    paddingVertical: espacamento.sm + 2,
   },
-  categoriaAtivaEmoji: {
-    fontSize: 22,
-  },
-  categoriaAtivaTexto: {
-    color: cores.acento,
-    fontFamily: familias.serifDisplay,
-    fontSize: tipografia.tamanhoSubtitulo,
-    letterSpacing: 0,
-  },
-  categoriaCard: {
-    alignItems: 'center',
-    backgroundColor: cores.superficie,
-    borderColor: cores.borda,
-    borderRadius: raio.md,
-    borderWidth: 1,
-    flex: 1,
-    gap: espacamento.xs,
-    paddingHorizontal: espacamento.sm,
-    paddingVertical: espacamento.md,
-  },
-  categoriaCardAtivo: {
-    backgroundColor: 'rgba(201, 137, 58, 0.1)',
-    borderColor: cores.acento,
-  },
-  categoriaCardEmoji: {
-    fontSize: 24,
-  },
-  categoriaCardNome: {
+  // Lowercase, sem uppercase transform — linguagem humana
+  sectionTitulo: {
     color: cores.textoSecundario,
-    fontSize: 12,
-    fontWeight: tipografia.pesoSemibold,
-    textAlign: 'center',
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.2,
   },
-  categoriaCardNomeAtivo: {
-    color: cores.acento,
+  sectionSubtitulo: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: 11,
+    letterSpacing: 0.3,
   },
-  categoriaCardPressionado: {
-    opacity: 0.7,
-  },
-  categoriaCardVazio: {
-    flex: 1,
-  },
-  categoriaGrid: {
-    gap: espacamento.sm,
-  },
-  categoriaLinha: {
-    flexDirection: 'row',
-    gap: espacamento.sm,
-  },
-  controleNumero: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: espacamento.lg,
-    justifyContent: 'center',
-  },
+
+  // ── Jogadores: primeiro e em destaque ──
   entradaBloco: {
     flexDirection: 'row',
     gap: espacamento.sm,
   },
-  faltam: {
-    color: cores.textoMudo,
-    fontSize: tipografia.tamanhoLegenda,
-    marginTop: espacamento.sm,
-    textAlign: 'center',
-  },
-  flex: { flex: 1 },
   input: {
     backgroundColor: cores.superficie,
     borderColor: cores.borda,
@@ -620,10 +540,39 @@ const estilos = StyleSheet.create({
     borderWidth: 1,
     color: cores.texto,
     flex: 1,
+    fontFamily: familias.sans,
     fontSize: 17,
     paddingHorizontal: espacamento.md,
     paddingVertical: espacamento.md,
   },
+  botaoAdicionar: {
+    alignItems: 'center',
+    backgroundColor: cores.primaria,
+    borderRadius: raio.md,
+    height: 52,
+    justifyContent: 'center',
+    width: 52,
+  },
+  botaoAdicionarDesabilitado: { backgroundColor: cores.borda },
+  botaoAdicionarPressionado: {
+    backgroundColor: cores.primariaPressionada,
+    transform: [{ scale: 0.95 }],
+  },
+  botaoAdicionarTexto: {
+    color: cores.textoSobrePrimaria,
+    fontSize: 28,
+    fontWeight: tipografia.pesoBold,
+    lineHeight: 30,
+  },
+  vazio: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    marginTop: espacamento.md,
+    paddingVertical: espacamento.sm,
+    textAlign: 'center',
+  },
+  lista: { marginTop: espacamento.md },
   item: {
     alignItems: 'center',
     backgroundColor: cores.superficie,
@@ -644,16 +593,18 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
     width: 32,
   },
+  itemNumero: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    fontWeight: tipografia.pesoExtraBold,
+  },
   itemNome: {
     color: cores.texto,
     flex: 1,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMaior,
     fontWeight: tipografia.pesoSemibold,
-  },
-  itemNumero: {
-    color: cores.textoSecundario,
-    fontSize: tipografia.tamanhoLegenda,
-    fontWeight: tipografia.pesoExtraBold,
   },
   itemRemover: {
     alignItems: 'center',
@@ -661,51 +612,86 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
     width: 28,
   },
-  itemRemoverPressionado: {
-    opacity: 0.5,
-  },
+  itemRemoverPressionado: { opacity: 0.5 },
   itemRemoverTexto: {
     color: cores.textoSecundario,
     fontSize: 24,
     fontWeight: tipografia.pesoBold,
     lineHeight: 26,
   },
-  legenda: {
-    color: cores.primaria,
-    fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
-  },
-  linhaSegmentos: {
+
+  // ── Categoria ──
+  categoriaAtivaBadge: {
+    alignItems: 'center',
+    backgroundColor: cores.superficieElevada,
+    borderColor: cores.acento,
+    borderRadius: raio.md,
+    borderWidth: 1,
     flexDirection: 'row',
     gap: espacamento.sm,
-  },
-  lista: {
-    marginTop: espacamento.md,
-  },
-  rodape: {
-    borderTopColor: cores.borda,
-    borderTopWidth: 1,
-    padding: espacamento.lg,
-    paddingTop: espacamento.md,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollConteudo: {
-    padding: espacamento.lg,
-  },
-  section: {
-    marginBottom: espacamento.xl,
-  },
-  sectionTitulo: {
-    color: cores.textoSecundario,
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1.8,
     marginBottom: espacamento.md,
-    textTransform: 'uppercase',
+    paddingHorizontal: espacamento.md,
+    paddingVertical: espacamento.sm + 2,
   },
+  categoriaAtivaEmoji: { fontSize: 22 },
+  categoriaAtivaTexto: {
+    color: cores.acento,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
+    fontSize: tipografia.tamanhoSubtitulo,
+  },
+  categoriaGrid: { gap: espacamento.sm },
+  categoriaLinha: { flexDirection: 'row', gap: espacamento.sm },
+  categoriaCard: {
+    alignItems: 'center',
+    backgroundColor: cores.superficie,
+    borderColor: cores.borda,
+    borderRadius: raio.md,
+    borderWidth: 1,
+    flex: 1,
+    gap: espacamento.xs,
+    paddingHorizontal: espacamento.sm,
+    paddingVertical: espacamento.md,
+  },
+  categoriaCardAtivo: {
+    backgroundColor: 'rgba(201, 137, 58, 0.10)',
+    borderColor: cores.acento,
+  },
+  categoriaCardEmoji: { fontSize: 24 },
+  categoriaCardNome: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: 12,
+    fontWeight: tipografia.pesoSemibold,
+    textAlign: 'center',
+  },
+  categoriaCardNomeAtivo: { color: cores.acento },
+  categoriaCardPressionado: { opacity: 0.7 },
+  categoriaCardVazio: { flex: 1 },
+  botaoSortear: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderColor: cores.acento,
+    borderRadius: raio.pill,
+    borderWidth: 1,
+    marginTop: espacamento.md,
+    paddingHorizontal: espacamento.lg,
+    paddingVertical: espacamento.sm + 2,
+  },
+  botaoSortearPressionado: {
+    backgroundColor: 'rgba(201, 137, 58, 0.12)',
+    transform: [{ scale: 0.97 }],
+  },
+  botaoSortearTexto: {
+    color: cores.acento,
+    fontFamily: familias.sans,
+    fontSize: 14,
+    fontWeight: tipografia.pesoSemibold,
+    letterSpacing: 0.3,
+  },
+
+  // ── Segmentos de modo/nível ──
+  linhaSegmentos: { flexDirection: 'row', gap: espacamento.sm },
   segmento: {
     alignItems: 'center',
     backgroundColor: cores.superficie,
@@ -721,40 +707,68 @@ const estilos = StyleSheet.create({
   },
   segmentoTexto: {
     color: cores.textoSecundario,
+    fontFamily: familias.sans,
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: tipografia.pesoSemibold,
   },
   segmentoTextoAtivo: {
     color: cores.textoSobrePrimaria,
+    fontWeight: tipografia.pesoBold,
   },
-  subtitulo: {
-    color: cores.textoSecundario,
-    fontSize: tipografia.tamanhoCorpoMenor,
-    marginTop: espacamento.xs,
-  },
-  tela: {
-    backgroundColor: cores.fundo,
-    flex: 1,
-  },
-  tituloPagina: {
-    color: cores.texto,
-    fontSize: 28,
-    fontWeight: '900',
+  ajuda: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: 13,
     marginTop: espacamento.sm,
+    textAlign: 'center',
   },
+
+  // ── Stepper de impostores ──
+  controleNumero: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: espacamento.lg,
+    justifyContent: 'center',
+  },
+  botaoNumero: {
+    alignItems: 'center',
+    backgroundColor: cores.superficieElevada,
+    borderColor: cores.borda,
+    borderRadius: raio.md,
+    borderWidth: 1,
+    height: 52,
+    justifyContent: 'center',
+    width: 60,
+  },
+  botaoNumeroDesabilitado: { opacity: 0.35 },
+  botaoNumeroTexto: {
+    color: cores.texto,
+    fontFamily: familias.sans,
+    fontSize: 26,
+    fontWeight: '700',
+  },
+  botaoNumeroTextoDesabilitado: { color: cores.textoMudo },
   valorNumero: {
     color: cores.primaria,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 44,
     minWidth: 56,
     textAlign: 'center',
   },
-  vazio: {
+
+  // ── Rodapé fixo ──
+  rodape: {
+    borderTopColor: cores.borda,
+    borderTopWidth: 1,
+    padding: espacamento.lg,
+    paddingTop: espacamento.md,
+  },
+  faltam: {
     color: cores.textoMudo,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
-    fontStyle: 'italic',
-    marginTop: espacamento.md,
-    paddingVertical: espacamento.sm,
+    marginTop: espacamento.sm,
     textAlign: 'center',
   },
 });

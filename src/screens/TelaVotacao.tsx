@@ -575,7 +575,7 @@ const estilos = StyleSheet.create({
     gap: 2,
   },
   cardDestacado: {
-    backgroundColor: cores.acentoEscuro,
+    backgroundColor: 'rgba(255, 90, 95, 0.10)',
     borderColor: cores.primaria,
     borderWidth: 2,
   },
@@ -650,7 +650,7 @@ const estilos = StyleSheet.create({
   },
   esperaAguardando: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoSubtitulo,
     textAlign: 'center',
   },
@@ -663,7 +663,7 @@ const estilos = StyleSheet.create({
   },
   esperaDecidiu: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoSubtitulo,
     letterSpacing: 0,
     textAlign: 'center',

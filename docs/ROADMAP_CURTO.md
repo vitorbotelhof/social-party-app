@@ -1,318 +1,394 @@
 # ENTRE NÓS — SHORT TERM PRODUCT ROADMAP
+Entre Nós — Short Term Roadmap
+Current Product Evolution Priorities
+1. Objetivo do Roadmap
+
+Este roadmap NÃO existe para:
+
+listar features aleatórias
+acumular funcionalidades
+transformar o produto em um “super app”
+
+O roadmap existe para:
+
+evoluir o Entre Nós em uma plataforma de energia social presencial.
+
+Toda prioridade deve responder:
+
+“isso melhora a experiência humana entre as pessoas?”
+
+Se não:
+não priorizar.
+
+2. Objetivo Atual do Produto
+
+O foco atual NÃO é:
+
+monetização
+escalabilidade massiva
+social network
+perfis
+feed
+gamificação
+
+O foco atual é:
+
+criar a melhor experiência social presencial mobile do Brasil.
+3. Meta do Próximo Ciclo
+
+O objetivo dos próximos ciclos é:
+
+consolidar identidade do produto
+estabilizar gameplay loops
+melhorar replayability
+melhorar flow social
+reduzir fricção
+aumentar memória coletiva
+fortalecer energia emocional das sessões
+4. Prioridade Máxima Atual
+PRIORIDADE #1
+Refatoração completa do design system.
+Objetivos
+
+Migrar de:
+
+noir cinematográfico
+jazz club
+thriller social pesado
+
+Para:
+
+social energy system.
+Precisamos:
+UI mais rápida
+UI mais leve
+UI mais humana
+UI mais social
+menos atmosfera
+mais energia
+mais clareza
+mais ritmo
+5. Refatoração Global de UI
+Objetivo
+
+Transformar TODO o produto em:
+
+energia social premium.
+Refatorar:
+cores
+typography
+spacing
+motion
+haptics
+cards
+feedbacks
+home
+config screens
+lobbies
+gameplay overlays
+Eliminar:
+breathing infinito
+suspense excessivo
+preto pesado
+glow dramático
+motion contemplativo
+6. Home Experience
+Problema atual
+
+A home ainda parece:
+
+catálogo
+launcher de jogos
+menu tradicional
+Objetivo
+
+Transformar a home em:
+
+organizador de energia social.
+Implementar
+Sistema de vibes
+quebra-gelo
+caos
+paranoia
+intimidade
+after
+festa
+vergonha alheia
+Sugestões contextuais
+
+“o grupo parece pronto para caos.”
+
+Organização emocional
+
+E NÃO:
+organização por gênero.
+
+7. Mr White — Próximos Passos
+Objetivo
+
+Transformar Mr White em:
+
+o melhor jogo de paranoia social mobile.
+Prioridades
+1.
+
+Sistema completo multi-round.
+
+2.
+
+Vitória progressiva.
+
+3.
+
+Escalada emocional.
+
+4.
+
+Sistema de múltiplos Mr Whites.
+
+5.
+
+Modo palavra semelhante.
+
+6.
+
+Banco de palavras premium.
+
+7.
+
+Modo multiplayer completamente estável.
+
+8.
+
+Eliminação social melhorada.
+
+9.
+
+Aftermath mais forte.
+
+8. Most Likely To — Próximos Passos
+Objetivo
+
+Transformar o jogo em:
+
+julgamento social extremamente replayable.
+Prioridades
+1.
+
+Mais prompts premium.
+
+2.
+
+Melhorar pacing do reveal.
+
+3.
+
+Sistema de callbacks sociais.
+
+4.
+
+Detecção de unanimidade.
+
+5.
+
+Memória de julgamentos passados.
+
+6.
+
+Modo 1 celular.
+
+7.
+
+Melhorar replayability.
+
+9. Na Ponta da Língua — Próximos Passos
+Objetivo
+
+Transformar o jogo em:
+
+o melhor jogo de colapso cognitivo social do mercado.
+Prioridades
+1.
+
+Sistema anti-repetição definitivo.
+
+2.
+
+300–1000+ cartas premium.
+
+3.
+
+Rebalanceamento do modo fácil.
+
+4.
+
+Sistema adaptativo de pacing.
+
+5.
+
+Categorias brasileiras premium.
+
+6.
+
+Special conditions.
+
+7.
+
+Modo Team vs Team definitivo.
+
+8.
+
+Modo Colapso definitivo.
+
+9.
+
+Multiplayer completo.
+
+10.
+
+Polish cinematográfico final.
+
+10. Novo Jogo — Na Ponta da Língua
+Objetivo
+
+Expandir:
+
+variedade emocional do ecossistema.
+Próximos jogos devem preencher:
+novas tensões sociais
+novas energias
+novas dinâmicas humanas
+Evitar:
+
+jogos redundantes emocionalmente.
+
+11. Dossiê do Caos
+PRIORIDADE ALTA
 
 Objetivo:
-Definir as prioridades de curto prazo do produto.
+criar:
 
-Este roadmap NÃO é técnico.
-Ele existe para garantir:
+memória coletiva compartilhável.
+Implementar:
+resumo da sessão
+maiores colapsos
+mais suspeito
+mais julgado
+clutch da noite
+momento mais absurdo
+Impactos esperados:
+replayability
+compartilhamento
+retenção emocional
+viralidade
+12. Sistema de Identidade do Grupo
+Objetivo
 
-* foco
-* qualidade
-* consistência emocional
-* evolução sustentável do produto
+O app deve detectar:
 
-O objetivo atual NÃO é:
-adicionar dezenas de jogos rapidamente.
+grupo caótico
+grupo paranoico
+grupo competitivo
+grupo silencioso
+grupo destrutivo
+grupo extremamente eficiente
+Isso deve impactar:
+commentary
+pacing
+aftermath
+sugestões
+vibe recommendations
+13. Session Intelligence
+Objetivo
 
-O objetivo atual é:
-transformar o Entre Nós em uma experiência social memorável.
+O produto deve entender:
 
----
+a energia da sessão.
+No futuro:
 
-# PRINCÍPIO CENTRAL
+o app deve sugerir:
 
-Antes de expandir o catálogo:
-precisamos criar:
-
-* uma Home excelente
-* um jogo excelente
-* uma experiência emocional consistente
-* uma arquitetura escalável
-
-Mr White será:
-o jogo de referência do produto.
-
-Tudo o que for aprendido nele:
-alimentará todos os próximos jogos.
-
----
-
-# PRIORIDADE ATUAL
-
-## 1. Finalizar a nova arquitetura da Home
-
-## 2. Transformar Mr White em Golden Experience
-
-## 3. Refinar onboarding emocional
-
-## 4. Estabilizar multiplayer
-
-## 5. Só então iniciar expansão do catálogo
-
----
-
-# TRACK A — HOME & DISCOVERY
+próximos jogos
+intensidade ideal
+mudança de vibe
+cooldown emocional
+14. Multiplayer Stability
+PRIORIDADE MUITO ALTA
 
 Objetivo:
-Transformar a Home em:
-uma curadoria emocional de atmosferas sociais.
-
----
-
-## EM PROGRESSO
-
-### Hero editorial
-
-* [x] Estrutura criada
-* [ ] Refinar copy dinâmica
-* [ ] Hero contextual por horário
-* [ ] Melhorar CTA do Hero
-* [ ] Melhorar transição Hero → categorias
-
----
-
-### Categorias emocionais
-
-* [x] Estrutura criada
-* [ ] Renomear categorias para linguagem humana/social
-* [ ] Refinar sub-labels editoriais
-* [ ] Validar ordem emocional das categorias
-* [ ] Implementar rows horizontais
-
----
-
-### Discovery emocional
-
-* [ ] Criar “Pergunta do Momento”
-* [ ] Criar mood entry points
-* [ ] Testar discovery por estado emocional
-* [ ] Evitar sensação de catálogo
-
----
-
-### Visual pacing
-
-* [ ] Refinar spacing cinematográfico
-* [ ] Refinar breathing room
-* [ ] Refinar hierarchy visual
-* [ ] Refinar ritmo do scroll
-* [ ] Refinar densidade visual
-
----
-
-# TRACK B — MR WHITE GOLDEN EXPERIENCE
-
-Objetivo:
-Transformar Mr White na experiência de referência do app.
-
-Mr White deve definir:
-
-* UX
-* multiplayer
-* pacing
-* onboarding
-* emotional tension
-* transitions
-* gameplay architecture
-
----
-
-## GAMEPLAY
-
-### Core gameplay
-
-* [ ] Revisar pacing das rodadas
-* [ ] Revisar pacing da votação
-* [ ] Melhorar momentos mortos
-* [ ] Melhorar transições entre fases
-* [ ] Melhorar feedback de ações
-
----
-
-### Tensão emocional
-
-* [ ] Criar momentos de silêncio/reveal
-* [ ] Melhorar antecipação da votação
-* [ ] Melhorar reveal do Mr White
-* [ ] Melhorar sensação de paranoia social
-
----
-
-### Clareza de UX
-
-* [ ] Melhorar onboarding do jogo
-* [ ] Melhorar explicações
-* [ ] Melhorar feedback visual
-* [ ] Melhorar clareza do estado atual
-* [ ] Melhorar indicação de turno/fase
-
----
-
-## MULTIPLAYER
-
-### Estabilidade
-
-* [ ] Melhorar reconnect
-* [ ] Melhorar leave handling
-* [ ] Melhorar cleanup de sessão
-* [ ] Melhorar resiliência Firebase
-* [ ] Revisar sincronização realtime
-
----
-
-### Host controls
-
-* [ ] Melhorar controles do host
-* [ ] Melhorar expulsão de jogadores
-* [ ] Melhorar feedback de presença
-* [ ] Melhorar reconexão de jogadores
-
----
-
-## POLISH
-
-### Motion
-
-* [ ] Refinar animações
-* [ ] Refinar transitions
-* [ ] Refinar haptics
-* [ ] Refinar reveal pacing
-
----
-
-### Visual
-
-* [ ] Refinar typography
-* [ ] Refinar contraste
-* [ ] Refinar hierarchy
-* [ ] Refinar feedback visual
-
----
-
-# TRACK C — FOUNDATION FOR MULTIPLE GAMES
-
-Objetivo:
-Preparar o produto para suportar muitos jogos sem criar caos arquitetural.
-
-Importante:
-O foco NÃO é criar dezenas de jogos agora.
-
-O foco é:
-criar uma base sustentável.
-
----
-
-## FOUNDATION
-
-### Shared systems
-
-* [ ] Universal game shell
-* [ ] Shared onboarding flow
-* [ ] Shared session flow
-* [ ] Shared result flow
-* [ ] Shared emotional systems
-
----
-
-### Taxonomy integration
-
-* [ ] Integrar emotional vectors nos jogos
-* [ ] Integrar taxonomy na Home
-* [ ] Integrar taxonomy nas recomendações
-* [ ] Integrar taxonomy no Hero
-
----
-
-### Editorial systems
-
-* [ ] Hero rotation system
-* [ ] Mood-based curation
-* [ ] Time-of-day curation
-* [ ] Dynamic editorial copy
-
----
-
-# TRACK D — NEXT GAME
-
-Objetivo:
-Começar expansão do catálogo APENAS após Mr White atingir maturidade.
-
----
-
-## Próximo jogo prioritário:
-
-### Most Likely To
-
-Motivos:
-
-* onboarding simples
-* alta viralidade social
-* alta exposição social
-* gameplay rápido
-* reutiliza infraestrutura atual
-* complementa emocionalmente Mr White
-
----
-
-## Antes de iniciar
-
-### O próximo jogo NÃO começa até:
-
-* [ ] Home refinada
-* [ ] Mr White estável
-* [ ] multiplayer estável
-* [ ] onboarding refinado
-* [ ] emotional taxonomy integrada
-
----
-
-## Foundation antes do desenvolvimento
-
-### Precisamos primeiro:
-
-* [ ] definir emotional vectors do jogo
-* [ ] definir onboarding emocional
-* [ ] definir pacing social
-* [ ] definir atmosphere direction
-* [ ] definir transitions/shared systems
-
----
-
-# TRACK E — FUTURE VISION
-
-Ainda NÃO prioritário.
-
----
-
-## Futuro
-
-* [ ] recommendation engine
-* [ ] adaptive Home
-* [ ] contextual curation
-* [ ] social memory
-* [ ] post-game recommendations
-* [ ] AI-powered curation
-* [ ] mood onboarding
-* [ ] seasonal editorial experiences
-
----
-
-# PRINCÍPIO FINAL
-
-O objetivo NÃO é:
-ter muitos jogos.
-
-O objetivo é:
-criar experiências sociais emocionalmente memoráveis.
-
-Entre Nós não é:
-um catálogo.
-
-É:
-uma máquina de criar:
-
-* tensão
-* revelação
-* intimidade
-* cumplicidade
-* memória coletiva.
+eliminar sensação de:
+
+Firebase app
+sistema técnico
+sync issues
+reconnect confuso
+O multiplayer deve parecer:
+experiência contínua.
+15. Onboarding Invisível
+Objetivo
+
+Eliminar:
+
+tutorial longo
+onboarding técnico
+excesso de texto
+O usuário deve:
+aprender jogando.
+16. Performance e Fluidez
+Prioridade constante
+
+Eliminar:
+
+loading perceptível
+waits desnecessários
+telas mortas
+flow quebrado
+O app deve parecer:
+instantâneo
+contínuo
+vivo
+17. Design Anti-Cringe
+
+Evitar:
+
+excesso de atmosfera
+excesso de dramaticidade
+“cool demais”
+estética cult
+linguagem pretensiosa
+UI performática
+O produto deve continuar:
+divertido primeiro.
+18. Longo Prazo
+
+O Entre Nós deve evoluir para:
+
+principal plataforma de experiências sociais presenciais do Brasil.
+Não queremos construir:
+apenas jogos
+apenas UX bonita
+apenas um app viral
+Queremos construir:
+memória coletiva
+ritual social contemporâneo
+sistema operacional de resenha
+mediação emocional de grupo
+19. O Verdadeiro KPI
+
+O principal KPI NÃO é:
+
+tempo de tela
+DAU
+retenção fria
+O verdadeiro KPI é:
+
+“quantas noites memoráveis o produto criou?”
+
+20. Princípio Final
+
+Toda decisão de produto deve responder:
+
+“isso melhora a energia social entre pessoas reais?”
+
+Se não:
+não implementar.

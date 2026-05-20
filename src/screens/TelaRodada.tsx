@@ -487,12 +487,12 @@ function ItemDica({
     Animated.parallel([
       Animated.timing(op, {
         toValue: 1,
-        duration: 320,
+        duration: 220,
         useNativeDriver: true,
       }),
       Animated.timing(ty, {
         toValue: 0,
-        duration: 320,
+        duration: 220,
         useNativeDriver: true,
       }),
     ]).start();
@@ -550,7 +550,7 @@ const estilos = StyleSheet.create({
     position: 'relative',
   },
   barraProgresso: {
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    backgroundColor: cores.borda,
     borderRadius: raio.pill,
     height: 4,
     marginTop: espacamento.md,
@@ -651,7 +651,9 @@ const estilos = StyleSheet.create({
     paddingTop: espacamento.md,
   },
   cabecalhoMinhaVez: {
-    backgroundColor: cores.acentoEscuro,
+    backgroundColor: 'rgba(255, 90, 95, 0.08)',
+    borderLeftColor: cores.primaria,
+    borderLeftWidth: 3,
   },
   contador: {
     color: cores.textoSecundario,
@@ -733,8 +735,7 @@ const estilos = StyleSheet.create({
     color: cores.textoSecundario,
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoBold,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
+    letterSpacing: 0.3,
   },
   itemDicaTexto: {
     color: cores.texto,
@@ -779,7 +780,7 @@ const estilos = StyleSheet.create({
     textAlign: 'center',
   },
   subtituloMinhaVez: {
-    color: 'rgba(255, 255, 255, 0.85)',
+    color: cores.textoSecundario,
     fontSize: tipografia.tamanhoCorpoMenor,
     marginTop: espacamento.xs,
     textAlign: 'center',
@@ -801,8 +802,8 @@ const estilos = StyleSheet.create({
     flex: 1,
   },
   tituloMinhaVez: {
-    color: cores.textoSobrePrimaria,
-    fontFamily: familias.serifDisplay,
+    color: cores.primaria,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 36,
     letterSpacing: 0,
     marginTop: espacamento.xs,
@@ -834,7 +835,6 @@ const estilos = StyleSheet.create({
     color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoMedio,
-    letterSpacing: tipografia.spacingLegenda,
-    textTransform: 'uppercase',
+    letterSpacing: 0.3,
   },
 });

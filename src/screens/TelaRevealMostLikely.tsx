@@ -272,7 +272,7 @@ const estilos = StyleSheet.create({
   },
   promptTexto: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     lineHeight: 22,
     textAlign: 'center',
@@ -305,12 +305,12 @@ const estilos = StyleSheet.create({
     width: '48.5%',
   },
   cardVencedor: {
-    backgroundColor: cores.acentoEscuro,
-    borderColor: cores.acento,
+    backgroundColor: 'rgba(255, 190, 11, 0.12)',
+    borderColor: cores.mostLikely,
     borderWidth: 2,
   },
   cardEmpate: {
-    backgroundColor: '#2A1F00',
+    backgroundColor: 'rgba(255, 190, 11, 0.06)',
     borderColor: cores.alerta,
     borderWidth: 2,
   },
@@ -354,16 +354,16 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoMedio,
     textAlign: 'center',
   },
-  // Vencedor: serifDisplay + âmbar — identidade revelada
+  // Vencedor: sans bold + amarelo MLT — identidade revelada
   cardNomeVencedor: {
-    color: cores.acento,
-    fontFamily: familias.serifDisplay,
+    color: cores.mostLikely,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpo,
   },
   // Empate: alerta (amarelo) — tensão sem vencedor
   cardNomeEmpate: {
     color: cores.alerta,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpo,
   },
 
@@ -374,28 +374,27 @@ const estilos = StyleSheet.create({
   },
   cristalizacaoTexto: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     lineHeight: 24,
     textAlign: 'center',
   },
   cristalizacaoNome: {
-    color: cores.acento,
-    fontFamily: familias.serifDisplay,
+    color: cores.mostLikely,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMaior,
   },
   cristalizacaoPromptInline: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
   },
 
   rodadaLegenda: {
     color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoMedio,
-    letterSpacing: tipografia.spacingLegenda,
+    letterSpacing: 0.3,
     textAlign: 'center',
-    textTransform: 'uppercase',
   },
 
   // Rodapé
@@ -408,7 +407,7 @@ const estilos = StyleSheet.create({
     paddingTop: espacamento.md,
   },
 
-  // Host — botão textual sutil, não CTA agressivo
+  // Host — botão textual claro, ação legível
   botaoProxima: {
     paddingHorizontal: espacamento.lg,
     paddingVertical: espacamento.md,
@@ -417,15 +416,16 @@ const estilos = StyleSheet.create({
     opacity: 0.6,
   },
   botaoProximaTexto: {
-    color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpo,
+    fontWeight: tipografia.pesoSemibold,
     letterSpacing: 0.2,
   },
 
   esperandoAnfitriao: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     textAlign: 'center',
   },

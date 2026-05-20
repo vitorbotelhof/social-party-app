@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { cores, familias } from '@/theme/colors';
+import { cores, familias, tipografia } from '@/theme/colors';
 
 type Tamanho = 'medio' | 'grande';
 
@@ -26,6 +26,7 @@ export function CodigoSala({ codigo, tamanho = 'grande' }: Props) {
         </Text>
         {parte2}
       </Text>
+      {/* Hairline: âncora o código visualmente */}
       <View style={[estilos.linhaBase, eGrande ? estilos.linhaBaseGrande : estilos.linhaBaseMedio]} />
     </View>
   );
@@ -33,9 +34,10 @@ export function CodigoSala({ codigo, tamanho = 'grande' }: Props) {
 
 const estilos = StyleSheet.create({
   codigo: {
-    color: cores.acento,
-    fontFamily: familias.serifDisplay,
-    letterSpacing: 6,
+    color: cores.primaria,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
+    letterSpacing: 4,
     textAlign: 'center',
   },
   codigoGrande: {
@@ -49,22 +51,24 @@ const estilos = StyleSheet.create({
   container: {
     alignItems: 'center',
   },
+  // Linha: usa primaria com baixa opacidade — sem hardcode amber
   linhaBase: {
-    backgroundColor: 'rgba(201,137,58,0.2)',
+    backgroundColor: 'rgba(255, 90, 95, 0.15)',
     borderRadius: 1,
     marginTop: 10,
   },
   linhaBaseGrande: {
     height: 1,
-    width: 220,
+    width: 200,
   },
   linhaBaseMedio: {
     height: 1,
-    width: 150,
+    width: 140,
   },
   ponto: {
-    color: 'rgba(201,137,58,0.4)',
-    fontFamily: familias.serifDisplay,
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontWeight: tipografia.pesoMedio,
   },
   pontoGrande: {
     fontSize: 28,

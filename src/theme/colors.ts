@@ -1,42 +1,85 @@
 /**
- * Identidade visual oficial — Entre Nós.
- * Paleta noir quente: carvão escuro / vinho / âmbar. Sem azul frio, sem neon.
+ * Sistema de Cores — Entre Nós v2.
+ *
+ * Identidade: plataforma de energia social presencial.
+ * Direção: rápido, humano, tátil, brasileiro.
+ *
+ * Base: papel quente (#F6F3EE) → preto denso (#161616)
+ * Acentos sociais por função emocional, não por decoração.
+ *
+ * COMPATIBILIDADE: todos os tokens legados foram preservados —
+ * os 42 arquivos que importam daqui continuam compilando.
+ * Os valores mudaram; o shape da interface permanece idêntico.
  */
+
+// ─── FUNDAÇÃO ─────────────────────────────────────────────────────────────────
+
 export const cores = {
-  // Backgrounds — carvão com subtom castanho, não azul
-  fundo: '#0E0B08',
-  fundoSecundario: '#141009',
-  superficie: '#1C1610',
-  superficieElevada: '#231A12',
-  borda: '#352A1C',
+  // Backgrounds — papel quente, presença humana, não noir
+  fundo: '#F6F3EE',
+  fundoSecundario: '#FFFFFF',
+  superficie: '#FFFFFF',
+  superficieElevada: '#FDFCFA',
+  borda: '#E7E2DA',
+  bordaForte: '#C8C2BA',
 
-  // Brand — vinho profundo como primária, âmbar como acento
-  primaria: '#A0522D',        // sienna: terra, calor, presença
-  primariaPressionada: '#7A3D20',
-  acento: '#C9893A',          // âmbar dourado: tensão, luz baixa
-  acentoQuente: '#D4633A',    // laranja cobre: emoção quente
-  acentoEscuro: '#6B3318',
-  acentoPressionado: '#7A3D20',
+  // Brand principal — vermelho social
+  // Energia, presença, intensidade. Não perigo, não erro — vida social.
+  primaria: '#FF5A5F',
+  primariaPressionada: '#E04449',
+  acento: '#FF5A5F',         // alias → primaria
+  acentoQuente: '#FF7A7F',   // versão mais suave
+  acentoEscuro: '#CC3338',
+  acentoPressionado: '#E04449',
 
-  // States — verde mais quente, alerta já era bom, erro levemente mais quente
-  sucesso: '#2ECC8A',
-  alerta: '#FFB020',
-  erro: '#E86A5A',
+  // Identidades por jogo — cada jogo tem sua assinatura cromática
+  mrWhite: '#FF5A5F',    // vermelho: paranóia, suspeita, tensão
+  mostLikely: '#FFBE0B', // amarelo: julgamento, revelação, humor
+  npl: '#8B5CF6',        // roxo: colapso cognitivo, pressão mental
 
-  // Text — off-white quente, secundário sepia, mudo terra
-  texto: '#F5F0EB',
-  textoSecundario: '#9A8878',
-  textoMudo: '#6B5A4A',
+  // Energia social — estados emocionais mapeados em cor
+  conversa: '#4D7CFE',   // azul: diálogo, fluxo, conexão
+  reacao: '#22C55E',     // verde: acerto, reação, celebração
+  caos: '#FFBE0B',       // amarelo: caos, surpresa, instabilidade
+  energia: '#8B5CF6',    // roxo: intensidade, pressão, colapso
+  social: '#FF5A5F',     // vermelho: presença humana ativa
+
+  // Estados do sistema
+  sucesso: '#22C55E',
+  alerta: '#FFBE0B',
+  erro: '#FF5A5F',
+
+  // Tipografia — denso, legível, humano
+  texto: '#161616',
+  textoSecundario: '#5E5E5E',
+  textoMudo: '#9E9E9E',
   textoSobrePrimaria: '#FFFFFF',
+  textoSobreEscuro: '#F6F3EE',
 } as const;
 
-/** Gradientes oficiais — usar com expo-linear-gradient. */
+// ─── GRADIENTES ───────────────────────────────────────────────────────────────
+
 export const gradientes = {
-  /** Principal: vinho → âmbar. Botão primário, destaques. */
-  principal: ['#A0522D', '#C9893A'] as [string, string],
-  /** Acento: sépia profundo → cobre. Avatares, detalhes. */
-  acento: ['#6B3318', '#D4633A'] as [string, string],
+  /** Principal: vermelho social → laranja quente. Botão primário, CTAs. */
+  principal: ['#FF5A5F', '#FF8C61'] as [string, string],
+
+  /** Acento: roxo energia → azul conversa. Momentos de alta intensidade. */
+  acento: ['#8B5CF6', '#4D7CFE'] as [string, string],
+
+  /** NPL: roxo colapso → violeta profundo. Gameplay de pressão cognitiva. */
+  npl: ['#8B5CF6', '#6D28D9'] as [string, string],
+
+  /** Most Likely: amarelo → laranja. Julgamento com leveza. */
+  mostLikely: ['#FFBE0B', '#FF8C61'] as [string, string],
+
+  /** Fade de fundo: transparente → papel quente. Para cards e sobreposições. */
+  fundoSutil: ['rgba(246,243,238,0)', 'rgba(246,243,238,1)'] as [string, string],
+
+  /** Superfície elevada: branco puro → papel levíssimo. */
+  superficieSutil: ['#FFFFFF', '#FDFCFA'] as [string, string],
 } as const;
+
+// ─── ESPAÇAMENTO ──────────────────────────────────────────────────────────────
 
 export const espacamento = {
   xs: 4,
@@ -45,69 +88,94 @@ export const espacamento = {
   lg: 24,
   xl: 32,
   xxl: 48,
+  xxxl: 64,
 } as const;
+
+// ─── RAIOS ────────────────────────────────────────────────────────────────────
 
 export const raio = {
   sm: 8,
   md: 12,
   lg: 16,
   xl: 24,
+  xxl: 32,
   pill: 999,
 } as const;
 
+// ─── TIPOGRAFIA ───────────────────────────────────────────────────────────────
+
 /**
- * Tokens de tipografia.
- * Hierarquia: heros (36-48 / 800) → títulos (28 / 700) →
- * subtítulos (20-24 / 600) → corpo (15-16 / 400) → legendas (12-13 / 700).
- */
-/**
- * Famílias tipográficas — display serif para momentos de alto impacto.
- * UI funcional usa System (sans-serif).
+ * Famílias tipográficas.
+ *
+ * Display serif (Playfair Display): momentos de alto impacto emocional —
+ * palavras do NPL, nomes de jogos, heroes. Presença editorial.
+ *
+ * System sans (SF Pro iOS / Roboto Android): toda UI funcional —
+ * botões, labels, instruções, scores. Rápido, legível, nativo.
  */
 export const familias = {
   serifDisplay: 'PlayfairDisplay_700Bold',
   serifItalico: 'PlayfairDisplay_400Regular_Italic',
+  sans: 'System',
 } as const;
 
 export const tipografia = {
+  // ── Pesos ──────────────────────────────────────────────────
+  pesoLeve: '300' as const,
   pesoRegular: '400' as const,
   pesoMedio: '500' as const,
   pesoSemibold: '600' as const,
   pesoBold: '700' as const,
   pesoExtraBold: '800' as const,
   pesoBlack: '900' as const,
-  pesoLeve: '300' as const,
 
-  tamanhoHero: 48,
-  tamanhoTituloGrande: 36,
-  tamanhoTitulo: 28,
-  tamanhoSubtituloGrande: 24,
-  tamanhoSubtitulo: 20,
-  tamanhoCorpoMaior: 17,
+  // ── Escala modular — 4pt base, razão ~1.25 ─────────────────
+  tamanhoMicro: 11,
+  tamanhoLegenda: 12,
+  tamanhoCaption: 13,
+  tamanhoCorpoMenor: 14,
   tamanhoCorpo: 16,
-  tamanhoCorpoMenor: 15,
-  tamanhoLegenda: 13,
-  tamanhoMicro: 12,
+  tamanhoCorpoMaior: 17,
+  tamanhoSubtitulo: 20,
+  tamanhoSubtituloGrande: 22,
+  tamanhoTitulo: 26,
+  tamanhoTituloGrande: 32,
+  tamanhoHero: 40,
+  tamanhoDisplay: 52,
 
-  // letter spacing
-  spacingHero: -1,
+  // ── Letter spacing ──────────────────────────────────────────
+  spacingApertado: -0.8,
   spacingTitulo: -0.5,
-  spacingLeve: 0.3,
-  spacingLegenda: 1.5,
-  spacingLabel: 2,
-  // aliases mantidos
+  spacingHero: -1.2,
+  spacingNormal: 0,
+  spacingLeve: 0.2,
+  spacingLegenda: 0.8,
+  spacingLabel: 1.2,
+  spacingCaps: 2.0,
+  // Aliases legados — preservados para compatibilidade
+  spacingHero_legado: -1,
   letraSpacingLegenda: 1.5,
   letraSpacingTitulo: -0.5,
+
+  // ── Altura de linha ─────────────────────────────────────────
+  alturaLinhaTitulo: 1.15,
+  alturaLinhaCorpo: 1.6,
+  alturaLinhaCompacto: 1.35,
 } as const;
 
-/** Paleta dos avatares — derivada da identidade vinho/âmbar/cobre. */
+// ─── AVATARES ─────────────────────────────────────────────────────────────────
+
+/**
+ * Paleta dos avatares — 8 cores sociais vibrantes.
+ * Cada jogador recebe uma cor de identidade dentro da sessão.
+ */
 export const PALETA_AVATARES = [
-  '#A0522D',
-  '#C9893A',
-  '#D4633A',
-  '#7A3D20',
-  '#B87333',
-  '#C46A2E',
-  '#8B4513',
-  '#E8924A',
+  '#FF5A5F',  // vermelho social
+  '#4D7CFE',  // azul conversa
+  '#22C55E',  // verde reação
+  '#FFBE0B',  // amarelo caos
+  '#8B5CF6',  // roxo energia
+  '#FF7A7F',  // vermelho suave
+  '#6D7FFF',  // azul suave
+  '#34D399',  // verde suave
 ] as const;

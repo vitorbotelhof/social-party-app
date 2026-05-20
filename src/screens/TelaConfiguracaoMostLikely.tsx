@@ -170,7 +170,7 @@ const estilos = StyleSheet.create({
   // Título — mesmo padrão da TelaConfiguracaoJogo
   tituloPagina: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTitulo,
     letterSpacing: 0,
     lineHeight: 36,
@@ -218,7 +218,7 @@ const estilos = StyleSheet.create({
   },
   stepperValor: {
     color: cores.acento,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 48,
     lineHeight: 56,
     minWidth: 64,
@@ -228,7 +228,7 @@ const estilos = StyleSheet.create({
   // Texto auxiliar
   ajuda: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     marginTop: espacamento.md,
     textAlign: 'center',
@@ -260,13 +260,13 @@ const estilos = StyleSheet.create({
   },
   segmentoTextoAtivo: {
     color: cores.acento,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMenor,
   },
   // Descrição do modo — aparece abaixo, muda com a seleção
   modoDescricao: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     marginTop: espacamento.md,
     textAlign: 'center',

@@ -260,7 +260,7 @@ function FasePreparando({
   const op = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.timing(op, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+    Animated.timing(op, { toValue: 1, duration: 220, useNativeDriver: true }).start();
   }, [op]);
 
   return (
@@ -304,18 +304,18 @@ function AguardandoDots() {
 
   useEffect(() => {
     const anim = Animated.loop(
-      Animated.stagger(200, [
+      Animated.stagger(120, [
         Animated.sequence([
-          Animated.timing(dot1, { toValue: 1, duration: 400, useNativeDriver: true }),
-          Animated.timing(dot1, { toValue: 0.2, duration: 400, useNativeDriver: true }),
+          Animated.timing(dot1, { toValue: 1, duration: 220, useNativeDriver: true }),
+          Animated.timing(dot1, { toValue: 0.2, duration: 220, useNativeDriver: true }),
         ]),
         Animated.sequence([
-          Animated.timing(dot2, { toValue: 1, duration: 400, useNativeDriver: true }),
-          Animated.timing(dot2, { toValue: 0.2, duration: 400, useNativeDriver: true }),
+          Animated.timing(dot2, { toValue: 1, duration: 220, useNativeDriver: true }),
+          Animated.timing(dot2, { toValue: 0.2, duration: 220, useNativeDriver: true }),
         ]),
         Animated.sequence([
-          Animated.timing(dot3, { toValue: 1, duration: 400, useNativeDriver: true }),
-          Animated.timing(dot3, { toValue: 0.2, duration: 400, useNativeDriver: true }),
+          Animated.timing(dot3, { toValue: 1, duration: 220, useNativeDriver: true }),
+          Animated.timing(dot3, { toValue: 0.2, duration: 220, useNativeDriver: true }),
         ]),
       ]),
     );
@@ -485,7 +485,7 @@ function IntensidadeVignette({ nivel }: { nivel: 'panico' | 'colapso' }) {
 
   useEffect(() => {
     const target = nivel === 'colapso' ? 0.35 : 0.18;
-    Animated.timing(op, { toValue: target, duration: 800, useNativeDriver: true }).start();
+    Animated.timing(op, { toValue: target, duration: 350, useNativeDriver: true }).start();
   }, [nivel, op]);
 
   return (
@@ -612,9 +612,9 @@ function FaseFinalizado({
 
   useEffect(() => {
     Animated.sequence([
-      Animated.delay(200),
+      Animated.delay(100),
       Animated.parallel([
-        Animated.timing(op, { toValue: 1, duration: 600, useNativeDriver: true }),
+        Animated.timing(op, { toValue: 1, duration: 260, useNativeDriver: true }),
         Animated.spring(tituloY, { toValue: 0, damping: 24, mass: 0.9, stiffness: 160, useNativeDriver: true }),
       ]),
     ]).start();
@@ -697,7 +697,7 @@ const estilos = StyleSheet.create({
   // Progresso
   progresso: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: tipografia.spacingLeve,
     marginBottom: espacamento.xxl,
@@ -707,7 +707,7 @@ const estilos = StyleSheet.create({
   // Preparando
   preparandoLabel: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTitulo,
     letterSpacing: tipografia.spacingTitulo,
     marginBottom: espacamento.md,
@@ -715,7 +715,7 @@ const estilos = StyleSheet.create({
   },
   preparandoSub: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     lineHeight: 22,
     marginBottom: espacamento.xxl,
@@ -747,14 +747,14 @@ const estilos = StyleSheet.create({
   },
   botaoProntoTexto: {
     color: cores.textoSobrePrimaria,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMaior,
     letterSpacing: tipografia.spacingLeve,
   },
 
   // Timer
   timerGrande: {
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoHero,
     letterSpacing: tipografia.spacingHero,
     lineHeight: 56,
@@ -764,7 +764,7 @@ const estilos = StyleSheet.create({
 
   // Observer
   observadorIntensidade: {
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: tipografia.spacingLabel,
     marginBottom: espacamento.sm,
@@ -773,7 +773,7 @@ const estilos = StyleSheet.create({
   },
   observadorNome: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoSubtituloGrande,
     letterSpacing: tipografia.spacingTitulo,
     marginBottom: espacamento.xs,
@@ -781,14 +781,14 @@ const estilos = StyleSheet.create({
   },
   observadorSub: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     marginBottom: espacamento.lg,
     textAlign: 'center',
   },
   observadorAcertos: {
     color: cores.sucesso,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpo,
     letterSpacing: tipografia.spacingLeve,
     marginTop: espacamento.md,
@@ -803,7 +803,7 @@ const estilos = StyleSheet.create({
   },
   palavraPrincipal: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     letterSpacing: tipografia.spacingTitulo,
     textAlign: 'center',
@@ -817,7 +817,7 @@ const estilos = StyleSheet.create({
   },
   proibidasLabel: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoMicro,
     letterSpacing: tipografia.spacingLabel,
     marginBottom: espacamento.sm,
@@ -840,7 +840,7 @@ const estilos = StyleSheet.create({
   },
   proibidaTexto: {
     color: cores.erro,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: tipografia.spacingLeve,
   },
@@ -848,7 +848,7 @@ const estilos = StyleSheet.create({
   // Acertos em tempo real
   acertosTurno: {
     color: cores.sucesso,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoSubtitulo,
     letterSpacing: tipografia.spacingTitulo,
     marginBottom: espacamento.md,
@@ -874,7 +874,7 @@ const estilos = StyleSheet.create({
   },
   botaoPassouTexto: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMaior,
     letterSpacing: tipografia.spacingLeve,
   },
@@ -890,7 +890,7 @@ const estilos = StyleSheet.create({
   },
   botaoAcertouTexto: {
     color: cores.textoSobrePrimaria,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMaior,
     letterSpacing: tipografia.spacingLeve,
   },
@@ -908,7 +908,7 @@ const estilos = StyleSheet.create({
   // Resumo turno
   resumoTitulo: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTitulo,
     letterSpacing: tipografia.spacingTitulo,
     marginBottom: espacamento.xl,
@@ -926,13 +926,13 @@ const estilos = StyleSheet.create({
   },
   resumoNumero: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     letterSpacing: tipografia.spacingTitulo,
   },
   resumoNumeroLabel: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoMicro,
     letterSpacing: tipografia.spacingLeve,
     marginTop: 2,
@@ -961,7 +961,7 @@ const estilos = StyleSheet.create({
   },
   historicoPalavra: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpo,
     letterSpacing: tipografia.spacingLeve,
   },
@@ -981,13 +981,13 @@ const estilos = StyleSheet.create({
   },
   botaoProximoTexto: {
     color: cores.textoSobrePrimaria,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMaior,
     letterSpacing: tipografia.spacingLeve,
   },
   aguardandoProximo: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     marginTop: espacamento.md,
     textAlign: 'center',
@@ -1010,7 +1010,7 @@ const estilos = StyleSheet.create({
   },
   vencedorLabel: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: tipografia.spacingLabel,
     marginBottom: espacamento.sm,
@@ -1018,14 +1018,14 @@ const estilos = StyleSheet.create({
   },
   vencedorNome: {
     color: cores.acento,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     letterSpacing: tipografia.spacingTitulo,
     textAlign: 'center',
   },
   vencedorPontos: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     marginTop: espacamento.xs,
     textAlign: 'center',
@@ -1049,7 +1049,7 @@ const estilos = StyleSheet.create({
   },
   rankingPos: {
     color: cores.textoMudo,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMenor,
     minWidth: 24,
     textAlign: 'center',
@@ -1057,13 +1057,13 @@ const estilos = StyleSheet.create({
   rankingNome: {
     color: cores.texto,
     flex: 1,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpo,
     letterSpacing: tipografia.spacingLeve,
   },
   rankingPontos: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: tipografia.spacingLeve,
   },
@@ -1082,7 +1082,7 @@ const estilos = StyleSheet.create({
   },
   botaoVoltarTexto: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: tipografia.spacingLeve,
   },

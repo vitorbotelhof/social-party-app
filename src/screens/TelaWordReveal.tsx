@@ -33,10 +33,11 @@ interface Props {
   jogadores: Player[];
 }
 
-const COR_FUNDO_MRWHITE = '#1E0606';
-const COR_FUNDO_CIVIL = '#061410';
-const COR_FUNDO_PREPARANDO = cores.fundo;
-const COR_PERIGO = '#F08080';
+// Warm light tints — intimacy through brand color, not noir darkness
+const COR_FUNDO_MRWHITE = '#FADADC'; // light rose — clearly Mr White
+const COR_FUNDO_CIVIL = '#D4F0DE';   // light mint — clearly Civil
+const COR_FUNDO_PREPARANDO = cores.fundo; // warm paper — neutral hold state
+const COR_PERIGO = cores.acentoEscuro;    // '#CC3338' — dark red, readable on light rose
 const MS_PREPARO = 1500;
 
 export function TelaWordReveal({
@@ -100,7 +101,7 @@ export function TelaWordReveal({
   useEffect(() => {
     Animated.timing(opacidadeIntro, {
       toValue: estagio === 'preparando' ? 1 : 0,
-      duration: 380,
+      duration: 240,
       useNativeDriver: true,
     }).start();
   }, [estagio, opacidadeIntro]);
@@ -381,21 +382,21 @@ const ALTURA_CARTAO = 280;
 const estilos = StyleSheet.create({
   aguardando: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     marginTop: espacamento.xs,
     textAlign: 'center',
   },
   aguardandoTitulo: {
     color: cores.acento,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoSubtitulo,
     marginBottom: espacamento.xs,
     textAlign: 'center',
   },
   aguardandoNomes: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     marginTop: espacamento.sm,
     paddingHorizontal: espacamento.lg,
@@ -439,21 +440,21 @@ const estilos = StyleSheet.create({
     gap: espacamento.md,
   },
   hairlinePreparo: {
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    backgroundColor: cores.borda,
     height: 1,
     marginBottom: espacamento.xs,
     width: 36,
   },
   instrucaoEsconder: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMaior,
     letterSpacing: 0.2,
     textAlign: 'center',
   },
   instrucaoRevelado: {
-    color: 'rgba(255, 255, 255, 0.5)',
-    fontFamily: familias.serifItalico,
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: 0.2,
     marginTop: espacamento.lg,
@@ -489,15 +490,15 @@ const estilos = StyleSheet.create({
   },
   labelMrWhiteDual: {
     color: COR_PERIGO,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: 0.3,
     marginBottom: espacamento.xs,
     textAlign: 'center',
   },
   labelPalavra: {
-    color: 'rgba(255, 255, 255, 0.4)',
-    fontFamily: familias.serifItalico,
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: 0.3,
     marginBottom: espacamento.xs,
@@ -505,7 +506,7 @@ const estilos = StyleSheet.create({
   },
   palavraDual: {
     color: COR_PERIGO,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 48,
     letterSpacing: 0,
     textAlign: 'center',
@@ -526,15 +527,15 @@ const estilos = StyleSheet.create({
   },
   nomeVez: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 32,
     letterSpacing: 0,
     marginTop: espacamento.xs,
     textAlign: 'center',
   },
   palavra: {
-    color: cores.textoSobrePrimaria,
-    fontFamily: familias.serifDisplay,
+    color: cores.texto,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 48,
     letterSpacing: 0,
     textAlign: 'center',
@@ -576,8 +577,8 @@ const estilos = StyleSheet.create({
     minHeight: 60,
   },
   subtextoMrWhite: {
-    color: 'rgba(255, 255, 255, 0.55)',
-    fontFamily: familias.serifItalico,
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     lineHeight: 22,
     marginTop: espacamento.md,
@@ -588,8 +589,8 @@ const estilos = StyleSheet.create({
     flex: 1,
   },
   textoPreparo: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontFamily: familias.serifDisplay,
+    color: cores.texto,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoSubtitulo,
     letterSpacing: 0,
     lineHeight: 30,
@@ -597,7 +598,7 @@ const estilos = StyleSheet.create({
   },
   tituloMrWhite: {
     color: COR_PERIGO,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 34,
     letterSpacing: 0,
     lineHeight: 42,

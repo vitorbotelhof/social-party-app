@@ -37,8 +37,8 @@ interface Props {
   jogadores: Player[];
 }
 
-// 3s pause — forces group to read the prompt together before voting opens
-const DELAY_ABSORCAO_MS = 3000;
+// 1.5s pause — gives group a beat to read before voting opens (was 3s)
+const DELAY_ABSORCAO_MS = 1500;
 
 export function TelaPromptMostLikely({
   estado,
@@ -320,23 +320,24 @@ function EsperaVotos({
       opacidade.setValue(0);
       animRef.current = Animated.timing(opacidade, {
         toValue: 1,
-        duration: 600,
+        duration: 240,
         useNativeDriver: true,
       });
       animRef.current.start();
       return;
     }
     opacidade.setValue(1);
+    // Pulso rápido — sinaliza "aguardando" sem atmosfera contemplativa
     animRef.current = Animated.loop(
       Animated.sequence([
         Animated.timing(opacidade, {
           toValue: 0.4,
-          duration: 2400,
+          duration: 800,
           useNativeDriver: true,
         }),
         Animated.timing(opacidade, {
           toValue: 1,
-          duration: 2400,
+          duration: 800,
           useNativeDriver: true,
         }),
       ]),
@@ -406,14 +407,14 @@ const estilos = StyleSheet.create({
     color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoMedio,
-    letterSpacing: tipografia.spacingLegenda,
+    letterSpacing: 0.3,
     marginBottom: espacamento.sm,
-    textTransform: 'uppercase',
   },
-  // Prompt em serifItalico — editorial, não trivia
+  // Prompt em sans — direto, social
   prompt: {
     color: cores.texto,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
+    fontWeight: '600' as const,
     fontSize: tipografia.tamanhoSubtituloGrande,
     lineHeight: 34,
   },
@@ -451,8 +452,8 @@ const estilos = StyleSheet.create({
     paddingVertical: espacamento.lg,
   },
   cardDestacado: {
-    backgroundColor: cores.acentoEscuro,
-    borderColor: cores.acento,
+    backgroundColor: 'rgba(255, 190, 11, 0.12)',
+    borderColor: cores.mostLikely,
     borderWidth: 2,
   },
   cardOpaco: {
@@ -479,10 +480,10 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoMedio,
     textAlign: 'center',
   },
-  // Nome destacado: serif + âmbar — identidade nomeada
+  // Nome destacado: bold + amarelo MLT — identidade nomeada
   cardNomeDestacado: {
-    color: cores.acento,
-    fontFamily: familias.serifDisplay,
+    color: cores.mostLikely,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpo,
   },
   cardVoceLegenda: {
@@ -506,34 +507,34 @@ const estilos = StyleSheet.create({
   },
   dicaVoto: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     textAlign: 'center',
   },
-  // Botão de confirmação — âmbar, não vinho (MLT é mais leve que Mr White)
+  // Botão de confirmação — amarelo MLT, não vermelho MrWhite
   botaoConfirmar: {
     alignItems: 'center',
-    backgroundColor: cores.acento,
+    backgroundColor: cores.mostLikely,
     borderRadius: raio.pill,
     elevation: 6,
     justifyContent: 'center',
     minHeight: 56,
     paddingHorizontal: espacamento.xl,
-    shadowColor: cores.acento,
+    shadowColor: cores.mostLikely,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.18,
     shadowRadius: 10,
   },
   botaoConfirmarPressionado: {
-    backgroundColor: cores.acentoPressionado,
+    backgroundColor: '#E6AC00',
     transform: [{ scale: 0.98 }],
   },
   botaoDesabilitado: {
     opacity: 0.6,
   },
   botaoConfirmarTexto: {
-    color: cores.textoSobrePrimaria,
-    fontFamily: familias.serifDisplay,
+    color: cores.texto,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpo,
   },
 
@@ -544,13 +545,13 @@ const estilos = StyleSheet.create({
   },
   esperaAguardando: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoSubtitulo,
     textAlign: 'center',
   },
   esperaDecidiu: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoSubtitulo,
     letterSpacing: 0,
     textAlign: 'center',

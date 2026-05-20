@@ -1,622 +1,449 @@
 # ENTRE NÓS — EMOTIONAL TAXONOMY
 
-Mapa emocional oficial do produto.
-Define como o Entre Nós organiza:
+Entre Nós — Emotional Taxonomy System
+1. Objetivo
+
+O Entre Nós NÃO organiza experiências por:
+
+gênero
+mecânica
+regras
+complexidade técnica
+
+O produto organiza experiências por:
+
+energia emocional social.
+
+A taxonomia emocional existe para:
+
+modular sessões
+organizar pacing
+escolher jogos
+adaptar intensidade
+criar progressão emocional
+aumentar replayability
+melhorar dinâmica de grupo
+2. Filosofia Central
+
+O produto NÃO entrega:
+
+gameplay.
+
+Ele entrega:
+
+transformação emocional coletiva.
+
+Toda sessão deve criar:
+
+mudança de energia
+mudança de comportamento
+memória coletiva
+reação social
+inside jokes
+tensão
+vulnerabilidade
+caos
+3. Regra Principal
+Emoções devem emergir:
+das pessoas.
+
+E NÃO:
+
+da interface tentando forçar emoção.
+4. Estrutura da Taxonomia
+
+Toda emoção do sistema pertence a um destes pilares:
+
+Pilar	Função
+Social Energy	ativa o grupo
+Social Tension	cria pressão
+Social Exposure	gera vulnerabilidade
+Cognitive Chaos	cria colapso mental
+Group Identity	fortalece memória coletiva
+Emotional Escalation	aumenta intensidade
+Emotional Release	libera tensão
+5. Social Energy
+Objetivo
+
+Aumentar:
+
+velocidade social
+espontaneidade
+volume emocional
+participação do grupo
+Sensação correta
+pessoas falando juntas
+respostas rápidas
+energia viva
+caos leve
+improviso
+Jogos mais conectados
+Na Ponta da Língua
+Most Likely To
+A interface deve:
+acelerar
+simplificar
+reagir rápido
+A interface NÃO deve:
+contemplar
+pausar demais
+dramatizar excessivamente
+6. Social Tension
+Objetivo
+
+Criar:
+
+suspeita
+hesitação
+pressão social
+silêncio estratégico
+leitura humana
+Sensação correta
+“alguém está mentindo”
+“ninguém sabe em quem confiar”
+paranoia divertida
+Jogos mais conectados
+Mr White
+A tensão deve vir:
+do grupo
+do contexto
+da votação
+da observação humana
+
+E NÃO:
+
+da UI exagerada
+7. Social Exposure
+Objetivo
+
+Gerar:
+
+vulnerabilidade leve
+revelação pessoal
+julgamento social divertido
+intimidade progressiva
+Sensação correta
+“isso ficou pessoal”
+“eu não esperava essa resposta”
+Jogos mais conectados
+Most Likely To
+jogos íntimos
+Importante
+
+A exposição:
+
+nunca deve parecer cruel.
+8. Cognitive Chaos
+Objetivo
+
+Criar:
+
+improviso sob pressão
+cérebro superaquecendo
+linguagem falhando
+pensamento acelerado
+desespero social divertido
+Sensação correta
+“a palavra estava vindo”
+“meu cérebro travou”
+“eu sabia isso”
+Jogos mais conectados
+Na Ponta da Língua
+O caos deve parecer:
+divertido
+coletivo
+humano
+
+E NÃO:
+
+impossível
+frustrante
+injusto
+9. Group Identity
+Objetivo
+
+Transformar:
+
+um grupo aleatório
+
+em:
+
+uma sessão memorável.
+O produto deve detectar:
+grupo caótico
+grupo competitivo
+grupo silencioso
+grupo eficiente
+grupo paranoico
+grupo íntimo
+grupo destrutivo
+Isso influencia:
+commentary
+pacing
+intensidade
+callbacks
+aftermath
+10. Emotional Escalation
+Objetivo
+
+Toda sessão deve:
+
+crescer emocionalmente.
+Estrutura ideal
+Início
+
+leve
+rápido
+social
+
+Meio
+
+flow
+caos
+confiança
+
+Depois
+
+pressão
+desespero
+colapso
 
-* experiências sociais
-* atmosferas
-* moods
-* categorias
-* progressão emocional
-* descoberta
-* curadoria
+Final
 
-O objetivo NÃO é categorizar mecânicas de jogos.
-O objetivo é categorizar:
-o que acontece emocionalmente entre as pessoas.
+aftermath
+memória
+alívio
 
----
+11. Emotional Release
+Objetivo
 
-# 1. CORE PRINCIPLE
+Liberar tensão acumulada.
 
-O Entre Nós não organiza:
+Formas comuns
+risada coletiva
+reveal
+acusação absurda
+colapso engraçado
+erro impossível
+clutch
+Importante
 
-* gêneros
-* regras
-* mecânicas
+Release:
 
-O Entre Nós organiza:
+é essencial.
 
-* estados sociais
-* energia emocional
-* tensão humana
-* proximidade
-* exposição
+Sem release:
+o produto vira:
 
-Cada jogo existe dentro de uma atmosfera emocional.
+cansativo
+pesado
+intenso demais
+12. Ritmo Emocional
 
-O jogo é apenas:
-o mecanismo que provoca aquela atmosfera.
+O app deve:
 
----
+acelerar
+respirar
+aliviar
+pressionar
+voltar a acelerar
+O produto NÃO pode:
+ficar intenso o tempo inteiro
+ficar lento o tempo inteiro
+13. Filosofia de Intensidade
+Intensidade NÃO é:
+UI dramática
+som alto
+excesso visual
 
-# 2. EMOTIONAL VECTORS
+Intensidade É:
 
-Todo jogo deve possuir vetores emocionais internos.
+consequência social
+expectativa
+tempo
+hesitação
+julgamento humano
+14. Design Anti-Cringe
 
-Esses vetores definem:
+Evitar:
 
-* onde o jogo aparece
-* quando ele aparece
-* para quem ele aparece
-* em qual momento da noite ele aparece
+teatralidade excessiva
+emoção forçada
+pseudo profundidade
+atmosfera exagerada
+“cinema social cult”
+O produto deve parecer:
+socialmente vivo.
 
----
+E NÃO:
 
-# Escala oficial
+artisticamente performático.
+15. Estados Emocionais Fundamentais
+1. Curiosidade
 
-1 → quase inexistente
-10 → extremamente dominante
+“o que vai acontecer?”
 
----
+2. Reconhecimento
 
-# Vetores principais
+“eu conheço isso.”
 
-## Intimidade
+3. Vulnerabilidade
 
-Quão emocionalmente próximo o grupo precisa estar.
+“agora ficou pessoal.”
 
-Baixo:
-desconhecidos conseguem jogar facilmente.
+4. Paranoia
 
-Alto:
-o jogo funciona melhor com vulnerabilidade e confiança.
+“alguém está mentindo.”
 
----
+5. Improviso
 
-## Exposição
+“fala qualquer coisa.”
 
-Quanto o jogador se sente visto/julgado/revelado.
+6. Colapso
 
-Baixo:
-o foco está no jogo.
+“meu cérebro parou.”
 
-Alto:
-o foco está nas pessoas.
+7. Julgamento
 
----
+“o grupo decidiu.”
 
-## Tensão
+8. Explosão
 
-Nível de antecipação emocional.
+“isso saiu do controle.”
 
-Baixo:
-leve, confortável.
+9. Aftermath
 
-Alto:
-suspeita, silêncio, expectativa.
+“ninguém supera essa rodada.”
 
----
+16. Emoções que DEVEMOS EVITAR
 
-## Caos
+❌ vergonha real
+❌ humilhação
+❌ ansiedade excessiva
+❌ exclusão
+❌ silêncio constrangedor longo
+❌ frustração injusta
+❌ sensação de burrice
+❌ punição emocional
 
-Nível de imprevisibilidade social.
+17. Emoções Prioritárias
 
-Baixo:
-ritmo controlado.
+✅ caos divertido
+✅ paranoia leve
+✅ improviso coletivo
+✅ tensão social divertida
+✅ vulnerabilidade segura
+✅ energia humana
+✅ inside jokes
+✅ memória coletiva
+✅ sensação de “essa noite foi absurda”
 
-Alto:
-gritaria, interrupções, explosões sociais.
+18. Emotional Temperature System
 
----
+Toda sessão possui:
 
-## Humor
+temperatura emocional.
+Frio
 
-Quanto o jogo gera riso espontâneo.
+leve
+social
+seguro
 
-Baixo:
-mais sério/reflexivo.
+Morno
 
-Alto:
-absurdo, engraçado, caótico.
+energia crescente
+participação coletiva
 
----
+Quente
 
-## Vulnerabilidade
+caos
+gritaria
+pressão
 
-Quanto honestidade emocional é exigida.
+Colapso
 
-Baixo:
-respostas superficiais funcionam.
+desespero divertido
+improviso extremo
+explosão emocional
 
-Alto:
-o jogo só funciona bem com honestidade real.
+19. Regras de Pacing
+Nunca começar:
+no colapso.
+Toda sessão deve:
+aquecer
+acelerar
+intensificar
+colapsar
+aliviar
+20. Filosofia de Memória
 
----
+O produto existe para criar:
 
-## Competitividade
+memória coletiva.
 
-Quanto o grupo se importa em ganhar.
+O usuário deve sair pensando:
 
-Baixo:
-a experiência importa mais.
+“essa rodada foi absurda”
+“ninguém esperava aquilo”
+“o grupo perdeu o controle”
+“isso virou piada interna”
+21. Filosofia de Replayability
 
-Alto:
-o resultado importa socialmente.
+Replayability NÃO vem de:
 
----
+grind
+ranking
+reward loop artificial
 
-## Sedução
+Ela vem de:
 
-Quanto o jogo favorece:
+novas dinâmicas humanas emergentes.
+22. Emoção > Mecânica
 
-* flerte
-* tensão romântica
-* leitura emocional interpessoal.
+Ao tomar decisões de produto:
 
----
+Priorizar:
 
-# 3. NIGHT PROGRESSION MODEL
+impacto emocional social.
 
-A noite possui fases emocionais naturais.
+Mesmo quando:
+a solução mecânica parece menos “gamey”.
 
-O app deve respeitar essa progressão.
+23. Sessão > Match
 
----
+O produto NÃO é:
 
-# FASE 1 — Abertura
+baseado em partidas.
 
-Estado:
+É:
 
-* grupo ainda calibrando energia
-* pouca vulnerabilidade
-* baixa exposição
+baseado em noites sociais.
 
-Objetivo:
+Toda decisão deve considerar:
 
-* quebrar gelo
-* gerar conforto
-* criar ritmo social
+progressão emocional da noite
+energia do grupo
+desgaste emocional
+intensidade acumulada
+24. Filosofia Final
 
-Vetores ideais:
+O Entre Nós NÃO cria:
 
-* humor médio/alto
-* tensão baixa/média
-* vulnerabilidade baixa
+jogos.
 
----
+Ele cria:
 
-# FASE 2 — Aquecimento
+ambientes emocionais sociais.
 
-Estado:
+A verdadeira experiência acontece:
 
-* grupo já confortável
-* confiança aumentando
-* primeiras provocações surgem
+entre olhares
+nas acusações
+nas hesitações
+nas risadas
+nos colapsos
+nas histórias que surgem depois
 
-Objetivo:
+O app apenas:
 
-* criar cumplicidade
-* iniciar tensão leve
-* aumentar energia
-
-Vetores ideais:
-
-* humor alto
-* caos médio
-* exposição média
-
----
-
-# FASE 3 — Revelação
-
-Estado:
-
-* filtros começam a cair
-* honestidade aparece
-* tensão social cresce
-
-Objetivo:
-
-* exposição
-* surpresa
-* revelação interpessoal
-
-Vetores ideais:
-
-* exposição alta
-* tensão alta
-* vulnerabilidade média/alta
-
----
-
-# FASE 4 — Caos Controlado
-
-Estado:
-
-* grupo emocionalmente entregue
-* energia alta
-* interrupções constantes
-
-Objetivo:
-
-* intensidade máxima
-* caos divertido
-* momentos memoráveis
-
-Vetores ideais:
-
-* caos alto
-* humor alto
-* exposição alta
-
----
-
-# FASE 5 — Pós-Caos
-
-Estado:
-
-* energia desacelerando
-* conversas mais honestas
-* intimidade maior
-
-Objetivo:
-
-* conexão
-* conversa profunda
-* vulnerabilidade
-
-Vetores ideais:
-
-* intimidade alta
-* vulnerabilidade alta
-* tensão baixa/média
-
----
-
-# 4. OFFICIAL EMOTIONAL CATEGORIES
-
-As categorias do app NÃO representam:
-
-* gêneros
-* mecânicas
-
-Representam:
-
-* estados sociais.
-
----
-
-# Categoria:
-
-## “quando ninguém confia em ninguém”
-
-Atmosfera:
-suspeita, leitura social, paranoia leve.
-
-Vetores dominantes:
-
-* tensão
-* exposição
-* competitividade
-
-Exemplos:
-
-* Mr White
-* Mafia
-* Impostor
-
----
-
-# Categoria:
-
-## “quando alguém vai contar tudo”
-
-Atmosfera:
-revelação, exposição, caos social.
-
-Vetores dominantes:
-
-* exposição
-* humor
-* caos
-
-Exemplos:
-
-* Eu Nunca
-* Verdade ou Desafio
-
----
-
-# Categoria:
-
-## “quando o grupo se vê como realmente é”
-
-Atmosfera:
-observação social, percepção coletiva.
-
-Vetores dominantes:
-
-* exposição
-* intimidade
-* humor
-
-Exemplos:
-
-* Quem na Sala
-* Most Likely To
-
----
-
-# Categoria:
-
-## “quando ninguém deveria responder isso”
-
-Atmosfera:
-desconforto divertido, vulnerabilidade.
-
-Vetores dominantes:
-
-* vulnerabilidade
-* tensão
-* intimidade
-
-Exemplos:
-
-* perguntas profundas
-* hot takes
-* dilemas
-
----
-
-# Categoria:
-
-## “quando o caos já venceu”
-
-Atmosfera:
-energia máxima, descontrole social.
-
-Vetores dominantes:
-
-* caos
-* humor
-* competitividade
-
-Exemplos:
-
-* drinking games
-* desafios absurdos
-* jogos rápidos de reação
-
----
-
-# 5. GAME TAXONOMY
-
----
-
-# MR WHITE
-
-## Atmosfera
-
-paranoia íntima.
-
-## Vetores
-
-* tensão: 9
-* exposição: 6
-* caos: 5
-* humor: 4
-* vulnerabilidade: 3
-* intimidade: 4
-* competitividade: 7
-* sedução: 1
-
-## Melhor momento da noite
-
-fase 2 → fase 3
-
-## Sensação ideal
-
-“alguém está mentindo aqui.”
-
----
-
-# MOST LIKELY TO
-
-## Atmosfera
-
-exposição divertida.
-
-## Vetores
-
-* tensão: 5
-* exposição: 8
-* caos: 7
-* humor: 9
-* vulnerabilidade: 5
-* intimidade: 6
-* competitividade: 2
-* sedução: 4
-
-## Melhor momento da noite
-
-fase 2 → fase 4
-
-## Sensação ideal
-
-“todo mundo já pensou isso sobre alguém.”
-
----
-
-# EU NUNCA
-
-## Atmosfera
-
-honestidade perigosa.
-
-## Vetores
-
-* tensão: 6
-* exposição: 9
-* caos: 4
-* humor: 6
-* vulnerabilidade: 9
-* intimidade: 8
-* competitividade: 1
-* sedução: 7
-
-## Melhor momento da noite
-
-fase 3 → fase 5
-
-## Sensação ideal
-
-“alguém vai revelar algo real.”
-
----
-
-# QUEM NA SALA
-
-## Atmosfera
-
-espelho social coletivo.
-
-## Vetores
-
-* tensão: 6
-* exposição: 8
-* caos: 5
-* humor: 7
-* vulnerabilidade: 6
-* intimidade: 7
-* competitividade: 2
-* sedução: 3
-
-## Melhor momento da noite
-
-fase 2 → fase 4
-
-## Sensação ideal
-
-“o grupo vê você de um jeito específico.”
-
----
-
-# VERDADE OU DESAFIO
-
-## Atmosfera
-
-tensão imprevisível.
-
-## Vetores
-
-* tensão: 8
-* exposição: 8
-* caos: 8
-* humor: 7
-* vulnerabilidade: 7
-* intimidade: 6
-* competitividade: 3
-* sedução: 6
-
-## Melhor momento da noite
-
-fase 3 → fase 4
-
-## Sensação ideal
-
-“ninguém sabe o que vem agora.”
-
----
-
-# 6. DISCOVERY RULES
-
-O usuário nunca deve ver:
-
-* 100 jogos simultaneamente
-* filtros técnicos
-* excesso de escolha
-
----
-
-# O app deve fazer:
-
-estado emocional
-↓
-redução invisível do catálogo
-↓
-curadoria
-↓
-4-8 jogos relevantes
-↓
-escolha simples
-
----
-
-# 7. CURATION RULES
-
-A Home deve:
-
-* variar emocionalmente
-* evitar repetição de energia
-* alternar intensidade
-* criar progressão
-
----
-
-# Regras oficiais
-
-## Nunca:
-
-duas categorias extremamente intensas consecutivas.
-
----
-
-## Sempre:
-
-começar acessível.
-
----
-
-## O Hero:
-
-deve refletir:
-
-* momento da noite
-* energia média
-* acessibilidade emocional
-
----
-
-# 8. FUTURE SYSTEMS
-
-Esse documento alimentará futuramente:
-
-* recommendation engine
-* AI curation
-* mood onboarding
-* smart Hero selection
-* social memory
-* adaptive Home
-* contextual discovery
-* pós-jogo recommendations
-
----
-
-# 9. FINAL PRODUCT PRINCIPLE
-
-Entre Nós não vende:
-
-* regras
-* competição
-* party games
-
-Entre Nós vende:
-
-* revelação social
-* tensão humana
-* intimidade coletiva
-* memórias emocionais
-
-O catálogo é apenas:
-o mapa das possíveis versões de uma noite.
+facilita isso da forma mais invisível possível.

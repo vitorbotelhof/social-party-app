@@ -1,576 +1,600 @@
 # ENTRE NÓS — DESIGN SYSTEM
 
-## Design Philosophy
+Entre Nós — Design System v2
+Social Energy System
+1. Filosofia Central
 
-The product should feel:
+O Entre Nós NÃO é:
 
-* premium
-* social
-* cinematic
-* emotional
-* intimate
-* human
-* noturno
-* misterioso
-* sofisticado
+um catálogo de jogos
+um SaaS gamificado
+um trivia app
+uma experiência cinematográfica contemplativa
+um “clube de jazz noir”
+uma interface gamer neon
 
-The app is NOT:
+O Entre Nós É:
 
-* gamer UI
-* neon cyberpunk
-* AI startup
-* web3 dashboard
-* childish UI
-* meme UI
-* hyper-casual UI
-* generic startup UI
+uma plataforma de energia social.
 
-The visual language should communicate:
-"algo interessante acontece quando pessoas se reúnem."
+O produto existe para:
 
----
+gerar conexão
+facilitar caos social saudável
+criar memória coletiva
+desbloquear conversas
+acelerar intimidade
+provocar risadas
+transformar grupos em experiências
 
-## Emotional References
+O app:
 
-The visual design draws from:
+media energia social humana.
+2. Princípio Central
+O app é rápido.
+As emoções são profundas.
 
-* poker — tensão, silêncio, olhares
-* filme noir — luz baixa, sombra dramática
-* bar de jazz sofisticado — madeira escura, âmbar, conversa íntima
-* jantar entre amigos — calor, cumplicidade, caos social
-* fotografia analógica — imperfeição quente, grão, profundidade
-* vinho tinto — riqueza, temperatura, sofisticação
+A interface nunca deve:
 
-These references inform every decision:
-color temperature, shadow quality, typography weight, glow intensity.
+competir com as pessoas
+exigir atenção contínua
+dramatizar excessivamente
+parecer mais importante que o grupo
 
----
+O app deve:
 
-# Visual Identity
+desaparecer no momento certo
+entregar estímulos claros
+acelerar o fluxo social
+reduzir fricção
+amplificar reações humanas
+3. Assinatura Emocional
 
-Core aesthetic:
+O produto deve parecer:
 
-* dark mode first
-* warm dark surfaces (not cold blue-black)
-* cinematic lighting
-* soft editorial depth
-* elegant spacing
-* atmospheric warmth — not tech glow
-* emotional minimalism
+humano
+social
+rápido
+vivo
+tátil
+espontâneo
+inteligente
+brasileiro
+energético
+divertido
+elegante sem pretensão
 
-Visual references (product quality, not aesthetic):
+E NÃO:
 
-* Spotify — catalog browsing feel
-* Netflix — cinematic card hierarchy
-* Apple Music — premium audio atmosphere
+contemplativo
+misterioso demais
+“cult”
+thriller constante
+atmosférico excessivo
+místico
+frio
+corporativo
+cyberpunk
+gamer neon
+4. Referência de Sensação
 
-Do NOT reference aesthetically:
+A experiência deve lembrar:
 
-* Discord (cold blue-purple)
-* Twitch (neon gamer)
-* Linear (tech startup purple)
-* Vercel (AI gradient)
+amigos falando alto no sofá
+barulho de resenha
+improviso coletivo
+caos organizado
+inside jokes surgindo
+alguém tentando explicar algo desesperadamente
+energia social viva
 
----
+Mistura ideal:
 
-# Color System
+50% social energy
+25% minimalismo premium
+15% caos divertido
+10% sofisticação emocional
+5. Filosofia Visual
+Clean Social Chaos
 
-## Primary Backgrounds
+Minimalismo rápido e social.
 
-The backgrounds must feel warm.
-No cold blue or blue-purple tones on surfaces.
+A interface deve:
 
-Deep black (sépia):
-#0C0A09
+respirar
+ser extremamente legível
+funcionar alcoolizado
+funcionar no escuro
+funcionar em grupos grandes
+funcionar em ambientes barulhentos
 
-Charcoal (aquecido):
-#111009
+O foco visual principal SEMPRE é:
 
-Elevated surface (madeira escura):
-#1A1614
+o estímulo social.
 
-Surface elevated (couro escuro):
-#221E1B
+Nunca:
 
-Border (quente):
-#2D2520
+o botão
+a UI
+a decoração
+6. Sistema de Cores
+Filosofia
 
----
+As cores devem:
 
-## Primary Accent
+parecer humanas
+quentes
+sociais
+energéticas
+contemporâneas
 
-The accent palette moves away from tech purple toward wine and amber.
+Evitar:
 
-Bordeaux (primário):
-#9B2335
+preto absoluto
+vinho pesado
+gradientes neon
+roxo cyberpunk
+glow gamer
+excesso de contraste agressivo
+Base
+Fundo Principal
 
-Wine dark (pressionado):
-#7A1B29
+#F6F3EE
 
-Amber (acento):
-#B85C2A
+Warm paper.
 
-Gold sépia (destaque):
-#8B6914
+Fundo Secundário
 
----
+#FFFFFF
 
-## Legacy Purple (uso restrito)
+Texto Primário
 
-The purple palette is preserved for compatibility but must not dominate.
+#161616
 
-Use purple only for:
-* avatar gradients
-* subtle decorative elements
+Texto Secundário
 
-Never use purple for:
-* primary buttons
-* CTA elements
-* surface colors
-* borders
+#5E5E5E
 
----
+Bordas
 
-## Text Colors
+#E7E2DA
 
-Primary text:
-#F0EAE0
+7. Acentos Emocionais
+Vermelho Social
 
-Secondary text:
-#9E9087
+#FF5A5F
 
-Muted text:
-#6B5F55
+Energia humana.
+Caos social.
+Paranoia leve.
+Urgência.
 
----
+Azul Conversa
 
-## Semantic Colors
+#4D7CFE
 
-Success:
+Flow.
+Comunicação.
+Leveza social.
+
+Verde Reação
+
 #22C55E
 
-Warning:
-#F59E0B
+Alívio.
+Acerto.
+Confirmação.
 
-Error:
-#EF4444
+Amarelo Caos
 
----
+#FFBE0B
 
-# Typography
+Improviso.
+Humor.
+Energia coletiva.
 
-## Primary Style
+Roxo Energia
 
-* modern sans-serif for UI, body, labels
-* elegant serif for high-impact emotional moments only
+#8B5CF6
 
-Sans-serif references:
-* Inter
-* Satoshi
-* Plus Jakarta Sans
+Colapso cognitivo.
+Pressão mental.
+Criatividade sob tensão.
 
-Serif references (para momentos de impacto):
-* Playfair Display
-* Bodoni Moda
+8. Temperaturas por Jogo
 
----
+Cada jogo possui:
 
-## Typography Rules
+temperatura emocional
+cor dominante
+micro comportamentos próprios
 
-* Avoid heavy bold everywhere
-* Prefer visual hierarchy through spacing
-* Large breathing room
-* Short readable text blocks
-* Strong contrast between headings and body
+Mas:
 
-Serif usage (Playfair Display or equivalent):
-* game names on cards
-* revealed words during gameplay
-* round titles
-* dramatic reveal moments
+todos pertencem ao mesmo universo visual.
+Mr White
 
-Sans-serif usage:
-* all UI labels
-* body text
-* buttons
-* navigation
+Dominante:
+#FF5A5F
+
+Sensação:
+paranoia social rápida.
+
+Most Likely To
 
----
+Dominante:
+#FFBE0B
+
+Sensação:
+julgamento social divertido.
+
+Na Ponta da Língua
 
-# Typography Scale
+Dominante:
+#8B5CF6
+
+Sensação:
+colapso cognitivo coletivo.
+
+Jogos íntimos
 
-Hero: 48px / weight 800 / tracking -1
-Title Large: 36px / weight 700
-Title: 28px / weight 700 / tracking -0.5
-Subtitle Large: 24px / weight 600
-Subtitle: 20px / weight 600
-Body Major: 17px / weight 400
-Body: 16px / weight 400
-Body Minor: 15px / weight 400
-Caption: 13px / weight 700 / tracking 1.5
-Micro: 12px / weight 400
+Dominante:
+tons quentes suaves.
 
----
+Sensação:
+conversa humana.
 
-# Spacing System
+9. Tipografia
+Filosofia
 
-Use spacious layouts.
+A tipografia deve parecer:
 
-Spacing feeling:
+viva
+humana
+moderna
+rápida
+expressiva
+extremamente legível
 
-* breathable
-* elegant
-* premium
-* uncluttered
+Evitar:
 
-Prefer:
+serifas dramáticas
+estética fashion editorial
+contemplação excessiva
+Headlines
+Família recomendada:
+Satoshi
+Cabinet Grotesk
+General Sans
 
-* large paddings
-* generous margins
-* visual calm
+Características:
 
-Avoid:
+bold
+expressiva
+amigável
+contemporânea
+Corpo
+Inter
 
-* cramped layouts
-* dense UI
-* excessive information
+Porque:
 
----
+desaparece visualmente
+extremamente legível
+escala bem
+funciona em qualquer contexto
+10. Hierarquia Visual
+Regra principal:
+Um estímulo social por tela.
 
-# Corner Radius
+Nunca:
 
-Use soft rounded corners.
+múltiplos focos principais
+HUD excessivo
+UI ruidosa
+O elemento dominante SEMPRE é:
+pergunta
+palavra
+acusação
+prompt
+momento social
+11. Layout
+O app deve parecer:
+leve
+respirável
+rápido
+organizado
+social
+Preferir:
+spacing generoso
+grids simples
+cards claros
+alinhamentos fortes
+grandes áreas de respiro
+Evitar:
+telas pretas contemplativas
+centralização dramática
+excesso de vazio “cinematográfico”
+layouts densos
+12. Motion System
+Filosofia
 
-Standard radius:
+Motion:
+
+rápido
+responsivo
+tátil
+energético
+divertido
 
-* cards: 20-24
-* buttons: 16-20
-* modals: 28-32
-
-Avoid sharp corners.
-
----
-
-# Depth System
-
-Depth should feel soft and cinematic.
-Think candlelight, not LED panel.
-
-Use:
-
-* subtle shadows with warm tint
-* layered warm surfaces
-* soft gradients (near-monochromatic)
-
-Avoid:
-
-* hard shadows
-* aggressive neumorphism
-* excessive blur
-* cold blue shadows
-
----
-
-# Glow System
-
-Glow must be atmospheric, not tech.
-
-Rules:
-
-* max shadowOpacity: 0.20
-* max shadowRadius: 10
-* shadow color must match warm accent (bordeaux, amber)
-
-Never:
-
-* purple neon glow on buttons
-* shadowOpacity above 0.25
-* gamer-style luminous borders
-* pulsing neon borders on room codes
-
-Glow is used to create:
-
-* intimidade atmosférica
-* foco emocional
-* presença quente
-
----
-
-# Gradients
-
-Gradients must feel near-monochromatic.
-Not chromatic arcs.
-
-Primary button gradient:
-['#9B2335', '#7A1B29'] — bordeaux profundo
-
-Accent gradient:
-['#6B3A1F', '#B85C2A'] — âmbar carvão
-
-Card overlay gradient:
-['rgba(12,10,9,0)', 'rgba(12,10,9,0.6)', 'rgba(12,10,9,0.96)']
-
-Avoid:
-
-* purple → pink horizontal gradients
-* multi-color arcs
-* rainbow-style gradients
-* tech startup gradient style
-
----
-
-# Motion Language
-
-Animations should feel:
-
-* smooth
-* soft
-* cinematic
-* organic
-
-Animation priorities:
-
-* fluid transitions
-* emotional pacing
-* responsive interactions
-* polished microinteractions
-
-Avoid:
-
-* chaotic motion
-* hyperactive UI
-* exaggerated bounces
-* excessive spring bounciness
-
-Glow press states:
-* scale: 0.97–0.98 only
-* no layout shift on press
-
----
-
-# Component Philosophy
-
-Components should feel:
-
-* tactile
-* warm
-* elegant
-* lightweight
-
-Prefer:
-
-* clean cards with warm surfaces
-* layered warm depth
-* near-monochromatic gradients
-* subtle warm transparency
-
-Avoid:
-
-* excessive borders
-* cold-tinted surfaces
-* visual clutter
-* blue-purple surface tones
-
----
-
-# Buttons
-
-Buttons should:
-
-* feel premium
-* have strong hierarchy
-* feel touch-friendly
-* use warm depth
-
-Primary buttons:
-
-* bordeaux gradient
-* warm subtle shadow (opacity max 0.20)
-* large tap area
-
-Avoid:
-
-* tiny buttons
-* flat boring CTAs
-* hyper saturated purple buttons
-* gamer glow on buttons
-
----
-
-# Cards
-
-Cards are the foundation of the UI.
-
-Cards should:
-
-* feel elevated with warm surfaces
-* create focus
-* separate emotional contexts
-* provoke curiosity — not just categorize
-
-Game cards specifically:
-* must create emotional anticipation
-* must insinuate social tension
-* must make the player want to enter that experience
-* not just display genre + player count
-
-Use:
-
-* warm dark surfaces (#1A1614, #221E1B)
-* subtle warm gradients
-* layered depth
-
----
-
-# Modal Philosophy
-
-Modals should feel:
-
-* immersive
-* cinematic
-* focused
-
-Use:
-
-* warm blurred backgrounds
-* centered content
-* emotional emphasis
-
----
-
-# Lobby and Multiplayer Feel
-
-Multiplayer spaces should feel:
-
-* alive
-* social
-* realtime
-* emotionally charged
-
-The room code must NOT feel like a game lobby HUD.
-It should feel like a secret invitation.
-
-Use:
-
-* typography-first room codes (not tile grids with neon borders)
-* warm subtle presence indicators
-* soft activity animations
-
-The room should feel like:
-"pessoas se reunindo em torno de algo que vai acontecer."
-
----
-
-# Emotional UI Priorities
-
-Optimize visual experience for:
-
-* antecipação
-* tensão social
-* revelação
-* cumplicidade
-* caos controlado
-
-UI should amplify emotional pacing.
-Every screen transition is a beat in the social drama.
-
----
-
-# Avatar System
-
-Avatar palette must feel human, not digital product.
-
-Mix:
-
-* warm wine tones
-* earthy amber tones
-* deep forest greens
-* night blue
-* warm terracotta
-
-Avoid:
-
-* 100% purple/lilac/pink palette
-* crypto/NFT avatar feel
-* all-same-family colors
-
----
-
-# Accessibility Rules
-
-* maintain readable contrast
-* avoid tiny touch targets
-* prioritize readability in dark mode
-* support fast comprehension
-
----
-
-# Consistency Rules
-
-All screens must feel:
-
-* cohesive
-* premium
-* cinematic
-* emotionally connected
-
-Never allow:
-
-* random styles
-* inconsistent spacing
-* mixed aesthetics
-* generic components
-* cold surfaces mixed with warm surfaces
-
----
-
-# Non-Negotiable Rules
-
-Every screen must feel like:
-"uma experiência social premium acontecendo à noite."
-
-The app must NEVER feel like:
-* a tech product
-* a gaming dashboard
-* an AI startup
-* a web3 app
-* a neon cyberpunk interface
-
-The palette must NEVER include:
-* cold blue-purple surfaces
-* gamer neon accents
-* purple-to-pink tech gradients as primary CTAs
-
----
-
-# Navigation Feeling
-
-The app should feel like:
-- descobrindo experiências sociais
-- escolhendo o que vai acontecer entre as pessoas
-- entrando em uma noite
-
-NOT:
-- configuring multiplayer infrastructure
-- selecting game modes
-- entering a lobby
-
-# Home Experience
-
-The home screen should behave like:
-- um catálogo emocional de experiências sociais
-- uma vitrine cinematográfica
-- uma antecipação do que vai acontecer
-
-Games are the primary product entities.
-
-# Game Cards
-
-Game cards should communicate:
-- tensão emocional
-- energia social
-- o que vai acontecer entre as pessoas
-- atmosfera — não categoria
-
-Cards should feel like movie posters, not app thumbnails.
-They should provoke: "quero viver isso."
+E NÃO:
+
+lento
+cinematográfico demais
+atmosférico
+contemplativo
+Duração
+Micro transitions
+
+120ms–220ms
+
+Standard transitions
+
+220ms–320ms
+
+Emotional transitions
+
+máximo 450ms
+
+Motion feeling
+
+Mistura de:
+
+iMessage
+apps sociais modernos
+jogos físicos premium
+interfaces vivas
+13. Feedback Tátil
+
+Haptics são:
+
+essenciais.
+
+O app deve parecer:
+
+físico
+responsivo
+vivo
+Regras
+Acerto
+
+pulse curto.
+
+Revelação
+
+impacto médio.
+
+Colapso
+
+vibração instável leve.
+
+Erro
+
+feedback seco.
+
+14. Sound Design
+Filosofia
+
+Som NÃO é:
+
+trilha sonora
+música constante
+ambience cinematográfica pesada
+
+Som É:
+
+energia
+ritmo
+tensão social
+resposta emocional
+Preferir:
+micro sons
+pulsos
+feedback rápido
+pressão crescente
+silêncio estratégico
+15. Cards
+
+Os cards devem parecer:
+
+objetos sociais físicos premium.
+
+E NÃO:
+
+widgets
+dashboards
+componentes de SaaS
+Características
+cantos suaves
+profundidade sutil
+sombras leves
+contraste forte
+foco absoluto no conteúdo
+16. Ícones e Ilustrações
+Filosofia
+
+As ilustrações devem representar:
+
+energia
+improviso
+tensão humana
+caos social
+movimento
+Evitar:
+mascotes
+cartoon infantil
+ilustração corporate
+personagens genéricos
+noir dramático
+Preferir:
+abstração social
+formas orgânicas
+silhuetas expressivas
+energia visual
+composição dinâmica
+17. Copywriting
+O app fala como:
+o amigo inteligente e social do grupo.
+O tom deve ser:
+rápido
+humano
+observador
+divertido
+levemente provocador
+Evitar:
+frases profundas demais
+linguagem cult
+tom místico
+“frases de filme”
+excesso de dramaticidade
+Bom exemplo:
+
+“isso saiu do controle rápido.”
+
+Mau exemplo:
+
+“o silêncio tomou conta da sala.”
+
+18. UX Philosophy
+
+O app deve:
+
+iniciar rápido
+ensinar jogando
+reduzir setup
+maximizar reação humana
+minimizar burocracia
+O usuário nunca deve sentir:
+onboarding longo
+excesso de regra
+configuração complexa
+excesso de menus
+19. Vibe System
+
+O usuário não escolhe apenas:
+
+um jogo.
+
+Ele escolhe:
+
+uma energia social.
+Exemplos
+Quebra-Gelo
+Caos
+Date
+Intimidade
+After
+Amigos Próximos
+Festa
+Vergonha Alheia
+Paranoia
+Destruição Psicológica
+20. Social-First Design
+
+O app existe para:
+
+melhorar o ambiente físico.
+
+E NÃO:
+
+prender atenção na tela.
+
+Toda decisão deve responder:
+
+“isso melhora a interação entre pessoas reais?”
+
+Se não:
+remover.
+
+21. Performance Percebida
+
+O app deve parecer:
+
+instantâneo
+leve
+contínuo
+Evitar:
+loading evidente
+delays artificiais
+waits desnecessários
+Priorizar:
+fluidez
+continuidade
+momentum social
+22. Sessão > Partida
+
+O produto não é estruturado em:
+
+“matches”.
+
+O produto é estruturado em:
+
+sessões sociais.
+
+Toda UX deve considerar:
+
+energia da noite
+identidade do grupo
+progressão emocional
+memória coletiva
+23. Dossiê do Caos
+
+Ao final da sessão:
+o app gera:
+
+memória social compartilhável.
+
+Exemplos:
+
+quem mais colapsou
+quem foi mais julgado
+rodada mais caótica
+maior clutch
+momento da noite
+
+Objetivo:
+
+memória coletiva
+compartilhamento
+viralidade
+retenção emocional
+24. Design Anti-Cringe
+
+O produto deve evitar:
+
+pretensão estética
+“cool demais”
+excesso de atmosfera
+teatralidade
+tom espiritualizado
+
+O humor e o caos social brasileiro:
+
+sempre vencem a estética.
+25. Princípio Final
+
+O Entre Nós NÃO é:
+
+um app de jogos.
+
+É:
+
+uma plataforma de experiências sociais presenciais.
+
+O design existe para:
+
+amplificar pessoas
+acelerar emoções
+facilitar histórias
+criar memórias coletivas
+
+E desaparecer no momento certo.

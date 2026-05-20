@@ -18,12 +18,13 @@ import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SelecaoDinamica'>;
 
+// Opção sem ícone — a escolha é social, não técnica.
+// O usuário pensa "como quero viver esse momento?" não "qual protocolo usar?".
 interface OpcaoDinamica {
   id: 'local' | 'realtime' | 'entrar';
-  icone: string;
   titulo: string;
   descricao: string;
-  destaque: boolean;
+  primaria: boolean;
 }
 
 const MAX_OPCOES = 3;
@@ -33,31 +34,29 @@ export function TelaSelecaoDinamica({ navigation, route }: Props) {
   const insets = useSafeAreaInsets();
   const jogo = JOGOS.find((j) => j.id === jogoId);
 
+  // Cada opção descreve o RITUAL SOCIAL — não o modo técnico.
   const opcoes: OpcaoDinamica[] = [];
   if (jogo?.supportsLocal) {
     opcoes.push({
       id: 'local',
-      icone: '📱',
-      titulo: 'um celular',
-      descricao: 'passem de mão em mão. cada um na sua vez.',
-      destaque: true,
+      titulo: 'passando de mão em mão',
+      descricao: 'um celular, o grupo todo. cada um pega quando for sua vez.',
+      primaria: true,
     });
   }
   if (jogo?.supportsRealtime) {
     opcoes.push({
       id: 'realtime',
-      icone: '👥',
-      titulo: 'cada um no seu',
-      descricao: 'todo mundo com o celular. cada um vê algo diferente.',
-      destaque: true,
+      titulo: 'cada um com o seu',
+      descricao: 'todo mundo com celular. papéis separados, segredos na tela de cada um.',
+      primaria: true,
     });
   }
   opcoes.push({
     id: 'entrar',
-    icone: '🔑',
-    titulo: 'já tenho código',
-    descricao: 'alguém já montou a sala. só entrar.',
-    destaque: false,
+    titulo: 'entrar numa sala',
+    descricao: 'alguém já começou. só entrar.',
+    primaria: false,
   });
 
   const headerOp = useRef(new Animated.Value(0)).current;
@@ -65,25 +64,30 @@ export function TelaSelecaoDinamica({ navigation, route }: Props) {
   const cardsAnim = useRef(
     Array.from({ length: MAX_OPCOES }, () => ({
       op: new Animated.Value(0),
-      y: new Animated.Value(20),
+      y: new Animated.Value(16),
     })),
   ).current;
 
   useEffect(() => {
+    // Header: social momentum — entra rápido
     Animated.parallel([
-      Animated.timing(headerOp, { toValue: 1, duration: 380, useNativeDriver: true }),
-      Animated.timing(headerY, { toValue: 0, duration: 380, useNativeDriver: true }),
+      Animated.timing(headerOp, { toValue: 1, duration: 220, useNativeDriver: true }),
+      Animated.timing(headerY, { toValue: 0, duration: 220, useNativeDriver: true }),
     ]).start();
 
-    Animated.stagger(
-      80,
-      cardsAnim.slice(0, opcoes.length).map((anim) =>
-        Animated.parallel([
-          Animated.timing(anim.op, { toValue: 1, duration: 360, useNativeDriver: true }),
-          Animated.timing(anim.y, { toValue: 0, duration: 360, useNativeDriver: true }),
-        ]),
+    // Cards: stagger curto — presença sem cerimônia
+    Animated.sequence([
+      Animated.delay(80),
+      Animated.stagger(
+        60,
+        cardsAnim.slice(0, opcoes.length).map((anim) =>
+          Animated.parallel([
+            Animated.timing(anim.op, { toValue: 1, duration: 220, useNativeDriver: true }),
+            Animated.timing(anim.y, { toValue: 0, duration: 220, useNativeDriver: true }),
+          ]),
+        ),
       ),
-    ).start();
+    ]).start();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -120,6 +124,8 @@ export function TelaSelecaoDinamica({ navigation, route }: Props) {
           { top: insets.top + espacamento.md },
           pressed && estilos.botaoVoltarPressionado,
         ]}
+        accessibilityLabel="Voltar"
+        accessibilityRole="button"
       >
         <Text style={estilos.botaoVoltarIcone}>←</Text>
       </Pressable>
@@ -132,6 +138,7 @@ export function TelaSelecaoDinamica({ navigation, route }: Props) {
         ]}
         showsVerticalScrollIndicator={false}
       >
+        {/* Cabeçalho: jogo identificado + convite — sem verbose */}
         <Animated.View
           style={[
             estilos.cabecalho,
@@ -142,6 +149,7 @@ export function TelaSelecaoDinamica({ navigation, route }: Props) {
           <Text style={estilos.pergunta}>como vocês{'\n'}querem jogar?</Text>
         </Animated.View>
 
+        {/* Opções: rituais sociais, não modos técnicos */}
         <View style={estilos.listaOpcoes}>
           {opcoes.map((opcao, i) => (
             <Animated.View
@@ -156,6 +164,7 @@ export function TelaSelecaoDinamica({ navigation, route }: Props) {
           ))}
         </View>
 
+        {/* Link de regras — discreto, para quem quer saber mais */}
         <Animated.View style={{ opacity: headerOp }}>
           <Pressable
             onPress={() => navigation.navigate('DetalhesJogo', { jogoId })}
@@ -171,6 +180,10 @@ export function TelaSelecaoDinamica({ navigation, route }: Props) {
     </View>
   );
 }
+
+// ─── CardOpcao ────────────────────────────────────────────────────────────────
+// Sem ícone emoji — a diferença é na linguagem, não no ícone.
+// Primárias: borda sutil de ativação. Secundária: mais discreta.
 
 interface CardOpcaoProps {
   opcao: OpcaoDinamica;
@@ -200,24 +213,33 @@ function CardOpcao({ opcao, onPress }: CardOpcaoProps) {
             bounciness: 6,
           }).start();
         }}
-        style={[estilos.card, opcao.destaque && estilos.cardDestaque]}
+        style={[estilos.card, opcao.primaria && estilos.cardPrimaria]}
+        accessibilityRole="button"
+        accessibilityLabel={opcao.titulo}
       >
-        <View style={[estilos.iconeContainer, opcao.destaque && estilos.iconeContainerDestaque]}>
-          <Text style={estilos.icone}>{opcao.icone}</Text>
-        </View>
+        {/* Indicador visual: ponto colorido para opções primárias */}
+        {opcao.primaria && <View style={estilos.pontoIndicador} />}
+
         <View style={estilos.cardTextos}>
-          <Text style={[estilos.cardTitulo, !opcao.destaque && estilos.cardTituloSecundario]}>
+          <Text style={[estilos.cardTitulo, !opcao.primaria && estilos.cardTituloSecundario]}>
             {opcao.titulo}
           </Text>
           <Text style={estilos.cardDescricao}>{opcao.descricao}</Text>
         </View>
-        <Text style={[estilos.seta, !opcao.destaque && estilos.setaSecundaria]}>→</Text>
+
+        <Text style={[estilos.seta, !opcao.primaria && estilos.setaSecundaria]}>→</Text>
       </Pressable>
     </Animated.View>
   );
 }
 
 const estilos = StyleSheet.create({
+  tela: {
+    backgroundColor: cores.fundo,
+    flex: 1,
+  },
+
+  // ── Voltar ──
   botaoVoltar: {
     alignItems: 'center',
     backgroundColor: cores.superficie,
@@ -238,10 +260,45 @@ const estilos = StyleSheet.create({
   botaoVoltarPressionado: {
     opacity: 0.6,
   },
+
+  // ── ScrollView ──
+  scroll: {
+    flex: 1,
+  },
+  scrollConteudo: {
+    paddingHorizontal: espacamento.lg,
+  },
+
+  // ── Cabeçalho ──
   cabecalho: {
     paddingBottom: espacamento.xl,
     paddingTop: 72,
   },
+  // Jogo identificado como contexto — não como título de formulário
+  nomeJogo: {
+    color: cores.primaria,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoExtraBold,
+    letterSpacing: tipografia.letraSpacingLegenda,
+    marginBottom: espacamento.sm,
+  },
+  // Pergunta direta — convite social, não seleção de modo
+  pergunta: {
+    color: cores.texto,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
+    fontSize: 32,
+    letterSpacing: -0.2,
+    lineHeight: 40,
+  },
+
+  // ── Lista de opções ──
+  listaOpcoes: {
+    gap: espacamento.sm,
+  },
+
+  // ── Card de opção — sem ícone, centrado no texto ──
   card: {
     alignItems: 'center',
     backgroundColor: cores.superficie,
@@ -253,41 +310,52 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacamento.lg,
     paddingVertical: espacamento.md + 4,
   },
-  cardDescricao: {
-    color: cores.textoSecundario,
-    fontSize: tipografia.tamanhoCorpoMenor,
-    lineHeight: 20,
-    marginTop: 2,
-  },
-  cardDestaque: {
-    borderColor: 'rgba(160, 82, 45, 0.4)',
+  // Opção primária: borda sutil de presença — não urgência
+  cardPrimaria: {
+    borderColor: 'rgba(255, 90, 95, 0.30)',
   },
   cardTextos: {
     flex: 1,
   },
   cardTitulo: {
     color: cores.texto,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMaior,
     fontWeight: tipografia.pesoBold,
+    letterSpacing: -0.1,
+    lineHeight: 24,
   },
   cardTituloSecundario: {
     color: cores.textoSecundario,
     fontWeight: tipografia.pesoSemibold,
   },
-  icone: {
-    fontSize: 22,
+  cardDescricao: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpoMenor,
+    lineHeight: 20,
+    marginTop: 3,
   },
-  iconeContainer: {
-    alignItems: 'center',
-    backgroundColor: cores.superficieElevada,
-    borderRadius: raio.md,
-    height: 48,
-    justifyContent: 'center',
-    width: 48,
+  // Ponto colorido sutil — diferencia visual sem emoji
+  pontoIndicador: {
+    backgroundColor: cores.primaria,
+    borderRadius: 4,
+    height: 8,
+    opacity: 0.7,
+    width: 8,
   },
-  iconeContainerDestaque: {
-    backgroundColor: 'rgba(160, 82, 45, 0.16)',
+  seta: {
+    color: cores.primaria,
+    fontFamily: familias.sans,
+    fontSize: 20,
+    fontWeight: tipografia.pesoBold,
   },
+  setaSecundaria: {
+    color: cores.textoMudo,
+    fontWeight: tipografia.pesoRegular,
+  },
+
+  // ── Link de regras — discreto ──
   linkRegras: {
     alignItems: 'center',
     marginTop: espacamento.xl,
@@ -298,42 +366,8 @@ const estilos = StyleSheet.create({
   },
   linkRegrasTexto: {
     color: cores.textoMudo,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
-    letterSpacing: 0.3,
-  },
-  listaOpcoes: {
-    gap: espacamento.md - 4,
-  },
-  nomeJogo: {
-    color: cores.primaria,
-    fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
-    marginBottom: espacamento.sm,
-  },
-  pergunta: {
-    color: cores.texto,
-    fontFamily: familias.serifDisplay,
-    fontSize: 32,
-    letterSpacing: 0.1,
-    lineHeight: 42,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollConteudo: {
-    paddingHorizontal: espacamento.lg,
-  },
-  seta: {
-    color: cores.primaria,
-    fontSize: 20,
-    fontWeight: tipografia.pesoBold,
-  },
-  setaSecundaria: {
-    color: cores.textoMudo,
-  },
-  tela: {
-    backgroundColor: cores.fundo,
-    flex: 1,
+    letterSpacing: 0.2,
   },
 });

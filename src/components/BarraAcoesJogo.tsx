@@ -48,6 +48,8 @@ export function BarraAcoesJogo() {
             pressed && estilos.botaoPressionado,
           ]}
           hitSlop={8}
+          accessibilityLabel={somAtivo ? 'Desativar som' : 'Ativar som'}
+          accessibilityRole="button"
         >
           <Text style={estilos.botaoTexto}>{somAtivo ? '🔊' : '🔇'}</Text>
         </Pressable>
@@ -58,6 +60,8 @@ export function BarraAcoesJogo() {
             pressed && estilos.botaoPressionado,
           ]}
           hitSlop={8}
+          accessibilityLabel="Ver regras"
+          accessibilityRole="button"
         >
           <Text style={estilos.botaoTexto}>?</Text>
         </Pressable>
@@ -90,6 +94,7 @@ function ModalRegras({
       onRequestClose={aoFechar}
       statusBarTranslucent
     >
+      {/* Overlay escurecido — universalmente correto para modais */}
       <Pressable style={estilos.modalOverlay} onPress={aoFechar} />
       <View
         style={[
@@ -102,7 +107,12 @@ function ModalRegras({
         </View>
         <View style={estilos.cabecalhoLinha}>
           <Text style={estilos.titulo}>como jogar</Text>
-          <Pressable onPress={aoFechar} hitSlop={12}>
+          <Pressable
+            onPress={aoFechar}
+            hitSlop={12}
+            accessibilityLabel="Fechar regras"
+            accessibilityRole="button"
+          >
             <Text style={estilos.fechar}>×</Text>
           </Pressable>
         </View>
@@ -149,24 +159,32 @@ const estilos = StyleSheet.create({
     right: espacamento.md,
     zIndex: 50,
   },
+  // Botão: superficie branca com borda quente — funciona em contexto claro e escuro
   botao: {
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: cores.superficie,
     borderColor: cores.borda,
     borderRadius: 18,
     borderWidth: 1,
+    elevation: 2,
     height: 36,
     justifyContent: 'center',
+    shadowColor: '#161616',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
     width: 36,
   },
   botaoPressionado: {
-    opacity: 0.6,
+    backgroundColor: cores.fundoSecundario,
+    opacity: 0.8,
     transform: [{ scale: 0.92 }],
   },
   botaoTexto: {
     color: cores.texto,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: tipografia.pesoBold,
+    textAlign: 'center',
   },
   cabecalho: {
     alignItems: 'center',
@@ -202,18 +220,26 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoBold,
     lineHeight: 32,
   },
+  // Bottom sheet: superficie branca sobre overlay escuro
   modalCard: {
     backgroundColor: cores.superficie,
     borderTopLeftRadius: raio.xl,
     borderTopRightRadius: raio.xl,
     bottom: 0,
+    // Sombra para separar do overlay
+    elevation: 16,
     left: 0,
     maxHeight: '80%',
     position: 'absolute',
     right: 0,
+    shadowColor: '#161616',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
   },
+  // Overlay: 50% preto — universalmente correto para modais sobre qualquer fundo
   modalOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     flex: 1,
   },
   objetivo: {
@@ -232,7 +258,7 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: cores.primaria,
     borderRadius: 14,
-    color: cores.textoSobrePrimaria,
+    color: '#FFFFFF',
     fontSize: 13,
     fontWeight: tipografia.pesoExtraBold,
     height: 28,
@@ -250,7 +276,7 @@ const estilos = StyleSheet.create({
     paddingTop: 4,
   },
   rotulo: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoBold,
     letterSpacing: tipografia.letraSpacingLegenda,

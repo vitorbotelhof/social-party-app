@@ -143,7 +143,7 @@ interface PropsFase {
 
 type EtapaRevelar = 'passe' | 'confirma' | 'revelar' | 'vire';
 
-const MS_HABILITAR_PROXIMO = 1000;
+const MS_HABILITAR_PROXIMO = 600;
 
 function FaseRevelarLocal({ estado, jogadores }: PropsFase) {
   const ordem = estado.estadoPublico.ordemJogadores;
@@ -233,12 +233,12 @@ function EtapaPasse({
       Animated.sequence([
         Animated.timing(pulso, {
           toValue: 1.15,
-          duration: 700,
+          duration: 280,
           useNativeDriver: true,
         }),
         Animated.timing(pulso, {
           toValue: 1,
-          duration: 700,
+          duration: 280,
           useNativeDriver: true,
         }),
       ]),
@@ -249,19 +249,15 @@ function EtapaPasse({
 
   return (
     <SafeAreaView
-      style={[estilos.tela, estilos.fundoPreto]}
+      style={estilos.tela}
       edges={['top', 'bottom']}
     >
       <View style={estilos.centroFlex}>
-        <Animated.Text
-          style={[estilos.emojiPasseGrande, { transform: [{ scale: pulso }] }]}
-        >
-          📱
-        </Animated.Text>
+        <Animated.View style={[estilos.passePulsoIndicador, { transform: [{ scale: pulso }] }]} />
         <Text style={estilos.legendaProgresso}>
           {indice} de {total}
         </Text>
-        <Text style={estilos.passeTitulo}>PASSE O CELULAR</Text>
+        <Text style={estilos.passeTitulo}>passe o celular</Text>
         <Text style={estilos.passeSubtitulo}>para {nomeProximo}</Text>
       </View>
       <View style={estilos.rodapeFlex}>
@@ -348,7 +344,7 @@ function EtapaRevelarPalavra({
               </>
             ) : (
               <>
-                <Text style={estilos.legendaPalavra}>SUA PALAVRA</Text>
+                <Text style={estilos.legendaPalavra}>sua palavra</Text>
                 <Text style={estilos.palavra}>{palavra}</Text>
               </>
             )}
@@ -358,8 +354,7 @@ function EtapaRevelarPalavra({
           </View>
         ) : (
           <View style={estilos.centroFlexInterno}>
-            <Text style={estilos.emojiSegurar}>👆</Text>
-            <Text style={estilos.segurarTitulo}>SEGURAR PARA VER</Text>
+            <Text style={estilos.segurarTitulo}>segure para ver</Text>
             <Text style={estilos.segurarSubtitulo}>
               ninguém mais pode estar vendo
             </Text>
@@ -375,7 +370,7 @@ function EtapaRevelarPalavra({
           />
         ) : (
           <Text style={estilos.aguardandoSegurar}>
-            segure pelo menos 1 segundo para liberar
+            segure para confirmar
           </Text>
         )}
       </View>
@@ -394,12 +389,11 @@ function EtapaVireCelular({
 }) {
   return (
     <SafeAreaView
-      style={[estilos.tela, estilos.fundoPreto]}
+      style={estilos.tela}
       edges={['top', 'bottom']}
     >
       <View style={estilos.centroFlex}>
-        <Text style={estilos.emojiVire}>🙈</Text>
-        <Text style={estilos.passeTitulo}>VIRE O CELULAR</Text>
+        <Text style={estilos.passeTitulo}>vire o celular</Text>
         <Text style={estilos.passeSubtitulo}>não deixe ninguém ver</Text>
       </View>
       <View style={estilos.rodapeFlex}>
@@ -465,11 +459,10 @@ function FaseRodadaLocal({ estado, jogadores }: PropsFase) {
     return (
       <Animated.View style={[estilos.flex, { opacity: fade }]}>
         <SafeAreaView
-          style={[estilos.tela, estilos.fundoRoxoEscuro]}
+          style={[estilos.tela, estilos.fundoTurno]}
           edges={['top', 'bottom']}
         >
           <View style={estilos.centroFlex}>
-            <Text style={estilos.emojiTransicao}>✅</Text>
             <Text style={estilos.tituloTransicao}>
               todos deram suas dicas
             </Text>
@@ -493,14 +486,14 @@ function FaseRodadaLocal({ estado, jogadores }: PropsFase) {
   return (
     <Animated.View style={[estilos.flex, { opacity: fade }]}>
       <SafeAreaView
-        style={[estilos.tela, estilos.fundoRoxoEscuro]}
+        style={[estilos.tela, estilos.fundoTurno]}
         edges={['top', 'bottom']}
       >
         <View style={estilos.centroFlex}>
           <Text style={estilos.progressoRodada}>
             {indiceLocal} de {total} jogadores já deram suas dicas
           </Text>
-          <Text style={estilos.legendaVezRoxa}>VEZ DE</Text>
+          <Text style={estilos.legendaVez}>vez de</Text>
           <Text style={estilos.nomeVezGrande}>{jogadorAtual.nome}</Text>
           <Text style={estilos.subtituloRodada}>
             dê uma dica sobre a palavra em voz alta
@@ -683,12 +676,11 @@ function EtapaVotoRegistrado({
 }) {
   return (
     <SafeAreaView
-      style={[estilos.tela, estilos.fundoPreto]}
+      style={estilos.tela}
       edges={['top', 'bottom']}
     >
       <View style={estilos.centroFlex}>
-        <Text style={estilos.emojiRegistrado}>🔒</Text>
-        <Text style={estilos.passeTitulo}>VOTO REGISTRADO</Text>
+        <Text style={estilos.passeTitulo}>voto registrado</Text>
         <Text style={estilos.passeSubtitulo}>não mostre para ninguém</Text>
       </View>
       <View style={estilos.rodapeFlex}>
@@ -732,7 +724,7 @@ function FasePalpiteLocal({ estado, jogadores }: PropsFase) {
         style={estilos.flex}
       >
         <View style={estilos.cabecalhoVez}>
-          <Text style={estilos.legendaPalpiteTopo}>VOCÊ FOI DESCOBERTO</Text>
+          <Text style={estilos.legendaPalpiteTopo}>você foi descoberto</Text>
           <Text style={estilos.tituloGrande}>{adivinhando.nome},</Text>
           <Text style={estilos.subtituloPalpite}>
             qual é a palavra?
@@ -794,12 +786,12 @@ function PassePalpite({
       Animated.sequence([
         Animated.timing(pulso, {
           toValue: 1.15,
-          duration: 700,
+          duration: 280,
           useNativeDriver: true,
         }),
         Animated.timing(pulso, {
           toValue: 1,
-          duration: 700,
+          duration: 280,
           useNativeDriver: true,
         }),
       ]),
@@ -810,16 +802,12 @@ function PassePalpite({
 
   return (
     <SafeAreaView
-      style={[estilos.tela, estilos.fundoPreto]}
+      style={estilos.tela}
       edges={['top', 'bottom']}
     >
       <View style={estilos.centroFlex}>
-        <Animated.Text
-          style={[estilos.emojiPasseGrande, { transform: [{ scale: pulso }] }]}
-        >
-          👁
-        </Animated.Text>
-        <Text style={estilos.passeTitulo}>PASSE O CELULAR</Text>
+        <Animated.View style={[estilos.passePulsoIndicador, { transform: [{ scale: pulso }] }]} />
+        <Text style={estilos.passeTitulo}>passe o celular</Text>
         <Text style={estilos.passeSubtitulo}>para {nome}</Text>
         <Text style={estilos.dicaMrWhiteDescoberto}>
           mr white descoberto — última chance
@@ -845,10 +833,10 @@ const ETAPA_RESULTADO = {
 } as const;
 
 const TEMPOS_RESULTADO = {
-  LEGENDA: 1500,
-  NOME: 2500,
-  BANNER: 3500,
-  CONTEUDO: 4500,
+  LEGENDA: 300,
+  NOME: 600,
+  BANNER: 900,
+  CONTEUDO: 1200,
 };
 
 function FaseResultadoLocal({
@@ -923,7 +911,7 @@ function FaseResultadoLocal({
         {etapa >= ETAPA_RESULTADO.CONTEUDO && (
           <View style={estilos.blocoResumo}>
             <View style={estilos.cardResumo}>
-              <Text style={estilos.rotuloResumo}>A PALAVRA ERA</Text>
+              <Text style={estilos.rotuloResumo}>a palavra era</Text>
               <Text style={estilos.palavraResumo}>
                 {estado.estadoPublico.palavraRevelada}
               </Text>
@@ -931,7 +919,7 @@ function FaseResultadoLocal({
 
             {estado.estadoPublico.palpiteFinal && (
               <View style={estilos.cardResumo}>
-                <Text style={estilos.rotuloResumo}>PALPITE DO MR WHITE</Text>
+                <Text style={estilos.rotuloResumo}>palpite do mr white</Text>
                 <Text style={estilos.palpiteResumo}>
                   “{estado.estadoPublico.palpiteFinal}”
                 </Text>
@@ -963,7 +951,7 @@ function FaseResultadoLocal({
 
             {ultimoEliminadoId && (
               <View style={estilos.cardResumo}>
-                <Text style={estilos.rotuloResumo}>ELIMINADO NA VOTAÇÃO</Text>
+                <Text style={estilos.rotuloResumo}>eliminado na votação</Text>
                 <Text style={estilos.nomeResumo}>
                   {nomeDe(ultimoEliminadoId)}
                 </Text>
@@ -976,7 +964,7 @@ function FaseResultadoLocal({
 
             {Object.keys(votos).length > 0 && (
               <View style={estilos.cardResumo}>
-                <Text style={estilos.rotuloResumo}>PLACAR DE VOTOS</Text>
+                <Text style={estilos.rotuloResumo}>placar de votos</Text>
                 <View style={estilos.listaVotosResumo}>
                   {Object.entries(votos).map(([eleitor, alvo]) => (
                     <Text key={eleitor} style={estilos.linhaVotoResumo}>
@@ -1016,12 +1004,12 @@ function RevelandoPulsando() {
       Animated.sequence([
         Animated.timing(pulso, {
           toValue: 1,
-          duration: 600,
+          duration: 240,
           useNativeDriver: true,
         }),
         Animated.timing(pulso, {
           toValue: 0.3,
-          duration: 600,
+          duration: 240,
           useNativeDriver: true,
         }),
       ]),
@@ -1050,13 +1038,13 @@ function BlocoLegendaMrWhite({
   useEffect(() => {
     Animated.timing(op, {
       toValue: visivel ? 1 : 0,
-      duration: 500,
+      duration: 220,
       useNativeDriver: true,
     }).start();
   }, [op, visivel]);
   return (
     <Animated.Text style={[estilos.legendaMrWhite, { opacity: op }]}>
-      {quantidade > 1 ? 'OS MR WHITES ERAM...' : 'O MR WHITE ERA...'}
+      {quantidade > 1 ? 'os mr whites eram...' : 'o mr white era...'}
     </Animated.Text>
   );
 }
@@ -1112,7 +1100,7 @@ function BannerResultado({ ehVitoriaMrWhite }: { ehVitoriaMrWhite: boolean }) {
     Animated.parallel([
       Animated.timing(op, {
         toValue: 1,
-        duration: 400,
+        duration: 220,
         useNativeDriver: true,
       }),
       Animated.spring(ty, {
@@ -1135,7 +1123,7 @@ function BannerResultado({ ehVitoriaMrWhite }: { ehVitoriaMrWhite: boolean }) {
     >
       <Text style={estilos.bannerEmoji}>{ehVitoriaMrWhite ? '👁' : '🎉'}</Text>
       <Text style={estilos.bannerTitulo}>
-        {ehVitoriaMrWhite ? 'MR WHITE VENCEU' : 'CIVIS VENCERAM'}
+        {ehVitoriaMrWhite ? 'mr white venceu' : 'civis venceram'}
       </Text>
     </Animated.View>
   );
@@ -1239,7 +1227,7 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoSemibold,
   },
   cardVotoSelecionado: {
-    backgroundColor: cores.acentoEscuro,
+    backgroundColor: 'rgba(255, 90, 95, 0.10)',
     borderColor: cores.primaria,
     borderWidth: 2,
   },
@@ -1282,17 +1270,17 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoSemibold,
     marginBottom: espacamento.sm,
   },
-  emojiPasseGrande: {
-    fontSize: 96,
+  passePulsoIndicador: {
+    backgroundColor: cores.primaria,
+    borderRadius: 32,
+    height: 64,
     marginBottom: espacamento.xl,
+    opacity: 0.15,
+    width: 64,
   },
   emojiSegurar: {
     fontSize: 80,
     marginBottom: espacamento.lg,
-  },
-  emojiVire: {
-    fontSize: 88,
-    marginBottom: espacamento.xl,
   },
   fundoCivil: {
     backgroundColor: '#064E3B',
@@ -1304,55 +1292,42 @@ const estilos = StyleSheet.create({
     backgroundColor: '#7F1D1D',
   },
   fundoPreto: {
-    backgroundColor: '#000',
+    backgroundColor: cores.fundo,
   },
   fundoRoxoEscuro: {
-    backgroundColor: cores.acentoEscuro,
+    backgroundColor: 'rgba(255, 90, 95, 0.06)',
   },
-  emojiTransicao: {
-    fontSize: 80,
-    marginBottom: espacamento.xl,
-    textAlign: 'center',
+  fundoTurno: {
+    backgroundColor: 'rgba(255, 90, 95, 0.06)',
   },
   tituloTransicao: {
-    color: cores.textoSobrePrimaria,
+    color: cores.texto,
     fontSize: tipografia.tamanhoTitulo,
     fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.spacingTitulo,
     textAlign: 'center',
   },
   subtituloTransicao: {
-    color: 'rgba(255, 255, 255, 0.85)',
+    color: cores.textoSecundario,
     fontSize: tipografia.tamanhoCorpo,
     marginTop: espacamento.md,
     textAlign: 'center',
   },
   progressoRodada: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
-    textAlign: 'center',
-    textTransform: 'uppercase',
-  },
-  legendaVezRoxa: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
-    marginTop: espacamento.xl,
+    letterSpacing: 0.3,
     textAlign: 'center',
   },
   nomeVezGrande: {
-    color: cores.textoSobrePrimaria,
+    color: cores.texto,
     fontSize: tipografia.tamanhoHero,
     fontWeight: tipografia.pesoBlack,
-    letterSpacing: tipografia.spacingTitulo,
     marginTop: espacamento.sm,
     textAlign: 'center',
   },
   subtituloRodada: {
-    color: 'rgba(255, 255, 255, 0.85)',
+    color: cores.textoSecundario,
     fontSize: tipografia.tamanhoCorpoMaior,
     marginTop: espacamento.lg,
     paddingHorizontal: espacamento.lg,
@@ -1366,8 +1341,7 @@ const estilos = StyleSheet.create({
     color: cores.textoSecundario,
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
-    textTransform: 'uppercase',
+    letterSpacing: 0.3,
   },
   tituloVotar: {
     color: cores.texto,
@@ -1380,10 +1354,6 @@ const estilos = StyleSheet.create({
     color: cores.textoSecundario,
     fontSize: tipografia.tamanhoCorpoMenor,
     marginTop: espacamento.sm,
-  },
-  emojiRegistrado: {
-    fontSize: 88,
-    marginBottom: espacamento.xl,
   },
   legendaPalpiteTopo: {
     color: cores.erro,
@@ -1408,10 +1378,9 @@ const estilos = StyleSheet.create({
     fontSize: tipografia.tamanhoLegenda,
     fontStyle: 'italic',
     fontWeight: tipografia.pesoBold,
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
     marginTop: espacamento.lg,
     textAlign: 'center',
-    textTransform: 'uppercase',
   },
   revelandoTexto: {
     color: cores.texto,
@@ -1473,10 +1442,9 @@ const estilos = StyleSheet.create({
     textAlign: 'center',
   },
   passeTitulo: {
-    color: cores.textoSobrePrimaria,
+    color: cores.texto,
     fontSize: tipografia.tamanhoTitulo,
     fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.spacingTitulo,
     marginTop: espacamento.md,
     textAlign: 'center',
   },
@@ -1493,7 +1461,7 @@ const estilos = StyleSheet.create({
     color: cores.texto,
     fontSize: tipografia.tamanhoTitulo,
     fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    letterSpacing: 0.2,
     textAlign: 'center',
   },
   subtextoMrWhiteReveal: {
@@ -1551,7 +1519,7 @@ const estilos = StyleSheet.create({
     color: cores.textoSecundario,
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    letterSpacing: 0.3,
     marginTop: espacamento.lg,
     textAlign: 'center',
   },
@@ -1622,7 +1590,7 @@ const estilos = StyleSheet.create({
     color: cores.textoSecundario,
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    letterSpacing: 0.3,
   },
   subtituloCentro: {
     color: cores.textoSecundario,

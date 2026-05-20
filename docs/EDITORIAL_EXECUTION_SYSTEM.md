@@ -1,554 +1,466 @@
 # ENTRE NÓS — EDITORIAL EXECUTION SYSTEM
 
-Documento operacional.
-Como transformar a identidade emocional do Entre Nós em decisões consistentes de produto, UI, copy, discovery e atmosfera.
-
----
-
-# 1. CORE PRINCIPLE
-
-O Entre Nós não organiza jogos.
-O Entre Nós organiza estados sociais.
-
-O usuário nunca deve sentir:
-“estou escolhendo um jogo”.
-
-O usuário deve sentir:
-“estou escolhendo o que vai acontecer entre nós.”
-
-Todo elemento do produto deve reforçar isso:
-
-* Home
-* Hero
-* imagens
-* copy
-* categorias
-* motion
-* spacing
-* onboarding
-* recommendations
-* pacing
-
----
-
-# 2. EMOTIONAL OPERATING MODEL
-
-Toda experiência do app deve ser construída sobre 4 pilares emocionais:
-
-## Intimidade
-
-Sensação de proximidade emocional.
-As pessoas baixam a guarda.
-
-## Exposição
-
-Sensação de vulnerabilidade social.
-Alguém será visto de forma real.
-
-## Tensão
-
-Antecipação emocional.
-O grupo não sabe exatamente o que vai acontecer.
-
-## Cumplicidade
-
-Sensação de experiência compartilhada.
-“Estamos vivendo algo juntos.”
-
-Nenhuma feature deve existir fora desses pilares.
-
----
-
-# 3. HERO SYSTEM
-
-## O Hero NÃO é:
-
-* banner
-* destaque de popularidade
-* marketing slot
-* trending game
-
-## O Hero É:
-
-* a abertura emocional da noite
-* uma posição editorial
-* um framing social
-
----
-
-## Regras do Hero
-
-O Hero deve:
-
-* criar antecipação
-* impor atmosfera
-* desacelerar o scroll
-* funcionar como capa de revista
-
----
-
-## O Hero deve conter apenas:
-
-* imagem cinematográfica
-* nome do jogo
-* 1 frase emocional curta
-* CTA mínimo
-
----
-
-## O Hero NUNCA deve conter:
-
-* metadata
-* badges
-* tags
-* intensidade
-* número de jogadores
-* métricas
-* popularidade
-
----
-
-## Critérios para virar Hero
-
-Um jogo só vira Hero se possuir:
-
-### Força cinematográfica
-
-A imagem gera atmosfera imediatamente.
-
-### Clareza emocional
-
-O usuário entende instantaneamente:
-“isso vai gerar uma situação social.”
-
-### Escalabilidade social
-
-O jogo funciona como “evento”.
-
-### Baixa explicação
-
-O Hero não pode depender de texto longo.
-
----
-
-# 4. COPYWRITING SYSTEM
-
-## O tom do Entre Nós
-
-O app fala:
-
-* como alguém próximo
-* com mistério controlado
-* com intimidade
-* com tensão elegante
-
----
-
-## O app NÃO fala como:
-
-* startup
-* dashboard
-* videogame
-* UX writer corporativo
-* rede social
-* AI app
-
----
-
-# Regras de copy
-
-## Frases curtas
-
-Máximo impacto.
-Poucas palavras.
-
----
-
-## Sugestão > explicação
-
-Preferir:
-“alguém vai revelar algo”
-
-ao invés de:
-“esse jogo ajuda amigos a se conhecerem”
-
----
-
-## Ambiguidade controlada
-
-A copy deve sugerir:
-
-* antecipação
-* curiosidade
-* tensão
-
-Mas nunca:
-
-* explicar demais
-* parecer marketing exagerado
-
----
-
-## Linguagem humana
-
-Evitar:
-
-* “engajamento”
-* “experiência imersiva”
-* “diversão garantida”
-* “viral”
-* “multiplayer”
-
----
-
-## Minúsculas preferenciais
-
-O Entre Nós fala baixo.
-Não grita.
-
-Preferir:
-“alguém vai mentir aqui”
-
-ao invés de:
-“ALGUÉM VAI MENTIR AQUI”
-
----
-
-# 5. DISCOVERY SYSTEM
-
-## O usuário NÃO navega por jogos
-
-O usuário navega por:
-
-* humor do grupo
-* energia da noite
-* intenção social
-* atmosfera desejada
-
----
-
-# Hierarquia correta
-
-estado emocional
-↓
-contexto social
-↓
-atmosfera
-↓
-categoria emocional
-↓
-jogo
-
----
-
-# A Home deve responder:
-
-* “como vocês estão?”
-* “o que querem sentir?”
-* “até onde querem ir?”
+Entre Nós — Editorial Execution System
+Social Energy Writing System
+1. Filosofia Central
+
+O editorial do Entre Nós NÃO existe para:
+
+soar profundo
+parecer cinematográfico
+criar frases “cool”
+parecer misterioso
+dramatizar excessivamente
+parecer um roteiro da A24
+soar como IA tentando ser inteligente
+
+O editorial existe para:
+
+amplificar energia social humana.
+
+O sistema de escrita deve:
+
+acelerar interação
+provocar reação
+aumentar caos social
+gerar timing cômico
+reforçar tensão leve
+criar memória coletiva
+comentar o grupo de forma inteligente
+2. O App NÃO É o Protagonista
+
+O app:
+
+nunca deve roubar a cena.
+
+A escrita:
+
+facilita
+reage
+provoca
+comenta
+direciona energia
+
+Mas:
+
+as pessoas são o espetáculo.
+3. Tom Central
+
+O tom deve ser:
+
+humano
+rápido
+social
+brasileiro
+inteligente
+observador
+espontâneo
+levemente provocador
+divertido
+emocionalmente consciente
+O tom NÃO deve ser:
+
+❌ místico
+❌ contemplativo
+❌ filosófico
+❌ dramático demais
+❌ thriller constante
+❌ frase de filme
+❌ coach emocional
+❌ IA engraçadinha
+❌ sarcasmo forçado
+❌ humor memeiro exagerado
+
+4. A Referência Correta
+
+O app deve soar como:
+
+o amigo socialmente inteligente do grupo.
+
+Aquele amigo que:
+
+percebe padrões
+comenta o caos
+aumenta o clima
+faz observações perfeitas
+entende a energia da sala
+
+Mas:
+
+sem monopolizar atenção
+sem parecer performer
+sem tentar ser mais engraçado que o grupo
+5. Regra Mais Importante
+O editorial deve parecer:
+reação social.
 
 E NÃO:
 
-* “qual jogo abrir?”
+texto escrito.
+6. Filosofia de Timing
 
----
+O timing editorial é:
 
-# 6. CATEGORY SYSTEM
+mais importante que o texto.
 
-Categorias são:
+O app deve:
 
-* atmosferas
-* intenções sociais
-* estados emocionais
+saber quando falar
+saber quando sumir
+saber quando acelerar
+saber quando deixar silêncio
+O silêncio é ferramenta editorial.
 
-E NÃO:
+Nem todo momento precisa:
 
-* gêneros
-* mecânicas
-* tipos técnicos de jogo
+comentário
+punchline
+observação
 
----
+Às vezes:
 
-# Categorias corretas
+o grupo completa emocionalmente o espaço sozinho.
+7. Tipos de Intervenção Editorial
+1. Energia
 
-✅ “quando ninguém confia em ninguém”
-✅ “quando alguém vai contar tudo”
-✅ “quando o grupo se vê como realmente é”
-
----
-
-# Categorias erradas
-
-❌ “jogos de blefe”
-❌ “party games”
-❌ “votação”
-❌ “social deduction”
-
----
-
-# 7. CARD SYSTEM
-
-## O card vende atmosfera.
-
-Não funcionalidade.
-
----
-
-# Um card deve conter:
-
-* imagem
-* nome
-* pequena frase opcional
-
----
-
-# O card NÃO deve conter:
-
-* tags
-* badges
-* metadata
-* overlays excessivos
-* informações técnicas
-
----
-
-# Objetivo emocional do card
-
-O usuário deve sentir:
-“isso vai gerar uma situação interessante.”
-
----
-
-# 8. VISUAL PACING
-
-## O app deve respirar.
-
-Espaço vazio:
-
-* cria antecipação
-* desacelera
-* dá peso emocional
-
----
-
-# Regras
-
-## Entre seções:
-
-mínimo 32px
-
-## Após Hero:
-
-pausa generosa
-
-## Nenhum bloco deve competir com o Hero
-
----
-
-# O scroll deve parecer:
-
-* entrar num bar
-* observar o ambiente
-* perceber pessoas
-* descobrir atmosferas
-
-E NÃO:
-
-* consumir feed
-* navegar catálogo
-* usar dashboard
-
----
-
-# 9. MOTION SYSTEM
-
-## Motion do Entre Nós
-
-Deve ser:
-
-* lento
-* elegante
-* humano
-* silencioso
-* cinematográfico
-
----
-
-# Nunca:
-
-* gamer
-* frenético
-* elástico
-* flashy
-* exagerado
-* neon
-
----
-
-# Motion ideal
-
-* fades suaves
-* opacity transitions
-* slow elevation
-* breathing motion
-* calm scrolling
-
----
-
-# 10. DARKNESS SYSTEM
-
-## O escuro do app NÃO é futurista.
-
-É:
-
-* noturno
-* quente
-* íntimo
-* cinematográfico
-
----
-
-# Referências corretas
-
-* vinho
-* âmbar
-* madeira escura
-* bar sofisticado
-* fotografia analógica
-* noir contemporâneo
-* jazz bar
-* luz baixa
-
----
-
-# Referências proibidas
-
-* cyberpunk
-* web3
-* neon gamer
-* sci-fi
-* AI startup
-* dashboard futurista
-
----
-
-# 11. IMAGE DIRECTION SYSTEM
-
-Toda imagem do app deve seguir:
-
-## Permitido
-
-* sombras quentes
-* contraste cinematográfico
-* realismo emocional
-* ambiguidade
-* silhuetas humanas
-* atmosfera social
-* film grain
-* luz baixa
-
----
-
-## Proibido
-
-* glow neon
-* excesso de roxo saturado
-* HUD gamer
-* UI futurista
-* aparência sintética
-* excesso de polish artificial
-
----
-
-# 12. INFORMATION DENSITY RULES
-
-## O app deve sugerir.
-
-Não explicar tudo.
-
----
-
-# Limites
-
-## Hero
-
-Máximo:
-
-* nome
-* frase
-* CTA
-
----
-
-## Card
-
-Máximo:
-
-* imagem
-* nome
-* subtítulo curto
-
----
-
-## Home
-
-Nunca:
-
-* metadata
-* listas técnicas
-* excesso de filtros
-* excesso de informação simultânea
-
----
-
-# 13. EMOTIONAL TEMPERATURE SYSTEM
-
-Cada jogo deve possuir vetores emocionais internos.
+Amplifica o momento.
 
 Exemplo:
 
-## Mr White
+“isso ficou perigosamente eficiente.”
 
-* tensão: 9
-* exposição: 6
-* caos: 5
-* intimidade: 4
+2. Observação
 
-## Eu Nunca
+Percebe dinâmica social.
 
-* intimidade: 9
-* exposição: 9
-* caos: 4
-* humor: 6
+Exemplo:
 
-## Most Likely To
+“ninguém aqui sabe lidar bem com pressão.”
 
-* caos: 8
-* humor: 8
-* exposição: 7
+3. Caos
 
-Esses vetores alimentarão:
+Reconhece colapso.
 
-* Hero selection
-* category ordering
-* recommendations
-* onboarding
-* future personalization
+Exemplo:
 
----
+“isso saiu do controle muito rápido.”
 
-# 14. FINAL PRODUCT PRINCIPLE
+4. Vulnerabilidade
 
-Entre Nós não é um catálogo de jogos.
+Reconhece exposição humana.
 
-É uma máquina de criar:
+Exemplo:
 
-* revelação social
-* tensão humana
-* intimidade
-* memória coletiva
+“agora ficou pessoal.”
 
-O jogo é apenas a ferramenta.
+5. Aftermath
 
-O produto real:
-é o que acontece entre as pessoas.
+Ajuda o grupo a sentir o momento.
+
+Exemplo:
+
+“ninguém volta igual depois dessa rodada.”
+
+8. O Que EVITAR
+
+Nunca escrever como:
+
+❌ narrador de filme
+❌ mestre de RPG
+❌ locutor gamer
+❌ coach emocional
+❌ stand-up comedian
+❌ poeta contemplativo
+❌ inteligência artificial autoconsciente
+
+9. Ritmo Editorial
+
+O editorial deve:
+
+entrar rápido
+sair rápido
+nunca bloquear fluxo
+Regra:
+o grupo sempre vem antes da frase bonita.
+10. Comprimento Ideal
+Ideal:
+
+1 linha.
+
+Excelente:
+
+3–6 palavras.
+
+Máximo:
+
+2 linhas curtas.
+
+O app NÃO deve:
+discursar
+explicar emoção
+narrar demais
+interromper energia social
+11. Filosofia de Humor
+
+O humor deve surgir de:
+
+reconhecimento social.
+
+E NÃO:
+
+piada escrita.
+Bom humor:
+
+✅ “isso virou ataque pessoal.”
+✅ “ninguém estava preparado pra isso.”
+✅ “o grupo claramente perdeu o controle.”
+
+Humor ruim:
+
+❌ meme pronto
+❌ piada forçada
+❌ ironia internet demais
+❌ sarcasmo excessivo
+❌ “humor de IA”
+
+12. Filosofia Brasileira
+
+O editorial deve soar:
+
+brasileiro real.
+
+Mas:
+sem caricatura.
+
+Preferir:
+oralidade leve
+observação cotidiana
+timing social brasileiro
+caos humano reconhecível
+Evitar:
+gíria forçada
+excesso de internetês
+personagem artificial
+13. Filosofia de Intensidade
+
+O app acompanha:
+
+a energia da sessão.
+
+Nunca:
+o contrário.
+
+Sessão leve:
+
+editorial leve.
+
+Sessão caótica:
+
+editorial mais intenso.
+
+Sessão íntima:
+
+editorial mais humano.
+
+Sessão paranoica:
+
+editorial mais observador.
+
+14. Editorial por Jogo
+Mr White
+
+Tom:
+paranoia divertida.
+
+Exemplos:
+
+“agora ninguém confia em ninguém.”
+“isso foi suspeitamente rápido.”
+“tem alguém mentindo muito bem.”
+Most Likely To
+
+Tom:
+julgamento social engraçado.
+
+Exemplos:
+
+“isso pareceu consenso demais.”
+“essa amizade não sobreviveu.”
+“o grupo já tinha essa resposta pronta.”
+Na Ponta da Língua
+
+Tom:
+colapso cognitivo coletivo.
+
+Exemplos:
+
+“o cérebro desistiu primeiro.”
+“a palavra estava vindo.”
+“isso virou sobrevivência.”
+Jogos íntimos
+
+Tom:
+humano e vulnerável.
+
+Exemplos:
+
+“agora ficou real.”
+“ninguém esperava essa resposta.”
+“isso mudou o clima.”
+15. Filosofia de Pressão
+
+Pressão NÃO vem:
+
+do texto.
+
+Ela vem:
+
+do tempo
+da situação social
+do grupo
+da expectativa
+da hesitação
+
+O editorial apenas:
+
+reconhece isso.
+16. Filosofia de Recompensa
+
+O app NÃO celebra como:
+
+videogame
+cassino
+app de produtividade
+NÃO:
+
+❌ “incrível!!!”
+❌ “perfeito!!”
+❌ “você venceu!”
+
+SIM:
+
+✅ “isso foi absurdo.”
+✅ “ninguém esperava isso.”
+✅ “vocês entraram no ritmo.”
+
+17. Filosofia de Fracasso
+
+Fracasso:
+
+é socialmente divertido.
+
+O app nunca deve:
+
+punir emocionalmente
+humilhar
+constranger de forma cruel
+O erro deve parecer:
+caos humano
+improviso falhando
+pressão vencendo
+18. Sistema de Sessão Viva
+
+O editorial deve lembrar:
+
+colapsos passados
+clutch moments
+julgamentos absurdos
+paranoia acumulada
+energia do grupo
+
+Objetivo:
+
+parecer que o app acompanhou a noite inteira.
+19. Sistema de Callback
+
+O app deve ocasionalmente dizer coisas como:
+
+“vocês continuam piorando.”
+“o time azul ainda não se recuperou.”
+“ninguém superou aquela rodada.”
+“isso começou leve demais.”
+
+Objetivo:
+
+criar narrativa emergente.
+20. Filosofia de Onboarding
+
+O app NÃO explica demais.
+
+O usuário:
+
+aprende jogando.
+O editorial deve:
+guiar
+sugerir
+provocar
+
+Nunca:
+
+dar tutorial excessivo
+virar manual
+21. Filosofia de Energia
+
+O editorial existe para:
+
+modular energia social.
+
+Ele pode:
+
+acelerar
+aliviar
+provocar
+respirar
+amplificar
+
+Mas nunca:
+
+dominar o ambiente.
+22. Design Anti-Cringe
+
+Sempre perguntar:
+
+“isso parece uma frase que um humano realmente falaria numa resenha?”
+
+Se não:
+remover.
+
+23. Regras de Ouro
+1.
+
+Curto > bonito.
+
+2.
+
+Timing > inteligência.
+
+3.
+
+Humano > cinematográfico.
+
+4.
+
+Social > estético.
+
+5.
+
+Reação > narração.
+
+6.
+
+Caos humano > texto sofisticado.
+
+24. O Objetivo Final
+
+O usuário nunca deve pensar:
+
+“esse app escreve bem.”
+
+Ele deve pensar:
+
+“essa noite saiu completamente do controle.”
+
+Porque:
+o editorial perfeito:
+
+desaparece dentro da experiência social.

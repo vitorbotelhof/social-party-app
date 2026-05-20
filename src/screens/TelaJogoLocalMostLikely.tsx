@@ -82,7 +82,7 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
     const { texto, indice } = selecionarPrompt([], rodadaAtual, modo);
     setPromptTexto(texto);
     setIndicesUsados([indice]);
-    Animated.timing(promptOp, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+    Animated.timing(promptOp, { toValue: 1, duration: 240, useNativeDriver: true }).start();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -103,7 +103,7 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
       Animated.spring(contagemScale, { toValue: 1, speed: 20, bounciness: 8, useNativeDriver: true }),
     ]).start(() => {
       setTimeout(() => {
-        Animated.timing(contagemOp, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
+        Animated.timing(contagemOp, { toValue: 0, duration: 160, useNativeDriver: true }).start(() => {
           if (n > 1) {
             setContagem(n - 1);
             baterContagem(n - 1);
@@ -111,7 +111,7 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
             irParaApontando();
           }
         });
-      }, 700);
+      }, 500);
     });
   }
 
@@ -147,25 +147,25 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
     cristalizacaoOp.setValue(0);
     proximaOp.setValue(0);
 
-    // B0: 300ms silêncio
+    // B0: 100ms para o haptic chegar antes do visual
     setTimeout(() => {
       // B1: nome/empate aparece
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Animated.parallel([
-        Animated.timing(nomeOp, { toValue: 1, duration: 500, useNativeDriver: true }),
-        Animated.spring(nomeScale, { toValue: 1, speed: 8, bounciness: 10, useNativeDriver: true }),
+        Animated.timing(nomeOp, { toValue: 1, duration: 220, useNativeDriver: true }),
+        Animated.spring(nomeScale, { toValue: 1, speed: 22, bounciness: 4, useNativeDriver: true }),
       ]).start();
 
-      // B2: cristalização após 2s
+      // B2: cristalização após 400ms
       setTimeout(() => {
-        Animated.timing(cristalizacaoOp, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+        Animated.timing(cristalizacaoOp, { toValue: 1, duration: 200, useNativeDriver: true }).start();
 
-        // B3: "próxima" após 4s de silêncio
+        // B3: "próxima" após 700ms
         setTimeout(() => {
-          Animated.timing(proximaOp, { toValue: 1, duration: 400, useNativeDriver: true }).start();
-        }, 4000);
-      }, 2000);
-    }, 300);
+          Animated.timing(proximaOp, { toValue: 1, duration: 180, useNativeDriver: true }).start();
+        }, 700);
+      }, 400);
+    }, 100);
   }
 
   // ─── Pós-reveal ──────────────────────────────────────────────────────────
@@ -206,7 +206,7 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
     setVencedorId(null);
     setFoiEmpate(false);
     promptOp.setValue(0);
-    Animated.timing(promptOp, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+    Animated.timing(promptOp, { toValue: 1, duration: 220, useNativeDriver: true }).start();
     setFase('prompt');
   }
 
@@ -325,8 +325,8 @@ function FaseApontando({ onJa }: { onJa: () => void }) {
   useEffect(() => {
     const t = setTimeout(() => {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      Animated.timing(jaOp, { toValue: 1, duration: 400, useNativeDriver: true }).start();
-    }, 2000);
+      Animated.timing(jaOp, { toValue: 1, duration: 180, useNativeDriver: true }).start();
+    }, 400);
     return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -511,15 +511,15 @@ function FaseResultado({
 
 const estilos = StyleSheet.create({
   apontandoJa: {
-    color: cores.acento,
-    fontFamily: familias.serifItalico,
+    color: cores.mostLikely,
+    fontFamily: familias.sans,
     fontSize: 48,
     marginTop: espacamento.xl,
     textAlign: 'center',
   },
   apontandoTexto: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 56,
     letterSpacing: -1,
     textAlign: 'center',
@@ -544,7 +544,7 @@ const estilos = StyleSheet.create({
   },
   contagemNumero: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 140,
     letterSpacing: -4,
     textAlign: 'center',
@@ -584,20 +584,20 @@ const estilos = StyleSheet.create({
   },
   posRevealFrase: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 22,
     lineHeight: 30,
     textAlign: 'center',
   },
   posRevealNome: {
-    color: cores.acento,
-    fontFamily: familias.serifDisplay,
+    color: cores.mostLikely,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 36,
     textAlign: 'center',
   },
   posRevealTimer: {
     color: cores.textoMudo,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 28,
     marginTop: espacamento.sm,
     textAlign: 'center',
@@ -608,7 +608,7 @@ const estilos = StyleSheet.create({
   },
   promptTexto: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 26,
     letterSpacing: 0.2,
     lineHeight: 36,
@@ -616,7 +616,7 @@ const estilos = StyleSheet.create({
   },
   resultadoDestaqueBloco: {
     alignItems: 'center',
-    borderColor: cores.acento,
+    borderColor: cores.mostLikely,
     borderRadius: raio.xl,
     borderWidth: 1,
     gap: espacamento.xs,
@@ -626,21 +626,20 @@ const estilos = StyleSheet.create({
     width: '100%',
   },
   resultadoDestaqueNome: {
-    color: cores.acento,
-    fontFamily: familias.serifDisplay,
+    color: cores.mostLikely,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 36,
     textAlign: 'center',
   },
   resultadoDestaquePre: {
     color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: 1.8,
-    textTransform: 'uppercase',
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
   },
   resultadoDestaqueVotos: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 15,
     marginTop: 4,
     textAlign: 'center',
@@ -674,11 +673,11 @@ const estilos = StyleSheet.create({
   },
   resultadoRankingVotos: {
     color: cores.textoMudo,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 18,
   },
   resultadoSair: {
-    borderColor: cores.primaria,
+    borderColor: cores.mostLikely,
     borderRadius: raio.pill,
     borderWidth: 1,
     marginTop: espacamento.xl,
@@ -686,7 +685,7 @@ const estilos = StyleSheet.create({
     paddingVertical: espacamento.md,
   },
   resultadoSairTexto: {
-    color: cores.primaria,
+    color: cores.mostLikely,
     fontSize: tipografia.tamanhoCorpo,
     fontWeight: tipografia.pesoSemibold,
   },
@@ -698,14 +697,14 @@ const estilos = StyleSheet.create({
   },
   resultadoTitulo: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 32,
     marginBottom: espacamento.xl,
     textAlign: 'center',
   },
   revealCristalizacao: {
     color: cores.textoMudo,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 16,
     letterSpacing: 0.3,
     marginTop: espacamento.lg,
@@ -720,14 +719,14 @@ const estilos = StyleSheet.create({
   },
   revealEmpate: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 28,
     lineHeight: 38,
     textAlign: 'center',
   },
   revealNome: {
     color: cores.texto,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 52,
     letterSpacing: -1,
     textAlign: 'center',
@@ -760,7 +759,7 @@ const estilos = StyleSheet.create({
   },
   rodadaLabel: {
     color: cores.textoMudo,
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: 16,
     letterSpacing: 0.5,
   },
@@ -783,12 +782,12 @@ const estilos = StyleSheet.create({
     width: '100%',
   },
   selecionarItemPressionado: {
-    backgroundColor: 'rgba(201, 137, 58, 0.1)',
-    borderColor: cores.acento,
+    backgroundColor: 'rgba(255, 190, 11, 0.12)',
+    borderColor: cores.mostLikely,
   },
   selecionarLabel: {
     color: cores.textoSecundario,
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: 20,
     marginBottom: espacamento.lg,
     textAlign: 'center',
@@ -803,7 +802,7 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoSemibold,
   },
   selecionarSeta: {
-    color: cores.acento,
+    color: cores.mostLikely,
     fontSize: 18,
   },
   tela: {

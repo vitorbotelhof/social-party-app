@@ -1,3 +1,4 @@
+import type { CategoriaIdNPL } from '@/games/na-ponta-da-lingua/types';
 import type { GameId, PlayerId, RoomCode } from '@/engine/types';
 
 export type RootStackParamList = {
@@ -31,6 +32,7 @@ export type RootStackParamList = {
     duracaoSegundos: 45 | 60 | 90;
     rodadasPorJogador: number;
     dificuldade: 'facil' | 'medio' | 'dificil' | 'colapso' | 'todas';
+    categorias: CategoriaIdNPL[] | 'todas';
     modoJogo: 'individual' | 'todos_juntos' | 'time_vs_time';
     times?: { nomeA: string; idsA: string[]; nomeB: string; idsB: string[] };
   };

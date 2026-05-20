@@ -18,13 +18,12 @@ interface Props {
   jogadores: Player[];
 }
 
-// Staged reveal timing (ms):
-// Beat 1 (header + hairline):  0   → 400
-// Beat 2 (name):               900 → 1400
-// Beat 3 (role):               1900 → 2400
-// Beat 4 (counts hairline):    2900 → 3300
-//         (counts values):     3100 → 3700
-// Beat 5 (button):             4100 → 4600
+// Staged reveal timing (ms) — social momentum:
+// Beat 1 (header):   0   → 220
+// Beat 2 (name):     400 → 660
+// Beat 3 (role):     840 → 1100
+// Beat 4 (counts):   1280 → 1500
+// Beat 5 (button):   1680 → 1900
 
 export function TelaEntreRodadas({
   estado,
@@ -67,29 +66,29 @@ export function TelaEntreRodadas({
     const dur = (ms: number) => ({ duration: ms, useNativeDriver: true });
 
     animRef.current = Animated.sequence([
-      // Beat 1: round context materialises from silence
-      Animated.timing(op1, { toValue: 1, ...dur(400) }),
-      Animated.delay(500),
-      // Beat 2: name rises into view — the weight of a person
+      // Beat 1: contexto da rodada — snap direto
+      Animated.timing(op1, { toValue: 1, ...dur(220) }),
+      Animated.delay(180),
+      // Beat 2: nome sobe — quem foi eliminado
       Animated.parallel([
-        Animated.timing(op2, { toValue: 1, ...dur(500) }),
-        Animated.timing(ty2, { toValue: 0, ...dur(500) }),
+        Animated.timing(op2, { toValue: 1, ...dur(260) }),
+        Animated.timing(ty2, { toValue: 0, ...dur(260) }),
       ]),
-      Animated.delay(500),
-      // Beat 3: verdict — what role they carried
-      Animated.timing(op3, { toValue: 1, ...dur(500) }),
-      Animated.delay(500),
-      // Beat 4: stakes — who remains
+      Animated.delay(180),
+      // Beat 3: veredicto — papel revelado
+      Animated.timing(op3, { toValue: 1, ...dur(260) }),
+      Animated.delay(180),
+      // Beat 4: placar — quem ainda está vivo
       Animated.parallel([
-        Animated.timing(opHair, { toValue: 1, ...dur(400) }),
+        Animated.timing(opHair, { toValue: 1, ...dur(220) }),
         Animated.sequence([
-          Animated.delay(200),
-          Animated.timing(op4, { toValue: 1, ...dur(500) }),
+          Animated.delay(80),
+          Animated.timing(op4, { toValue: 1, ...dur(220) }),
         ]),
       ]),
-      Animated.delay(400),
-      // Beat 5: continuation — the game isn't over
-      Animated.timing(op5, { toValue: 1, ...dur(500) }),
+      Animated.delay(180),
+      // Beat 5: continuar — o jogo não acabou
+      Animated.timing(op5, { toValue: 1, ...dur(220) }),
     ]);
 
     animRef.current.start();
@@ -262,7 +261,7 @@ const estilos = StyleSheet.create({
     marginBottom: espacamento.md,
   },
   nomeTexto: {
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     color: cores.texto,
     textAlign: 'center',
@@ -272,7 +271,7 @@ const estilos = StyleSheet.create({
 
   // Beat 3 ────────────────────────────────────────────────────────────────────
   papelBase: {
-    fontFamily: familias.serifItalico,
+    fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMaior,
     textAlign: 'center',
     marginBottom: espacamento.xl,
@@ -304,7 +303,7 @@ const estilos = StyleSheet.create({
     gap: espacamento.xs,
   },
   contagemValor: {
-    fontFamily: familias.serifDisplay,
+    fontFamily: familias.sans, fontWeight: '800' as const,
     fontSize: tipografia.tamanhoSubtituloGrande,
     color: cores.texto,
   },

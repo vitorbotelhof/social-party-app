@@ -7,7 +7,7 @@ import {
   type PressableProps,
 } from 'react-native';
 
-import { cores, espacamento, gradientes, raio } from '@/theme/colors';
+import { cores, espacamento, gradientes, raio, tipografia } from '@/theme/colors';
 
 interface Props extends Omit<PressableProps, 'style' | 'children'> {
   titulo: string;
@@ -38,7 +38,7 @@ export function BotaoPrimario({
         style={estilos.gradiente}
       >
         {carregando ? (
-          <ActivityIndicator color={cores.textoSobrePrimaria} />
+          <ActivityIndicator color={cores.textoSobrePrimaria} size="small" />
         ) : (
           <Text style={estilos.texto}>{titulo}</Text>
         )}
@@ -59,23 +59,25 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacamento.lg,
     paddingVertical: espacamento.md,
   },
-  // Profundidade real — sombra escura quente, não glow de cor
+  // Warm tactile shadow — depth without drama
   pressionado: {
+    opacity: 0.88,
     transform: [{ scale: 0.97 }],
   },
   texto: {
     color: cores.textoSobrePrimaria,
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.6,
+    fontSize: tipografia.tamanhoCorpoMaior,
+    fontWeight: tipografia.pesoBold,
+    letterSpacing: 0.4,
   },
   wrapper: {
     borderRadius: raio.pill,
-    elevation: 4,
-    shadowColor: '#0E0B08',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.55,
-    shadowRadius: 8,
+    // Warm shadow — #161616 at low opacity, not noir black at 0.55
+    elevation: 3,
+    shadowColor: '#161616',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 10,
     width: '100%',
   },
 });
