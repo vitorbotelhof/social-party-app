@@ -33,12 +33,7 @@ interface Props {
   jogadores: Player[];
 }
 
-// Warm light tints — intimacy through brand color, not noir darkness
-const COR_FUNDO_MRWHITE = '#FADADC'; // light rose — clearly Mr White
-const COR_FUNDO_CIVIL = '#D4F0DE';   // light mint — clearly Civil
-const COR_FUNDO_PREPARANDO = cores.fundo; // warm paper — neutral hold state
-const COR_PERIGO = cores.acentoEscuro;    // '#CC3338' — dark red, readable on light rose
-const MS_PREPARO = 1500;
+// Nenhuma cor diferenciada por papel — o ambiente visual é idêntico para todos.
 
 export function TelaWordReveal({
   estado,
@@ -55,8 +50,6 @@ export function TelaWordReveal({
   const [enviando, setEnviando] = useState(false);
 
   const escalaPalavra = useRef(new Animated.Value(0.5)).current;
-  const fundoAnim = useRef(new Animated.Value(0)).current;
-  const opacidadeIntro = useRef(new Animated.Value(0)).current;
   const ultimoCliqueRef = useRef(0);
 
   const meuEstado = estado.estadosPrivados[jogadorId];
@@ -83,51 +76,32 @@ export function TelaWordReveal({
     return null;
   }, [jogadorId, mapaNomes, ordem, queViram]);
 
-  // Sequência de estágios enquanto o jogador segura.
+  // Revela imediatamente ao segurar — sem delay artificial.
   useEffect(() => {
     if (!segurando) {
       setEstagio('inicial');
       return;
     }
-    setEstagio('preparando');
-    const id = setTimeout(() => {
-      setEstagio('revelado');
-      void tocar('whoosh');
-    }, MS_PREPARO);
-    return () => clearTimeout(id);
+    setEstagio('revelado');
+    void tocar('whoosh');
   }, [segurando]);
 
-  // Fade-in do texto introdutório ("só você pode ver isso...").
+  // Escala da palavra — spring ao revelar, reset ao fechar.
   useEffect(() => {
-    Animated.timing(opacidadeIntro, {
-      toValue: estagio === 'preparando' ? 1 : 0,
-      duration: 240,
-      useNativeDriver: true,
-    }).start();
-  }, [estagio, opacidadeIntro]);
-
-  // Cor de fundo do cartão + escala da palavra conforme o estágio.
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fundoAnim, {
-        toValue: estagio === 'inicial' ? 0 : estagio === 'preparando' ? 1 : 2,
-        duration: 280,
-        useNativeDriver: false,
-      }),
-      estagio === 'revelado'
-        ? Animated.spring(escalaPalavra, {
-            toValue: 1,
-            useNativeDriver: true,
-            tension: 60,
-            friction: 7,
-          })
-        : Animated.timing(escalaPalavra, {
-            toValue: 0.5,
-            duration: 120,
-            useNativeDriver: true,
-          }),
-    ]).start();
-  }, [escalaPalavra, estagio, fundoAnim]);
+    (estagio === 'revelado'
+      ? Animated.spring(escalaPalavra, {
+          toValue: 1,
+          useNativeDriver: true,
+          tension: 60,
+          friction: 7,
+        })
+      : Animated.timing(escalaPalavra, {
+          toValue: 0.5,
+          duration: 120,
+          useNativeDriver: true,
+        })
+    ).start();
+  }, [escalaPalavra, estagio]);
 
   function aoPressionar() {
     if (jaVi || enviando) return;
@@ -168,11 +142,6 @@ export function TelaWordReveal({
   }
 
   const ehMrWhite = meuEstado.ehMrWhite;
-  const corRevelacao = ehMrWhite ? COR_FUNDO_MRWHITE : COR_FUNDO_CIVIL;
-  const corFundo = fundoAnim.interpolate({
-    inputRange: [0, 1, 2],
-    outputRange: [cores.superficie, COR_FUNDO_PREPARANDO, corRevelacao],
-  });
 
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
@@ -203,9 +172,8 @@ export function TelaWordReveal({
             <Text style={estilos.legendaVez}>vez de</Text>
             <Text style={estilos.nomeVez}>{meuNome}</Text>
 
-            <Animated.View
-              style={[estilos.cartao, { backgroundColor: corFundo }]}
-            >
+            {/* Cartão neutro — mesmo fundo para todos os papéis */}
+            <View style={estilos.cartao}>
               <Pressable
                 onPressIn={aoPressionar}
                 onPressOut={aoSoltar}
@@ -218,19 +186,6 @@ export function TelaWordReveal({
                     </Text>
                   </View>
                 )}
-                {estagio === 'preparando' && (
-                  <Animated.View
-                    style={[
-                      estilos.preparandoBloco,
-                      { opacity: opacidadeIntro },
-                    ]}
-                  >
-                    <View style={estilos.hairlinePreparo} />
-                    <Text style={estilos.textoPreparo}>
-                      {'só você\npode ver isso.'}
-                    </Text>
-                  </Animated.View>
-                )}
                 {estagio === 'revelado' && (
                   <View style={estilos.reveladoBloco}>
                     <Animated.View
@@ -239,55 +194,29 @@ export function TelaWordReveal({
                         { transform: [{ scale: escalaPalavra }] },
                       ]}
                     >
-                      {ehMrWhite && !meuEstado.palavraSecreta ? (
-                        <>
-                          <Text style={estilos.tituloMrWhite}>
-                            {'você é\no mr white.'}
-                          </Text>
-                          <Text style={estilos.subtextoMrWhite}>
-                            não tem palavra.{'\n'}descubra a dos outros.
-                          </Text>
-                        </>
-                      ) : ehMrWhite && meuEstado.palavraSecreta ? (
-                        <>
-                          <Text style={estilos.labelMrWhiteDual}>
-                            você é o mr white.
-                          </Text>
-                          <Text
-                            style={estilos.palavraDual}
-                            adjustsFontSizeToFit
-                            numberOfLines={1}
-                          >
-                            {meuEstado.palavraSecreta}
-                          </Text>
-                          <Text style={estilos.subtextoMrWhite}>
-                            sua palavra é parecida.{'\n'}não é a mesma.
-                          </Text>
-                        </>
-                      ) : (
-                        <>
-                          <Text style={estilos.labelPalavra}>
-                            sua palavra
-                          </Text>
-                          <Text
-                            style={estilos.palavra}
-                            adjustsFontSizeToFit
-                            numberOfLines={1}
-                          >
-                            {meuEstado.palavraSecreta}
-                          </Text>
-                        </>
-                      )}
+                      {/* Mesma estrutura visual para civil e mr white */}
+                      <Text style={estilos.labelPalavra}>sua palavra</Text>
+                      <Text
+                        style={estilos.palavra}
+                        adjustsFontSizeToFit
+                        numberOfLines={1}
+                      >
+                        {ehMrWhite && !meuEstado.palavraSecreta
+                          ? 'improvise.'
+                          : meuEstado.palavraSecreta ?? ''}
+                      </Text>
                     </Animated.View>
                     <Text style={estilos.instrucaoRevelado}>
-                      {ehMrWhite
-                        ? 'solte quando estiver pronto.'
-                        : 'memorize. solte quando terminar.'}
+                      {ehMrWhite && !meuEstado.palavraSecreta
+                        ? 'descubra a dos outros.'
+                        : ehMrWhite
+                          ? 'a palavra dos outros é diferente.'
+                          : 'memorize. solte quando terminar.'}
                     </Text>
                   </View>
                 )}
               </Pressable>
-            </Animated.View>
+            </View>
 
             <View style={estilos.rodape}>
               {jaSegurou && !segurando && (
@@ -439,12 +368,6 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     gap: espacamento.md,
   },
-  hairlinePreparo: {
-    backgroundColor: cores.borda,
-    height: 1,
-    marginBottom: espacamento.xs,
-    width: 36,
-  },
   instrucaoEsconder: {
     color: cores.textoSecundario,
     fontFamily: familias.sans,
@@ -457,7 +380,7 @@ const estilos = StyleSheet.create({
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: 0.2,
-    marginTop: espacamento.lg,
+    marginTop: espacamento.xl,
     textAlign: 'center',
   },
   itemLista: {
@@ -488,27 +411,12 @@ const estilos = StyleSheet.create({
     color: cores.texto,
     fontWeight: tipografia.pesoSemibold,
   },
-  labelMrWhiteDual: {
-    color: COR_PERIGO,
-    fontFamily: familias.sans,
-    fontSize: tipografia.tamanhoLegenda,
-    letterSpacing: 0.3,
-    marginBottom: espacamento.xs,
-    textAlign: 'center',
-  },
   labelPalavra: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: 0.3,
-    marginBottom: espacamento.xs,
-    textAlign: 'center',
-  },
-  palavraDual: {
-    color: COR_PERIGO,
-    fontFamily: familias.sans, fontWeight: '800' as const,
-    fontSize: 48,
-    letterSpacing: 0,
+    marginBottom: espacamento.sm,
     textAlign: 'center',
   },
   legendaVez: {
@@ -536,13 +444,9 @@ const estilos = StyleSheet.create({
   palavra: {
     color: cores.texto,
     fontFamily: familias.sans, fontWeight: '800' as const,
-    fontSize: 48,
-    letterSpacing: 0,
+    fontSize: 52,
+    letterSpacing: tipografia.spacingApertado,
     textAlign: 'center',
-  },
-  preparandoBloco: {
-    alignItems: 'center',
-    gap: espacamento.md,
   },
   progressoBloco: {
     alignItems: 'flex-end',
@@ -576,32 +480,8 @@ const estilos = StyleSheet.create({
   rodape: {
     minHeight: 60,
   },
-  subtextoMrWhite: {
-    color: cores.textoSecundario,
-    fontFamily: familias.sans,
-    fontSize: tipografia.tamanhoCorpoMenor,
-    lineHeight: 22,
-    marginTop: espacamento.md,
-    textAlign: 'center',
-  },
   tela: {
     backgroundColor: cores.fundo,
     flex: 1,
-  },
-  textoPreparo: {
-    color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
-    fontSize: tipografia.tamanhoSubtitulo,
-    letterSpacing: 0,
-    lineHeight: 30,
-    textAlign: 'center',
-  },
-  tituloMrWhite: {
-    color: COR_PERIGO,
-    fontFamily: familias.sans, fontWeight: '800' as const,
-    fontSize: 34,
-    letterSpacing: 0,
-    lineHeight: 42,
-    textAlign: 'center',
   },
 });

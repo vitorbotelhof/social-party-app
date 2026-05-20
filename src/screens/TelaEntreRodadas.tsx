@@ -65,30 +65,31 @@ export function TelaEntreRodadas({
 
     const dur = (ms: number) => ({ duration: ms, useNativeDriver: true });
 
+    // Botão disponível imediatamente — não espera a sequência de conteúdo.
+    Animated.timing(op5, { toValue: 1, ...dur(180) }).start();
+
+    // Sequência de conteúdo roda em paralelo, apenas visual.
     animRef.current = Animated.sequence([
-      // Beat 1: contexto da rodada — snap direto
+      // Beat 1: contexto da rodada
       Animated.timing(op1, { toValue: 1, ...dur(220) }),
-      Animated.delay(180),
-      // Beat 2: nome sobe — quem foi eliminado
+      Animated.delay(120),
+      // Beat 2: nome sobe
       Animated.parallel([
-        Animated.timing(op2, { toValue: 1, ...dur(260) }),
-        Animated.timing(ty2, { toValue: 0, ...dur(260) }),
+        Animated.timing(op2, { toValue: 1, ...dur(220) }),
+        Animated.timing(ty2, { toValue: 0, ...dur(220) }),
       ]),
-      Animated.delay(180),
-      // Beat 3: veredicto — papel revelado
-      Animated.timing(op3, { toValue: 1, ...dur(260) }),
-      Animated.delay(180),
-      // Beat 4: placar — quem ainda está vivo
+      Animated.delay(100),
+      // Beat 3: veredicto
+      Animated.timing(op3, { toValue: 1, ...dur(200) }),
+      Animated.delay(100),
+      // Beat 4: placar
       Animated.parallel([
-        Animated.timing(opHair, { toValue: 1, ...dur(220) }),
+        Animated.timing(opHair, { toValue: 1, ...dur(180) }),
         Animated.sequence([
-          Animated.delay(80),
-          Animated.timing(op4, { toValue: 1, ...dur(220) }),
+          Animated.delay(60),
+          Animated.timing(op4, { toValue: 1, ...dur(180) }),
         ]),
       ]),
-      Animated.delay(180),
-      // Beat 5: continuar — o jogo não acabou
-      Animated.timing(op5, { toValue: 1, ...dur(220) }),
     ]);
 
     animRef.current.start();

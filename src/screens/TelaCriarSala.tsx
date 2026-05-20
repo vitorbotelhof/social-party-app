@@ -151,9 +151,9 @@ export function TelaCriarSala({ navigation, route }: Props) {
   const podeIniciar = jogadores.length >= MIN_JOGADORES;
 
   return (
-    <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
+    <SafeAreaView style={estilos.tela} edges={['top', 'bottom']} >
       <View style={estilos.blocoCodigo}>
-        <Text style={estilos.legenda}>CÓDIGO DA SALA</Text>
+        <Text style={estilos.legenda}>código da sala</Text>
         <CodigoSala codigo={codigoSala} />
         <Text style={estilos.subtitulo}>
           manda pro grupo e espera todo mundo entrar
@@ -162,7 +162,7 @@ export function TelaCriarSala({ navigation, route }: Props) {
 
       <View style={estilos.blocoJogadores}>
         <View style={estilos.cabecalhoLista}>
-          <Text style={estilos.tituloLista}>Jogadores</Text>
+          <Text style={estilos.tituloLista}>jogadores</Text>
           <Text style={estilos.contadorLista}>{jogadores.length}</Text>
         </View>
         <FlatList
@@ -226,10 +226,10 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoMedio,
   },
   legenda: {
-    color: cores.textoSecundario,
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
   },
   listaConteudo: {
     paddingBottom: espacamento.lg,

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BotaoPrimario, ContagemRegressiva } from '@/components';
+import { BotaoPrimario } from '@/components';
 import type { ModoMostLikely } from '@/games/most-likely-to/types';
 import type { RootStackParamList } from '@/navigation/types';
 import { iniciarJogo } from '@/services/roomService';
@@ -42,13 +42,12 @@ export function TelaConfiguracaoMostLikely({ navigation, route }: Props) {
   const [totalRodadas, setTotalRodadas] = useState(TOTAL_RODADAS_PADRAO);
   const [modo, setModo] = useState<ModoMostLikely>('classico');
   const [iniciando, setIniciando] = useState(false);
-  const [mostrarContagem, setMostrarContagem] = useState(false);
 
   async function aoIniciar() {
     setIniciando(true);
     try {
       await iniciarJogo(roomCode, jogadorId, { totalRodadas, modo });
-      setMostrarContagem(true);
+      navigation.replace('Game', { roomCode, jogoId, jogadorId });
     } catch (erro) {
       setIniciando(false);
       const mensagem =
@@ -57,16 +56,6 @@ export function TelaConfiguracaoMostLikely({ navigation, route }: Props) {
           : 'Algo deu errado, tenta de novo.';
       Alert.alert('Não rolou começar a partida', mensagem);
     }
-  }
-
-  if (mostrarContagem) {
-    return (
-      <ContagemRegressiva
-        aoTerminar={() =>
-          navigation.replace('Game', { roomCode, jogoId, jogadorId })
-        }
-      />
-    );
   }
 
   const modoSelecionado = MODOS.find((m) => m.id === modo)!;
@@ -185,9 +174,8 @@ const estilos = StyleSheet.create({
     color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoMedio,
-    letterSpacing: tipografia.spacingLegenda,
+    letterSpacing: 0.3,
     marginBottom: espacamento.md,
-    textTransform: 'uppercase',
   },
 
   // Stepper de rodadas — idêntico ao Mr White mas mais espaçoso

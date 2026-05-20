@@ -20,7 +20,7 @@ import { cores, espacamento, raio, tipografia } from '@/theme/colors';
 type Props = NativeStackScreenProps<RootStackParamList, 'SelecaoJogo'>;
 
 const ALTURA_CARD = 160;
-const STAGGER_MS = 80;
+const STAGGER_MS = 40;
 const GRADIENTE_OVERLAY: [string, string, string] = [
   'rgba(0,0,0,0)',
   'rgba(0,0,0,0.45)',
@@ -44,12 +44,12 @@ export function TelaSelecaoJogo({ navigation }: Props) {
     Animated.parallel([
       Animated.timing(headerOp, {
         toValue: 1,
-        duration: 380,
+        duration: 200,
         useNativeDriver: true,
       }),
       Animated.timing(headerY, {
         toValue: 0,
-        duration: 380,
+        duration: 200,
         useNativeDriver: true,
       }),
     ]).start();
@@ -60,12 +60,12 @@ export function TelaSelecaoJogo({ navigation }: Props) {
         Animated.parallel([
           Animated.timing(anim.op, {
             toValue: 1,
-            duration: 360,
+            duration: 200,
             useNativeDriver: true,
           }),
           Animated.timing(anim.y, {
             toValue: 0,
-            duration: 360,
+            duration: 200,
             useNativeDriver: true,
           }),
         ]),
@@ -74,8 +74,8 @@ export function TelaSelecaoJogo({ navigation }: Props) {
 
     Animated.timing(rodapeOp, {
       toValue: 1,
-      delay: STAGGER_MS * JOGOS.length + 200,
-      duration: 380,
+      delay: STAGGER_MS * JOGOS.length + 80,
+      duration: 200,
       useNativeDriver: true,
     }).start();
   }, [cardsAnim, headerOp, headerY, rodapeOp]);
@@ -93,7 +93,6 @@ export function TelaSelecaoJogo({ navigation }: Props) {
           { opacity: headerOp, transform: [{ translateY: headerY }] },
         ]}
       >
-        <Text style={estilos.legenda}>ESCOLHA UM JOGO</Text>
         <Text style={estilos.subtitulo}>qual o clima hoje?</Text>
       </Animated.View>
 
@@ -153,7 +152,7 @@ function CardJogo({ jogo, onPress }: CardJogoProps) {
     }).start();
   }
 
-  const fogos = '🔥'.repeat(jogo.intensidade);
+  const intensidadeTexto = '·'.repeat(jogo.intensidade);
 
   return (
     <Animated.View
@@ -184,11 +183,11 @@ function CardJogo({ jogo, onPress }: CardJogoProps) {
           <View style={estilos.barraTopo}>
             <View style={estilos.badge}>
               <Text style={estilos.badgeTexto}>
-                {jogo.minJogadores}-{jogo.maxJogadores} jogadores
+                {jogo.minJogadores}–{jogo.maxJogadores} jogadores
               </Text>
             </View>
             <View style={estilos.badge}>
-              <Text style={estilos.badgeTexto}>{fogos}</Text>
+              <Text style={estilos.badgeTexto}>{intensidadeTexto}</Text>
             </View>
           </View>
 

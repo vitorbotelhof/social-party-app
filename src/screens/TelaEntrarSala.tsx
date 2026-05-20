@@ -241,9 +241,8 @@ const estilos = StyleSheet.create({
   rotulo: {
     color: cores.textoSecundario,
     fontSize: 13,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
+    fontWeight: '600',
+    letterSpacing: 0.3,
   },
   subtitulo: {
     color: cores.textoSecundario,

@@ -47,7 +47,7 @@ export function TelaDetalhesJogo({ navigation, route }: Props) {
     );
   }
 
-  const fogos = '🔥'.repeat(jogo.intensidade);
+  const intensidadeTexto = '·'.repeat(jogo.intensidade);
 
   async function aoCriarSala() {
     if (jogo!.id === 'mrwhite' && !(await tutorialFoiVisto('mrwhite'))) {
@@ -119,14 +119,14 @@ export function TelaDetalhesJogo({ navigation, route }: Props) {
           <View style={estilos.badges}>
             <View style={estilos.badge}>
               <Text style={estilos.badgeTexto}>
-                👥 {jogo.minJogadores} a {jogo.maxJogadores} jogadores
+                {jogo.minJogadores}–{jogo.maxJogadores} jogadores
               </Text>
             </View>
             <View style={estilos.badge}>
-              <Text style={estilos.badgeTexto}>⏱ {jogo.tempoMedio}</Text>
+              <Text style={estilos.badgeTexto}>{jogo.tempoMedio}</Text>
             </View>
             <View style={estilos.badge}>
-              <Text style={estilos.badgeTexto}>{fogos}</Text>
+              <Text style={estilos.badgeTexto}>{intensidadeTexto}</Text>
             </View>
           </View>
 
@@ -134,7 +134,7 @@ export function TelaDetalhesJogo({ navigation, route }: Props) {
 
           <Text style={estilos.descricao}>{jogo.instrucoes.objetivo}</Text>
 
-          <Text style={estilos.rotuloSecao}>COMO JOGAR</Text>
+          <Text style={estilos.rotuloSecao}>como jogar</Text>
           <View style={estilos.listaPassos}>
             {jogo.instrucoes.passos.map((passo, indice) => (
               <View key={indice} style={estilos.passo}>
@@ -146,7 +146,7 @@ export function TelaDetalhesJogo({ navigation, route }: Props) {
             ))}
           </View>
 
-          <Text style={estilos.rotuloSecao}>DICAS</Text>
+          <Text style={estilos.rotuloSecao}>dicas</Text>
           <View style={estilos.listaDicas}>
             {jogo.instrucoes.dicas.map((dica, indice) => (
               <View key={indice} style={estilos.dica}>

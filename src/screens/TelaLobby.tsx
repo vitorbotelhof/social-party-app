@@ -111,7 +111,7 @@ export function TelaLobby({ navigation, route }: Props) {
 
       <View style={estilos.blocoLista}>
         <View style={estilos.cabecalhoLista}>
-          <Text style={estilos.tituloLista}>Jogadores</Text>
+          <Text style={estilos.tituloLista}>jogadores</Text>
           <Text style={estilos.contadorLista}>{jogadores.length}</Text>
         </View>
         <FlatList
@@ -135,7 +135,7 @@ export function TelaLobby({ navigation, route }: Props) {
 
       <View style={estilos.rodape}>
         <Text style={estilos.aguardando}>
-          aguardando o anfitrião.
+          o anfitrião vai iniciar em breve.
         </Text>
         <BotaoSecundario titulo="sair da sala" onPress={aoSair} />
       </View>

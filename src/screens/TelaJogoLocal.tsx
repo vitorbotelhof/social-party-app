@@ -315,14 +315,9 @@ function EtapaRevelarPalavra({
     return () => clearTimeout(id);
   }, [segurando]);
 
-  const corFundo = segurando
-    ? ehMrWhite
-      ? estilos.fundoMrWhite
-      : estilos.fundoCivil
-    : null;
-
+  // Fundo sempre neutro — sem cores de papel que vazem fisicamente.
   return (
-    <SafeAreaView style={[estilos.tela, corFundo]} edges={['top', 'bottom']}>
+    <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
       <Pressable
         onPressIn={() => {
           setSegurando(true);
@@ -333,23 +328,21 @@ function EtapaRevelarPalavra({
       >
         {segurando ? (
           <View style={estilos.centroFlexInterno}>
-            {ehMrWhite ? (
-              <>
-                <Text style={estilos.papelMrWhite}>
-                  você é o{'\n'}MR WHITE 🤫
-                </Text>
-                <Text style={estilos.subtextoMrWhiteReveal}>
-                  descubra a palavra sem ser pego
-                </Text>
-              </>
-            ) : (
-              <>
-                <Text style={estilos.legendaPalavra}>sua palavra</Text>
-                <Text style={estilos.palavra}>{palavra}</Text>
-              </>
-            )}
+            {/* Mesma estrutura visual para civil e mr white — diferença só semântica */}
+            <Text style={estilos.legendaPalavraReveal}>sua palavra</Text>
+            <Text
+              style={estilos.palavraReveal}
+              adjustsFontSizeToFit
+              numberOfLines={1}
+            >
+              {ehMrWhite && !palavra ? 'improvise.' : (palavra ?? '')}
+            </Text>
             <Text style={estilos.instrucaoMemorize}>
-              memorize e solte quando terminar
+              {ehMrWhite && !palavra
+                ? 'descubra a dos outros.'
+                : ehMrWhite
+                  ? 'a palavra dos outros é diferente.'
+                  : 'memorize e solte quando terminar.'}
             </Text>
           </View>
         ) : (
@@ -1282,14 +1275,8 @@ const estilos = StyleSheet.create({
     fontSize: 80,
     marginBottom: espacamento.lg,
   },
-  fundoCivil: {
-    backgroundColor: '#064E3B',
-  },
   fundoEscuro: {
     backgroundColor: '#000',
-  },
-  fundoMrWhite: {
-    backgroundColor: '#7F1D1D',
   },
   fundoPreto: {
     backgroundColor: cores.fundo,
@@ -1464,13 +1451,6 @@ const estilos = StyleSheet.create({
     letterSpacing: 0.2,
     textAlign: 'center',
   },
-  subtextoMrWhiteReveal: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: tipografia.tamanhoCorpoMenor,
-    fontStyle: 'italic',
-    marginTop: espacamento.md,
-    textAlign: 'center',
-  },
   historico: {
     flex: 1,
     paddingHorizontal: espacamento.lg,
@@ -1479,7 +1459,7 @@ const estilos = StyleSheet.create({
     paddingVertical: espacamento.md,
   },
   instrucaoMemorize: {
-    color: 'rgba(255, 255, 255, 0.75)',
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoCorpoMenor,
     marginTop: espacamento.xl,
     textAlign: 'center',
@@ -1496,10 +1476,17 @@ const estilos = StyleSheet.create({
     textAlign: 'center',
   },
   legendaPalavra: {
-    color: 'rgba(255,255,255,0.85)',
+    color: cores.textoMudo,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
+  },
+  legendaPalavraReveal: {
+    color: cores.textoMudo,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoMedio,
+    letterSpacing: 0.3,
+    marginBottom: espacamento.sm,
   },
   legendaProgresso: {
     color: cores.textoSecundario,
@@ -1551,11 +1538,19 @@ const estilos = StyleSheet.create({
     marginTop: espacamento.sm,
   },
   palavra: {
-    color: cores.textoSobrePrimaria,
+    color: cores.texto,
     fontSize: 56,
     fontWeight: tipografia.pesoExtraBold,
-    marginTop: espacamento.md,
+    letterSpacing: tipografia.spacingApertado,
     textAlign: 'center',
+  },
+  palavraReveal: {
+    color: cores.texto,
+    fontSize: 56,
+    fontWeight: tipografia.pesoExtraBold,
+    letterSpacing: tipografia.spacingApertado,
+    textAlign: 'center',
+    width: '100%',
   },
   palavraResumo: {
     color: cores.acentoQuente,
@@ -1568,14 +1563,6 @@ const estilos = StyleSheet.create({
     fontSize: tipografia.tamanhoSubtitulo,
     fontStyle: 'italic',
     marginTop: espacamento.sm,
-  },
-  papelMrWhite: {
-    color: cores.textoSobrePrimaria,
-    fontSize: 36,
-    fontWeight: tipografia.pesoExtraBold,
-    letterSpacing: tipografia.spacingTitulo,
-    lineHeight: 44,
-    textAlign: 'center',
   },
   rodape: {
     gap: espacamento.sm,

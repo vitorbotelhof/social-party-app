@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BotaoPrimario, ContagemRegressiva } from '@/components';
+import { BotaoPrimario } from '@/components';
 import { LISTA_CATEGORIAS } from '@/games/mr-white/categorias';
 import type {
   CategoriaId,
@@ -58,7 +58,6 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
   const [modoDualWord, setModoDualWord] = useState(false);
   const [dificuldadePar, setDificuldadePar] = useState<DificuldadeParPalavras>('media');
   const [iniciando, setIniciando] = useState(false);
-  const [mostrarContagem, setMostrarContagem] = useState(false);
 
   function sortearCategoria() {
     const atual = categoriaId;
@@ -79,7 +78,7 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
     setIniciando(true);
     try {
       await iniciarJogo(roomCode, jogadorId, opcoes);
-      setMostrarContagem(true);
+      navigation.replace('Game', { roomCode, jogoId, jogadorId });
     } catch (erro) {
       setIniciando(false);
       const mensagem =
@@ -88,16 +87,6 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
           : 'Algo deu errado, tenta de novo.';
       Alert.alert('Não rolou começar a partida', mensagem);
     }
-  }
-
-  if (mostrarContagem) {
-    return (
-      <ContagemRegressiva
-        aoTerminar={() =>
-          navigation.replace('Game', { roomCode, jogoId, jogadorId })
-        }
-      />
-    );
   }
 
   return (
@@ -375,10 +364,9 @@ const estilos = StyleSheet.create({
   sectionTitulo: {
     color: cores.textoSecundario,
     fontSize: 13,
-    fontWeight: '700',
-    letterSpacing: 1.5,
+    fontWeight: '600',
+    letterSpacing: 0.3,
     marginBottom: espacamento.md,
-    textTransform: 'uppercase',
   },
   segmento: {
     alignItems: 'center',

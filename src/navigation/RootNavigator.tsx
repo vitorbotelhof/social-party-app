@@ -92,12 +92,12 @@ export function RootNavigator() {
       <Stack.Screen
         name="Inicio"
         component={TelaInicio}
-        options={{ headerShown: false, animation: 'fade', animationDuration: 500 }}
+        options={{ headerShown: false, animation: 'fade', animationDuration: 250 }}
       />
       <Stack.Screen
         name="SelecaoJogo"
         component={TelaSelecaoJogo}
-        options={{ title: 'Jogos' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="DetalhesJogo"
@@ -117,7 +117,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="CriarSala"
         component={TelaCriarSala}
-        options={{ title: 'Sua Sala' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="EntrarSala"
@@ -127,12 +127,12 @@ export function RootNavigator() {
       <Stack.Screen
         name="Lobby"
         component={TelaLobby}
-        options={{ title: 'Sala de Espera', headerBackVisible: false }}
+        options={{ headerShown: false, headerBackVisible: false }}
       />
       <Stack.Screen
         name="ConfiguracaoJogo"
         component={ConfiguracaoJogoGateway}
-        options={{ title: 'Configurar' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Game"
@@ -140,7 +140,7 @@ export function RootNavigator() {
         options={{
           headerShown: false,
           animation: 'fade_from_bottom',
-          animationDuration: 400,
+          animationDuration: 220,
         }}
       />
       <Stack.Screen
@@ -154,7 +154,7 @@ export function RootNavigator() {
         options={{
           headerShown: false,
           animation: 'fade_from_bottom',
-          animationDuration: 400,
+          animationDuration: 220,
         }}
       />
       <Stack.Screen
@@ -173,7 +173,7 @@ export function RootNavigator() {
         options={{
           headerShown: false,
           animation: 'fade_from_bottom',
-          animationDuration: 400,
+          animationDuration: 220,
         }}
       />
       <Stack.Screen
@@ -187,7 +187,7 @@ export function RootNavigator() {
         options={{
           headerShown: false,
           animation: 'fade_from_bottom',
-          animationDuration: 400,
+          animationDuration: 220,
         }}
       />
     </Stack.Navigator>
