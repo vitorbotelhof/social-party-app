@@ -198,6 +198,41 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     },
   },
   {
+    id: 'inquisicao',
+    nome: 'Inquisição',
+    slogan: 'alguém entre vocês não é o que parece.',
+    descricao:
+      'Um jogo de dedução e traição em tempo real. A maioria é inocente — mas corrompidos agem na escuridão. A cada loop, o grupo vota para eliminar quem parece suspeito. A cada noite, os corrompidos crescem. Confiar é o único caminho. E a maior armadilha.',
+    cover: require('../../assets/games/inquisicao/cover.png'),
+    minJogadores: 4,
+    maxJogadores: 10,
+    tempoMedio: '25-45 min',
+    intensidade: 3,
+    disponivel: true,
+    supportsLocal: false,
+    supportsRealtime: true,
+    socialTags: ['traição', 'dedução', 'paranoia'],
+    categorias: ['tensao_misterio', 'quem_voces_sao'],
+    destaque: true,
+    ordemNaCategoria: 3,
+    instrucoes: {
+      objetivo:
+        'Os inocentes precisam identificar e eliminar os corrompidos antes de serem superados em número. Os corrompidos precisam sobreviver, contaminar e dominar — sem que ninguém perceba.',
+      passos: [
+        'Cada jogador recebe seu papel em segredo no celular: inocente, corrompido ou guardião. Apenas os corrompidos sabem quem são seus aliados.',
+        'Durante a fase de conversa, todos interagem livremente. Não existe script — a paranoia vem naturalmente.',
+        'Na votação, todos escolhem quem eliminar ao mesmo tempo. O mais votado sai. Seu papel é revelado.',
+        'Durante a noite, corrompidos agem: eliminam ou contaminam outro jogador. O guardião pode proteger alguém.',
+        'O loop recomeça. Se a corrupção atingir maioria, os corrompidos vencem. Se todos os corrompidos forem eliminados, os inocentes vencem.',
+      ],
+      dicas: [
+        'Inocentes que falam demais parecem nervosos. Inocentes que falam de menos parecem suspeitos. Não tem resposta certa.',
+        'Corrompidos: coordenem votos sem parecer coordenados. Uma unanimidade suspeita destrói a cobertura.',
+        'Guardião: proteja quem parece alvo. Mas não deixe ninguém perceber que você tem essa função.',
+      ],
+    },
+  },
+  {
     id: 'eu-nunca',
     nome: 'Eu Nunca',
     slogan: 'Revelações, confissões e muita risada',

@@ -90,6 +90,14 @@ export {
 
 export type { TurnoNPL, ResultadoNPL } from './nplAdapter';
 
+export {
+  processarLoopInquisicao,
+  processarResultadoInquisicao,
+  construirLoopInquisicao,
+} from './inquisicaoAdapter';
+
+export type { LoopInquisicao, ResultadoInquisicao } from './inquisicaoAdapter';
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type {
@@ -104,6 +112,7 @@ export type {
   MrWhiteSessaoStats,
   MLTSessaoStats,
   NPLSessaoStats,
+  InquisicaoSessaoStats,
   DestaqueJogador,
   DossieDoCapos,
   MomentoCallback,

@@ -49,17 +49,25 @@ function pontuar(): PontuacaoIdentidade[] {
   const sobreviventes = contarMomentos('sobrevivente');
   const perfeitos = contarMomentos('perfeito');
 
+  // Inquisição
+  const corrupcoes = contarMomentos('corrupcao_revelada');
+  const inversoes = contarMomentos('inversao');
+  const paranoia_max = contarMomentos('paranoia_maxima');
+  const colapsos_inq = contarMomentos('colapso_inquisicao');
+
   const totalMomentos =
     unanimidades + clutches + paranoia + colapsos + viradas +
     sobreviventes + perfeitos + contarMomentos('julgamento') +
-    contarMomentos('revelacao');
+    contarMomentos('revelacao') +
+    corrupcoes + inversoes + paranoia_max + colapsos_inq;
 
   const jogosCompletos = getJogosCompletos().length;
 
   const pontuacao: PontuacaoIdentidade[] = [
     {
       identidade: 'caotico',
-      pontos: paranoia * 2 + viradas * 2 + colapsos,
+      // Inquisição: grupo que elimina inocentes e não percebe corrupção é caótico
+      pontos: paranoia * 2 + viradas * 2 + colapsos + colapsos_inq * 3 + corrupcoes,
     },
     {
       identidade: 'competitivo',
@@ -75,7 +83,8 @@ function pontuar(): PontuacaoIdentidade[] {
     },
     {
       identidade: 'paranoico',
-      pontos: paranoia * 3,
+      // Inquisição: empates e votações espalhadas definem o grupo paranoico
+      pontos: paranoia * 3 + paranoia_max * 3 + colapsos_inq,
     },
     {
       identidade: 'intimo',
@@ -83,7 +92,8 @@ function pontuar(): PontuacaoIdentidade[] {
     },
     {
       identidade: 'destrutivo',
-      pontos: colapsos * 3 + viradas,
+      // Inquisição: corrompidos vencendo e corrupções em cadeia → grupo destrutivo
+      pontos: colapsos * 3 + viradas + inversoes * 3 + corrupcoes * 2,
     },
   ];
 

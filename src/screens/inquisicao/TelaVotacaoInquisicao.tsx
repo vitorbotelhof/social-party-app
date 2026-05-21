@@ -124,9 +124,8 @@ export function TelaVotacaoInquisicao({ estadoPublico, jogadorId, mapaNomes, rea
       {/* Botão de confirmação */}
       <View style={estilos.rodape}>
         {mostrarAguardando ? (
-          <View style={estilos.botaoDesabilitado}>
-            <Text style={estilos.textoAguardando}>aguardando...</Text>
-          </View>
+          // Voto registrado — tela fica quieta enquanto os outros votam
+          <View style={estilos.botaoDesabilitado} />
         ) : (
           <TouchableOpacity
             style={[

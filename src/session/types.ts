@@ -1,5 +1,6 @@
 import type { CategoriaEmocional } from '@/games/gameRegistry';
 import type { GameId, PlayerId } from '@/engine/types';
+import type { IntensidadeInquisicao } from '@/games/inquisicao/types';
 
 // ─── Re-export ────────────────────────────────────────────────────────────────
 // Vibe da sessão = categoria emocional escolhida ou detectada.
@@ -39,15 +40,20 @@ export type GrupoIdentidade =
  * Cada tipo alimenta callbacks, identidade de grupo e dossiê.
  */
 export type TipoMomento =
-  | 'unanimidade'    // todos votaram na mesma pessoa (MLT ou voting)
-  | 'clutch'         // Mr White adivinhou corretamente
-  | 'sobrevivente'   // Mr White sobreviveu múltiplas rodadas de votação
-  | 'colapso_npl'    // NPL: turno com mais falhas que acertos
-  | 'paranoia_total' // votação caótica / empate geral — ninguém acorda
-  | 'julgamento'     // MLT: prompt de alta exposição com consenso rápido
-  | 'revelacao'      // resultado inesperado — coalizão que ninguém esperava
-  | 'virada'         // Mr White venceu após estar em vantagem dos civis
-  | 'perfeito';      // NPL: turno sem nenhuma falha
+  | 'unanimidade'         // todos votaram na mesma pessoa (MLT ou voting)
+  | 'clutch'              // Mr White adivinhou corretamente
+  | 'sobrevivente'        // Mr White sobreviveu múltiplas rodadas de votação
+  | 'colapso_npl'         // NPL: turno com mais falhas que acertos
+  | 'paranoia_total'      // votação caótica / empate geral — ninguém acorda
+  | 'julgamento'          // MLT: prompt de alta exposição com consenso rápido
+  | 'revelacao'           // resultado inesperado — coalizão que ninguém esperava
+  | 'virada'              // Mr White venceu após estar em vantagem dos civis
+  | 'perfeito'            // NPL: turno sem nenhuma falha
+  // ── Inquisição ──────────────────────────────────────────────────────────────
+  | 'corrupcao_revelada'  // inocente foi convertido — grupo encolheu por dentro
+  | 'inversao'            // corrompidos venceram — grupo dominado pela corrupção
+  | 'paranoia_maxima'     // votação empatada / sem maioria — ninguém eliminado
+  | 'colapso_inquisicao'; // grupo votou e eliminou um inocente por engano
 
 export interface Momento {
   id: string;
@@ -86,6 +92,17 @@ export interface NPLSessaoStats {
   taxaAcerto: number; // 0.0–1.0
 }
 
+export interface InquisicaoSessaoStats {
+  vencedor: 'inocentes' | 'corrompidos';
+  totalLoops: number;
+  intensidade: IntensidadeInquisicao;
+  totalContaminacoes: number;
+  /** Inocentes/guardiões eliminados por voto (falsos positivos). */
+  eliminadosInocentes: number;
+  /** Corrompidos eliminados por voto (acertos). */
+  eliminadosCorrompidos: number;
+}
+
 export interface JogoSessao {
   jogoId: GameId;
   iniciadoEm: number;
@@ -95,6 +112,7 @@ export interface JogoSessao {
   mrWhite?: MrWhiteSessaoStats;
   mlt?: MLTSessaoStats;
   npl?: NPLSessaoStats;
+  inquisicao?: InquisicaoSessaoStats;
 }
 
 // ─── Jogador na sessão ────────────────────────────────────────────────────────
@@ -119,6 +137,11 @@ export interface SessaoJogador {
   // NPL
   colapsos: number;       // turnos com mais falhas que acertos
   pontosTotais: number;   // pontos acumulados no NPL
+
+  // Inquisição
+  vezesEliminado: number;   // foi eliminado por votação do grupo
+  vezesContaminado: number; // foi convertido para corrompido durante a noite
+  acoesCorrompidas: number; // executou ações noturnas como corrompido
 }
 
 // ─── Sessão ───────────────────────────────────────────────────────────────────

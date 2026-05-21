@@ -91,6 +91,50 @@ function destaqueColapso(
   };
 }
 
+function destaqueContaminado(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort((a, b) => b.vezesContaminado - a.vezesContaminado)[0];
+  if (!top || top.vezesContaminado < 1) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o corrompido oculto',
+    descricao: top.vezesContaminado === 1
+      ? 'foi convertido durante a noite — ninguém percebeu'
+      : `foi convertido ${top.vezesContaminado}x — virou o inimigo`,
+  };
+}
+
+function destaqueAgenteDuplo(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort((a, b) => b.acoesCorrompidas - a.acoesCorrompidas)[0];
+  if (!top || top.acoesCorrompidas < 2) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o agente da corrupção',
+    descricao: `executou ${top.acoesCorrompidas} ações na noite como corrompido`,
+  };
+}
+
+function destaqueEliminado(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort((a, b) => b.vezesEliminado - a.vezesEliminado)[0];
+  if (!top || top.vezesEliminado < 2) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o mais eliminado',
+    descricao: `foi eliminado por votação ${top.vezesEliminado}x na sessão`,
+  };
+}
+
 function gerarDestaquesJogadores(
   jogadores: SessaoJogador[],
   nomes: Map<PlayerId, string>,
@@ -101,6 +145,10 @@ function gerarDestaquesJogadores(
     destaqueJulgado(jogadores, nomes),
     destaquePontos(jogadores, nomes),
     destaqueColapso(jogadores, nomes),
+    // Inquisição — destaques específicos
+    destaqueContaminado(jogadores, nomes),
+    destaqueAgenteDuplo(jogadores, nomes),
+    destaqueEliminado(jogadores, nomes),
   ].filter((d): d is DestaqueJogador => d !== null);
 
   // Evita destacar a mesma pessoa duas vezes — mantém o primeiro destaque
@@ -126,6 +174,11 @@ const PRIORIDADE_MOMENTO: Record<string, number> = {
   perfeito: 55,
   julgamento: 50,
   colapso_npl: 40,
+  // Inquisição
+  inversao: 88,         // corrompidos venceram — foto da sessão poderosa
+  colapso_inquisicao: 85, // grupo eliminou inocente — momento mais doloroso
+  corrupcao_revelada: 75, // conversão revelada — tensão social alta
+  paranoia_maxima: 68,  // empate caótico — ninguém chegou a um acordo
 };
 
 function escolherMomentoDaSessao(momentos: Momento[]): Momento | null {

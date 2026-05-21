@@ -201,6 +201,167 @@ const TEMPLATES: CallbackTemplate[] = [
     },
   },
 
+  // ── Inquisição: pós-jogo ────────────────────────────────────────────────────
+
+  {
+    id: 'inq_pos_corrompidos_venceram',
+    momento: 'pos_jogo',
+    prioridade: 95,
+    condicao: (s) => {
+      const ultimo = [...s.jogosDaSessao].reverse().find(
+        (j) => j.jogoId === 'inquisicao' && j.finalizadoEm !== null,
+      );
+      return ultimo?.inquisicao?.vencedor === 'corrompidos';
+    },
+    gerar: (s) => {
+      const inq = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'inquisicao')?.inquisicao;
+      const loops = inq?.totalLoops ?? 0;
+      return `os corrompidos venceram em ${loops} ${loops === 1 ? 'loop' : 'loops'}. vocês não se conhecem tão bem assim.`;
+    },
+  },
+
+  {
+    id: 'inq_pos_inocentes_venceram',
+    momento: 'pos_jogo',
+    prioridade: 86,
+    condicao: (s) => {
+      const ultimo = [...s.jogosDaSessao].reverse().find(
+        (j) => j.jogoId === 'inquisicao' && j.finalizadoEm !== null,
+      );
+      return ultimo?.inquisicao?.vencedor === 'inocentes';
+    },
+    gerar: () => 'os inocentes sobreviveram. mas ficou perto.',
+  },
+
+  {
+    id: 'inq_pos_corrupcao_em_cadeia',
+    momento: 'pos_jogo',
+    prioridade: 92,
+    condicao: (s) =>
+      s.momentosMemoraveis.filter((m) => m.tipo === 'corrupcao_revelada').length >= 2,
+    gerar: (s) => {
+      const n = s.momentosMemoraveis.filter((m) => m.tipo === 'corrupcao_revelada').length;
+      return `${n} conversões. o grupo mudou de lado sem perceber.`;
+    },
+  },
+
+  {
+    id: 'inq_pos_guardiao_salvou',
+    momento: 'pos_jogo',
+    prioridade: 84,
+    condicao: (s) =>
+      s.momentosMemoraveis.some(
+        (m) => m.tipo === 'corrupcao_revelada' && m.dados.eliminarBloqueado === true,
+      ),
+    gerar: (_s, nomes) => {
+      const m = [..._s.momentosMemoraveis]
+        .reverse()
+        .find((x) => x.tipo === 'corrupcao_revelada' && x.dados.eliminarBloqueado === true);
+      if (!m || m.jogadoresIds.length === 0) return 'alguém salvou alguém. sem saber.';
+      const salvo = nomes.get(m.jogadoresIds[0]) ?? 'alguém';
+      return `${salvo} foi salvo pelo guardião sem saber que precisava.`;
+    },
+  },
+
+  // ── Inquisição: pós-resultado ───────────────────────────────────────────────
+
+  {
+    id: 'inq_votou_inocente',
+    momento: 'pos_resultado',
+    prioridade: 90,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'colapso_inquisicao'),
+    gerar: (s, nomes) => {
+      const m = [...s.momentosMemoraveis]
+        .reverse()
+        .find((x) => x.tipo === 'colapso_inquisicao');
+      if (!m || m.jogadoresIds.length === 0) return 'vocês eliminaram alguém inocente.';
+      const nome = nomes.get(m.jogadoresIds[0]) ?? 'alguém';
+      return `${nome} era inocente. vocês erraram feio.`;
+    },
+  },
+
+  {
+    id: 'inq_paranoia_maxima',
+    momento: 'pos_resultado',
+    prioridade: 82,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'paranoia_maxima'),
+    gerar: () =>
+      'ninguém chegou a um acordo. a paranoia venceu a lógica.',
+  },
+
+  {
+    id: 'inq_inversao_pos_resultado',
+    momento: 'pos_resultado',
+    prioridade: 88,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'inversao'),
+    gerar: (s) => {
+      const inq = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'inquisicao')?.inquisicao;
+      const n = inq?.totalContaminacoes ?? 0;
+      if (n === 0) return 'o grupo virou. sem que ninguém percebesse.';
+      return `${n} ${n === 1 ? 'conversão' : 'conversões'} mudaram o resultado. a corrupção foi mais rápida que a confiança.`;
+    },
+  },
+
+  // ── Inquisição: entre jogos ─────────────────────────────────────────────────
+
+  {
+    id: 'inq_entre_grupo_paranoico',
+    momento: 'entre_jogos',
+    prioridade: 75,
+    condicao: (s) =>
+      s.grupoIdentidade === 'paranoico' &&
+      s.jogosDaSessao.some((j) => j.jogoId === 'inquisicao'),
+    gerar: () => 'vocês não confiam em ninguém. nem em si mesmos.',
+  },
+
+  {
+    id: 'inq_entre_grupo_destrutivo',
+    momento: 'entre_jogos',
+    prioridade: 72,
+    condicao: (s) =>
+      s.grupoIdentidade === 'destrutivo' &&
+      s.jogosDaSessao.some((j) => j.jogoId === 'inquisicao'),
+    gerar: () => 'esse grupo se autodestrói sem perceber. próximo.',
+  },
+
+  // ── Inquisição: dossiê ──────────────────────────────────────────────────────
+
+  {
+    id: 'inq_dossie_corrompidos_venceram',
+    momento: 'dossie',
+    prioridade: 95,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'inversao') &&
+      (s.temperatura === 'quente' || s.temperatura === 'colapso'),
+    gerar: (s) => {
+      const inq = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'inquisicao')?.inquisicao;
+      const loops = inq?.totalLoops ?? 0;
+      const corrupções = inq?.totalContaminacoes ?? 0;
+      return `${loops} loops. ${corrupções} ${corrupções === 1 ? 'conversão' : 'conversões'}. esse grupo não resiste à pressão de dentro.`;
+    },
+  },
+
+  {
+    id: 'inq_dossie_paranoia_final',
+    momento: 'dossie',
+    prioridade: 88,
+    condicao: (s) =>
+      s.momentosMemoraveis.filter((m) => m.tipo === 'paranoia_maxima').length >= 2,
+    gerar: (s) => {
+      const n = s.momentosMemoraveis.filter((m) => m.tipo === 'paranoia_maxima').length;
+      return `${n} vezes o grupo empatou. quando todo mundo desconfia, ninguém decide.`;
+    },
+  },
+
   // ── Dossiê ──────────────────────────────────────────────────────────────────
 
   {

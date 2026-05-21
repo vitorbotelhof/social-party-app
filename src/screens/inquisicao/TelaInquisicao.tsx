@@ -6,10 +6,12 @@
  *  - Inicializar e restaurar o engine (apenas host)
  *  - Rastrear confirmações de papel visto e despachar ao engine
  *  - Roteador de sub-fases → componentes filhos
+ *  - [DEV] Integrar debug panel e pacing tracker
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+
 import { onValue, ref, set } from 'firebase/database';
 
 import type { PlayerId, Player, RoomCode } from '@/engine/types';
@@ -19,7 +21,7 @@ import { getRealtimeDb } from '@/services/firebase';
 import { criarInquisicaoRealtime } from '@/services/inquisicaoRealtime';
 import type { InquisicaoRealtimeService } from '@/services/inquisicaoRealtime';
 import { observarSala } from '@/services/roomService';
-import { TelaCarregamento } from '@/components';
+import { __dev__setTemperaturaCallback } from '@/session/emotionalTracker';
 import { cores } from '@/theme/colors';
 
 import { TelaDistribuindoPapeis } from './TelaDistribuindoPapeis';
@@ -29,13 +31,31 @@ import { TelaResultadoVotacao } from './TelaResultadoVotacao';
 import { TelaNoite } from './TelaNoite';
 import { TelaFinalizado } from './TelaFinalizado';
 
+// Debug imports — tree-shaken em produção via __DEV__ guards internos
+import { DebugPanelInquisicao } from '@/debug/inquisicao/DebugPanelInquisicao';
+import { adicionarEmocionalLog } from '@/debug/inquisicao/debugStore';
+import { logMudancaSubFase, resetPhaseLogger } from '@/debug/inquisicao/phaseLogger';
+import {
+  finalizarSubFase,
+  iniciarSubFase,
+  registrarJogoFinalizado,
+  registrarReplay,
+  resetPacingTracker,
+} from '@/debug/inquisicao/pacingTracker';
+import { processarEstadoParaReplay, resetLoopReplay } from '@/debug/inquisicao/loopReplay';
+import { resetDebugSession } from '@/debug/inquisicao/debugStore';
+
 interface Props {
   roomCode: RoomCode;
   jogoId: string;
   jogadorId: PlayerId;
+  /** Navegar para a tela inicial após o jogo terminar. */
+  onJogarDeNovo: () => void;
+  /** Voltar para a seleção de jogos. */
+  onVoltar: () => void;
 }
 
-export function TelaInquisicao({ roomCode, jogadorId }: Props) {
+export function TelaInquisicao({ roomCode, jogadorId, onVoltar }: Props) {
   const [anfitriaoId, setAnfitriaoId] = useState<PlayerId | null>(null);
   const [jogadores, setJogadores] = useState<Player[]>([]);
   const [estadoPublico, setEstadoPublico] = useState<EstadoFirebaseInquisicao | null>(null);
@@ -44,6 +64,7 @@ export function TelaInquisicao({ roomCode, jogadorId }: Props) {
   const realtimeRef = useRef<InquisicaoRealtimeService | null>(null);
   const engineIniciadoRef = useRef(false);
   const papelVistoSetRef = useRef<Set<PlayerId>>(new Set());
+  const subFaseAnteriorRef = useRef<string | null>(null);
 
   const isHost = anfitriaoId !== null && jogadorId === anfitriaoId;
 
@@ -53,6 +74,55 @@ export function TelaInquisicao({ roomCode, jogadorId }: Props) {
     jogadores.forEach((j) => m.set(j.id, j.nome));
     return m;
   }, [jogadores]);
+
+  // ── Debug: conectar callback de temperatura emocional ──────────────────────
+  useEffect(() => {
+    if (!__DEV__) return;
+
+    __dev__setTemperaturaCallback((temperatura, momento) => {
+      adicionarEmocionalLog({ timestamp: Date.now(), temperatura, momento });
+    });
+
+    // Reset de estado ao montar uma nova sessão de debug
+    resetDebugSession();
+    resetPhaseLogger();
+    resetPacingTracker();
+    resetLoopReplay();
+
+    return () => {
+      __dev__setTemperaturaCallback(null);
+    };
+  }, []);
+
+  // ── Debug: rastrear mudanças de sub-fase ───────────────────────────────────
+  useEffect(() => {
+    if (!__DEV__ || !estadoPublico) return;
+
+    const subFase = estadoPublico.subFase;
+    const loop = estadoPublico.loop;
+    const anterior = subFaseAnteriorRef.current;
+
+    if (subFase !== anterior) {
+      // Finalizar sub-fase anterior
+      if (anterior) {
+        finalizarSubFase(anterior, loop);
+      }
+
+      // Iniciar nova sub-fase
+      logMudancaSubFase(subFase, loop);
+      iniciarSubFase(subFase, loop);
+
+      // Eventos especiais
+      if (subFase === 'finalizado') {
+        registrarJogoFinalizado();
+      }
+
+      subFaseAnteriorRef.current = subFase;
+    }
+
+    // Processar para replay (roda a cada update, não só em mudança de fase)
+    processarEstadoParaReplay(estadoPublico);
+  }, [estadoPublico]);
 
   // ── Observar sala ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -162,9 +232,17 @@ export function TelaInquisicao({ roomCode, jogadorId }: Props) {
     await set(papelVistoRef, true);
   }, [roomCode, jogadorId]);
 
+  // ── Handler: nova partida — registra replay antes de navegar ─────────────────
+  const handleVoltar = useCallback(() => {
+    if (__DEV__) registrarReplay();
+    onVoltar();
+  }, [onVoltar]);
+
   // ── Aguardar estado mínimo ───────────────────────────────────────────────────
+  // Tela escura enquanto Firebase sincroniza — sem loader visível.
+  // O fundo do jogo já é cores.fundo; o silêncio é o estado de loading.
   if (!estadoPublico || !estadoPrivado || !realtimeRef.current) {
-    return <TelaCarregamento />;
+    return <View style={estilos.container} />;
   }
 
   const realtime = realtimeRef.current;
@@ -224,7 +302,18 @@ export function TelaInquisicao({ roomCode, jogadorId }: Props) {
           estadoPublico={estadoPublico}
           jogadores={jogadores}
           jogadorId={jogadorId}
-          onVoltar={() => {/* navegação tratada pelo navigator */}}
+          onVoltar={handleVoltar}
+        />
+      )}
+
+      {/* Painel de debug — renderizado apenas em __DEV__ */}
+      {__DEV__ && (
+        <DebugPanelInquisicao
+          estadoPublico={estadoPublico}
+          anfitriaoId={anfitriaoId}
+          roomCode={roomCode}
+          jogadores={jogadores}
+          isHost={isHost}
         />
       )}
     </View>

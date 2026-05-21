@@ -1,8 +1,10 @@
 /**
  * TelaResultadoVotacao — Fase apurando.
  *
- * Exibe resultado da votação por ~5 segundos.
- * Empate: "ninguém." / Eliminação: nome + papel revelado.
+ * Impacto imediato, sem texto de sistema.
+ * Empate: "empate." — direto.
+ * Eliminação: nome grande + papel em cor. Sem label "ELIMINADO".
+ * Sem fallback textual — enquanto vota, o silêncio é o estado.
  */
 
 import React, { useEffect, useRef } from 'react';
@@ -38,21 +40,16 @@ export function TelaResultadoVotacao({ estadoPublico, mapaNomes }: Props) {
   useEffect(() => {
     Animated.timing(opacidade, {
       toValue: 1,
-      duration: 200,
+      duration: 180,
       useNativeDriver: true,
     }).start();
   }, [opacidade]);
 
   const votacao = estadoPublico.votacaoAtual as VotacaoResolvida | null;
 
+  // Aguardando resolução — tela vazia. Não exibir texto de sistema.
   if (!votacao || votacao.tipo !== 'resolvida') {
-    return (
-      <SafeAreaView style={estilos.container}>
-        <View style={estilos.centro}>
-          <Text style={estilos.textoGrande}>apurando...</Text>
-        </View>
-      </SafeAreaView>
-    );
+    return <View style={estilos.container} />;
   }
 
   const { foiEmpate, eliminadoId, papelRevelado } = votacao;
@@ -61,13 +58,11 @@ export function TelaResultadoVotacao({ estadoPublico, mapaNomes }: Props) {
     <SafeAreaView style={estilos.container}>
       <Animated.View style={[estilos.centro, { opacity: opacidade }]}>
         {foiEmpate || !eliminadoId ? (
-          <>
-            <Text style={estilos.textoGrande}>ninguém.</Text>
-            <Text style={estilos.textoMudo}>o impasse persiste.</Text>
-          </>
+          // Empate — uma palavra. O grupo decide sem eliminar.
+          <Text style={estilos.textoGrande}>empate.</Text>
         ) : (
+          // Eliminação — nome em destaque, papel em cor abaixo. Sem label.
           <>
-            <Text style={estilos.label}>ELIMINADO</Text>
             <Text style={estilos.nomeEliminado}>
               {mapaNomes.get(eliminadoId) ?? eliminadoId}
             </Text>
@@ -93,13 +88,7 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: espacamento.xl,
-  },
-  label: {
-    fontSize: 13,
-    fontFamily: familias.sans,
-    color: cores.textoMudo,
-    letterSpacing: 2.0,
-    marginBottom: espacamento.md,
+    gap: espacamento.md,
   },
   textoGrande: {
     fontSize: tipografia.tamanhoHero,
@@ -107,7 +96,6 @@ const estilos = StyleSheet.create({
     color: cores.texto,
     textAlign: 'center',
     letterSpacing: tipografia.spacingHero,
-    marginBottom: espacamento.md,
   },
   nomeEliminado: {
     fontSize: tipografia.tamanhoTituloGrande,
@@ -115,18 +103,11 @@ const estilos = StyleSheet.create({
     color: cores.texto,
     textAlign: 'center',
     letterSpacing: tipografia.spacingTitulo,
-    marginBottom: espacamento.md,
   },
   papelRevelado: {
     fontSize: tipografia.tamanhoCorpoMaior,
     fontFamily: familias.sans,
     fontWeight: tipografia.pesoBold,
-  },
-  textoMudo: {
-    fontSize: tipografia.tamanhoCorpoMaior,
-    fontFamily: familias.sans,
-    color: cores.textoMudo,
-    textAlign: 'center',
-    marginTop: espacamento.sm,
+    letterSpacing: 0.5,
   },
 });

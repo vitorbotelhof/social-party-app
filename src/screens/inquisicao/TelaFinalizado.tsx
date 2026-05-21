@@ -1,13 +1,14 @@
 /**
  * TelaFinalizado — Fase finalizado.
  *
- * Exibe o vencedor, reveal completo de todos os papéis,
- * conversões ocorridas e botão de nova partida.
+ * Resultado em duas partes: quem ganhou (grande) + reveal de papéis (lista).
+ * Sem label "RESULTADO" nem narrativa. O vencedor fala por si.
+ * "nova partida" volta para SelecaoJogo — imediato, sem confirmação.
  */
 
 import React from 'react';
 import {
-  FlatList,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -36,73 +37,69 @@ function corDoPapel(papel: PapelInquisicao): string {
   return COR_INOCENTE;
 }
 
-interface ItemJogador {
-  id: PlayerId;
-  nome: string;
-}
-
-export function TelaFinalizado({ estadoPublico, jogadores, onVoltar }: Props) {
+export function TelaFinalizado({ estadoPublico, jogadores, jogadorId, onVoltar }: Props) {
   const revelacao = estadoPublico.revelacaoFinal;
   const vencedor = estadoPublico.vencedor;
+  const totalLoops = revelacao?.totalLoops ?? estadoPublico.loop;
 
   const corVencedor = vencedor === 'corrompidos' ? COR_CORRUPCAO : COR_INOCENTE;
   const textoVencedor = vencedor === 'corrompidos'
-    ? 'corrompidos venceram.'
-    : 'inocentes venceram.';
-
-  const items: ItemJogador[] = jogadores.map((j) => ({
-    id: j.id,
-    nome: j.nome,
-  }));
-
-  const renderJogador = ({ item, index }: { item: ItemJogador; index: number }) => {
-    const dadosRevelacao = revelacao?.papeisPorJogador[item.id];
-    const papelOriginal = dadosRevelacao?.papelOriginal;
-    const convertidoNoLoop = dadosRevelacao?.convertidoNoLoop ?? null;
-
-    return (
-      <View style={estilos.linhaJogador}>
-        <View style={estilos.infoJogador}>
-          <Text style={estilos.nomeJogador}>{item.nome}</Text>
-          {papelOriginal && (
-            <Text style={[estilos.papelJogador, { color: corDoPapel(papelOriginal) }]}>
-              {papelOriginal}
-            </Text>
-          )}
-          {convertidoNoLoop !== null && (
-            <Text style={estilos.conversao}>
-              → corrompido no loop {convertidoNoLoop}
-            </Text>
-          )}
-        </View>
-        {index < items.length - 1 && <View style={estilos.divisor} />}
-      </View>
-    );
-  };
-
-  const totalLoops = revelacao?.totalLoops ?? estadoPublico.loop;
+    ? 'corrompidos.'
+    : 'inocentes.';
 
   return (
     <SafeAreaView style={estilos.container}>
-      {/* Cabeçalho fixo */}
+
+      {/* Cabeçalho fixo: vencedor em destaque + loops como contexto */}
       <View style={estilos.cabecalho}>
         <Text style={[estilos.textoVencedor, { color: corVencedor }]}>
           {textoVencedor}
         </Text>
+        <Text style={estilos.subtituloLoops}>
+          {totalLoops} {totalLoops === 1 ? 'loop' : 'loops'}
+        </Text>
       </View>
 
-      {/* Lista scrollable */}
-      <FlatList
-        data={items}
-        keyExtractor={(item) => item.id}
-        renderItem={renderJogador}
+      {/* Lista scrollable de reveals — sem FlatList (máx 10 jogadores) */}
+      <ScrollView
         style={estilos.lista}
         contentContainerStyle={estilos.listaConteudo}
-      />
+        showsVerticalScrollIndicator={false}
+      >
+        {jogadores.map((jogador, index) => {
+          const dadosRevelacao = revelacao?.papeisPorJogador[jogador.id];
+          const papelOriginal = dadosRevelacao?.papelOriginal;
+          const convertidoNoLoop = dadosRevelacao?.convertidoNoLoop ?? null;
+          const euMesmo = jogador.id === jogadorId;
 
-      {/* Rodapé fixo */}
+          return (
+            <View key={jogador.id}>
+              <View style={estilos.linhaJogador}>
+                <View style={estilos.infoJogador}>
+                  <Text style={[estilos.nomeJogador, euMesmo && estilos.nomeJogadorEu]}>
+                    {jogador.nome}
+                    {euMesmo && <Text style={estilos.euTag}> (você)</Text>}
+                  </Text>
+                  {papelOriginal && (
+                    <Text style={[estilos.papelJogador, { color: corDoPapel(papelOriginal) }]}>
+                      {papelOriginal}
+                    </Text>
+                  )}
+                  {convertidoNoLoop !== null && (
+                    <Text style={estilos.conversao}>
+                      convertido no loop {convertidoNoLoop}
+                    </Text>
+                  )}
+                </View>
+              </View>
+              {index < jogadores.length - 1 && <View style={estilos.divisor} />}
+            </View>
+          );
+        })}
+      </ScrollView>
+
+      {/* Rodapé fixo: replay imediato, sem confirmação */}
       <View style={estilos.rodape}>
-        <Text style={estilos.totalLoops}>{totalLoops} {totalLoops === 1 ? 'loop' : 'loops'}</Text>
         <TouchableOpacity
           style={estilos.botaoNova}
           onPress={onVoltar}
@@ -128,9 +125,15 @@ const estilos = StyleSheet.create({
     borderBottomColor: cores.borda,
   },
   textoVencedor: {
-    fontSize: tipografia.tamanhoTituloGrande,
+    fontSize: tipografia.tamanhoDisplay,
     fontFamily: familias.serifDisplay,
-    letterSpacing: tipografia.spacingTitulo,
+    letterSpacing: tipografia.spacingHero,
+  },
+  subtituloLoops: {
+    fontSize: tipografia.tamanhoCorpoMenor,
+    fontFamily: familias.sans,
+    color: cores.textoMudo,
+    marginTop: espacamento.xs,
   },
   lista: {
     flex: 1,
@@ -138,25 +141,33 @@ const estilos = StyleSheet.create({
   listaConteudo: {
     paddingHorizontal: espacamento.lg,
     paddingTop: espacamento.md,
+    paddingBottom: espacamento.lg,
   },
   linhaJogador: {
     paddingVertical: espacamento.md,
   },
   infoJogador: {
     flexDirection: 'column',
+    gap: 2,
   },
   nomeJogador: {
     fontSize: 18,
     fontFamily: familias.sans,
     fontWeight: tipografia.pesoBold,
     color: cores.texto,
-    marginBottom: 2,
+  },
+  nomeJogadorEu: {
+    color: cores.texto,
+  },
+  euTag: {
+    fontSize: tipografia.tamanhoCorpoMenor,
+    fontWeight: tipografia.pesoRegular,
+    color: cores.textoMudo,
   },
   papelJogador: {
     fontSize: tipografia.tamanhoCorpoMenor,
     fontFamily: familias.sans,
     fontWeight: tipografia.pesoBold,
-    marginBottom: 2,
   },
   conversao: {
     fontSize: 13,
@@ -166,7 +177,6 @@ const estilos = StyleSheet.create({
   divisor: {
     height: 1,
     backgroundColor: cores.borda,
-    marginTop: espacamento.md,
   },
   rodape: {
     paddingHorizontal: espacamento.lg,
@@ -174,13 +184,6 @@ const estilos = StyleSheet.create({
     paddingTop: espacamento.md,
     borderTopWidth: 1,
     borderTopColor: cores.borda,
-  },
-  totalLoops: {
-    fontSize: 13,
-    fontFamily: familias.sans,
-    color: cores.textoMudo,
-    marginBottom: espacamento.md,
-    textAlign: 'center',
   },
   botaoNova: {
     backgroundColor: cores.texto,

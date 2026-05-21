@@ -8,6 +8,7 @@ import { GameScreenMostLikely } from '@/screens/GameScreenMostLikely';
 import { GameScreenNaPontaDaLingua } from '@/screens/GameScreenNaPontaDaLingua';
 import { TelaCadastroJogadores } from '@/screens/TelaCadastroJogadores';
 import { TelaConfiguracaoJogo } from '@/screens/TelaConfiguracaoJogo';
+import { TelaConfiguracaoInquisicao } from '@/screens/TelaConfiguracaoInquisicao';
 import { TelaConfiguracaoLocal } from '@/screens/TelaConfiguracaoLocal';
 import { TelaConfiguracaoLocalMostLikely } from '@/screens/TelaConfiguracaoLocalMostLikely';
 import { TelaConfiguracaoLocalNaPontaDaLingua } from '@/screens/TelaConfiguracaoLocalNaPontaDaLingua';
@@ -55,6 +56,8 @@ function GameScreenGateway({
         roomCode={roomCode}
         jogoId={jogoId}
         jogadorId={jogadorId}
+        onJogarDeNovo={() => navigation.navigate('Inicio')}
+        onVoltar={() => navigation.navigate('SelecaoJogo')}
       />
     );
   }
@@ -70,6 +73,9 @@ function ConfiguracaoJogoGateway({
 }: NativeStackScreenProps<RootStackParamList, 'ConfiguracaoJogo'>) {
   if (route.params.jogoId === 'most-likely-to') {
     return <TelaConfiguracaoMostLikely route={route} navigation={navigation} />;
+  }
+  if (route.params.jogoId === 'inquisicao') {
+    return <TelaConfiguracaoInquisicao route={route} navigation={navigation} />;
   }
   return <TelaConfiguracaoJogo route={route} navigation={navigation} />;
 }

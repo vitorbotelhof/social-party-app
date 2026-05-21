@@ -29,6 +29,7 @@ const JOGO_POR_VIBE: Record<string, CategoriaEmocional> = {
   'mr-white': 'tensao_misterio',
   'most-likely-to': 'votacao_exposicao',
   'na-ponta-da-lingua': 'festa_barulho',
+  'inquisicao': 'tensao_misterio',
 };
 
 // ─── Pontuação de vibe ────────────────────────────────────────────────────────
@@ -70,6 +71,29 @@ function pontuarVibes(): Map<CategoriaEmocional, number> {
   if (viradas >= 1) {
     add('revelacoes_caos', viradas);
     add('tensao_misterio', viradas);
+  }
+
+  // Inquisição: corrupção e inversão → tensao_misterio + revelacoes_caos
+  const corrupcoes = contarMomentos('corrupcao_revelada');
+  const inversoes = contarMomentos('inversao');
+  const paranoia_max = contarMomentos('paranoia_maxima');
+  const colapsos_inq = contarMomentos('colapso_inquisicao');
+
+  if (corrupcoes >= 1) {
+    add('tensao_misterio', corrupcoes * 2);
+    add('quem_voces_sao', corrupcoes);
+  }
+  if (inversoes >= 1) {
+    add('revelacoes_caos', inversoes * 3);
+    add('tensao_misterio', inversoes);
+  }
+  if (paranoia_max >= 1) {
+    add('quem_voces_sao', paranoia_max * 2);
+    add('revelacoes_caos', paranoia_max);
+  }
+  if (colapsos_inq >= 1) {
+    add('revelacoes_caos', colapsos_inq * 2);
+    add('quem_voces_sao', colapsos_inq);
   }
 
   // Temperatura geral → revelacoes_caos

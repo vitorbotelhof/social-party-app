@@ -1,9 +1,9 @@
 /**
  * TelaDistribuindoPapeis — Fase revelando_papeis.
  *
- * Mostra o papel secreto do jogador com animação de entrada.
- * Corrompidos veem seus aliados.
- * Botão "estou pronto" → aguardando os outros.
+ * Papel em grande. Aliados em silêncio abaixo.
+ * Botão desaparece após confirmar — o papel fica visível enquanto aguarda.
+ * Sem labels óbvios. Sem texto de status. O silêncio é o pacing.
  */
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
 
 import type { PlayerId } from '@/engine/types';
 import type { EstadoPrivadoInquisicao } from '@/games/inquisicao/types';
@@ -48,24 +49,32 @@ export function TelaDistribuindoPapeis({
 }: Props) {
   const [pronto, setPronto] = useState(false);
 
-  // Animação de entrada: fade in + subir 16px
+  // Entrada: fade in + subir suave
   const opacidade = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(16)).current;
+  const translateY = useRef(new Animated.Value(14)).current;
+
+  // Pulso sutil do indicador de espera
+  const pulsarOp = useRef(new Animated.Value(0.3)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(opacidade, {
-        toValue: 1,
-        duration: 280,
-        useNativeDriver: true,
-      }),
-      Animated.timing(translateY, {
-        toValue: 0,
-        duration: 280,
-        useNativeDriver: true,
-      }),
+      Animated.timing(opacidade, { toValue: 1, duration: 260, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: 260, useNativeDriver: true }),
     ]).start();
   }, [opacidade, translateY]);
+
+  useEffect(() => {
+    if (!pronto) return;
+    // Pulso lento enquanto aguarda — mantém vida na tela sem adicionar ruído
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulsarOp, { toValue: 1, duration: 900, useNativeDriver: true }),
+        Animated.timing(pulsarOp, { toValue: 0.3, duration: 900, useNativeDriver: true }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [pronto, pulsarOp]);
 
   const papel = estadoPrivado.papelOriginal;
   const faccao = derivarFaccao(estadoPrivado);
@@ -74,6 +83,7 @@ export function TelaDistribuindoPapeis({
 
   const handlePronto = () => {
     setPronto(true);
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     onPronto();
   };
 
@@ -85,18 +95,15 @@ export function TelaDistribuindoPapeis({
           { opacity: opacidade, transform: [{ translateY }] },
         ]}
       >
-        {/* Label "seu papel" */}
-        <Text style={estilos.label}>SEU PAPEL</Text>
-
-        {/* Nome do papel em grande */}
+        {/* Papel — o nome é a informação, sem label */}
         <Text style={[estilos.nomePapel, { color: corDoPapel(papel) }]}>
           {papel}
         </Text>
 
-        {/* Aliados (apenas corrompidos) */}
+        {/* Aliados: corrompidos veem quem está do seu lado — sem header */}
         {isCorrompido && aliados.length > 0 && (
           <View style={estilos.aliadosContainer}>
-            <Text style={estilos.aliadosLabel}>seus aliados:</Text>
+            <View style={estilos.separador} />
             {aliados.map((id) => (
               <Text key={id} style={estilos.nomeAliado}>
                 {mapaNomes.get(id) ?? id}
@@ -104,28 +111,22 @@ export function TelaDistribuindoPapeis({
             ))}
           </View>
         )}
-
-        {isCorrompido && aliados.length === 0 && (
-          <View style={estilos.aliadosContainer}>
-            <Text style={estilos.aliadosLabel}>você age sozinho.</Text>
-          </View>
-        )}
       </Animated.View>
 
-      {/* Botão de confirmação */}
+      {/* Rodapé: botão desaparece, tela fica em silêncio enquanto aguarda */}
       <View style={estilos.rodape}>
         {!pronto ? (
           <TouchableOpacity
             style={estilos.botaoPronto}
             onPress={handlePronto}
-            activeOpacity={0.8}
+            activeOpacity={0.75}
           >
-            <Text style={estilos.textoBotao}>estou pronto →</Text>
+            <Text style={estilos.textoBotao}>pronto</Text>
           </TouchableOpacity>
         ) : (
-          <View style={estilos.botaoDesabilitado}>
-            <Text style={estilos.textoAguardando}>aguardando os outros...</Text>
-          </View>
+          <Animated.View style={[estilos.indicadorEspera, { opacity: pulsarOp }]}>
+            <View style={estilos.pontinho} />
+          </Animated.View>
         )}
       </View>
     </SafeAreaView>
@@ -143,44 +144,39 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: espacamento.xl,
   },
-  label: {
-    fontSize: 13,
-    fontFamily: familias.sans,
-    color: cores.textoMudo,
-    letterSpacing: 2.0,
-    marginBottom: espacamento.lg,
-  },
   nomePapel: {
     fontSize: tipografia.tamanhoDisplay,
     fontFamily: familias.serifDisplay,
     textAlign: 'center',
     letterSpacing: tipografia.spacingHero,
   },
-  aliadosContainer: {
+  separador: {
+    height: 1,
+    width: 32,
+    backgroundColor: cores.borda,
+    marginBottom: espacamento.md,
     marginTop: espacamento.xl,
-    alignItems: 'center',
   },
-  aliadosLabel: {
-    fontSize: tipografia.tamanhoCorpoMenor,
-    fontFamily: familias.sans,
-    color: cores.textoSecundario,
-    marginBottom: espacamento.sm,
+  aliadosContainer: {
+    alignItems: 'center',
   },
   nomeAliado: {
     fontSize: tipografia.tamanhoCorpoMaior,
     fontFamily: familias.sans,
-    color: cores.texto,
+    color: COR_CORRUPCAO,
     fontWeight: tipografia.pesoBold,
     marginBottom: espacamento.xs,
   },
   rodape: {
     paddingHorizontal: espacamento.lg,
     paddingBottom: espacamento.xl,
+    alignItems: 'center',
   },
   botaoPronto: {
     backgroundColor: cores.texto,
     borderRadius: 12,
     height: 56,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -190,14 +186,15 @@ const estilos = StyleSheet.create({
     fontFamily: familias.sans,
     fontWeight: tipografia.pesoBold,
   },
-  botaoDesabilitado: {
+  indicadorEspera: {
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  textoAguardando: {
-    fontSize: tipografia.tamanhoCorpo,
-    fontFamily: familias.sans,
-    color: cores.textoMudo,
+  pontinho: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: cores.textoMudo,
   },
 });

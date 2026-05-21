@@ -51,6 +51,9 @@ export function iniciarSessao(
     clutchsMrWhite: 0,
     colapsos: 0,
     pontosTotais: 0,
+    vezesEliminado: 0,
+    vezesContaminado: 0,
+    acoesCorrompidas: 0,
   }));
 
   sessaoAtual = {
@@ -286,6 +289,8 @@ export function assegurarSessaoIniciada(
       estaConectado: true,
       entrouEm: Date.now() + i,
     }));
+    // Nota: iniciarSessao já garante os campos padrão de SessaoJogador,
+    // incluindo os campos de Inquisição (vezesEliminado, vezesContaminado, acoesCorrompidas).
     iniciarSessao(players);
   }
   registrarJogoIniciado(jogoId);

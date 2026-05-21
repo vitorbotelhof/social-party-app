@@ -93,12 +93,15 @@ export function TelaNoite({ estadoPublico, estadoPrivado, jogadorId, mapaNomes, 
     );
   }
 
-  // ── Aguardando após submeter ─────────────────────────────────────────────────
+  // ── Aguardando após submeter — mesmo silêncio do inocente ───────────────────
   if (submetido) {
     return (
       <SafeAreaView style={estilos.container}>
         <View style={estilos.centro}>
-          <Text style={estilos.textoAguarde}>aguardando a noite...</Text>
+          <Text style={estilos.textoAguarde}>aguarde.</Text>
+        </View>
+        <View style={estilos.barraContainer}>
+          <View style={estilos.barraNoite} />
         </View>
       </SafeAreaView>
     );

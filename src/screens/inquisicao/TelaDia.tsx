@@ -126,18 +126,13 @@ export function TelaDia({ estadoPublico, estadoPrivado, jogadorId, realtime }: P
         <Text style={estilos.labelTimer}>{segundosRestantes}s</Text>
       </View>
 
-      {/* Área central de eventos */}
+      {/* Área central de eventos — silêncio quando não há evento ativo */}
       <View style={estilos.centro}>
         {eventoAtual && eventoVisivelId === eventoAtual.id && (
           <Animated.Text style={[estilos.textoEvento, { opacity: opacidadeEvento }]}>
             {eventoAtual.texto}
           </Animated.Text>
         )}
-
-        {(!eventoAtual || eventoVisivelId !== eventoAtual?.id) &&
-          estadoPublico.mensagemDoSistema && (
-            <Text style={estilos.mensagemSistema}>{estadoPublico.mensagemDoSistema}</Text>
-          )}
       </View>
 
       {/* Card de evento privado */}
