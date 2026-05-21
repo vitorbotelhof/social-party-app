@@ -53,7 +53,11 @@ export type TipoMomento =
   | 'corrupcao_revelada'  // inocente foi convertido — grupo encolheu por dentro
   | 'inversao'            // corrompidos venceram — grupo dominado pela corrupção
   | 'paranoia_maxima'     // votação empatada / sem maioria — ninguém eliminado
-  | 'colapso_inquisicao'; // grupo votou e eliminou um inocente por engano
+  | 'colapso_inquisicao'  // grupo votou e eliminou um inocente por engano
+  // ── Você Me Conhece? ────────────────────────────────────────────────────────
+  | 'leitura_perfeita_vmc' // todos previram corretamente a escolha do ranqueador
+  | 'desconhecido_vmc'     // ninguém acertou — ranqueador é um mistério para o grupo
+  | 'sinergia_vmc';        // >70% de acerto no jogo — grupo muito sincronizado
 
 export interface Momento {
   id: string;
@@ -103,6 +107,16 @@ export interface InquisicaoSessaoStats {
   eliminadosCorrompidos: number;
 }
 
+export interface VMCSessaoStats {
+  totalRodadas: number;
+  leiturasPerfeitasTotal: number;
+  desconhecidosTotal: number;
+  melhorLeitorId: string | null;
+  menosPrevistoId: string | null;
+  /** IDs das categorias jogadas nesta partida. */
+  categorias: string[];
+}
+
 export interface JogoSessao {
   jogoId: GameId;
   iniciadoEm: number;
@@ -113,6 +127,7 @@ export interface JogoSessao {
   mlt?: MLTSessaoStats;
   npl?: NPLSessaoStats;
   inquisicao?: InquisicaoSessaoStats;
+  vmc?: VMCSessaoStats;
 }
 
 // ─── Jogador na sessão ────────────────────────────────────────────────────────
@@ -142,6 +157,10 @@ export interface SessaoJogador {
   vezesEliminado: number;   // foi eliminado por votação do grupo
   vezesContaminado: number; // foi convertido para corrompido durante a noite
   acoesCorrompidas: number; // executou ações noturnas como corrompido
+
+  // Você Me Conhece?
+  acertosLeitura: number;   // acertou a previsão sobre o ranqueador
+  vezesDesconhecido: number; // foi ranqueador e ninguém acertou sua escolha
 }
 
 // ─── Sessão ───────────────────────────────────────────────────────────────────

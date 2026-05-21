@@ -54,6 +54,8 @@ export function iniciarSessao(
     vezesEliminado: 0,
     vezesContaminado: 0,
     acoesCorrompidas: 0,
+    acertosLeitura: 0,
+    vezesDesconhecido: 0,
   }));
 
   sessaoAtual = {

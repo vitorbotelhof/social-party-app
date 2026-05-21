@@ -362,6 +362,64 @@ const TEMPLATES: CallbackTemplate[] = [
     },
   },
 
+  // ── Você Me Conhece?: pós-jogo ─────────────────────────────────────────────
+
+  {
+    id: 'vmc_pos_sinergia',
+    momento: 'pos_jogo',
+    prioridade: 93,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'sinergia_vmc'),
+    gerar: (s, nomes) => {
+      const vmc = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'voce-me-conhece')?.vmc;
+      const melhor = vmc?.melhorLeitorId ? nomes.get(vmc.melhorLeitorId) : null;
+      if (melhor) return `${melhor} leu o grupo como um livro. esse nível de sintonia é raro.`;
+      return 'esse grupo se conhece melhor do que admite.';
+    },
+  },
+
+  {
+    id: 'vmc_pos_desconhecido',
+    momento: 'pos_jogo',
+    prioridade: 88,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'desconhecido_vmc'),
+    gerar: (s, nomes) => {
+      const m = [...s.momentosMemoraveis]
+        .reverse()
+        .find((x) => x.tipo === 'desconhecido_vmc');
+      if (!m || m.jogadoresIds.length === 0) return 'alguém aqui é um mistério para o grupo.';
+      const nome = nomes.get(m.jogadoresIds[0] as PlayerId) ?? 'alguém';
+      return `${nome} surpreendeu todo mundo. ninguém acertou uma vez sequer.`;
+    },
+  },
+
+  {
+    id: 'vmc_pos_leitura_perfeita',
+    momento: 'pos_jogo',
+    prioridade: 84,
+    condicao: (s) =>
+      s.momentosMemoraveis.filter((m) => m.tipo === 'leitura_perfeita_vmc').length >= 2,
+    gerar: (s) => {
+      const n = s.momentosMemoraveis.filter((m) => m.tipo === 'leitura_perfeita_vmc').length;
+      return `${n} rodadas com leitura perfeita. esse grupo não tem muitos segredos.`;
+    },
+  },
+
+  // ── Você Me Conhece?: entre jogos ───────────────────────────────────────────
+
+  {
+    id: 'vmc_entre_intimo',
+    momento: 'entre_jogos',
+    prioridade: 72,
+    condicao: (s) =>
+      s.grupoIdentidade === 'intimo' &&
+      s.jogosDaSessao.some((j) => j.jogoId === 'voce-me-conhece'),
+    gerar: () => 'depois do que viram agora, difícil fingir que não se conhecem.',
+  },
+
   // ── Dossiê ──────────────────────────────────────────────────────────────────
 
   {

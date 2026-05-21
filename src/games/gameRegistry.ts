@@ -233,6 +233,42 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     },
   },
   {
+    id: 'voce-me-conhece',
+    nome: 'Você Me Conhece?',
+    slogan: 'prioridades revelam identidade.',
+    descricao:
+      'Um jogo de leitura humana. O ranqueador escolhe em segredo o que colocaria primeiro — ou por último — entre 4 opções. O grupo tenta prever. O valor não está em acertar: está em discutir.',
+    // TODO fase 2: criar cover próprio
+    cover: require('../../assets/games/voce-me-conhece/cover.png'),
+    minJogadores: 3,
+    maxJogadores: 10,
+    tempoMedio: '20-40 min',
+    intensidade: 2,
+    disponivel: true,
+    supportsLocal: true,
+    supportsRealtime: false,
+    socialTags: ['intimidade', 'leitura', 'conversa'],
+    categorias: ['quem_voces_sao'],
+    ordemNaCategoria: 2,
+    instrucoes: {
+      objetivo:
+        'Ler o grupo — e descobrir quem te lê de volta. Não é sobre acertar: é sobre entender como as pessoas priorizam o que importa.',
+      passos: [
+        'O ranqueador recebe 4 opções no celular e escolhe em segredo: a que colocaria PRIMEIRO, ou a que deixaria por ÚLTIMO.',
+        'O grupo debate e tenta prever a escolha do ranqueador.',
+        'Cada jogador registra sua previsão no celular, em segredo.',
+        'O reveal acontece: a escolha aparece. Quem acertou aparece em destaque.',
+        'A discussão começa — o que a escolha revela sobre a pessoa?',
+        'O celular passa para o próximo ranqueador.',
+      ],
+      dicas: [
+        'O jogo é sobre a conversa após o reveal, não sobre o placar.',
+        'Categorias leves para começar — intensidade vai crescendo naturalmente.',
+        'Se alguém sempre surpreende o grupo, pergunte o porquê.',
+      ],
+    },
+  },
+  {
     id: 'eu-nunca',
     nome: 'Eu Nunca',
     slogan: 'Revelações, confissões e muita risada',

@@ -5,6 +5,8 @@ import type { RootStackParamList } from '@/navigation/types';
 import { TelaInquisicao } from '@/screens/inquisicao/TelaInquisicao';
 import { TelaConfiguracaoLocalInquisicao } from '@/screens/inquisicao/local/TelaConfiguracaoLocalInquisicao';
 import { TelaLocalInquisicao } from '@/screens/inquisicao/local/TelaLocalInquisicao';
+import { TelaConfiguracaoLocalVMC } from '@/screens/voce-me-conhece/local/TelaConfiguracaoLocalVMC';
+import { TelaLocalVMC } from '@/screens/voce-me-conhece/local/TelaLocalVMC';
 import { GameScreen } from '@/screens/GameScreen';
 import { GameScreenMostLikely } from '@/screens/GameScreenMostLikely';
 import { GameScreenNaPontaDaLingua } from '@/screens/GameScreenNaPontaDaLingua';
@@ -80,6 +82,21 @@ function ConfiguracaoJogoGateway({
     return <TelaConfiguracaoInquisicao route={route} navigation={navigation} />;
   }
   return <TelaConfiguracaoJogo route={route} navigation={navigation} />;
+}
+
+// Wrapper de tela para o jogo local VMC — extrai params da rota.
+function JogoLocalVMCScreen({
+  route,
+  navigation,
+}: NativeStackScreenProps<RootStackParamList, 'JogoLocalVMC'>) {
+  const { jogadores, config } = route.params;
+  return (
+    <TelaLocalVMC
+      jogadores={jogadores}
+      config={config}
+      onVoltar={() => navigation.navigate('Inicio')}
+    />
+  );
 }
 
 // Wrapper de tela para o jogo local Inquisição — extrai params da rota.
@@ -213,6 +230,20 @@ export function RootNavigator() {
         name="ConfiguracaoLocalInquisicao"
         component={TelaConfiguracaoLocalInquisicao}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ConfiguracaoLocalVMC"
+        component={TelaConfiguracaoLocalVMC}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="JogoLocalVMC"
+        component={JogoLocalVMCScreen}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
       />
       <Stack.Screen
         name="JogoLocalInquisicao"

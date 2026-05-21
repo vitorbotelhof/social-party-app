@@ -210,6 +210,8 @@ export function TelaInicio({ navigation }: Props) {
         navigation.navigate('ConfiguracaoLocalNaPontaDaLingua');
       } else if (jogoId === 'inquisicao') {
         navigation.navigate('ConfiguracaoLocalInquisicao');
+      } else if (jogoId === 'voce-me-conhece') {
+        navigation.navigate('ConfiguracaoLocalVMC');
       } else {
         navigation.navigate('ConfiguracaoLocal');
       }

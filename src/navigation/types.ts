@@ -1,5 +1,6 @@
 import type { CategoriaIdNPL } from '@/games/na-ponta-da-lingua/types';
 import type { ConfiguracaoLocal, JogadorLocal } from '@/games/inquisicao/local/types';
+import type { ConfiguracaoVMC, JogadorVMC } from '@/games/voce-me-conhece/local/types';
 import type { GameId, PlayerId, RoomCode } from '@/engine/types';
 
 export type RootStackParamList = {
@@ -31,6 +32,11 @@ export type RootStackParamList = {
   JogoLocalInquisicao: {
     jogadores: JogadorLocal[];
     config: ConfiguracaoLocal;
+  };
+  ConfiguracaoLocalVMC: undefined;
+  JogoLocalVMC: {
+    jogadores: JogadorVMC[];
+    config: ConfiguracaoVMC;
   };
   JogoLocalNaPontaDaLingua: {
     jogadores: { id: string; nome: string }[];
