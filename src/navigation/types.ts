@@ -1,4 +1,5 @@
 import type { CategoriaIdNPL } from '@/games/na-ponta-da-lingua/types';
+import type { ConfiguracaoLocal, JogadorLocal } from '@/games/inquisicao/local/types';
 import type { GameId, PlayerId, RoomCode } from '@/engine/types';
 
 export type RootStackParamList = {
@@ -26,6 +27,11 @@ export type RootStackParamList = {
     modo: 'classico' | 'sincero';
   };
   ConfiguracaoLocalNaPontaDaLingua: undefined;
+  ConfiguracaoLocalInquisicao: undefined;
+  JogoLocalInquisicao: {
+    jogadores: JogadorLocal[];
+    config: ConfiguracaoLocal;
+  };
   JogoLocalNaPontaDaLingua: {
     jogadores: { id: string; nome: string }[];
     duracaoSegundos: 45 | 60 | 90;

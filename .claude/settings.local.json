@@ -76,7 +76,8 @@
       "Bash(sips -g all /Users/vitorfreitas/social-party-app/assets/logo.png)",
       "Bash(grep -v \"Try \\\\`npm\")",
       "Bash(node -e ' *)",
-      "Bash(awk '{print NR, $0}')"
+      "Bash(awk '{print NR, $0}')",
+      "Bash(grep -v \"prompts\\\\|Try \\\\`npm\")"
     ]
   }
 }

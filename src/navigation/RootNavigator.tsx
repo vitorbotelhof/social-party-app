@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import type { RootStackParamList } from '@/navigation/types';
 import { TelaInquisicao } from '@/screens/inquisicao/TelaInquisicao';
+import { TelaConfiguracaoLocalInquisicao } from '@/screens/inquisicao/local/TelaConfiguracaoLocalInquisicao';
+import { TelaLocalInquisicao } from '@/screens/inquisicao/local/TelaLocalInquisicao';
 import { GameScreen } from '@/screens/GameScreen';
 import { GameScreenMostLikely } from '@/screens/GameScreenMostLikely';
 import { GameScreenNaPontaDaLingua } from '@/screens/GameScreenNaPontaDaLingua';
@@ -78,6 +80,21 @@ function ConfiguracaoJogoGateway({
     return <TelaConfiguracaoInquisicao route={route} navigation={navigation} />;
   }
   return <TelaConfiguracaoJogo route={route} navigation={navigation} />;
+}
+
+// Wrapper de tela para o jogo local Inquisição — extrai params da rota.
+function JogoLocalInquisicaoScreen({
+  route,
+  navigation,
+}: NativeStackScreenProps<RootStackParamList, 'JogoLocalInquisicao'>) {
+  const { jogadores, config } = route.params;
+  return (
+    <TelaLocalInquisicao
+      jogadores={jogadores}
+      config={config}
+      onVoltar={() => navigation.navigate('Inicio')}
+    />
+  );
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -191,6 +208,20 @@ export function RootNavigator() {
         name="ConfiguracaoLocalNaPontaDaLingua"
         component={TelaConfiguracaoLocalNaPontaDaLingua}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ConfiguracaoLocalInquisicao"
+        component={TelaConfiguracaoLocalInquisicao}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="JogoLocalInquisicao"
+        component={JogoLocalInquisicaoScreen}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
       />
       <Stack.Screen
         name="JogoLocalNaPontaDaLingua"

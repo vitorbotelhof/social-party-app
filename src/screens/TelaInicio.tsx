@@ -208,6 +208,8 @@ export function TelaInicio({ navigation }: Props) {
         navigation.navigate('ConfiguracaoLocalMostLikely');
       } else if (jogoId === 'na-ponta-da-lingua') {
         navigation.navigate('ConfiguracaoLocalNaPontaDaLingua');
+      } else if (jogoId === 'inquisicao') {
+        navigation.navigate('ConfiguracaoLocalInquisicao');
       } else {
         navigation.navigate('ConfiguracaoLocal');
       }

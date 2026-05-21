@@ -209,7 +209,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     tempoMedio: '25-45 min',
     intensidade: 3,
     disponivel: true,
-    supportsLocal: false,
+    supportsLocal: true,
     supportsRealtime: true,
     socialTags: ['traição', 'dedução', 'paranoia'],
     categorias: ['tensao_misterio', 'quem_voces_sao'],
