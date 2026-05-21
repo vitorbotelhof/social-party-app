@@ -154,6 +154,29 @@ export interface EngineCallbacks {
    * Retorna false se outro host está resolvendo (lock ativo e não expirado).
    */
   adquirirLockNoite(agora: number): Promise<boolean>;
+
+  /**
+   * Escreve /estado e /noiteControle ATOMICAMENTE via multi-path update do Firebase.
+   *
+   * Implementação esperada no service layer:
+   *   await update(ref(db, `/salas/${codigo}`), {
+   *     estado:        update,
+   *     noiteControle: controle,
+   *   });
+   *
+   * Esta atomicidade é a garantia central de crash-safety na resolução noturna:
+   *   - Se o host crashar ANTES desta escrita: lock expira em 10s, outro host retenta.
+   *   - Se o host crashar DEPOIS desta escrita: estado público e lock estão consistentes.
+   *     Patches privados não gravados são perdidos (jogadores não veem a mensagem de
+   *     conversão/eliminação, mas o jogo avança corretamente).
+   *
+   * Nunca chamar escreverEstadoPublico() + escreverControle() em sequência —
+   * qualquer crash entre as duas escritas deixa o jogo em estado inconsistente.
+   */
+  escreverEstadoEControleAtomico(
+    update: Partial<EstadoFirebaseInquisicao>,
+    controle: ControleNoiteInquisicao,
+  ): Promise<void>;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -794,17 +817,31 @@ export class InquisicaoEngine extends GameEngine<
   /**
    * noite → conversa (loop+1) ou finalizado
    *
-   * Fluxo de resolução noturna com lock otimista:
-   *   1. Verificar idempotência (jaFoiResolvida)
-   *   2. Verificar lock não expirado (podeTentarResolver)
-   *   3. Tentar adquirir lock via runTransaction
-   *   4. Ler ações noturnas do Firebase
-   *   5. resolverNoite() — módulo puro, sem Firebase
-   *   6. Escrever patches privados um a um
-   *   7. Persistir novoControleNoite em /noiteControle
-   *   8. Deletar /noite/* (ações são efêmeras)
-   *   9. Verificar vitória com estado pós-noite
-   *  10. Avançar para conversa (loop+1) ou finalizar
+   * ─── Ordem de escrita (crash-safe) ────────────────────────────────────────
+   *
+   *   ETAPA 1 (memória)   — Aplicar patchesPrivados em memória local.
+   *   ETAPA 2 (memória)   — Calcular ativos, eliminados, vencedor pós-noite.
+   *   ETAPA 3 (memória)   — Construir atualizacaoPublica completa.
+   *   ETAPA 4 (Firebase)  — Escrever público + controle ATOMICAMENTE (multi-path).
+   *   ETAPA 5 (Firebase)  — Escrever patches privados um a um.
+   *   ETAPA 6 (Firebase)  — Deletar /noite/* (ações efêmeras).
+   *   ETAPA 7 (memória)   — Sincronizar estado interno do host.
+   *
+   * ─── Crash-safety garantida pela Etapa 4 ──────────────────────────────────
+   *
+   *   Crash ANTES da Etapa 4: lock expira em 10s, outro host retenta.
+   *   Crash APÓS  a Etapa 4:  público e controle estão consistentes.
+   *     Patches privados não gravados (Etapa 5 incompleta): jogadores perdem a
+   *     mensagem de conversão/eliminação, mas o jogo avança corretamente.
+   *     Na reconexão: _controleNoite é restaurado com resolvidoLoop correto →
+   *     jaFoiResolvida() retorna true → resolução não é reexecutada.
+   *
+   * ─── Por que NÃO usar escreverControle() + escreverEstadoPublico() separados ─
+   *
+   *   Se escreverControle() suceder e escreverEstadoPublico() falhar:
+   *     resolvidoLoop = loop (noite "resolvida") mas subFase = 'noite' (público).
+   *     Na reconexão: jaFoiResolvida = true → skip. Mas estado público = 'noite'.
+   *     Poll loop nunca dispara _transicaoNoite. Jogo travado para sempre.
    *
    * Emocional: "o grupo piscou e a realidade mudou um pouco."
    */
@@ -827,7 +864,7 @@ export class InquisicaoEngine extends GameEngine<
     const lockAdquirido = await this._callbacks.adquirirLockNoite(agora);
     if (!lockAdquirido) return;
 
-    // ── Resolução ─────────────────────────────────────────────────────────
+    // ── Resolução (pura, sem efeitos) ─────────────────────────────────────
 
     const acoes = await this._callbacks.lerAcoesNoturnas();
 
@@ -839,29 +876,25 @@ export class InquisicaoEngine extends GameEngine<
 
     const resultado: ResultadoResolucaoNoite = resolverNoite(acoes, ctx, agora);
 
-    // ── Escrita de patches privados (um a um — nunca em batch) ─────────────
+    // ─────────────────────────────────────────────────────────────────────
+    // ETAPA 1 — Aplicar patches EM MEMÓRIA (sem escrita Firebase ainda)
+    //
+    // Necessário para calcular papelRevelado correto de jogadores convertidos
+    // (convertidoNoLoop ainda é null no Firebase, mas já está correto em memória).
+    // ─────────────────────────────────────────────────────────────────────
 
-    // Cópia mutável dos estadosPrivados para atualização em memória
     const estadosPrivadosAtualizados = { ...estado.estadosPrivados };
 
     for (const [jogadorId, patch] of resultado.patchesPrivados) {
-      await this._callbacks.escreverPrivado(jogadorId, patch);
-
       const privadoAtual = estadosPrivadosAtualizados[jogadorId];
       if (privadoAtual !== undefined) {
         estadosPrivadosAtualizados[jogadorId] = { ...privadoAtual, ...patch };
       }
     }
 
-    // ── Persistir controle da noite ────────────────────────────────────────
-
-    this._controleNoite = resultado.novoControleNoite;
-    await this._callbacks.escreverControle(resultado.novoControleNoite);
-
-    // Limpar ações efêmeras
-    await this._callbacks.deletarAcoesNoturnas();
-
-    // ── Calcular ativos e eliminados pós-noite ─────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────
+    // ETAPA 2 — Calcular ativos, eliminados e vencedor pós-noite
+    // ─────────────────────────────────────────────────────────────────────
 
     let jogadoresAtivosAposNoite = [...estadoPublico.jogadoresAtivos];
     let eliminadosAposNoite = [...estadoPublico.eliminados];
@@ -871,76 +904,123 @@ export class InquisicaoEngine extends GameEngine<
 
       jogadoresAtivosAposNoite = jogadoresAtivosAposNoite.filter((id) => id !== eliminadoId);
 
-      // Papel revelado: apenas se configuração permite (leve/padrão revelam, paranoia não)
+      // Papel revelado: apenas em modos que revelam (leve/padrão).
+      // Usa estadosPrivadosAtualizados para pegar convertidoNoLoop correto.
       let papelRevelado: PapelInquisicao | null = null;
       if (estadoPublico.configuracao.revelarPapelAoEliminar) {
         const privado = estadosPrivadosAtualizados[eliminadoId];
         if (privado !== undefined) {
-          // Facção no momento da eliminação: convertidos aparecem como corrompidos
           papelRevelado = privado.convertidoNoLoop !== null ? 'corrompido' : privado.papelOriginal;
         }
       }
 
-      const novoRecord: EliminacaoRecord = {
-        jogadorId: eliminadoId,
-        loop,
-        causa: 'noite',
-        papelRevelado,
-        eliminadoEm: agora,
-      };
-      eliminadosAposNoite = [...eliminadosAposNoite, novoRecord];
+      eliminadosAposNoite = [
+        ...eliminadosAposNoite,
+        {
+          jogadorId: eliminadoId,
+          loop,
+          causa: 'noite',
+          papelRevelado,
+          eliminadoEm: agora,
+        } satisfies EliminacaoRecord,
+      ];
     }
-
-    // ── Verificar vitória ──────────────────────────────────────────────────
 
     const vencedor = verificarCondicaoVitoria(
       jogadoresAtivosAposNoite,
       resultado.novoControleNoite.corrompidosAtuais,
     );
 
+    // ─────────────────────────────────────────────────────────────────────
+    // ETAPA 3 — Construir atualização pública completa
+    // ─────────────────────────────────────────────────────────────────────
+
+    let atualizacaoPublica: Partial<EstadoFirebaseInquisicao>;
+    let eventoPrivadoResult: { jogadorId: PlayerId; patch: Partial<EstadoPrivadoInquisicao> } | null = null;
+
     if (vencedor !== null) {
-      const estadoComPrivadosAtualizados: EstadoInquisicao = {
-        ...estado,
-        estadosPrivados: estadosPrivadosAtualizados,
-      };
-      await this._finalizarPartida(
-        estadoComPrivadosAtualizados,
+      // Fim de jogo: construir estado finalizado
+      const estadoComPrivados: EstadoInquisicao = { ...estado, estadosPrivados: estadosPrivadosAtualizados };
+
+      const todosIds = [...new Set([
+        ...jogadoresAtivosAposNoite,
+        ...eliminadosAposNoite.map((e) => e.jogadorId),
+      ])];
+      const vencedorIds = obterIdsDosVencedores(
         vencedor,
-        jogadoresAtivosAposNoite,
-        eliminadosAposNoite,
-        agora,
+        resultado.novoControleNoite.corrompidosAtuais,
+        todosIds,
       );
-      return;
+      const revelacaoFinal = this._construirRevelacaoFinal(vencedor, estadoComPrivados, agora);
+
+      atualizacaoPublica = {
+        ...criarAtualizacaoFase('finalizado', estadoPublico.configuracao, agora, {
+          jogadoresAtivos: jogadoresAtivosAposNoite,
+          eliminados: eliminadosAposNoite,
+          vencedor,
+          vencedorIds,
+          revelacaoFinal,
+          votacaoAtual: null,
+          mensagemDoSistema: null,
+        }),
+        fase: 'results',
+      };
+    } else {
+      // Continuar: avançar para nova conversa (loop+1)
+      const proximoLoop = loop + 1;
+      const { intensidade } = estadoPublico.configuracao;
+
+      const eventoPublicoResult = this._selecionarEventoPublicoSeMerecido(proximoLoop, intensidade);
+
+      // Evento privado selecionado aqui para rastrear templateId antes da escrita,
+      // mas escrito no Firebase apenas na Etapa 5 (após write atômico).
+      eventoPrivadoResult = this._tentarSelecionarEventoPrivado(
+        proximoLoop,
+        intensidade,
+        jogadoresAtivosAposNoite,
+      );
+
+      atualizacaoPublica = criarAtualizacaoFase('conversa', estadoPublico.configuracao, agora, {
+        loop: proximoLoop,
+        votacaoAtual: null,
+        eventoAtivo: eventoPublicoResult?.evento ?? null,
+        mensagemDoSistema: resultado.resolucaoInterna.mensagemDoSistema,
+        jogadoresAtivos: jogadoresAtivosAposNoite,
+        eliminados: eliminadosAposNoite,
+      });
     }
 
-    // ── Sem vitória: avançar para nova conversa (loop+1) ─────────────────
+    // ─────────────────────────────────────────────────────────────────────
+    // ETAPA 4 — WRITE ATÔMICO: público + controle juntos
+    //
+    // Ponto de não-retorno. Após este await:
+    //   - jaFoiResolvida(controle, loop) === true
+    //   - subFase === 'conversa' ou 'finalizado' no Firebase público
+    //
+    // Qualquer crash após este ponto é recuperável: o jogo avança.
+    // Qualquer crash antes deste ponto: lock expira e outro host retenta.
+    // ─────────────────────────────────────────────────────────────────────
 
-    const proximoLoop = loop + 1;
-    const { intensidade } = estadoPublico.configuracao;
-
-    // Selecionar evento público para a nova conversa
-    const eventoResult = this._selecionarEventoPublicoSeMerecido(proximoLoop, intensidade);
-
-    // Tentar emitir evento privado para um inocente
-    const eventoPrivadoResult = this._tentarSelecionarEventoPrivado(
-      proximoLoop,
-      intensidade,
-      jogadoresAtivosAposNoite,
+    await this._callbacks.escreverEstadoEControleAtomico(
+      atualizacaoPublica,
+      resultado.novoControleNoite,
     );
 
-    const atualizacao = criarAtualizacaoFase('conversa', estadoPublico.configuracao, agora, {
-      loop: proximoLoop,
-      votacaoAtual: null,
-      eventoAtivo: eventoResult?.evento ?? null,
-      // Mensagem pós-noite: ambígua, do pool de nightPhase.ts ("algo mudou." etc.)
-      mensagemDoSistema: resultado.resolucaoInterna.mensagemDoSistema,
-      jogadoresAtivos: jogadoresAtivosAposNoite,
-      eliminados: eliminadosAposNoite,
-    });
+    // Sincronizar controle em memória imediatamente após escrita confirmada
+    this._controleNoite = resultado.novoControleNoite;
 
-    await this._callbacks.escreverEstadoPublico(atualizacao);
+    // ─────────────────────────────────────────────────────────────────────
+    // ETAPA 5 — Patches privados (um a um, após write atômico)
+    //
+    // Falhas aqui não corrompem o estado público — o jogo já avançou.
+    // O dado privado perdido (mensagem de conversão) é cosmético, não estrutural.
+    // ─────────────────────────────────────────────────────────────────────
 
-    // Escrever evento privado, se selecionado
+    for (const [jogadorId, patch] of resultado.patchesPrivados) {
+      await this._callbacks.escreverPrivado(jogadorId, patch);
+    }
+
+    // Evento privado: apenas no caminho sem vitória
     if (eventoPrivadoResult !== null) {
       const { jogadorId, patch } = eventoPrivadoResult;
       await this._callbacks.escreverPrivado(jogadorId, patch);
@@ -951,9 +1031,23 @@ export class InquisicaoEngine extends GameEngine<
       }
     }
 
-    this._atualizarEstadoInterno(estado, atualizacao, {
+    // ─────────────────────────────────────────────────────────────────────
+    // ETAPA 6 — Deletar ações efêmeras
+    // ─────────────────────────────────────────────────────────────────────
+
+    await this._callbacks.deletarAcoesNoturnas();
+
+    // ─────────────────────────────────────────────────────────────────────
+    // ETAPA 7 — Sincronizar estado interno do host
+    // ─────────────────────────────────────────────────────────────────────
+
+    const extrasGameState: Partial<Omit<EstadoInquisicao, 'estadoPublico'>> = {
       estadosPrivados: estadosPrivadosAtualizados,
-    });
+    };
+    if (vencedor !== null) {
+      extrasGameState.fase = 'results';
+    }
+    this._atualizarEstadoInterno(estado, atualizacaoPublica, extrasGameState);
   }
 
   // ── §10  FINALIZAÇÃO DA PARTIDA ────────────────────────────────────────────
@@ -962,8 +1056,12 @@ export class InquisicaoEngine extends GameEngine<
    * Encerra a partida: escreve vencedor, revelação final, fase 'finalizado'.
    *
    * Chamado quando vitória é detectada em:
-   *   - _transicaoApurando (eliminação por votação)
-   *   - _transicaoNoite (eliminação ou vitória por dominação pós-conversão)
+   *   - _transicaoApurando (eliminação por votação — único caminho)
+   *
+   * Nota: vitória detectada em _transicaoNoite é tratada INLINE naquela função,
+   * para que o write público + controle sejam atômicos via escreverEstadoEControleAtomico.
+   * Esta função usa escreverEstadoPublico separado — adequado para o caminho de votação,
+   * onde não há controle de noite a escrever atomicamente.
    *
    * O reveal final sempre mostra tudo — mesmo em modo paranoia.
    * Em paranoia, é a PRIMEIRA vez que o grupo vê os papéis de todos.
@@ -1533,9 +1631,20 @@ export class InquisicaoEngine extends GameEngine<
 /**
  * Instância singleton do InquisicaoEngine.
  *
- * Uma instância por processo — o service layer reutiliza para múltiplas salas
- * via chamadas sequenciais de criarEstadoInicial() e iniciar().
+ * ⚠ ATENÇÃO — SEGURANÇA PARA MÚLTIPLAS SALAS:
  *
- * Para múltiplas salas simultâneas no mesmo processo: instanciar separadamente.
+ * Esta instância armazena estado por-partida em campos privados:
+ *   _controleNoite, _idsTemplatesUsados, _papelConfirmadoPor, etc.
+ *
+ * Consequência: em um processo Node.js com múltiplas salas simultâneas,
+ * reutilizar este singleton para a Sala B sobrescreve o estado da Sala A.
+ *
+ * Uso seguro:
+ *   ✓ Processo dedicado por sala (ex.: Cloud Functions, worker por sala)
+ *   ✓ `new InquisicaoEngine()` por sala em processos com múltiplas salas
+ *   ✗ Reutilizar este singleton via iniciar() para salas concorrentes
+ *
+ * O padrão atual (singleton) é correto para o modelo de implantação esperado:
+ * cada host é um dispositivo móvel rodando uma única partida ativa por vez.
  */
 export const inquisicaoEngine = new InquisicaoEngine();

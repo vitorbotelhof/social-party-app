@@ -74,7 +74,9 @@
       "Bash(sort -t: -k1,1 -k2,2n)",
       "Bash(identify /Users/vitorfreitas/social-party-app/assets/logo.png)",
       "Bash(sips -g all /Users/vitorfreitas/social-party-app/assets/logo.png)",
-      "Bash(grep -v \"Try \\\\`npm\")"
+      "Bash(grep -v \"Try \\\\`npm\")",
+      "Bash(node -e ' *)",
+      "Bash(awk '{print NR, $0}')"
     ]
   }
 }

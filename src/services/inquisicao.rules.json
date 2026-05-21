@@ -1,0 +1,113 @@
+{
+  "_comentario": "Firebase Realtime Database Security Rules — Inquisição",
+  "_versao": "1.0",
+  "_instrucoes": [
+    "Copiar o conteúdo de 'rules' para o console Firebase em:",
+    "  Realtime Database → Rules",
+    "Pré-requisito: Firebase Anonymous Auth habilitado no projeto.",
+    "auth.uid vem do Anonymous Auth — configurado em jogadorLocal.ts."
+  ],
+
+  "rules": {
+    "salas": {
+      "$codigo": {
+
+        "_comentario_sala": "Metadados da sala — leitura pública para jogadores autenticados.",
+
+        ".read": "auth !== null",
+
+        "anfitriaoId": {
+          "_comentario": "Qualquer jogador ativo pode assumir a anfitriania quando o host desconecta.",
+          ".write": "auth !== null && root.child('salas').child($codigo).child('jogadores').child(auth.uid).exists()"
+        },
+
+        "atualizadoEm": {
+          ".write": "auth !== null && root.child('salas').child($codigo).child('jogadores').child(auth.uid).exists()"
+        },
+
+        "jogadores": {
+          "_comentario": "Cada jogador gerencia sua própria presença; host gerencia todos.",
+          ".read": "auth !== null",
+          "$playerId": {
+            ".write": "auth.uid === $playerId || auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val()"
+          }
+        },
+
+        "estado": {
+          "_comentario": "Estado público — todos leem; apenas o host escreve.",
+          ".read": "auth !== null",
+          ".write": "auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val()",
+
+          "votacaoAtual": {
+            "votantesConfirmados": {
+              "_comentario": "Cada jogador confirma apenas o próprio voto (quem votou — nunca em quem).",
+              "$playerId": {
+                ".write": "auth.uid === $playerId && newData.val() === true"
+              }
+            }
+          }
+        },
+
+        "privados": {
+          "_comentario": [
+            "Estado privado por jogador.",
+            "Lido apenas pelo próprio jogador e pelo host.",
+            "Escrito pelo host (exceto mensagemLida e eventoPrivado/lido)."
+          ],
+          "$playerId": {
+            ".read": "auth.uid === $playerId || auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val()",
+            ".write": "auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val()",
+
+            "mensagemLida": {
+              "_comentario": "O próprio jogador confirma leitura da mensagem privada.",
+              ".write": "auth.uid === $playerId && newData.val() === true"
+            },
+
+            "eventoPrivado": {
+              "lido": {
+                "_comentario": "O próprio jogador confirma leitura do evento privado.",
+                ".write": "auth.uid === $playerId && newData.val() === true"
+              }
+            }
+          }
+        },
+
+        "noite": {
+          "_comentario": [
+            "Ações noturnas efêmeras.",
+            "Host lê todas para resolver a noite.",
+            "Cada jogador escreve apenas a própria ação."
+          ],
+          ".read": "auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val()",
+          "$playerId": {
+            ".write": "auth.uid === $playerId",
+            ".validate": "newData.hasChildren(['tipo', 'alvoId', 'loop', 'jogadorId', 'registradaEm']) && newData.child('jogadorId').val() === $playerId"
+          }
+        },
+
+        "votosPrivados": {
+          "_comentario": [
+            "Votos privados efêmeros.",
+            "Host lê todos para resolver a votação.",
+            "Cada jogador escreve apenas o próprio voto."
+          ],
+          ".read": "auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val()",
+          "$playerId": {
+            ".write": "auth.uid === $playerId",
+            ".validate": "newData.hasChildren(['alvoId', 'loop', 'registradoEm'])"
+          }
+        },
+
+        "noiteControle": {
+          "_comentario": [
+            "Nó de controle exclusivo do host.",
+            "Contém: lock otimista, corrompidosAtuais, totalCorrompidosInicial.",
+            "NUNCA exposto a jogadores — protege a contagem de corrompidos."
+          ],
+          ".read": "auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val()",
+          ".write": "auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val()"
+        }
+      }
+    }
+  }
+}

@@ -2,6 +2,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import type { RootStackParamList } from '@/navigation/types';
+import { TelaInquisicao } from '@/screens/inquisicao/TelaInquisicao';
 import { GameScreen } from '@/screens/GameScreen';
 import { GameScreenMostLikely } from '@/screens/GameScreenMostLikely';
 import { GameScreenNaPontaDaLingua } from '@/screens/GameScreenNaPontaDaLingua';
@@ -46,6 +47,16 @@ function GameScreenGateway({
 
   if (jogoId === 'na-ponta-da-lingua') {
     return <GameScreenNaPontaDaLingua route={route} navigation={navigation} />;
+  }
+
+  if (jogoId === 'inquisicao') {
+    return (
+      <TelaInquisicao
+        roomCode={roomCode}
+        jogoId={jogoId}
+        jogadorId={jogadorId}
+      />
+    );
   }
 
   return <GameScreen route={route} navigation={navigation} />;

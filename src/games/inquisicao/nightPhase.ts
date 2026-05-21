@@ -862,10 +862,13 @@ function construirAtualizacaoPublica(
   if (resolucao.eliminado !== null) {
     const estadoPrivadoEliminado = estadosPrivados[resolucao.eliminado];
 
-    // papelRevelado: exposto em modos leve e padrão, oculto em paranoia
+    // papelRevelado: exposto em modos leve e padrão, oculto em paranoia.
+    // Convertidos aparecem como 'corrompido' — facção real no momento da eliminação.
     const papelRevelado =
       configuracao.revelarPapelAoEliminar && estadoPrivadoEliminado !== undefined
-        ? estadoPrivadoEliminado.papelOriginal
+        ? (estadoPrivadoEliminado.convertidoNoLoop !== null
+            ? 'corrompido'
+            : estadoPrivadoEliminado.papelOriginal)
         : null;
 
     eliminadosPosNoite.push({
