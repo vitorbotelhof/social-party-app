@@ -237,6 +237,46 @@ const SUSPEITA: readonly TemplateEventoPublico[] = [
     loopMinimo: 2,
   },
 
+  {
+    // Calar no momento exato é mais eloquente do que falar.
+    // Loop 2+: o grupo já sabe quando deveriam falar. O silêncio no momento certo é suspeito.
+    id: 'sus-calado-hora',
+    categoria: 'suspeita',
+    texto: 'alguém ficou calado na hora exata.',
+    raridade: 'incomum',
+    loopMinimo: 2,
+  },
+
+  {
+    // Recalcular antes de falar implica que a resposta espontânea teria sido diferente.
+    // O observador não sabe o que foi filtrado — mas sente que algo foi.
+    id: 'sus-recalculou',
+    categoria: 'suspeita',
+    texto: 'alguém recalculou antes de responder.',
+    raridade: 'incomum',
+    loopMinimo: 2,
+  },
+
+  {
+    // Narrativa revisada sem motivo declarado: o que mudou entre as duas versões?
+    // Loop 3: o grupo tem histórico suficiente para detectar inconsistência.
+    id: 'sus-versao-mudou',
+    categoria: 'suspeita',
+    texto: 'a versão mudou sem que ninguém pedisse.',
+    raridade: 'incomum',
+    loopMinimo: 3,
+  },
+
+  {
+    // Saber algo antes de saber: pré-conhecimento é o sinal mais condenador.
+    // Funciona em ambos os lados: o inocente que "sabia" também sente o peso.
+    id: 'sus-antes-saber',
+    categoria: 'suspeita',
+    texto: 'alguém soube antes de poder saber.',
+    raridade: 'raro',
+    loopMinimo: 3,
+  },
+
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -292,6 +332,28 @@ const CORRUPCAO: readonly TemplateEventoPublico[] = [
     texto: 'o grupo já não é o mesmo.',
     raridade: 'raro',
     loopMinimo: 2,
+  },
+
+  {
+    // A origem interna da mudança é a revelação mais perturbadora.
+    // "Veio de dentro" elimina a hipótese de causa externa — é um de vocês.
+    // Falso positivo igualmente eficaz: planta desconfiança sem evidência.
+    id: 'cor-dentro',
+    categoria: 'corrupcao',
+    texto: 'a mudança veio de dentro.',
+    raridade: 'raro',
+    loopMinimo: 3,
+  },
+
+  {
+    // Fronteiras dissolvidas. Quem era claramente aliado agora é ambíguo.
+    // Loop 4+: ao este ponto a confiança já foi testada várias vezes.
+    // "Sumiu" é mais definitivo que "se apagou" — a perda é irreversível.
+    id: 'cor-linha',
+    categoria: 'corrupcao',
+    texto: 'a linha entre vocês sumiu.',
+    raridade: 'raro',
+    loopMinimo: 4,
   },
 
 ];
@@ -367,6 +429,26 @@ const PRESSAO_SOCIAL: readonly TemplateEventoPublico[] = [
     loopMinimo: 2,
   },
 
+  {
+    // Observação social pura — não é instrução. O grupo identifica quem é.
+    // "ainda não se posicionou" implica que a posição é esperada e cobrada.
+    id: 'prs-posicionou',
+    categoria: 'pressao_social',
+    texto: 'alguém aqui ainda não se posicionou.',
+    raridade: 'incomum',
+    loopMinimo: 2,
+  },
+
+  {
+    // O custo do silêncio nomeado sem nomear quem paga.
+    // Funciona como pressão coletiva: todos que estão calados se sentem atingidos.
+    id: 'prs-custo',
+    categoria: 'pressao_social',
+    texto: 'silêncio tem um preço aqui.',
+    raridade: 'incomum',
+    loopMinimo: 3,
+  },
+
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -437,6 +519,26 @@ const CAOS_SOCIAL: readonly TemplateEventoPublico[] = [
     texto: 'o grupo virou partes soltas.',
     raridade: 'raro',
     loopMinimo: 2,
+  },
+
+  {
+    // O argumento circular como diagnóstico de impasse. Quem começou?
+    // Mais específico que "ninguém concorda" — implica que a conversa rodou sem sair.
+    id: 'cao-volta',
+    categoria: 'caos_social',
+    texto: 'a conversa voltou onde começou.',
+    raridade: 'incomum',
+    loopMinimo: 3,
+  },
+
+  {
+    // Cada aliança formada cria um adversário implícito. Loop 4+: fica explícito.
+    // "escolheu um lado" é mais concreto que fragmentação abstrata.
+    id: 'cao-lado',
+    categoria: 'caos_social',
+    texto: 'todo mundo já escolheu um lado.',
+    raridade: 'incomum',
+    loopMinimo: 4,
   },
 
 ];
@@ -514,6 +616,36 @@ const INFORMACAO_PARCIAL: readonly TemplateEventoPrivado[] = [
     loopMinimo: 2,
   },
 
+  {
+    // Confiança depositada no lugar errado. O jogador não sabe em quem — só sabe que errou.
+    // Funciona se for verdade (ele confiou no corrompido) ou como paranoia (não confiou em ninguém).
+    id: 'prv-confiou-errado',
+    categoria: 'informacao_parcial',
+    texto: 'você confiou em alguém que não merecia.',
+    raridade: 'comum',
+    loopMinimo: 1,
+  },
+
+  {
+    // Próxima ação como revelação de identidade. Cria paralisia decisória intencional.
+    // O jogador vai deliberar excessivamente — e esse deliberar vai ser observado.
+    id: 'prv-proxima',
+    categoria: 'informacao_parcial',
+    texto: 'sua próxima escolha vai revelar mais do que você pensa.',
+    raridade: 'incomum',
+    loopMinimo: 2,
+  },
+
+  {
+    // Urgência sem explicação. Loop 3+: a partida já está avançada.
+    // "Correndo contra você" não especifica o quê — mas o grupo acelerado vai completar.
+    id: 'prv-tempo',
+    categoria: 'informacao_parcial',
+    texto: 'o tempo está correndo contra você.',
+    raridade: 'raro',
+    loopMinimo: 3,
+  },
+
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -521,13 +653,13 @@ const INFORMACAO_PARCIAL: readonly TemplateEventoPrivado[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Banco público completo — 24 templates, 4 categorias.
+ * Banco público completo — 35 templates, 4 categorias.
  *
- * Distribuição após auditoria editorial (v2):
- *   suspeita       8   (comum:3, incomum:3, raro:2)
- *   corrupcao      4   (comum:2, incomum:1, raro:1)
- *   pressao_social 6   (comum:1, incomum:3, raro:2)
- *   caos_social    6   (comum:3, incomum:2, raro:1)
+ * Distribuição após calibração emocional (v3):
+ *   suspeita       13  (comum:3, incomum:6, raro:4)  — arco loop 1–3
+ *   corrupcao       6  (comum:2, incomum:1, raro:3)  — falsos positivos + real
+ *   pressao_social  8  (comum:1, incomum:5, raro:2)  — pressão social, nunca instrução
+ *   caos_social     8  (comum:3, incomum:4, raro:1)  — diagnóstico do grupo, não do indivíduo
  *
  * Uso: importado por socialEvents.ts para seleção ponderada.
  */
@@ -539,12 +671,12 @@ export const BANCO_PUBLICO: readonly TemplateEventoPublico[] = [
 ] as const;
 
 /**
- * Banco privado completo — 6 templates, categoria 'informacao_parcial'.
+ * Banco privado completo — 9 templates, categoria 'informacao_parcial'.
  *
- * Distribuição após auditoria editorial (v2):
- *   comum    2   (prv-percebeu, prv-observado)
- *   incomum  3   (prv-notado, prv-costas, prv-disse)
- *   raro     1   (prv-admite)
+ * Distribuição após calibração emocional (v3):
+ *   comum    3   (prv-percebeu, prv-observado, prv-confiou-errado)
+ *   incomum  4   (prv-notado, prv-costas, prv-disse, prv-proxima)
+ *   raro     2   (prv-admite, prv-tempo)
  *
  * Todos em segunda pessoa. Todos funcionam como verdade E como falso positivo.
  * Uso: importado por socialEvents.ts para entrega a jogador único por loop.

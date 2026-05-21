@@ -7,8 +7,10 @@
  *  - Guardião: escolher alvo para proteger → confirmar.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
+  Animated,
+  Dimensions,
   FlatList,
   StyleSheet,
   Text,
@@ -16,6 +18,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+const { width: LARGURA_TELA } = Dimensions.get('window');
 
 import type { PlayerId } from '@/engine/types';
 import type {
@@ -47,6 +51,22 @@ export function TelaNoite({ estadoPublico, estadoPrivado, jogadorId, mapaNomes, 
   const [alvoEscolhido, setAlvoEscolhido] = useState<PlayerId | null>(null);
   const [submetido, setSubmetido] = useState(false);
   const [enviando, setEnviando] = useState(false);
+
+  // Timer visual para inocentes e jogadores aguardando
+  const barraLargura = useState(() => new Animated.Value(LARGURA_TELA))[0];
+
+  useEffect(() => {
+    if (!estadoPublico.prazoFaseEm) return;
+    const restante = Math.max(0, estadoPublico.prazoFaseEm - Date.now());
+
+    Animated.timing(barraLargura, {
+      toValue: 0,
+      duration: restante,
+      useNativeDriver: false,
+    }).start();
+
+    return () => barraLargura.stopAnimation();
+  }, [estadoPublico.prazoFaseEm, barraLargura]);
 
   // Determinar papel e ações disponíveis
   const acoesDisponiveis = estadoPrivado ? derivarAcoesNoturnas(estadoPrivado) : [];
@@ -86,9 +106,8 @@ export function TelaNoite({ estadoPublico, estadoPrivado, jogadorId, mapaNomes, 
         <View style={estilos.centro}>
           <Text style={estilos.textoAguarde}>aguarde.</Text>
         </View>
-        <View style={estilos.barraContainer}>
-          <View style={estilos.barraNoite} />
-        </View>
+        {/* Barra de progresso da noite — ancora o inocente no tempo */}
+        <Animated.View style={[estilos.barraNoite, { width: barraLargura }]} />
       </SafeAreaView>
     );
   }
@@ -100,9 +119,7 @@ export function TelaNoite({ estadoPublico, estadoPrivado, jogadorId, mapaNomes, 
         <View style={estilos.centro}>
           <Text style={estilos.textoAguarde}>aguarde.</Text>
         </View>
-        <View style={estilos.barraContainer}>
-          <View style={estilos.barraNoite} />
-        </View>
+        <Animated.View style={[estilos.barraNoite, { width: barraLargura }]} />
       </SafeAreaView>
     );
   }
@@ -111,25 +128,25 @@ export function TelaNoite({ estadoPublico, estadoPrivado, jogadorId, mapaNomes, 
   if (isCorrompido && !acaoEscolhida) {
     return (
       <SafeAreaView style={estilos.container}>
-        <View style={estilos.cabecalho}>
-          <Text style={estilos.labelCabecalho}>escolha o tipo</Text>
+        <View style={estilos.flex1}>
+          <View style={estilos.acoes}>
+            <TouchableOpacity
+              style={estilos.botaoAcao}
+              onPress={() => setAcaoEscolhida('eliminar')}
+              activeOpacity={0.8}
+            >
+              <Text style={estilos.textoBotaoAcao}>eliminar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={estilos.botaoAcao}
+              onPress={() => setAcaoEscolhida('contaminar')}
+              activeOpacity={0.8}
+            >
+              <Text style={estilos.textoBotaoAcao}>contaminar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={estilos.acoes}>
-          <TouchableOpacity
-            style={estilos.botaoAcao}
-            onPress={() => setAcaoEscolhida('eliminar')}
-            activeOpacity={0.8}
-          >
-            <Text style={estilos.textoBotaoAcao}>eliminar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={estilos.botaoAcao}
-            onPress={() => setAcaoEscolhida('contaminar')}
-            activeOpacity={0.8}
-          >
-            <Text style={estilos.textoBotaoAcao}>contaminar</Text>
-          </TouchableOpacity>
-        </View>
+        <Animated.View style={[estilos.barraNoite, { width: barraLargura }]} />
       </SafeAreaView>
     );
   }
@@ -137,7 +154,9 @@ export function TelaNoite({ estadoPublico, estadoPrivado, jogadorId, mapaNomes, 
   // ── Guardião ou corrompido após escolher ação: escolher alvo ─────────────────
   const labelTopo = isGuardiao
     ? 'quem você protege?'
-    : `ação: ${acaoEscolhida} — escolha o alvo`;
+    : acaoEscolhida === 'eliminar'
+      ? 'quem você elimina?'
+      : 'quem você contamina?';
 
   const renderAlvo = ({ item: id }: { item: PlayerId }) => {
     const selecionado = alvoEscolhido === id;
@@ -162,6 +181,15 @@ export function TelaNoite({ estadoPublico, estadoPrivado, jogadorId, mapaNomes, 
   return (
     <SafeAreaView style={estilos.container}>
       <View style={estilos.cabecalho}>
+        {/* Corrompido pode voltar e escolher outro tipo de ação */}
+        {isCorrompido && (
+          <TouchableOpacity
+            onPress={() => { setAcaoEscolhida(null); setAlvoEscolhido(null); }}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
+            <Text style={estilos.labelVoltar}>← voltar</Text>
+          </TouchableOpacity>
+        )}
         <Text style={estilos.labelCabecalho}>{labelTopo}</Text>
       </View>
 
@@ -185,6 +213,8 @@ export function TelaNoite({ estadoPublico, estadoPrivado, jogadorId, mapaNomes, 
           </Text>
         </TouchableOpacity>
       </View>
+
+      <Animated.View style={[estilos.barraNoite, { width: barraLargura }]} />
     </SafeAreaView>
   );
 }
@@ -207,24 +237,33 @@ const estilos = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: tipografia.spacingHero,
   },
-  barraContainer: {
-    paddingBottom: 0,
-  },
   barraNoite: {
     height: 2,
     backgroundColor: COR_NOITE_LINHA,
-    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
   },
   cabecalho: {
     paddingHorizontal: espacamento.lg,
     paddingTop: espacamento.lg,
     paddingBottom: espacamento.md,
+    gap: espacamento.xs,
   },
   labelCabecalho: {
     fontSize: 14,
     fontFamily: familias.sans,
     color: COR_NOITE_MUDO,
     letterSpacing: 0.5,
+  },
+  labelVoltar: {
+    fontSize: 12,
+    fontFamily: familias.sans,
+    color: COR_NOITE_MUDO,
+    letterSpacing: 0.3,
+  },
+  flex1: {
+    flex: 1,
   },
   acoes: {
     flex: 1,

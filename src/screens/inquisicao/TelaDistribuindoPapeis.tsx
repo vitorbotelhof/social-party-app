@@ -29,9 +29,7 @@ const COR_GUARDIAO = '#22C55E';
 interface Props {
   estadoPrivado: EstadoPrivadoInquisicao;
   jogadorId: PlayerId;
-  jogadoresAtivos: PlayerId[];
   mapaNomes: Map<PlayerId, string>;
-  loop: number;
   onPronto: () => void;
 }
 
@@ -81,6 +79,14 @@ export function TelaDistribuindoPapeis({
   const isCorrompido = faccao === 'corrompidos';
   const aliados = estadoPrivado.corrompidosConhecidos.filter((id) => id !== jogadorId);
 
+  // Subtítulo contextual por papel — onboarding implícito sem tutorial explícito
+  const subtituloPapel =
+    papel === 'corrompido'
+      ? 'elimine os inocentes. não seja descoberto.'
+      : papel === 'guardiao'
+        ? 'proteja um jogador por noite. você é um inocente.'
+        : 'descubra os corrompidos. vote sabiamente.';
+
   const handlePronto = () => {
     setPronto(true);
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -99,6 +105,9 @@ export function TelaDistribuindoPapeis({
         <Text style={[estilos.nomePapel, { color: corDoPapel(papel) }]}>
           {papel}
         </Text>
+
+        {/* Micro-descrição contextual — onboarding implícito por papel */}
+        <Text style={estilos.subtituloPapel}>{subtituloPapel}</Text>
 
         {/* Aliados: corrompidos veem quem está do seu lado — sem header */}
         {isCorrompido && aliados.length > 0 && (
@@ -149,6 +158,14 @@ const estilos = StyleSheet.create({
     fontFamily: familias.serifDisplay,
     textAlign: 'center',
     letterSpacing: tipografia.spacingHero,
+  },
+  subtituloPapel: {
+    fontSize: tipografia.tamanhoCorpoMenor,
+    fontFamily: familias.sans,
+    color: cores.textoMudo,
+    textAlign: 'center',
+    marginTop: espacamento.sm,
+    letterSpacing: 0.3,
   },
   separador: {
     height: 1,

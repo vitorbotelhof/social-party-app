@@ -55,10 +55,11 @@ const DURACAO_VOTANDO_MS = 30_000;
 /**
  * Duração da fase de apuração do resultado da votação (ms).
  *
- * Breve: apenas tempo para o app exibir a consequência e o grupo absorver.
- * A conversa sobre o que aconteceu fluirá naturalmente na próxima fase.
+ * 7s: tempo suficiente para absorver o resultado emocionalmente antes
+ * de avançar para a noite. 5s era curto demais — a eliminação chegava
+ * antes do grupo processar quem havia sido eliminado.
  */
-const DURACAO_APURANDO_MS = 5_000;
+const DURACAO_APURANDO_MS = 7_000;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // §2  CÁLCULO DE PRAZO DE FASE
@@ -75,7 +76,7 @@ const DURACAO_APURANDO_MS = 5_000;
  *   revelando_papeis → 30s fixo (visualização de papel — início de partida)
  *   conversa         → configuracao.duracaoConversaSegundos (30–50s por intensidade)
  *   votando          → 30s fixo (pressão de decisão)
- *   apurando         → 5s fixo (exibição rápida de consequência)
+ *   apurando         → 7s fixo (absorção emocional da eliminação)
  *   noite            → configuracao.duracaoNoiteMaxSegundos (12–15s por intensidade)
  *   finalizado       → null (permanece até jogadores saírem explicitamente)
  *

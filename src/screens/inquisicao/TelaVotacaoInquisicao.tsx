@@ -199,7 +199,8 @@ const estilos = StyleSheet.create({
     color: cores.texto,
   },
   nomeJogadorSelecionado: {
-    color: '#FFFFFF',
+    // Selecionado tem backgroundColor: cores.texto (claro) — texto deve ser escuro
+    color: cores.fundo,
   },
   rodape: {
     paddingHorizontal: espacamento.lg,

@@ -36,10 +36,15 @@ export function TelaDia({ estadoPublico, estadoPrivado, jogadorId, realtime }: P
   const [segundosRestantes, setSegundosRestantes] = useState(0);
   const [eventoVisivelId, setEventoVisivelId] = useState<string | null>(null);
   const [eventoPrivadoVisivel, setEventoPrivadoVisivel] = useState(false);
+  const [mensagemSistemaVisivel, setMensagemSistemaVisivel] = useState(false);
+  const [mensagemPrivadaVisivel, setMensagemPrivadaVisivel] = useState(false);
 
   const opacidadeEvento = useRef(new Animated.Value(0)).current;
+  const opacidadeMensagemSistema = useRef(new Animated.Value(0)).current;
   const barraLargura = useRef(new Animated.Value(BARRA_LARGURA)).current;
   const timerEventoRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerMensagemSistemaRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const loopMensagemExibidaRef = useRef<number | null>(null);
   const duracaoTotalRef = useRef(0);
 
   // ── Timer countdown ─────────────────────────────────────────────────────────
@@ -104,6 +109,45 @@ export function TelaDia({ estadoPublico, estadoPrivado, jogadorId, realtime }: P
     };
   }, [estadoPublico.eventoAtivo, eventoVisivelId, opacidadeEvento]);
 
+  // ── Mensagem do sistema (pós-noite) ────────────────────────────────────────
+  // Exibe a mensagem ambígua que o engine escreve ao resolver a noite.
+  // Aparece uma vez por loop (primeira entrada em conversa após noite).
+  // Fade in → permanece 4s → fade out.
+  useEffect(() => {
+    const mensagem = estadoPublico.mensagemDoSistema;
+    const loop = estadoPublico.loop;
+
+    // Só exibe se: há mensagem, loop > 1 (primeiro loop não tem noite prévia),
+    // e ainda não foi exibida para este loop.
+    if (!mensagem || loop <= 1 || loopMensagemExibidaRef.current === loop) return;
+
+    loopMensagemExibidaRef.current = loop;
+    setMensagemSistemaVisivel(true);
+
+    if (timerMensagemSistemaRef.current) clearTimeout(timerMensagemSistemaRef.current);
+
+    // Fade in
+    opacidadeMensagemSistema.setValue(0);
+    Animated.timing(opacidadeMensagemSistema, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
+
+    // Após 4s, fade out
+    timerMensagemSistemaRef.current = setTimeout(() => {
+      Animated.timing(opacidadeMensagemSistema, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start(() => setMensagemSistemaVisivel(false));
+    }, 4000);
+
+    return () => {
+      if (timerMensagemSistemaRef.current) clearTimeout(timerMensagemSistemaRef.current);
+    };
+  }, [estadoPublico.mensagemDoSistema, estadoPublico.loop, opacidadeMensagemSistema]);
+
   // ── Evento privado ──────────────────────────────────────────────────────────
   const eventoPrivado = estadoPrivado?.eventoPrivado;
   const temEventoPrivadoPendente = eventoPrivado !== null && eventoPrivado !== undefined && !eventoPrivado.lido;
@@ -114,6 +158,15 @@ export function TelaDia({ estadoPublico, estadoPrivado, jogadorId, realtime }: P
       await realtime.marcarEventoPrivadoLido(jogadorId);
       setEventoPrivadoVisivel(false);
     }, 4000);
+  }, [realtime, jogadorId]);
+
+  // ── Mensagem privada (notificação de corrupção) ─────────────────────────────
+  const mensagemPrivada = estadoPrivado?.mensagemPrivada ?? null;
+  const mensagemPrivadaNaoLida = mensagemPrivada !== null && estadoPrivado?.mensagemLida === false;
+
+  const handleDismissarMensagemPrivada = useCallback(async () => {
+    setMensagemPrivadaVisivel(true);
+    await realtime.marcarMensagemLida(jogadorId);
   }, [realtime, jogadorId]);
 
   const eventoAtual = estadoPublico.eventoAtivo;
@@ -131,6 +184,15 @@ export function TelaDia({ estadoPublico, estadoPrivado, jogadorId, realtime }: P
         {eventoAtual && eventoVisivelId === eventoAtual.id && (
           <Animated.Text style={[estilos.textoEvento, { opacity: opacidadeEvento }]}>
             {eventoAtual.texto}
+          </Animated.Text>
+        )}
+
+        {/* Mensagem pós-noite — aparece no início de cada nova conversa */}
+        {mensagemSistemaVisivel && estadoPublico.mensagemDoSistema && (
+          <Animated.Text
+            style={[estilos.mensagemSistema, { opacity: opacidadeMensagemSistema }]}
+          >
+            {estadoPublico.mensagemDoSistema}
           </Animated.Text>
         )}
       </View>
@@ -152,6 +214,27 @@ export function TelaDia({ estadoPublico, estadoPrivado, jogadorId, realtime }: P
         <View style={estilos.cardPrivadoContainer}>
           <View style={[estilos.cardPrivado, estilos.cardPrivadoAberto]}>
             <Text style={estilos.cardPrivadoTextoAberto}>{eventoPrivado.texto}</Text>
+          </View>
+        </View>
+      )}
+
+      {/* Card de mensagem privada — notificação de corrupção (dismiss manual) */}
+      {mensagemPrivadaNaoLida && !mensagemPrivadaVisivel && (
+        <View style={estilos.cardPrivadoContainer}>
+          <TouchableOpacity
+            style={estilos.cardMensagemPrivada}
+            onPress={handleDismissarMensagemPrivada}
+            activeOpacity={0.85}
+          >
+            <Text style={estilos.cardPrivadoTextoAberto}>mensagem para você</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {mensagemPrivadaVisivel && mensagemPrivada && (
+        <View style={estilos.cardPrivadoContainer}>
+          <View style={[estilos.cardPrivado, estilos.cardPrivadoAberto]}>
+            <Text style={estilos.cardPrivadoTextoAberto}>{mensagemPrivada}</Text>
           </View>
         </View>
       )}
@@ -213,6 +296,16 @@ const estilos = StyleSheet.create({
     paddingVertical: espacamento.lg,
     paddingHorizontal: espacamento.lg,
     alignItems: 'center',
+  },
+  // Card de notificação de corrupção — visual distinto do evento privado
+  cardMensagemPrivada: {
+    backgroundColor: cores.superficieElevada,
+    borderRadius: 12,
+    paddingVertical: espacamento.lg,
+    paddingHorizontal: espacamento.lg,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: cores.borda,
   },
   cardPrivadoAberto: {
     backgroundColor: cores.superficieElevada,

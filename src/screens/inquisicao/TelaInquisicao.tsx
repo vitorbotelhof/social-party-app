@@ -255,9 +255,7 @@ export function TelaInquisicao({ roomCode, jogadorId, onVoltar }: Props) {
         <TelaDistribuindoPapeis
           estadoPrivado={estadoPrivado}
           jogadorId={jogadorId}
-          jogadoresAtivos={estadoPublico.jogadoresAtivos}
           mapaNomes={mapaNomes}
-          loop={estadoPublico.loop}
           onPronto={handlePronto}
         />
       )}

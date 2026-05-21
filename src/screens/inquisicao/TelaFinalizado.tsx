@@ -6,8 +6,9 @@
  * "nova partida" volta para SelecaoJogo — imediato, sem confirmação.
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
+  Animated,
   ScrollView,
   StyleSheet,
   Text,
@@ -47,7 +48,18 @@ export function TelaFinalizado({ estadoPublico, jogadores, jogadorId, onVoltar }
     ? 'corrompidos.'
     : 'inocentes.';
 
+  // Fade-in suave — o resultado do jogo merece um beat de entrada
+  const opacidade = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(opacidade, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [opacidade]);
+
   return (
+    <Animated.View style={[estilos.flex1, { opacity: opacidade }]}>
     <SafeAreaView style={estilos.container}>
 
       {/* Cabeçalho fixo: vencedor em destaque + loops como contexto */}
@@ -87,7 +99,7 @@ export function TelaFinalizado({ estadoPublico, jogadores, jogadorId, onVoltar }
                   )}
                   {convertidoNoLoop !== null && (
                     <Text style={estilos.conversao}>
-                      convertido no loop {convertidoNoLoop}
+                      virou corrompido no loop {convertidoNoLoop}
                     </Text>
                   )}
                 </View>
@@ -109,10 +121,14 @@ export function TelaFinalizado({ estadoPublico, jogadores, jogadorId, onVoltar }
         </TouchableOpacity>
       </View>
     </SafeAreaView>
+    </Animated.View>
   );
 }
 
 const estilos = StyleSheet.create({
+  flex1: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: cores.fundo,

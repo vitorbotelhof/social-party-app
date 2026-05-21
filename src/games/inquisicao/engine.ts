@@ -561,14 +561,11 @@ export class InquisicaoEngine extends GameEngine<
     // ── Early resolution por sub-fase ─────────────────────────────────────
 
     if (subFase === 'votando') {
-      const votacao = estadoPublico.votacaoAtual;
-      if (
-        votacao?.tipo === 'em_andamento' &&
-        Object.keys(votacao.votantesConfirmados).length >= votacao.totalEsperado
-      ) {
-        await this._tentarAvancarSubFase(estado);
-        return;
-      }
+      // Leitura do Firebase para checar se todos votaram — necessário porque
+      // os clientes escrevem em /votosPrivados/* diretamente, nunca via processarAcao.
+      // O _estadoAtual do engine tem votantesConfirmados sempre vazio (stale).
+      await this._verificarEarlyResolutionVotacao(estado);
+      return;
     }
 
     if (subFase === 'noite') {
@@ -609,6 +606,33 @@ export class InquisicaoEngine extends GameEngine<
     );
 
     if (todosAgiram || timerExpirou) {
+      await this._tentarAvancarSubFase(estado);
+    }
+  }
+
+  /**
+   * Verifica se todos os jogadores ativos já submeteram voto.
+   * Se todos votaram OU o timer expirou, avança a sub-fase.
+   *
+   * Lê /votosPrivados/* do Firebase — necessário para ter contagem real
+   * (jogadores escrevem via runTransaction, nunca via processarAcao do engine,
+   * portanto o _estadoAtual.votantesConfirmados é sempre {} no engine).
+   */
+  private async _verificarEarlyResolutionVotacao(estado: EstadoInquisicao): Promise<void> {
+    if (this._callbacks === null) return;
+
+    const votacao = estado.estadoPublico.votacaoAtual;
+    if (votacao?.tipo !== 'em_andamento') return;
+
+    const votos = await this._callbacks.lerVotosPrivados();
+    const todosVotaram = Object.keys(votos).length >= votacao.totalEsperado;
+    const timerExpirou = deveAvancarPorTimer(
+      estado.estadoPublico.prazoFaseEm,
+      'votando',
+      Date.now(),
+    );
+
+    if (todosVotaram || timerExpirou) {
       await this._tentarAvancarSubFase(estado);
     }
   }

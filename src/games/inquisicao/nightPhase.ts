@@ -68,6 +68,7 @@ import {
   verificarCondicaoVitoria,
 } from '@/games/inquisicao/initialState';
 import type { ExtrasTransicaoFase } from '@/games/inquisicao/initialState';
+import { sortearFraseNoite, sortearMensagemCorrupcao } from '@/games/inquisicao/eventos';
 import { sortearProximoLoopDeCorrupcao } from '@/games/inquisicao/roleDistribution';
 import { derivarAcoesNoturnas, derivarFaccao } from '@/games/inquisicao/types';
 import type {
@@ -100,36 +101,9 @@ import type {
  */
 export const DURACAO_LOCK_EXPIRADO_MS = 10_000;
 
-/**
- * Mensagem privada entregue ao jogador convertido.
- *
- * Curta e deliberadamente ambígua — não confirma explicitamente que o
- * jogador é agora um corrompido. Deixa a interpretação em aberto.
- * Escrita em /privados/{convertidoId}/mensagemPrivada.
- */
-const MENSAGEM_CONVERSAO_PRIVADA = 'você mudou.';
-
-/**
- * Pool de mensagens para /estado/mensagemDoSistema após a noite.
- *
- * Regra editorial: NUNCA correlacionar uma mensagem a um resultado específico.
- * Um observador externo não deve deduzir o que aconteceu pela mensagem escolhida.
- * A seleção é aleatória ponderada — mesmo resultado, mensagem diferente possível.
- *
- * ⚠ "a influência se espalhou." é PROIBIDA aqui:
- *   Essa frase existe em socialEvents.ts (categoria 'corrupcao') onde funciona como
- *   FALSO POSITIVO — pode aparecer sem que corrupção tenha ocorrido.
- *   Usá-la pós-noite criaria correlação detectável: "apareceu → conversão ocorreu."
- *   Isso destrói paranoia ao transformar suspeita em dedução.
- */
-const MENSAGENS_POS_NOITE: ReadonlyArray<{
-  readonly texto: string;
-  readonly peso: number;
-}> = [
-  { texto: 'algo mudou.',            peso: 5 }, // 50% — catch-all, sempre plausível
-  { texto: 'a noite passou.',        peso: 3 }, // 30% — neutro, sem indício
-  { texto: 'o grupo ainda respira.', peso: 2 }, // 20% — levemente esperançoso
-] as const;
+// Mensagens de corrupção e frases pós-noite provêm do banco canônico em eventos.ts.
+// sortearMensagemCorrupcao() — 5 variações ponderadas, entregue ao convertido.
+// sortearFraseNoite(ultimaFrase) — 10 variações ponderadas, anti-repetição consecutiva.
 
 // ─────────────────────────────────────────────────────────────────────────────
 // §2  TIPOS INTERNOS E EXPORTADOS
@@ -490,35 +464,10 @@ function selecionarAcaoGuardiao(
 
 // ─────────────────────────────────────────────────────────────────────────────
 // §7  SELEÇÃO DE MENSAGEM PÚBLICA AMBÍGUA
+//
+// Delegada a sortearFraseNoite(ultimaFrase, aleatorio) de eventos.ts.
+// 10 frases ponderadas com anti-repetição consecutiva — banco canônico único.
 // ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Seleciona uma mensagem pós-noite do pool neutro via roleta ponderada.
- *
- * O não-determinismo aqui é INTENCIONAL e DESEJÁVEL:
- *   - Mesmo resultado → mensagem diferente possível entre partidas
- *   - Previne que jogadores aprendam a ler o resultado pela mensagem
- *   - Quebra a correlação mensagem → outcome ao longo do tempo
- *
- * A eliminação de um jogador já é VISÍVEL na UI (jogadoresAtivos diminuiu).
- * O app não precisa confirmar isso verbalmente — "algo mudou." já é
- * suficientemente unsettling quando alguém desapareceu.
- *
- * @param aleatorio Função aleatória injetável para testes (padrão: Math.random)
- */
-function selecionarMensagemPosNoite(aleatorio: () => number = Math.random): string {
-  const pesoTotal = MENSAGENS_POS_NOITE.reduce((soma, m) => soma + m.peso, 0);
-  let alvo = aleatorio() * pesoTotal;
-
-  for (const mensagem of MENSAGENS_POS_NOITE) {
-    alvo -= mensagem.peso;
-    if (alvo <= 0) return mensagem.texto;
-  }
-
-  // Fallback: imprecisão de float — retorna a última mensagem com peso > 0
-  // (MENSAGENS_POS_NOITE é não-vazio por definição — cast seguro)
-  return MENSAGENS_POS_NOITE[MENSAGENS_POS_NOITE.length - 1]!.texto;
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // §8  RESOLUÇÃO INTERNA (função pura central)
@@ -548,6 +497,7 @@ function calcularResolucaoInterna(
   controle: ControleNoiteInquisicao,
   configuracao: ConfiguracaoPartida,
   loop: number,
+  ultimaFrase: string | null,
   aleatorio: () => number,
 ): ResolucaoNoiteInterna {
   // ── 1. Elegibilidade de corrupção ────────────────────────────────────────
@@ -589,12 +539,13 @@ function calcularResolucaoInterna(
   }
 
   // ── 5. Mensagem pública ambígua ───────────────────────────────────────────
+  // Anti-repetição: sortearFraseNoite filtra a frase da noite anterior.
   return {
     eliminado,
     convertido,
     eliminacaoProtegida,
     corrupcaoProtegida,
-    mensagemDoSistema: selecionarMensagemPosNoite(aleatorio),
+    mensagemDoSistema: sortearFraseNoite(ultimaFrase, aleatorio),
   };
 }
 
@@ -629,6 +580,7 @@ function construirPatchesPrivados(
   estadosPrivados: Readonly<Record<PlayerId, EstadoPrivadoInquisicao>>,
   loop: number,
   agora: number,
+  aleatorio: () => number,
 ): ReadonlyMap<PlayerId, Partial<EstadoPrivadoInquisicao>> {
   const patches = new Map<PlayerId, Partial<EstadoPrivadoInquisicao>>();
   const { convertido, eliminado } = resolucao;
@@ -643,11 +595,11 @@ function construirPatchesPrivados(
       convertido,
     ];
 
-    // Patch para o jogador convertido
+    // Patch para o jogador convertido — mensagem selecionada do banco ponderado
     patches.set(convertido, {
       convertidoNoLoop: loop,
       corrompidosConhecidos: todosCorrompidos.filter((id) => id !== convertido),
-      mensagemPrivada: MENSAGEM_CONVERSAO_PRIVADA,
+      mensagemPrivada: sortearMensagemCorrupcao(aleatorio),
       mensagemLida: false,
       atualizadaEm: agora,
     });
@@ -1010,12 +962,15 @@ export function resolverNoite(
   const acaoGuardiao = selecionarAcaoGuardiao(acoesValidadas);
 
   // ── Etapa 3: resolução interna (proteção → eliminação → corrupção) ────────
+  // ultimaFrase: anti-repetição de mensagem pós-noite (nunca a mesma noite seguida)
+  const ultimaFrase = ctx.estadoPublico.mensagemDoSistema ?? null;
   const resolucaoInterna = calcularResolucaoInterna(
     acaoCorrompidos,
     acaoGuardiao,
     controleNoite,
     estadoPublico.configuracao,
     loop,
+    ultimaFrase,
     aleatorio,
   );
 
@@ -1034,6 +989,7 @@ export function resolverNoite(
     ctx.estadosPrivados,
     loop,
     agora,
+    aleatorio,
   );
 
   // ── Etapa 6: atualização pública (vitória, novo loop, mensagem, limpeza) ──
