@@ -56,6 +56,9 @@ export function iniciarSessao(
     acoesCorrompidas: 0,
     acertosLeitura: 0,
     vezesDesconhecido: 0,
+    acertosFazAi: 0,
+    passesFazAi: 0,
+    turnosCaoticosFazAi: 0,
   }));
 
   sessaoAtual = {
@@ -138,7 +141,9 @@ export function registrarJogoIniciado(jogoId: GameId): void {
  */
 export function registrarJogoFinalizado(
   jogoId: GameId,
-  dados: Partial<Omit<JogoSessao, 'jogoId' | 'iniciadoEm' | 'finalizadoEm' | 'momentos'>>,
+  dados: Partial<
+    Omit<JogoSessao, 'jogoId' | 'iniciadoEm' | 'finalizadoEm' | 'momentos'>
+  >,
 ): void {
   if (!sessaoAtual) return;
 

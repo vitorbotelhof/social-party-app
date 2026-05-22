@@ -27,14 +27,19 @@ import type { TemperaturaEmocional, TipoMomento } from './types';
 // Permite que o DebugPanelInquisicao observe mudanças de temperatura
 // sem acoplar o módulo de sessão ao código de debug.
 
-type DebugTemperaturaFn = (temp: TemperaturaEmocional, momento: TipoMomento | null) => void;
+type DebugTemperaturaFn = (
+  temp: TemperaturaEmocional,
+  momento: TipoMomento | null,
+) => void;
 let _debugCallback: DebugTemperaturaFn | null = null;
 
 /**
  * Registra callback que dispara após cada mudança de temperatura.
  * No-op em produção — guard interno garante zero overhead.
  */
-export function __dev__setTemperaturaCallback(fn: DebugTemperaturaFn | null): void {
+export function __dev__setTemperaturaCallback(
+  fn: DebugTemperaturaFn | null,
+): void {
   if (__DEV__) _debugCallback = fn;
 }
 
@@ -56,6 +61,11 @@ const PESO_MOMENTOS_CAOS: Partial<Record<TipoMomento, number>> = {
   inversao: 2,
   paranoia_maxima: 1,
   colapso_inquisicao: 2,
+  // Faz Aí
+  surto_faz_ai: 2,
+  vergonha_coletiva: 1,
+  atuacao_duvidosa: 1,
+  identificacao_imediata: 1,
 };
 
 // ─── Cálculo de peso total ────────────────────────────────────────────────────
@@ -79,7 +89,7 @@ function calcularNovaTemperatura(): TemperaturaEmocional {
 
   // Grupo paranoico evolui mais rápido — thresholds reduzidos em 1
   const paranoico = sessao.grupoIdentidade === 'paranoico';
-  const limiarQuente  = paranoico ? 1 : 2;
+  const limiarQuente = paranoico ? 1 : 2;
   const limiarColapso = paranoico ? 4 : 5;
   const limiarColapsoDeCima = paranoico ? 3 : 4;
 

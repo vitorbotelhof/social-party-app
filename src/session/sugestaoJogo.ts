@@ -26,10 +26,16 @@ import type { DefinicaoJogo } from '@/games/gameRegistry';
  * Ordem de rotação padrão — usada como fallback quando nenhuma regra emocional
  * se aplica. Alterna entre tipos de dinâmica para variar a sessão.
  */
-const ROTACAO = ['mrwhite', 'most-likely-to', 'na-ponta-da-lingua', 'inquisicao'] as const;
+const ROTACAO = [
+  'mrwhite',
+  'most-likely-to',
+  'faz-ai',
+  'na-ponta-da-lingua',
+  'inquisicao',
+] as const;
 
 function proximoNaRotacao(jogoAtualId: string): string {
-  const idx = ROTACAO.indexOf(jogoAtualId as typeof ROTACAO[number]);
+  const idx = ROTACAO.indexOf(jogoAtualId as (typeof ROTACAO)[number]);
   return ROTACAO[(idx + 1) % ROTACAO.length]!;
 }
 
@@ -68,10 +74,21 @@ export function sugerirProximoJogo(jogoAtualId: string): DefinicaoJogo | null {
     return resolverJogo('most-likely-to');
   }
 
+  // Após Faz Aí → se o grupo ficou físico demais, troca para leitura social.
+  // Mantém energia sem exigir que todo mundo continue performando.
+  if (jogoAtualId === 'faz-ai') {
+    if (sessao.grupoIdentidade === 'caotico')
+      return resolverJogo('most-likely-to');
+    if (sessao.temperatura === 'colapso')
+      return resolverJogo('voce-me-conhece');
+    return resolverJogo('na-ponta-da-lingua');
+  }
+
   // Após Mr White e grupo destrutivo/caótico → considerar Inquisição para subir tensão.
   if (
     jogoAtualId === 'mrwhite' &&
-    (sessao.grupoIdentidade === 'destrutivo' || sessao.grupoIdentidade === 'caotico') &&
+    (sessao.grupoIdentidade === 'destrutivo' ||
+      sessao.grupoIdentidade === 'caotico') &&
     sessao.temperatura === 'quente'
   ) {
     return resolverJogo('inquisicao');
@@ -95,7 +112,7 @@ export function sugerirProximoJogo(jogoAtualId: string): DefinicaoJogo | null {
         } else if (sessao.grupoIdentidade === 'competitivo') {
           jogoSugeridoId = 'mrwhite';
         } else {
-          jogoSugeridoId = 'na-ponta-da-lingua';
+          jogoSugeridoId = 'faz-ai';
         }
       } else if (jogoAtualId === 'na-ponta-da-lingua') {
         // De NPL: muda a dinâmica para social/dedução.

@@ -271,6 +271,8 @@ export function TelaInicio({ navigation }: Props) {
         navigation.navigate('ConfiguracaoLocalInquisicao');
       } else if (jogoId === 'voce-me-conhece') {
         navigation.navigate('ConfiguracaoLocalVMC');
+      } else if (jogoId === 'faz-ai') {
+        navigation.navigate('ConfiguracaoLocalFazAi');
       } else {
         navigation.navigate('ConfiguracaoLocal');
       }

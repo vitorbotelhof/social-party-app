@@ -277,6 +277,43 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     },
   },
   {
+    id: 'faz-ai',
+    nome: 'Faz Aí',
+    slogan: 'atua logo. o grupo grita.',
+    descricao:
+      'Um jogo de atuação social moderna. Você recebe uma situação extremamente reconhecível, tenta representar com o corpo, e o grupo precisa descobrir antes do tempo acabar.',
+    cover: require('../../assets/games/faz-ai/cover.png'),
+    banner: require('../../assets/games/faz-ai/banner.png'),
+    minJogadores: 3,
+    maxJogadores: 12,
+    tempoMedio: '10-25 min',
+    intensidade: 3,
+    disponivel: true,
+    supportsLocal: true,
+    supportsRealtime: false,
+    socialTags: ['atuação', 'improviso', 'vergonha'],
+    categorias: ['festa_barulho', 'humor_absurdo', 'votacao_exposicao'],
+    destaque: true,
+    ordemNaCategoria: 1,
+    instrucoes: {
+      objetivo:
+        'Fazer o grupo reconhecer uma situação social moderna só pela sua atuação. Não é teatro. É vergonha física, improviso ruim e identificação imediata.',
+      passos: [
+        'Na sua vez, pegue o celular e veja a situação em segredo.',
+        'Comece a atuar rápido. Sem explicar, sem ler a carta, sem dar aula.',
+        'O grupo grita respostas tentando descobrir qual situação você está representando.',
+        'Se acertarem, marque acerto e a próxima carta aparece na hora.',
+        'Se travar, passe. O ritmo vale mais que a dignidade.',
+        'Quando o tempo acabar, o celular vai para a próxima pessoa.',
+      ],
+      dicas: [
+        'Atuar mal é parte do jogo. Quanto mais específico o gesto, melhor.',
+        'Use corpo, cara, silêncio, vergonha e exagero. Só não explique demais.',
+        'O jogo fica melhor quando o grupo reconhece alguém da vida real na cena.',
+      ],
+    },
+  },
+  {
     id: 'eu-nunca',
     nome: 'Eu Nunca',
     slogan: 'Revelações, confissões e muita risada',

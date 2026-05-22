@@ -37,15 +37,18 @@ function destaqueClutch(
   jogadores: SessaoJogador[],
   _nomes: Map<PlayerId, string>,
 ): DestaqueJogador | null {
-  const top = [...jogadores].sort((a, b) => b.clutchsMrWhite - a.clutchsMrWhite)[0];
+  const top = [...jogadores].sort(
+    (a, b) => b.clutchsMrWhite - a.clutchsMrWhite,
+  )[0];
   if (!top || top.clutchsMrWhite < 1) return null;
 
   return {
     jogadorId: top.id,
     titulo: 'o escapista',
-    descricao: top.clutchsMrWhite === 1
-      ? 'foi mr white e adivinhou a palavra'
-      : `foi mr white ${top.clutchsMrWhite}x e adivinhou`,
+    descricao:
+      top.clutchsMrWhite === 1
+        ? 'foi mr white e adivinhou a palavra'
+        : `foi mr white ${top.clutchsMrWhite}x e adivinhou`,
   };
 }
 
@@ -95,15 +98,18 @@ function destaqueContaminado(
   jogadores: SessaoJogador[],
   _nomes: Map<PlayerId, string>,
 ): DestaqueJogador | null {
-  const top = [...jogadores].sort((a, b) => b.vezesContaminado - a.vezesContaminado)[0];
+  const top = [...jogadores].sort(
+    (a, b) => b.vezesContaminado - a.vezesContaminado,
+  )[0];
   if (!top || top.vezesContaminado < 1) return null;
 
   return {
     jogadorId: top.id,
     titulo: 'o corrompido oculto',
-    descricao: top.vezesContaminado === 1
-      ? 'foi convertido durante a noite — ninguém percebeu'
-      : `foi convertido ${top.vezesContaminado}x — virou o inimigo`,
+    descricao:
+      top.vezesContaminado === 1
+        ? 'foi convertido durante a noite — ninguém percebeu'
+        : `foi convertido ${top.vezesContaminado}x — virou o inimigo`,
   };
 }
 
@@ -111,7 +117,9 @@ function destaqueAgenteDuplo(
   jogadores: SessaoJogador[],
   _nomes: Map<PlayerId, string>,
 ): DestaqueJogador | null {
-  const top = [...jogadores].sort((a, b) => b.acoesCorrompidas - a.acoesCorrompidas)[0];
+  const top = [...jogadores].sort(
+    (a, b) => b.acoesCorrompidas - a.acoesCorrompidas,
+  )[0];
   if (!top || top.acoesCorrompidas < 2) return null;
 
   return {
@@ -125,13 +133,62 @@ function destaqueEliminado(
   jogadores: SessaoJogador[],
   _nomes: Map<PlayerId, string>,
 ): DestaqueJogador | null {
-  const top = [...jogadores].sort((a, b) => b.vezesEliminado - a.vezesEliminado)[0];
+  const top = [...jogadores].sort(
+    (a, b) => b.vezesEliminado - a.vezesEliminado,
+  )[0];
   if (!top || top.vezesEliminado < 2) return null;
 
   return {
     jogadorId: top.id,
     titulo: 'o mais eliminado',
     descricao: `foi eliminado por votação ${top.vezesEliminado}x na sessão`,
+  };
+}
+
+function destaqueAcertosFazAi(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort((a, b) => b.acertosFazAi - a.acertosFazAi)[0];
+  if (!top || top.acertosFazAi < 4) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o mais reconhecível',
+    descricao: `${top.acertosFazAi} cenas acertadas no faz aí`,
+  };
+}
+
+function destaqueAtuacaoDuvidosaFazAi(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort((a, b) => b.passesFazAi - a.passesFazAi)[0];
+  if (!top || top.passesFazAi < 3) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'atuação questionável',
+    descricao: `${top.passesFazAi} cenas passaram sem o grupo entender`,
+  };
+}
+
+function destaqueCaosFazAi(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort(
+    (a, b) => b.turnosCaoticosFazAi - a.turnosCaoticosFazAi,
+  )[0];
+  if (!top || top.turnosCaoticosFazAi < 1) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o corpo do caos',
+    descricao:
+      top.turnosCaoticosFazAi === 1
+        ? 'teve um turno de energia social alta'
+        : `${top.turnosCaoticosFazAi} turnos de energia social alta`,
   };
 }
 
@@ -149,6 +206,10 @@ function gerarDestaquesJogadores(
     destaqueContaminado(jogadores, nomes),
     destaqueAgenteDuplo(jogadores, nomes),
     destaqueEliminado(jogadores, nomes),
+    // Faz Aí
+    destaqueAcertosFazAi(jogadores, nomes),
+    destaqueCaosFazAi(jogadores, nomes),
+    destaqueAtuacaoDuvidosaFazAi(jogadores, nomes),
   ].filter((d): d is DestaqueJogador => d !== null);
 
   // Evita destacar a mesma pessoa duas vezes — mantém o primeiro destaque
@@ -175,10 +236,15 @@ const PRIORIDADE_MOMENTO: Record<string, number> = {
   julgamento: 50,
   colapso_npl: 40,
   // Inquisição
-  inversao: 88,         // corrompidos venceram — foto da sessão poderosa
+  inversao: 88, // corrompidos venceram — foto da sessão poderosa
   colapso_inquisicao: 85, // grupo eliminou inocente — momento mais doloroso
   corrupcao_revelada: 75, // conversão revelada — tensão social alta
-  paranoia_maxima: 68,  // empate caótico — ninguém chegou a um acordo
+  paranoia_maxima: 68, // empate caótico — ninguém chegou a um acordo
+  // Faz Aí
+  surto_faz_ai: 82,
+  vergonha_coletiva: 72,
+  identificacao_imediata: 62,
+  atuacao_duvidosa: 48,
 };
 
 function escolherMomentoDaSessao(momentos: Momento[]): Momento | null {
@@ -200,7 +266,9 @@ function gerarFraseFinal(sessao: ReturnType<typeof getSessaoAtual>): string {
   if (callbackDossie) return callbackDossie;
 
   // Fallback genérico
-  const jogos = sessao.jogosDaSessao.filter((j) => j.finalizadoEm !== null).length;
+  const jogos = sessao.jogosDaSessao.filter(
+    (j) => j.finalizadoEm !== null,
+  ).length;
   const min = Math.round((Date.now() - sessao.iniciadoEm) / 60000);
   return `${jogos} ${jogos === 1 ? 'jogo' : 'jogos'} em ${min} minutos.`;
 }
@@ -215,10 +283,14 @@ export function gerarDossie(): DossieDoCapos | null {
   const sessao = getSessaoAtual();
   if (!sessao) return null;
 
-  const jogosCompletos = sessao.jogosDaSessao.filter((j) => j.finalizadoEm !== null);
+  const jogosCompletos = sessao.jogosDaSessao.filter(
+    (j) => j.finalizadoEm !== null,
+  );
   if (jogosCompletos.length === 0) return null;
 
-  const nomes = new Map(sessao.jogadores.map((j) => [j.id as PlayerId, j.nome]));
+  const nomes = new Map(
+    sessao.jogadores.map((j) => [j.id as PlayerId, j.nome]),
+  );
   const duracaoMs = (sessao.finalizadoEm ?? Date.now()) - sessao.iniciadoEm;
 
   return {

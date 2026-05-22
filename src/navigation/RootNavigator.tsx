@@ -15,7 +15,9 @@ import { TelaConfiguracaoJogo } from '@/screens/TelaConfiguracaoJogo';
 import { TelaConfiguracaoInquisicao } from '@/screens/TelaConfiguracaoInquisicao';
 import { TelaConfiguracaoLocal } from '@/screens/TelaConfiguracaoLocal';
 import { TelaConfiguracaoLocalMostLikely } from '@/screens/TelaConfiguracaoLocalMostLikely';
+import { TelaConfiguracaoLocalFazAi } from '@/screens/TelaConfiguracaoLocalFazAi';
 import { TelaConfiguracaoLocalNaPontaDaLingua } from '@/screens/TelaConfiguracaoLocalNaPontaDaLingua';
+import { TelaJogoLocalFazAi } from '@/screens/TelaJogoLocalFazAi';
 import { TelaJogoLocalMostLikely } from '@/screens/TelaJogoLocalMostLikely';
 import { TelaJogoLocalNaPontaDaLingua } from '@/screens/TelaJogoLocalNaPontaDaLingua';
 import { TelaConfiguracaoMostLikely } from '@/screens/TelaConfiguracaoMostLikely';
@@ -241,6 +243,11 @@ export function RootNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
+        name="ConfiguracaoLocalFazAi"
+        component={TelaConfiguracaoLocalFazAi}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="JogoLocalVMC"
         component={JogoLocalVMCScreen}
         options={{
@@ -261,6 +268,15 @@ export function RootNavigator() {
       <Stack.Screen
         name="JogoLocalNaPontaDaLingua"
         component={TelaJogoLocalNaPontaDaLingua}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
+      />
+      <Stack.Screen
+        name="JogoLocalFazAi"
+        component={TelaJogoLocalFazAi}
         options={{
           headerShown: false,
           animation: 'fade_from_bottom',

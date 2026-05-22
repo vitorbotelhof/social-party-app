@@ -1,4 +1,5 @@
 import { registrarJogo } from '@/engine/registry';
+import { fazAiEngine } from '@/games/faz-ai/engine';
 import { mrWhiteEngine } from '@/games/mr-white';
 import { mostLikelyEngine } from '@/games/most-likely-to';
 
@@ -12,7 +13,8 @@ export function registrarJogosDisponiveis(): void {
   if (jogosForamRegistrados) return;
   registrarJogo(mrWhiteEngine);
   registrarJogo(mostLikelyEngine);
+  registrarJogo(fazAiEngine);
   jogosForamRegistrados = true;
 }
 
-export { mrWhiteEngine, mostLikelyEngine };
+export { fazAiEngine, mrWhiteEngine, mostLikelyEngine };

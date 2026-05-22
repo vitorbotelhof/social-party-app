@@ -40,24 +40,29 @@ export type GrupoIdentidade =
  * Cada tipo alimenta callbacks, identidade de grupo e dossiê.
  */
 export type TipoMomento =
-  | 'unanimidade'         // todos votaram na mesma pessoa (MLT ou voting)
-  | 'clutch'              // Mr White adivinhou corretamente
-  | 'sobrevivente'        // Mr White sobreviveu múltiplas rodadas de votação
-  | 'colapso_npl'         // NPL: turno com mais falhas que acertos
-  | 'paranoia_total'      // votação caótica / empate geral — ninguém acorda
-  | 'julgamento'          // MLT: prompt de alta exposição com consenso rápido
-  | 'revelacao'           // resultado inesperado — coalizão que ninguém esperava
-  | 'virada'              // Mr White venceu após estar em vantagem dos civis
-  | 'perfeito'            // NPL: turno sem nenhuma falha
+  | 'unanimidade' // todos votaram na mesma pessoa (MLT ou voting)
+  | 'clutch' // Mr White adivinhou corretamente
+  | 'sobrevivente' // Mr White sobreviveu múltiplas rodadas de votação
+  | 'colapso_npl' // NPL: turno com mais falhas que acertos
+  | 'paranoia_total' // votação caótica / empate geral — ninguém acorda
+  | 'julgamento' // MLT: prompt de alta exposição com consenso rápido
+  | 'revelacao' // resultado inesperado — coalizão que ninguém esperava
+  | 'virada' // Mr White venceu após estar em vantagem dos civis
+  | 'perfeito' // NPL: turno sem nenhuma falha
   // ── Inquisição ──────────────────────────────────────────────────────────────
-  | 'corrupcao_revelada'  // inocente foi convertido — grupo encolheu por dentro
-  | 'inversao'            // corrompidos venceram — grupo dominado pela corrupção
-  | 'paranoia_maxima'     // votação empatada / sem maioria — ninguém eliminado
-  | 'colapso_inquisicao'  // grupo votou e eliminou um inocente por engano
+  | 'corrupcao_revelada' // inocente foi convertido — grupo encolheu por dentro
+  | 'inversao' // corrompidos venceram — grupo dominado pela corrupção
+  | 'paranoia_maxima' // votação empatada / sem maioria — ninguém eliminado
+  | 'colapso_inquisicao' // grupo votou e eliminou um inocente por engano
   // ── Você Me Conhece? ────────────────────────────────────────────────────────
   | 'leitura_perfeita_vmc' // todos previram corretamente a escolha do ranqueador
-  | 'desconhecido_vmc'     // ninguém acertou — ranqueador é um mistério para o grupo
-  | 'sinergia_vmc';        // >70% de acerto no jogo — grupo muito sincronizado
+  | 'desconhecido_vmc' // ninguém acertou — ranqueador é um mistério para o grupo
+  | 'sinergia_vmc' // >70% de acerto no jogo — grupo muito sincronizado
+  // ── Faz Aí ─────────────────────────────────────────────────────────────────
+  | 'surto_faz_ai' // carta absurda/caótica acertada rápido
+  | 'vergonha_coletiva' // sequência com alta exposição social
+  | 'atuacao_duvidosa' // turno com muitos passes e pouco acerto
+  | 'identificacao_imediata'; // carta reconhecida em poucos segundos
 
 export interface Momento {
   id: string;
@@ -117,6 +122,17 @@ export interface VMCSessaoStats {
   categorias: string[];
 }
 
+export interface FazAiSessaoStats {
+  totalTurnos: number;
+  totalCartas: number;
+  jogadorMaisCaoticoId: PlayerId | null;
+  quemMaisAcertaId: PlayerId | null;
+  quemAtuaPiorId: PlayerId | null;
+  energiaMediaGrupo: number;
+  vergonhaColetiva: number;
+  categoriasFavoritas: string[];
+}
+
 export interface JogoSessao {
   jogoId: GameId;
   iniciadoEm: number;
@@ -128,6 +144,7 @@ export interface JogoSessao {
   npl?: NPLSessaoStats;
   inquisicao?: InquisicaoSessaoStats;
   vmc?: VMCSessaoStats;
+  fazAi?: FazAiSessaoStats;
 }
 
 // ─── Jogador na sessão ────────────────────────────────────────────────────────
@@ -141,26 +158,31 @@ export interface SessaoJogador {
   nome: string;
 
   // MLT
-  vezesJulgado: number;   // foi o mais votado em uma rodada MLT
+  vezesJulgado: number; // foi o mais votado em uma rodada MLT
 
   // Mr White — votação
-  vezesVotado: number;    // recebeu votos na eliminação do Mr White
+  vezesVotado: number; // recebeu votos na eliminação do Mr White
 
   // Mr White — papel
   clutchsMrWhite: number; // acertou a palavra como Mr White
 
   // NPL
-  colapsos: number;       // turnos com mais falhas que acertos
-  pontosTotais: number;   // pontos acumulados no NPL
+  colapsos: number; // turnos com mais falhas que acertos
+  pontosTotais: number; // pontos acumulados no NPL
 
   // Inquisição
-  vezesEliminado: number;   // foi eliminado por votação do grupo
+  vezesEliminado: number; // foi eliminado por votação do grupo
   vezesContaminado: number; // foi convertido para corrompido durante a noite
   acoesCorrompidas: number; // executou ações noturnas como corrompido
 
   // Você Me Conhece?
-  acertosLeitura: number;   // acertou a previsão sobre o ranqueador
+  acertosLeitura: number; // acertou a previsão sobre o ranqueador
   vezesDesconhecido: number; // foi ranqueador e ninguém acertou sua escolha
+
+  // Faz Aí
+  acertosFazAi: number; // cartas reconhecidas durante atuações
+  passesFazAi: number; // cartas puladas ou perdidas no tempo
+  turnosCaoticosFazAi: number; // turnos de alta energia/vergonha
 }
 
 // ─── Sessão ───────────────────────────────────────────────────────────────────
@@ -222,10 +244,10 @@ export interface DossieDoCapos {
 // ─── Callback Engine ──────────────────────────────────────────────────────────
 
 export type MomentoCallback =
-  | 'pos_jogo'        // logo após um jogo terminar
-  | 'entre_jogos'     // na tela de seleção entre jogos
-  | 'pos_resultado'   // após reveal de resultado dentro de um jogo
-  | 'dossie';         // no dossiê final
+  | 'pos_jogo' // logo após um jogo terminar
+  | 'entre_jogos' // na tela de seleção entre jogos
+  | 'pos_resultado' // após reveal de resultado dentro de um jogo
+  | 'dossie'; // no dossiê final
 
 export interface CallbackTemplate {
   id: string;

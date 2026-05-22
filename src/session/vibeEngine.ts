@@ -29,7 +29,8 @@ const JOGO_POR_VIBE: Record<string, CategoriaEmocional> = {
   'mr-white': 'tensao_misterio',
   'most-likely-to': 'votacao_exposicao',
   'na-ponta-da-lingua': 'festa_barulho',
-  'inquisicao': 'tensao_misterio',
+  inquisicao: 'tensao_misterio',
+  'faz-ai': 'festa_barulho',
 };
 
 // ─── Pontuação de vibe ────────────────────────────────────────────────────────
@@ -94,6 +95,29 @@ function pontuarVibes(): Map<CategoriaEmocional, number> {
   if (colapsos_inq >= 1) {
     add('revelacoes_caos', colapsos_inq * 2);
     add('quem_voces_sao', colapsos_inq);
+  }
+
+  // Faz Aí: energia física + exposição social
+  const surtosFazAi = contarMomentos('surto_faz_ai');
+  const vergonhasFazAi = contarMomentos('vergonha_coletiva');
+  const atuacoesDuvidosas = contarMomentos('atuacao_duvidosa');
+  const identificacoesImediatas = contarMomentos('identificacao_imediata');
+
+  if (surtosFazAi >= 1) {
+    add('festa_barulho', surtosFazAi * 3);
+    add('humor_absurdo', surtosFazAi * 2);
+  }
+  if (vergonhasFazAi >= 1) {
+    add('votacao_exposicao', vergonhasFazAi * 2);
+    add('quem_voces_sao', vergonhasFazAi);
+  }
+  if (atuacoesDuvidosas >= 1) {
+    add('humor_absurdo', atuacoesDuvidosas * 2);
+    add('festa_barulho', atuacoesDuvidosas);
+  }
+  if (identificacoesImediatas >= 2) {
+    add('quem_voces_sao', identificacoesImediatas);
+    add('festa_barulho', identificacoesImediatas);
   }
 
   // Temperatura geral → revelacoes_caos

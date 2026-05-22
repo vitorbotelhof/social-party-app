@@ -24,13 +24,13 @@ import type { GrupoIdentidade } from './types';
 // ─── Thresholds ───────────────────────────────────────────────────────────────
 
 const THRESHOLDS = {
-  caoticoMomentos: 3,       // 3+ momentos de caos → caótico
-  competitivoClutch: 2,     // 2+ clutches → competitivo
-  paranoicoVotacoes: 3,     // 3+ paranoia_total → paranoico
-  intinoUnanimidades: 2,    // 2+ unanimidades → íntimo
-  destivoColapsos: 2,       // 2+ colapsos NPL → destrutivo
+  caoticoMomentos: 3, // 3+ momentos de caos → caótico
+  competitivoClutch: 2, // 2+ clutches → competitivo
+  paranoicoVotacoes: 3, // 3+ paranoia_total → paranoico
+  intinoUnanimidades: 2, // 2+ unanimidades → íntimo
+  destivoColapsos: 2, // 2+ colapsos NPL → destrutivo
   silenciosoMaxMomentos: 1, // ≤1 momento com 2+ jogos → silencioso
-  minimoJogos: 1,           // mínimo para detectar identidade
+  minimoJogos: 1, // mínimo para detectar identidade
 } as const;
 
 // ─── Pontuação por sinal ──────────────────────────────────────────────────────
@@ -54,12 +54,29 @@ function pontuar(): PontuacaoIdentidade[] {
   const inversoes = contarMomentos('inversao');
   const paranoia_max = contarMomentos('paranoia_maxima');
   const colapsos_inq = contarMomentos('colapso_inquisicao');
+  const surtosFazAi = contarMomentos('surto_faz_ai');
+  const vergonhasFazAi = contarMomentos('vergonha_coletiva');
+  const atuacoesDuvidosas = contarMomentos('atuacao_duvidosa');
+  const identificacoesImediatas = contarMomentos('identificacao_imediata');
 
   const totalMomentos =
-    unanimidades + clutches + paranoia + colapsos + viradas +
-    sobreviventes + perfeitos + contarMomentos('julgamento') +
+    unanimidades +
+    clutches +
+    paranoia +
+    colapsos +
+    viradas +
+    sobreviventes +
+    perfeitos +
+    contarMomentos('julgamento') +
     contarMomentos('revelacao') +
-    corrupcoes + inversoes + paranoia_max + colapsos_inq;
+    corrupcoes +
+    inversoes +
+    paranoia_max +
+    colapsos_inq +
+    surtosFazAi +
+    vergonhasFazAi +
+    atuacoesDuvidosas +
+    identificacoesImediatas;
 
   const jogosCompletos = getJogosCompletos().length;
 
@@ -67,7 +84,14 @@ function pontuar(): PontuacaoIdentidade[] {
     {
       identidade: 'caotico',
       // Inquisição: grupo que elimina inocentes e não percebe corrupção é caótico
-      pontos: paranoia * 2 + viradas * 2 + colapsos + colapsos_inq * 3 + corrupcoes,
+      pontos:
+        paranoia * 2 +
+        viradas * 2 +
+        colapsos +
+        colapsos_inq * 3 +
+        corrupcoes +
+        surtosFazAi * 3 +
+        vergonhasFazAi * 2,
     },
     {
       identidade: 'competitivo',
@@ -75,11 +99,17 @@ function pontuar(): PontuacaoIdentidade[] {
     },
     {
       identidade: 'silencioso',
-      pontos: jogosCompletos >= 2 && totalMomentos <= THRESHOLDS.silenciosoMaxMomentos ? 5 : 0,
+      pontos:
+        jogosCompletos >= 2 && totalMomentos <= THRESHOLDS.silenciosoMaxMomentos
+          ? 5
+          : 0,
     },
     {
       identidade: 'eficiente',
-      pontos: perfeitos * 3 + (jogosCompletos >= 2 && totalMomentos <= 2 ? 2 : 0),
+      pontos:
+        perfeitos * 3 +
+        identificacoesImediatas * 2 +
+        (jogosCompletos >= 2 && totalMomentos <= 2 ? 2 : 0),
     },
     {
       identidade: 'paranoico',
@@ -93,7 +123,12 @@ function pontuar(): PontuacaoIdentidade[] {
     {
       identidade: 'destrutivo',
       // Inquisição: corrompidos vencendo e corrupções em cadeia → grupo destrutivo
-      pontos: colapsos * 3 + viradas + inversoes * 3 + corrupcoes * 2,
+      pontos:
+        colapsos * 3 +
+        viradas +
+        inversoes * 3 +
+        corrupcoes * 2 +
+        atuacoesDuvidosas * 2,
     },
   ];
 

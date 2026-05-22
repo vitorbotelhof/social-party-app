@@ -43,10 +43,7 @@ export {
 
 // ─── Group profile ────────────────────────────────────────────────────────────
 
-export {
-  reavaliarGrupo,
-  detectarIdentidadeGrupo,
-} from './groupProfile';
+export { reavaliarGrupo, detectarIdentidadeGrupo } from './groupProfile';
 
 // ─── Callback engine ──────────────────────────────────────────────────────────
 
@@ -62,31 +59,19 @@ export { gerarDossie } from './dossieDoCapos';
 
 // ─── Vibe engine ──────────────────────────────────────────────────────────────
 
-export {
-  detectarVibe,
-  calcularVibe,
-  getVibePorJogo,
-} from './vibeEngine';
+export { detectarVibe, calcularVibe, getVibePorJogo } from './vibeEngine';
 
 // ─── Game adapters ────────────────────────────────────────────────────────────
 
-export {
-  processarResultadoMrWhite,
-} from './mrWhiteAdapter';
+export { processarResultadoMrWhite } from './mrWhiteAdapter';
 
 export type { ResultadoMrWhite } from './mrWhiteAdapter';
 
-export {
-  processarRodadaMLT,
-  processarResultadoMLT,
-} from './mltAdapter';
+export { processarRodadaMLT, processarResultadoMLT } from './mltAdapter';
 
 export type { RodadaMLT, ResultadoMLT } from './mltAdapter';
 
-export {
-  processarTurnoNPL,
-  processarResultadoNPL,
-} from './nplAdapter';
+export { processarTurnoNPL, processarResultadoNPL } from './nplAdapter';
 
 export type { TurnoNPL, ResultadoNPL } from './nplAdapter';
 
@@ -97,6 +82,16 @@ export {
 } from './inquisicaoAdapter';
 
 export type { LoopInquisicao, ResultadoInquisicao } from './inquisicaoAdapter';
+
+export {
+  processarTurnoFazAi,
+  processarResultadoFazAi,
+} from './fazAiLocalAdapter';
+
+export type {
+  RodadaResolvidaFazAi,
+  ResultadoFazAiFinalizado,
+} from '@/games/faz-ai/types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -113,6 +108,7 @@ export type {
   MLTSessaoStats,
   NPLSessaoStats,
   InquisicaoSessaoStats,
+  FazAiSessaoStats,
   DestaqueJogador,
   DossieDoCapos,
   MomentoCallback,

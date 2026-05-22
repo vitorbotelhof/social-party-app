@@ -42,13 +42,13 @@ const TEMPLATES: CallbackTemplate[] = [
     id: 'pos_jogo_mrwhite_clutch',
     momento: 'pos_jogo',
     prioridade: 90,
-    condicao: (s) =>
-      s.momentosMemoraveis.some((m) => m.tipo === 'clutch'),
+    condicao: (s) => s.momentosMemoraveis.some((m) => m.tipo === 'clutch'),
     gerar: (s, nomes) => {
       const clutch = [...s.momentosMemoraveis]
         .reverse()
         .find((m) => m.tipo === 'clutch');
-      if (!clutch || clutch.jogadoresIds.length === 0) return 'essa foi difícil de assistir.';
+      if (!clutch || clutch.jogadoresIds.length === 0)
+        return 'essa foi difícil de assistir.';
       const nome = nomes.get(clutch.jogadoresIds[0]) ?? 'alguém';
       return `${nome} estava jogando no escuro e adivinhou. respeito.`;
     },
@@ -58,13 +58,13 @@ const TEMPLATES: CallbackTemplate[] = [
     id: 'pos_jogo_unanimidade',
     momento: 'pos_jogo',
     prioridade: 85,
-    condicao: (s) =>
-      s.momentosMemoraveis.some((m) => m.tipo === 'unanimidade'),
+    condicao: (s) => s.momentosMemoraveis.some((m) => m.tipo === 'unanimidade'),
     gerar: (s, nomes) => {
       const u = [...s.momentosMemoraveis]
         .reverse()
         .find((m) => m.tipo === 'unanimidade');
-      if (!u || u.jogadoresIds.length === 0) return 'todo mundo concordou uma vez. raro.';
+      if (!u || u.jogadoresIds.length === 0)
+        return 'todo mundo concordou uma vez. raro.';
       const nome = nomes.get(u.jogadoresIds[0]) ?? 'alguém';
       return `todo mundo escolheu ${nome} ao mesmo tempo. nem combinado fica assim.`;
     },
@@ -80,7 +80,8 @@ const TEMPLATES: CallbackTemplate[] = [
       const sv = [...s.momentosMemoraveis]
         .reverse()
         .find((m) => m.tipo === 'sobrevivente');
-      if (!sv || sv.jogadoresIds.length === 0) return 'alguém sobreviveu mais do que devia.';
+      if (!sv || sv.jogadoresIds.length === 0)
+        return 'alguém sobreviveu mais do que devia.';
       const nome = nomes.get(sv.jogadoresIds[0]) ?? 'alguém';
       return `${nome} sobreviveu rodadas suficientes pra ficar confortável demais.`;
     },
@@ -100,7 +101,8 @@ const TEMPLATES: CallbackTemplate[] = [
     id: 'pos_jogo_primeiro',
     momento: 'pos_jogo',
     prioridade: 10,
-    condicao: (s) => s.jogosDaSessao.filter((j) => j.finalizadoEm !== null).length === 1,
+    condicao: (s) =>
+      s.jogosDaSessao.filter((j) => j.finalizadoEm !== null).length === 1,
     gerar: () => 'primeiro jogo. ainda estão se aquecendo.',
   },
 
@@ -110,8 +112,7 @@ const TEMPLATES: CallbackTemplate[] = [
     id: 'entre_jogos_quente',
     momento: 'entre_jogos',
     prioridade: 80,
-    condicao: (s) =>
-      s.temperatura === 'quente' || s.temperatura === 'colapso',
+    condicao: (s) => s.temperatura === 'quente' || s.temperatura === 'colapso',
     gerar: (s) => {
       const n = s.jogosDaSessao.filter((j) => j.finalizadoEm !== null).length;
       return `${n} jogos. a sala já esquentou. qual é o próximo?`;
@@ -157,8 +158,7 @@ const TEMPLATES: CallbackTemplate[] = [
     id: 'pos_resultado_virada',
     momento: 'pos_resultado',
     prioridade: 90,
-    condicao: (s) =>
-      s.momentosMemoraveis.some((m) => m.tipo === 'virada'),
+    condicao: (s) => s.momentosMemoraveis.some((m) => m.tipo === 'virada'),
     gerar: (s, nomes) => {
       const v = [...s.momentosMemoraveis]
         .reverse()
@@ -173,8 +173,7 @@ const TEMPLATES: CallbackTemplate[] = [
     id: 'pos_resultado_perfeito',
     momento: 'pos_resultado',
     prioridade: 85,
-    condicao: (s) =>
-      s.momentosMemoraveis.some((m) => m.tipo === 'perfeito'),
+    condicao: (s) => s.momentosMemoraveis.some((m) => m.tipo === 'perfeito'),
     gerar: (s, nomes) => {
       const p = [...s.momentosMemoraveis]
         .reverse()
@@ -189,13 +188,13 @@ const TEMPLATES: CallbackTemplate[] = [
     id: 'pos_resultado_colapso_npl',
     momento: 'pos_resultado',
     prioridade: 80,
-    condicao: (s) =>
-      s.momentosMemoraveis.some((m) => m.tipo === 'colapso_npl'),
+    condicao: (s) => s.momentosMemoraveis.some((m) => m.tipo === 'colapso_npl'),
     gerar: (s, nomes) => {
       const c = [...s.momentosMemoraveis]
         .reverse()
         .find((m) => m.tipo === 'colapso_npl');
-      if (!c || c.jogadoresIds.length === 0) return 'esse turno foi difícil de ver.';
+      if (!c || c.jogadoresIds.length === 0)
+        return 'esse turno foi difícil de ver.';
       const nome = nomes.get(c.jogadoresIds[0]) ?? 'alguém';
       return `${nome} travou completamente. acontece com todo mundo.`;
     },
@@ -208,9 +207,9 @@ const TEMPLATES: CallbackTemplate[] = [
     momento: 'pos_jogo',
     prioridade: 95,
     condicao: (s) => {
-      const ultimo = [...s.jogosDaSessao].reverse().find(
-        (j) => j.jogoId === 'inquisicao' && j.finalizadoEm !== null,
-      );
+      const ultimo = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'inquisicao' && j.finalizadoEm !== null);
       return ultimo?.inquisicao?.vencedor === 'corrompidos';
     },
     gerar: (s) => {
@@ -227,9 +226,9 @@ const TEMPLATES: CallbackTemplate[] = [
     momento: 'pos_jogo',
     prioridade: 86,
     condicao: (s) => {
-      const ultimo = [...s.jogosDaSessao].reverse().find(
-        (j) => j.jogoId === 'inquisicao' && j.finalizadoEm !== null,
-      );
+      const ultimo = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'inquisicao' && j.finalizadoEm !== null);
       return ultimo?.inquisicao?.vencedor === 'inocentes';
     },
     gerar: () => 'os inocentes sobreviveram. mas ficou perto.',
@@ -240,9 +239,12 @@ const TEMPLATES: CallbackTemplate[] = [
     momento: 'pos_jogo',
     prioridade: 92,
     condicao: (s) =>
-      s.momentosMemoraveis.filter((m) => m.tipo === 'corrupcao_revelada').length >= 2,
+      s.momentosMemoraveis.filter((m) => m.tipo === 'corrupcao_revelada')
+        .length >= 2,
     gerar: (s) => {
-      const n = s.momentosMemoraveis.filter((m) => m.tipo === 'corrupcao_revelada').length;
+      const n = s.momentosMemoraveis.filter(
+        (m) => m.tipo === 'corrupcao_revelada',
+      ).length;
       return `${n} conversões. o grupo mudou de lado sem perceber.`;
     },
   },
@@ -253,13 +255,19 @@ const TEMPLATES: CallbackTemplate[] = [
     prioridade: 84,
     condicao: (s) =>
       s.momentosMemoraveis.some(
-        (m) => m.tipo === 'corrupcao_revelada' && m.dados.eliminarBloqueado === true,
+        (m) =>
+          m.tipo === 'corrupcao_revelada' && m.dados.eliminarBloqueado === true,
       ),
     gerar: (_s, nomes) => {
       const m = [..._s.momentosMemoraveis]
         .reverse()
-        .find((x) => x.tipo === 'corrupcao_revelada' && x.dados.eliminarBloqueado === true);
-      if (!m || m.jogadoresIds.length === 0) return 'alguém salvou alguém. sem saber.';
+        .find(
+          (x) =>
+            x.tipo === 'corrupcao_revelada' &&
+            x.dados.eliminarBloqueado === true,
+        );
+      if (!m || m.jogadoresIds.length === 0)
+        return 'alguém salvou alguém. sem saber.';
       const salvo = nomes.get(m.jogadoresIds[0]) ?? 'alguém';
       return `${salvo} foi salvo pelo guardião sem saber que precisava.`;
     },
@@ -277,7 +285,8 @@ const TEMPLATES: CallbackTemplate[] = [
       const m = [...s.momentosMemoraveis]
         .reverse()
         .find((x) => x.tipo === 'colapso_inquisicao');
-      if (!m || m.jogadoresIds.length === 0) return 'vocês eliminaram alguém inocente.';
+      if (!m || m.jogadoresIds.length === 0)
+        return 'vocês eliminaram alguém inocente.';
       const nome = nomes.get(m.jogadoresIds[0]) ?? 'alguém';
       return `${nome} era inocente. vocês erraram feio.`;
     },
@@ -289,16 +298,14 @@ const TEMPLATES: CallbackTemplate[] = [
     prioridade: 82,
     condicao: (s) =>
       s.momentosMemoraveis.some((m) => m.tipo === 'paranoia_maxima'),
-    gerar: () =>
-      'ninguém chegou a um acordo. a paranoia venceu a lógica.',
+    gerar: () => 'ninguém chegou a um acordo. a paranoia venceu a lógica.',
   },
 
   {
     id: 'inq_inversao_pos_resultado',
     momento: 'pos_resultado',
     prioridade: 88,
-    condicao: (s) =>
-      s.momentosMemoraveis.some((m) => m.tipo === 'inversao'),
+    condicao: (s) => s.momentosMemoraveis.some((m) => m.tipo === 'inversao'),
     gerar: (s) => {
       const inq = [...s.jogosDaSessao]
         .reverse()
@@ -355,9 +362,12 @@ const TEMPLATES: CallbackTemplate[] = [
     momento: 'dossie',
     prioridade: 88,
     condicao: (s) =>
-      s.momentosMemoraveis.filter((m) => m.tipo === 'paranoia_maxima').length >= 2,
+      s.momentosMemoraveis.filter((m) => m.tipo === 'paranoia_maxima').length >=
+      2,
     gerar: (s) => {
-      const n = s.momentosMemoraveis.filter((m) => m.tipo === 'paranoia_maxima').length;
+      const n = s.momentosMemoraveis.filter(
+        (m) => m.tipo === 'paranoia_maxima',
+      ).length;
       return `${n} vezes o grupo empatou. quando todo mundo desconfia, ninguém decide.`;
     },
   },
@@ -375,7 +385,8 @@ const TEMPLATES: CallbackTemplate[] = [
         .reverse()
         .find((j) => j.jogoId === 'voce-me-conhece')?.vmc;
       const melhor = vmc?.melhorLeitorId ? nomes.get(vmc.melhorLeitorId) : null;
-      if (melhor) return `${melhor} leu o grupo como um livro. esse nível de sintonia é raro.`;
+      if (melhor)
+        return `${melhor} leu o grupo como um livro. esse nível de sintonia é raro.`;
       return 'esse grupo se conhece melhor do que admite.';
     },
   },
@@ -390,7 +401,8 @@ const TEMPLATES: CallbackTemplate[] = [
       const m = [...s.momentosMemoraveis]
         .reverse()
         .find((x) => x.tipo === 'desconhecido_vmc');
-      if (!m || m.jogadoresIds.length === 0) return 'alguém aqui é um mistério para o grupo.';
+      if (!m || m.jogadoresIds.length === 0)
+        return 'alguém aqui é um mistério para o grupo.';
       const nome = nomes.get(m.jogadoresIds[0] as PlayerId) ?? 'alguém';
       return `${nome} surpreendeu todo mundo. ninguém acertou uma vez sequer.`;
     },
@@ -401,9 +413,12 @@ const TEMPLATES: CallbackTemplate[] = [
     momento: 'pos_jogo',
     prioridade: 84,
     condicao: (s) =>
-      s.momentosMemoraveis.filter((m) => m.tipo === 'leitura_perfeita_vmc').length >= 2,
+      s.momentosMemoraveis.filter((m) => m.tipo === 'leitura_perfeita_vmc')
+        .length >= 2,
     gerar: (s) => {
-      const n = s.momentosMemoraveis.filter((m) => m.tipo === 'leitura_perfeita_vmc').length;
+      const n = s.momentosMemoraveis.filter(
+        (m) => m.tipo === 'leitura_perfeita_vmc',
+      ).length;
       return `${n} rodadas com leitura perfeita. esse grupo não tem muitos segredos.`;
     },
   },
@@ -417,7 +432,95 @@ const TEMPLATES: CallbackTemplate[] = [
     condicao: (s) =>
       s.grupoIdentidade === 'intimo' &&
       s.jogosDaSessao.some((j) => j.jogoId === 'voce-me-conhece'),
-    gerar: () => 'depois do que viram agora, difícil fingir que não se conhecem.',
+    gerar: () =>
+      'depois do que viram agora, difícil fingir que não se conhecem.',
+  },
+
+  // ── Faz Aí: pós-jogo ──────────────────────────────────────────────────────
+
+  {
+    id: 'faz_ai_pos_surto',
+    momento: 'pos_jogo',
+    prioridade: 94,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'surto_faz_ai'),
+    gerar: (s, nomes) => {
+      const momento = [...s.momentosMemoraveis]
+        .reverse()
+        .find((m) => m.tipo === 'surto_faz_ai');
+      if (!momento || momento.jogadoresIds.length === 0) {
+        return 'teve uma atuação ali que ninguém vai conseguir explicar depois.';
+      }
+      const nome = nomes.get(momento.jogadoresIds[0] as PlayerId) ?? 'alguém';
+      return `${nome} entrou em modo físico. difícil desver.`;
+    },
+  },
+
+  {
+    id: 'faz_ai_pos_identificacao',
+    momento: 'pos_jogo',
+    prioridade: 89,
+    condicao: (s) =>
+      s.momentosMemoraveis.filter((m) => m.tipo === 'identificacao_imediata')
+        .length >= 2,
+    gerar: (s) => {
+      const n = s.momentosMemoraveis.filter(
+        (m) => m.tipo === 'identificacao_imediata',
+      ).length;
+      return `${n} cenas reconhecidas rápido. esse grupo tem repertório demais.`;
+    },
+  },
+
+  {
+    id: 'faz_ai_pos_atuacao_duvidosa',
+    momento: 'pos_jogo',
+    prioridade: 83,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'atuacao_duvidosa'),
+    gerar: (s, nomes) => {
+      const momento = [...s.momentosMemoraveis]
+        .reverse()
+        .find((m) => m.tipo === 'atuacao_duvidosa');
+      if (!momento || momento.jogadoresIds.length === 0) {
+        return 'algumas atuações exigiram fé do grupo.';
+      }
+      const nome = nomes.get(momento.jogadoresIds[0] as PlayerId) ?? 'alguém';
+      return `${nome} fez escolhas artísticas. o grupo não acompanhou.`;
+    },
+  },
+
+  // ── Faz Aí: entre jogos ────────────────────────────────────────────────────
+
+  {
+    id: 'faz_ai_entre_caotico',
+    momento: 'entre_jogos',
+    prioridade: 73,
+    condicao: (s) =>
+      s.grupoIdentidade === 'caotico' &&
+      s.jogosDaSessao.some((j) => j.jogoId === 'faz-ai'),
+    gerar: () => 'depois dessas atuações, qualquer jogo parece normal.',
+  },
+
+  // ── Faz Aí: dossiê ─────────────────────────────────────────────────────────
+
+  {
+    id: 'faz_ai_dossie_vergonha',
+    momento: 'dossie',
+    prioridade: 92,
+    condicao: (s) =>
+      s.jogosDaSessao.some(
+        (j) =>
+          j.jogoId === 'faz-ai' &&
+          j.finalizadoEm !== null &&
+          (j.fazAi?.vergonhaColetiva ?? 0) >= 2.7,
+      ),
+    gerar: (s) => {
+      const fazAi = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'faz-ai')?.fazAi;
+      const total = fazAi?.totalCartas ?? 0;
+      return `${total} cenas depois, ficou claro: esse grupo reconhece vergonha rápido demais.`;
+    },
   },
 
   // ── Dossiê ──────────────────────────────────────────────────────────────────
@@ -439,7 +542,9 @@ const TEMPLATES: CallbackTemplate[] = [
     prioridade: 90,
     condicao: (s) => s.temperatura === 'quente',
     gerar: (s) => {
-      const jogos = s.jogosDaSessao.filter((j) => j.finalizadoEm !== null).length;
+      const jogos = s.jogosDaSessao.filter(
+        (j) => j.finalizadoEm !== null,
+      ).length;
       return `${jogos} jogos, ${s.momentosMemoraveis.length} momentos. boa noite.`;
     },
   },
@@ -450,7 +555,9 @@ const TEMPLATES: CallbackTemplate[] = [
     prioridade: 80,
     condicao: (s) => s.temperatura === 'morno',
     gerar: (s) => {
-      const jogos = s.jogosDaSessao.filter((j) => j.finalizadoEm !== null).length;
+      const jogos = s.jogosDaSessao.filter(
+        (j) => j.finalizadoEm !== null,
+      ).length;
       return `${jogos} ${jogos === 1 ? 'jogo' : 'jogos'}. estava só começando.`;
     },
   },
@@ -477,8 +584,7 @@ export function obterCallback(momento: MomentoCallback): string | null {
 
   const nomes = construirMapaNomes();
 
-  const candidatos = TEMPLATES
-    .filter((t) => t.momento === momento)
+  const candidatos = TEMPLATES.filter((t) => t.momento === momento)
     .filter((t) => !sessao.callbacksUsados.includes(t.id))
     .filter((t) => t.condicao(sessao))
     .sort((a, b) => b.prioridade - a.prioridade);
@@ -499,10 +605,11 @@ export function obterCallbackSimples(
   momento: MomentoCallback,
   sessao: SessionIdentity,
 ): string | null {
-  const nomes = new Map(sessao.jogadores.map((j) => [j.id as PlayerId, j.nome]));
+  const nomes = new Map(
+    sessao.jogadores.map((j) => [j.id as PlayerId, j.nome]),
+  );
 
-  const candidatos = TEMPLATES
-    .filter((t) => t.momento === momento)
+  const candidatos = TEMPLATES.filter((t) => t.momento === momento)
     .filter((t) => !sessao.callbacksUsados.includes(t.id))
     .filter((t) => t.condicao(sessao))
     .sort((a, b) => b.prioridade - a.prioridade);

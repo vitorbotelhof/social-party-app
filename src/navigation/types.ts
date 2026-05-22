@@ -1,6 +1,13 @@
 import type { CategoriaIdNPL } from '@/games/na-ponta-da-lingua/types';
-import type { ConfiguracaoLocal, JogadorLocal } from '@/games/inquisicao/local/types';
-import type { ConfiguracaoVMC, JogadorVMC } from '@/games/voce-me-conhece/local/types';
+import type { CategoriaFazAiId, IntensidadeSocial } from '@/games/faz-ai/types';
+import type {
+  ConfiguracaoLocal,
+  JogadorLocal,
+} from '@/games/inquisicao/local/types';
+import type {
+  ConfiguracaoVMC,
+  JogadorVMC,
+} from '@/games/voce-me-conhece/local/types';
 import type { GameId, PlayerId, RoomCode } from '@/engine/types';
 
 export type RootStackParamList = {
@@ -34,9 +41,17 @@ export type RootStackParamList = {
     config: ConfiguracaoLocal;
   };
   ConfiguracaoLocalVMC: undefined;
+  ConfiguracaoLocalFazAi: undefined;
   JogoLocalVMC: {
     jogadores: JogadorVMC[];
     config: ConfiguracaoVMC;
+  };
+  JogoLocalFazAi: {
+    jogadores: { id: string; nome: string }[];
+    duracaoSegundos: 20 | 30 | 45;
+    rodadasPorJogador: number;
+    categorias: CategoriaFazAiId[] | 'todas';
+    intensidade: IntensidadeSocial | 'todas';
   };
   JogoLocalNaPontaDaLingua: {
     jogadores: { id: string; nome: string }[];
@@ -50,7 +65,9 @@ export type RootStackParamList = {
 };
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace ReactNavigation {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface RootParamList extends RootStackParamList {}
   }
 }
