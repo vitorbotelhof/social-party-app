@@ -20,8 +20,6 @@ import {
   tipografia,
 } from '@/theme/colors';
 
-const ALTURA_BANNER = 340;
-
 const GRADIENTE_BANNER: [string, string, string, string] = [
   'rgba(22,14,10,0)',
   'rgba(22,14,10,0.12)',
@@ -33,6 +31,7 @@ export interface JogoDestaqueItem {
   id: string;
   nome: string;
   cover: ImageSourcePropType;
+  banner?: ImageSourcePropType;
 }
 
 export interface DestaqueCatalogoItem {
@@ -85,7 +84,12 @@ export function BannerJogoDestaque({ destaque, onPress }: Props) {
         accessibilityLabel={`Jogar ${jogo.nome}`}
         style={estilos.pressavel}
       >
-        <ImageBackground source={jogo.cover} style={estilos.imagem}>
+        <ImageBackground
+          source={jogo.banner ?? jogo.cover}
+          style={estilos.imagem}
+          imageStyle={estilos.imagemInterna}
+          resizeMode="cover"
+        >
           <LinearGradient
             colors={GRADIENTE_BANNER}
             locations={[0, 0.34, 0.68, 1]}
@@ -162,7 +166,11 @@ const estilos = StyleSheet.create({
     lineHeight: 20,
   },
   imagem: {
-    height: ALTURA_BANNER,
+    aspectRatio: 16 / 9,
+    minHeight: 194,
+  },
+  imagemInterna: {
+    borderRadius: raio.sm,
   },
   nome: {
     color: cores.textoSobrePrimaria,

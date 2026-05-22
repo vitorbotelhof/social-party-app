@@ -1,9 +1,8 @@
 import * as Haptics from 'expo-haptics';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRef } from 'react';
 import {
   Animated,
-  ImageBackground,
+  Image,
   type ImageSourcePropType,
   Pressable,
   StyleSheet,
@@ -18,11 +17,6 @@ const ALTURA_IMAGEM_PADRAO = 124;
 const LARGURA_COMPACTA = 112;
 const ALTURA_IMAGEM_COMPACTA = 112;
 
-const GRADIENTE_CARD: [string, string, string] = [
-  'rgba(22,14,10,0)',
-  'rgba(22,14,10,0.16)',
-  'rgba(22,14,10,0.58)',
-];
 const COR_OVERLAY_INDISPONIVEL = 'rgba(22,14,10,0.58)';
 const COR_SELO_FUNDO = 'rgba(255,255,255,0.18)';
 const COR_SELO_BORDA = 'rgba(255,255,255,0.38)';
@@ -96,14 +90,11 @@ export function CardJogoCatalogo({
         accessibilityLabel={`${jogo.disponivel ? 'Jogar' : 'Em breve'} ${jogo.nome}`}
         style={estilos.pressavel}
       >
-        <ImageBackground
-          source={jogo.cover}
-          style={[estilos.imagem, { height: alturaImagemCard }]}
-          imageStyle={estilos.imagemRaio}
-        >
-          <LinearGradient
-            colors={GRADIENTE_CARD}
-            style={StyleSheet.absoluteFillObject}
+        <View style={[estilos.imagem, { height: alturaImagemCard }]}>
+          <Image
+            source={jogo.cover}
+            style={estilos.imagemConteudo}
+            resizeMode="contain"
           />
 
           {!jogo.disponivel && (
@@ -113,7 +104,7 @@ export function CardJogoCatalogo({
               </View>
             </View>
           )}
-        </ImageBackground>
+        </View>
 
         <View style={estilos.textos}>
           <Text style={estilos.nome} numberOfLines={2}>
@@ -143,8 +134,9 @@ const estilos = StyleSheet.create({
     justifyContent: 'flex-end',
     overflow: 'hidden',
   },
-  imagemRaio: {
-    borderRadius: raio.sm,
+  imagemConteudo: {
+    height: '100%',
+    width: '100%',
   },
   meta: {
     color: cores.textoMudo,

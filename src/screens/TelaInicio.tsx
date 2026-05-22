@@ -1,9 +1,11 @@
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
+  ImageBackground,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -56,6 +58,11 @@ const MARGEM_TELA = espacamento.lg;
 const COR_MODAL_OVERLAY = 'rgba(0,0,0,0.75)';
 const COR_SHEET_OVERLAY = 'rgba(0, 0, 0, 0.55)';
 const COR_SHEET_PRIMARIA_BORDA = 'rgba(255, 90, 95, 0.28)';
+const GRADIENTE_SHEET_BANNER: [string, string, string] = [
+  'rgba(0,0,0,0)',
+  'rgba(0,0,0,0.36)',
+  'rgba(0,0,0,0.78)',
+];
 
 const destaqueDoDia = getJogoDestaqueDoDia();
 const secoesHome = getSecoesHomeCatalogo();
@@ -114,6 +121,9 @@ export function TelaInicio({ navigation }: Props) {
   const [temperatura, setTemperatura] = useState<TemperaturaEmocional>('frio');
   const [jogoSelecionado, setJogoSelecionado] = useState<DefinicaoJogo | null>(
     null,
+  );
+  const [etapaSheet, setEtapaSheet] = useState<'descricao' | 'modo'>(
+    'descricao',
   );
 
   const sheetY = useRef(new Animated.Value(500)).current;
@@ -183,6 +193,7 @@ export function TelaInicio({ navigation }: Props) {
     }
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setJogoSelecionado(jogo);
+    setEtapaSheet('descricao');
     sheetY.setValue(500);
     overlayOp.setValue(0);
     Animated.parallel([
@@ -240,7 +251,10 @@ export function TelaInicio({ navigation }: Props) {
         duration: 180,
         useNativeDriver: true,
       }),
-    ]).start(() => setJogoSelecionado(null));
+    ]).start(() => {
+      setJogoSelecionado(null);
+      setEtapaSheet('descricao');
+    });
   }
 
   async function aoEscolherModo(id: 'local' | 'realtime' | 'entrar') {
@@ -276,6 +290,16 @@ export function TelaInicio({ navigation }: Props) {
     const { id } = jogoSelecionado;
     setJogoSelecionado(null);
     navigation.navigate('DetalhesJogo', { jogoId: id });
+  }
+
+  function mostrarEscolhaDeModo() {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setEtapaSheet('modo');
+  }
+
+  function voltarParaDescricao() {
+    void Haptics.selectionAsync();
+    setEtapaSheet('descricao');
   }
 
   function aoEntrarPartida() {
@@ -388,44 +412,20 @@ export function TelaInicio({ navigation }: Props) {
             style={[estilos.sheet, { transform: [{ translateY: sheetY }] }]}
           >
             <View style={estilos.sheetHandle} />
-            <Text style={estilos.sheetNomeJogo}>{jogoSelecionado?.nome}</Text>
-
-            <View style={estilos.sheetOpcoes}>
-              {jogoSelecionado?.supportsLocal && (
-                <SheetOpcao
-                  titulo="passando de mão em mão"
-                  descricao="um celular, o grupo todo. cada um pega na sua vez."
-                  primaria
-                  onPress={() => void aoEscolherModo('local')}
+            {jogoSelecionado &&
+              (etapaSheet === 'descricao' ? (
+                <SheetDescricaoJogo
+                  jogo={jogoSelecionado}
+                  onJogar={mostrarEscolhaDeModo}
+                  onDetalhes={aoVerDetalhesDoJogo}
                 />
-              )}
-              {jogoSelecionado?.supportsRealtime && (
-                <SheetOpcao
-                  titulo="cada um com o seu"
-                  descricao="todo mundo com celular. papéis separados, segredos na tela."
-                  primaria
-                  onPress={() => void aoEscolherModo('realtime')}
+              ) : (
+                <SheetEscolhaModo
+                  jogo={jogoSelecionado}
+                  onVoltar={voltarParaDescricao}
+                  onEscolherModo={(modo) => void aoEscolherModo(modo)}
                 />
-              )}
-              <SheetOpcao
-                titulo="entrar numa sala"
-                descricao="alguém já começou. só entrar com o código."
-                primaria={false}
-                onPress={() => void aoEscolherModo('entrar')}
-              />
-            </View>
-
-            <Pressable
-              onPress={aoVerDetalhesDoJogo}
-              style={({ pressed }) => [
-                estilos.sheetLinkDetalhes,
-                pressed && { opacity: 0.5 },
-              ]}
-            >
-              <Text style={estilos.sheetLinkDetalhesTexto}>
-                como funciona →
-              </Text>
-            </Pressable>
+              ))}
 
             <View style={{ height: Math.max(insets.bottom, espacamento.md) }} />
           </Animated.View>
@@ -598,6 +598,128 @@ interface SheetOpcaoProps {
   descricao: string;
   primaria: boolean;
   onPress: () => void;
+}
+
+interface SheetDescricaoJogoProps {
+  jogo: DefinicaoJogo;
+  onJogar: () => void;
+  onDetalhes: () => void;
+}
+
+function SheetDescricaoJogo({
+  jogo,
+  onJogar,
+  onDetalhes,
+}: SheetDescricaoJogoProps) {
+  return (
+    <View style={estilos.sheetDescricao}>
+      <ImageBackground
+        source={jogo.banner ?? jogo.cover}
+        style={estilos.sheetBanner}
+        imageStyle={estilos.sheetBannerImagem}
+        resizeMode="cover"
+      >
+        <LinearGradient
+          colors={GRADIENTE_SHEET_BANNER}
+          locations={[0, 0.56, 1]}
+          style={StyleSheet.absoluteFillObject}
+        />
+        <View style={estilos.sheetBannerConteudo}>
+          <Text style={estilos.sheetMeta}>
+            {jogo.minJogadores}–{jogo.maxJogadores} jogadores ·{' '}
+            {jogo.tempoMedio}
+          </Text>
+          <Text style={estilos.sheetTituloJogo}>{jogo.nome}</Text>
+        </View>
+      </ImageBackground>
+
+      <View style={estilos.sheetDescricaoTextos}>
+        <Text style={estilos.sheetSlogan}>{jogo.slogan}</Text>
+        <Text style={estilos.sheetResumo}>{jogo.descricao}</Text>
+      </View>
+
+      <Pressable
+        onPress={onJogar}
+        accessibilityRole="button"
+        accessibilityLabel={`Jogar ${jogo.nome}`}
+        style={({ pressed }) => [
+          estilos.sheetBotaoJogar,
+          pressed && estilos.sheetBotaoPressionado,
+        ]}
+      >
+        <Text style={estilos.sheetBotaoJogarTexto}>jogar</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={onDetalhes}
+        style={({ pressed }) => [
+          estilos.sheetLinkDetalhes,
+          pressed && { opacity: 0.5 },
+        ]}
+        accessibilityRole="button"
+        accessibilityLabel={`Ver regras de ${jogo.nome}`}
+      >
+        <Text style={estilos.sheetLinkDetalhesTexto}>ver regras completas</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+interface SheetEscolhaModoProps {
+  jogo: DefinicaoJogo;
+  onVoltar: () => void;
+  onEscolherModo: (modo: 'local' | 'realtime' | 'entrar') => void;
+}
+
+function SheetEscolhaModo({
+  jogo,
+  onVoltar,
+  onEscolherModo,
+}: SheetEscolhaModoProps) {
+  return (
+    <View>
+      <Pressable
+        onPress={onVoltar}
+        hitSlop={10}
+        style={({ pressed }) => [
+          estilos.sheetVoltar,
+          pressed && estilos.sheetVoltarPressionado,
+        ]}
+        accessibilityRole="button"
+        accessibilityLabel="Voltar para descrição do jogo"
+      >
+        <Text style={estilos.sheetVoltarTexto}>←</Text>
+        <Text style={estilos.sheetVoltarLabel}>{jogo.nome}</Text>
+      </Pressable>
+
+      <Text style={estilos.sheetModoTitulo}>como vocês vão jogar?</Text>
+
+      <View style={estilos.sheetOpcoes}>
+        {jogo.supportsLocal && (
+          <SheetOpcao
+            titulo="passando de mão em mão"
+            descricao="um celular, o grupo todo. cada um pega na sua vez."
+            primaria
+            onPress={() => onEscolherModo('local')}
+          />
+        )}
+        {jogo.supportsRealtime && (
+          <SheetOpcao
+            titulo="cada um com o seu"
+            descricao="todo mundo com celular. papéis separados, segredos na tela."
+            primaria
+            onPress={() => onEscolherModo('realtime')}
+          />
+        )}
+        <SheetOpcao
+          titulo="entrar numa sala"
+          descricao="alguém já começou. só entrar com o código."
+          primaria={false}
+          onPress={() => onEscolherModo('entrar')}
+        />
+      </View>
+    </View>
+  );
 }
 
 function SheetOpcao({ titulo, descricao, primaria, onPress }: SheetOpcaoProps) {
@@ -852,9 +974,46 @@ const estilos = StyleSheet.create({
     marginBottom: espacamento.lg,
     width: 36,
   },
+  sheetBanner: {
+    aspectRatio: 16 / 9,
+    justifyContent: 'flex-end',
+    overflow: 'hidden',
+    width: '100%',
+  },
+  sheetBannerConteudo: {
+    gap: espacamento.xs,
+    padding: espacamento.md,
+  },
+  sheetBannerImagem: {
+    borderRadius: raio.lg,
+  },
+  sheetBotaoJogar: {
+    alignItems: 'center',
+    backgroundColor: cores.primaria,
+    borderRadius: raio.pill,
+    justifyContent: 'center',
+    minHeight: 56,
+    paddingHorizontal: espacamento.lg,
+  },
+  sheetBotaoJogarTexto: {
+    color: cores.textoSobrePrimaria,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpo,
+    fontWeight: tipografia.pesoExtraBold,
+    letterSpacing: 0,
+  },
+  sheetBotaoPressionado: {
+    opacity: 0.82,
+    transform: [{ scale: 0.99 }],
+  },
+  sheetDescricao: {
+    gap: espacamento.lg,
+  },
+  sheetDescricaoTextos: {
+    gap: espacamento.sm,
+  },
   sheetLinkDetalhes: {
     alignItems: 'center',
-    marginTop: espacamento.lg,
     paddingVertical: espacamento.sm,
   },
   sheetLinkDetalhesTexto: {
@@ -863,12 +1022,21 @@ const estilos = StyleSheet.create({
     fontSize: tipografia.tamanhoLegenda,
     letterSpacing: 0,
   },
-  sheetNomeJogo: {
-    color: cores.textoMudo,
+  sheetMeta: {
+    color: cores.textoSobreEscuro,
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoMedio,
+    fontWeight: tipografia.pesoBold,
     letterSpacing: 0,
+    opacity: 0.9,
+  },
+  sheetModoTitulo: {
+    color: cores.texto,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoIconePequeno,
+    fontWeight: tipografia.pesoBlack,
+    letterSpacing: 0,
+    lineHeight: 26,
     marginBottom: espacamento.md,
   },
   sheetOpcao: {
@@ -928,6 +1096,53 @@ const estilos = StyleSheet.create({
   sheetSetaSec: {
     color: cores.textoMudo,
     fontWeight: tipografia.pesoRegular,
+  },
+  sheetSlogan: {
+    color: cores.texto,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpo,
+    fontWeight: tipografia.pesoExtraBold,
+    letterSpacing: 0,
+    lineHeight: 21,
+  },
+  sheetResumo: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpoMenor,
+    lineHeight: 20,
+  },
+  sheetTituloJogo: {
+    color: cores.textoSobrePrimaria,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoTitulo,
+    fontWeight: tipografia.pesoBlack,
+    letterSpacing: 0,
+    lineHeight: 31,
+  },
+  sheetVoltar: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    gap: espacamento.xs,
+    marginBottom: espacamento.sm,
+    paddingVertical: espacamento.xs,
+  },
+  sheetVoltarLabel: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    fontWeight: tipografia.pesoSemibold,
+    letterSpacing: 0,
+  },
+  sheetVoltarPressionado: {
+    opacity: 0.55,
+  },
+  sheetVoltarTexto: {
+    color: cores.texto,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoIconePequeno,
+    fontWeight: tipografia.pesoBold,
+    lineHeight: 22,
   },
   tela: {
     backgroundColor: cores.fundo,

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 export type CategoriaEmocional =
   | 'tensao_misterio'
   | 'revelacoes_caos'
@@ -10,9 +12,9 @@ export type CategoriaEmocional =
 
 export interface CategoriaMeta {
   id: CategoriaEmocional;
-  label: string;       // vibe statement — frase longa, usada no header do bloco
-  sublabel: string;    // contexto curto e pontiagudo
-  labelCurto: string;  // etiqueta do chip — 2-4 palavras
+  label: string; // vibe statement — frase longa, usada no header do bloco
+  sublabel: string; // contexto curto e pontiagudo
+  labelCurto: string; // etiqueta do chip — 2-4 palavras
 }
 
 export const CATEGORIAS_EMOCIONAIS: ReadonlyArray<CategoriaMeta> = [
@@ -72,6 +74,7 @@ export interface DefinicaoJogo {
   slogan: string;
   descricao: string;
   cover: number;
+  banner?: number;
   minJogadores: number;
   maxJogadores: number;
   tempoMedio: string;
@@ -98,6 +101,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     descricao:
       'Você precisa fazer o grupo adivinhar uma palavra — mas as mais óbvias para explicá-la estão proibidas. O tempo corre. O improviso começa. O grupo observa.',
     cover: require('../../assets/games/na-ponta-da-lingua/cover.png'),
+    banner: require('../../assets/games/na-ponta-da-lingua/banner.png'),
     minJogadores: 2,
     maxJogadores: 10,
     tempoMedio: '20-40 min',
@@ -134,6 +138,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     descricao:
       'Um jogo de blefe e dedução em grupo. Quase todo mundo recebe a mesma palavra secreta — exceto o Mr White, que precisa fingir que sabe do que estão falando até descobrir a verdade.',
     cover: require('../../assets/games/mr-white/cover.png'),
+    banner: require('../../assets/games/mr-white/banner.png'),
     minJogadores: 3,
     maxJogadores: 12,
     tempoMedio: '15-30 min',
@@ -170,6 +175,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     descricao:
       'Perguntas provocativas, divertidas e às vezes constrangedoras. Todo mundo aponta ao mesmo tempo para quem do grupo se encaixa melhor — e os resultados sempre surpreendem.',
     cover: require('../../assets/games/most-likely-to/cover.png'),
+    banner: require('../../assets/games/most-likely-to/banner.png'),
     minJogadores: 3,
     maxJogadores: 10,
     tempoMedio: '10-20 min',
@@ -204,6 +210,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     descricao:
       'Um jogo de dedução e traição em tempo real. A maioria é inocente — mas corrompidos agem na escuridão. A cada loop, o grupo vota para eliminar quem parece suspeito. A cada noite, os corrompidos crescem. Confiar é o único caminho. E a maior armadilha.',
     cover: require('../../assets/games/inquisicao/cover.png'),
+    banner: require('../../assets/games/inquisicao/banner.png'),
     minJogadores: 4,
     maxJogadores: 10,
     tempoMedio: '25-45 min',
@@ -240,6 +247,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
       'Um jogo de leitura humana. O ranqueador escolhe em segredo o que colocaria primeiro — ou por último — entre 4 opções. O grupo tenta prever. O valor não está em acertar: está em discutir.',
     // TODO fase 2: criar cover próprio
     cover: require('../../assets/games/voce-me-conhece/cover.png'),
+    banner: require('../../assets/games/voce-me-conhece/banner.png'),
     minJogadores: 3,
     maxJogadores: 10,
     tempoMedio: '20-40 min',
@@ -275,6 +283,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     descricao:
       'A versão digital do clássico jogo de confissões. Alguém solta um "eu nunca..." e quem já fez, paga a prenda. O app sorteia frases para você nunca mais ficar sem assunto.',
     cover: require('../../assets/games/eu-nunca/cover.png'),
+    banner: require('../../assets/games/eu-nunca/banner.png'),
     minJogadores: 3,
     maxJogadores: 15,
     tempoMedio: '20-40 min',
@@ -309,6 +318,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     descricao:
       'Verdade pesada ou desafio impossível? O app sorteia perguntas e missões na medida certa para qualquer rolê, do esquenta tranquilo ao caos da madrugada.',
     cover: require('../../assets/games/verdade-desafio/cover.png'),
+    banner: require('../../assets/games/verdade-desafio/banner.png'),
     minJogadores: 2,
     maxJogadores: 10,
     tempoMedio: '20-40 min',
@@ -344,6 +354,7 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     descricao:
       'O app faz uma pergunta e todo mundo vota em segredo em alguém do grupo. Os votos só aparecem no final da rodada — e ninguém sabe quem votou em quem.',
     cover: require('../../assets/games/quem-na-sala/cover.png'),
+    banner: require('../../assets/games/quem-na-sala/banner.png'),
     minJogadores: 4,
     maxJogadores: 15,
     tempoMedio: '10-20 min',
@@ -373,7 +384,10 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
   },
 ];
 
-export function jogosPorCategoria(): Record<CategoriaEmocional, DefinicaoJogo[]> {
+export function jogosPorCategoria(): Record<
+  CategoriaEmocional,
+  DefinicaoJogo[]
+> {
   const resultado = {} as Record<CategoriaEmocional, DefinicaoJogo[]>;
 
   for (const cat of CATEGORIAS_EMOCIONAIS) {
