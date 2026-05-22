@@ -19,8 +19,10 @@ interface Props {
 }
 
 export function CartaoJogador({ jogador, estado = 'normal' }: Props) {
-  const [corA, corB] = gradienteAvatarDe(jogador.id);
-  const inicial = (jogador.nome.trim().charAt(0) || '?').toUpperCase();
+  const nome = jogador.nome?.trim() || 'Jogador';
+  const idAvatar = jogador.id || nome;
+  const [corA, corB] = gradienteAvatarDe(idAvatar);
+  const inicial = (nome.charAt(0) || '?').toUpperCase();
   const desconectado = jogador.estaConectado === false;
 
   return (
@@ -46,7 +48,7 @@ export function CartaoJogador({ jogador, estado = 'normal' }: Props) {
           style={[estilos.nome, desconectado && estilos.nomeDesconectado]}
           numberOfLines={1}
         >
-          {jogador.nome}
+          {nome}
         </Text>
         {desconectado ? (
           <Text style={estilos.tagDesconectado}>SEM SINAL</Text>
@@ -69,10 +71,11 @@ export function CartaoJogador({ jogador, estado = 'normal' }: Props) {
   );
 }
 
-function gradienteAvatarDe(id: string): [string, string] {
+function gradienteAvatarDe(id: string | undefined): [string, string] {
+  const idSeguro = id || 'jogador';
   let hash = 0;
-  for (let i = 0; i < id.length; i += 1) {
-    hash = (hash * 31 + id.charCodeAt(i)) | 0;
+  for (let i = 0; i < idSeguro.length; i += 1) {
+    hash = (hash * 31 + idSeguro.charCodeAt(i)) | 0;
   }
   const idx = Math.abs(hash) % PALETA_AVATARES.length;
   const idx2 =
