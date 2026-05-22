@@ -67,7 +67,7 @@ export function TelaConfiguracaoLocalFazAi({ navigation }: Props) {
     categoriasSelecionadas === 'todas'
       ? CATEGORIAS_INICIAIS
       : categoriasSelecionadas;
-  const categoriaValida = categoriasAtivas.length >= 3;
+  const categoriaValida = categoriasAtivas.length >= 1;
   const podeIniciar = nomes.length >= MIN_JOGADORES && categoriaValida;
   const avisoRodape =
     nomes.length < MIN_JOGADORES
@@ -75,7 +75,7 @@ export function TelaConfiguracaoLocalFazAi({ navigation }: Props) {
           MIN_JOGADORES - nomes.length === 1 ? '' : 'es'
         }`
       : !categoriaValida
-        ? 'escolha pelo menos 3 categorias'
+        ? 'escolha uma categoria ou misture tudo'
         : undefined;
   const sublabelRodadas =
     nomes.length > 0
@@ -102,6 +102,11 @@ export function TelaConfiguracaoLocalFazAi({ navigation }: Props) {
   function selecionarTodasCategorias() {
     void Haptics.selectionAsync();
     setCategoriasSelecionadas('todas');
+  }
+
+  function limparCategorias() {
+    void Haptics.selectionAsync();
+    setCategoriasSelecionadas([]);
   }
 
   function aoComecar() {
@@ -212,6 +217,29 @@ export function TelaConfiguracaoLocalFazAi({ navigation }: Props) {
               misturar tudo
             </Text>
           </Pressable>
+          <Pressable
+            onPress={limparCategorias}
+            accessibilityRole="button"
+            accessibilityLabel="Deselecionar todas as categorias"
+            style={({ pressed }) => [
+              estilos.botaoTodas,
+              categoriasSelecionadas !== 'todas' &&
+                categoriasSelecionadas.length === 0 &&
+                estilos.botaoTodasAtivo,
+              pressed && estilos.pressionado,
+            ]}
+          >
+            <Text
+              style={[
+                estilos.botaoTodasTexto,
+                categoriasSelecionadas !== 'todas' &&
+                  categoriasSelecionadas.length === 0 &&
+                  estilos.botaoTodasTextoAtivo,
+              ]}
+            >
+              deselecionar tudo
+            </Text>
+          </Pressable>
         </View>
 
         <View style={estilos.gradeCategorias}>
@@ -316,6 +344,9 @@ const estilos = StyleSheet.create({
     color: cores.primaria,
   },
   categoriasHeader: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: espacamento.sm,
     marginBottom: espacamento.sm,
   },
   gradeCategorias: {

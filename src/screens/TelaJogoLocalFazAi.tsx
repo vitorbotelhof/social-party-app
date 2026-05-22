@@ -90,7 +90,7 @@ function textoAtuabilidade(atuabilidade: AtuabilidadeFazAi): string {
 
 function exemplosResposta(respostas?: string[]): string | null {
   if (!respostas || respostas.length === 0) return null;
-  return respostas.slice(0, 2).join(' / ');
+  return respostas.length >= 2 ? respostas.slice(0, 2).join(' / ') : null;
 }
 
 export function TelaJogoLocalFazAi({ navigation, route }: Props) {
