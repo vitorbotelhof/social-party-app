@@ -15,9 +15,11 @@ import type { Player } from '@/engine/types';
 import { getCategoriaFazAi } from '@/games/faz-ai/cards';
 import { criarResultadoFinalFazAi, fazAiEngine } from '@/games/faz-ai/engine';
 import type {
+  AtuabilidadeFazAi,
   FazAiAction,
   FazAiPublicState,
   HistoricoTurnoFazAi,
+  ModoAtuacaoFazAi,
 } from '@/games/faz-ai/types';
 import type { RootStackParamList } from '@/navigation/types';
 import {
@@ -68,6 +70,27 @@ function comentarioTurno(turno: HistoricoTurnoFazAi): string {
   if (turno.vergonhaMedia >= 3) return 'a vergonha fez o trabalho.';
   if (turno.acertos === 0) return 'ninguém entendeu. isso também diz muito.';
   return 'deu pra reconhecer. do jeito que deu.';
+}
+
+function dicaModoAtuacao(modo: ModoAtuacaoFazAi): string {
+  if (modo === 'gesto') return 'vai no gesto';
+  if (modo === 'objeto') return 'usa objeto imaginário';
+  if (modo === 'personagem') return 'vira o personagem';
+  if (modo === 'emocao') return 'mostra pela cara';
+  if (modo === 'referencia') return 'puxa a referência';
+  return 'faz a cena';
+}
+
+function textoAtuabilidade(atuabilidade: AtuabilidadeFazAi): string {
+  if (atuabilidade === 'direta') return 'direta';
+  if (atuabilidade === 'boa') return 'boa de atuar';
+  if (atuabilidade === 'sutil') return 'mais sutil';
+  return 'difícil';
+}
+
+function exemplosResposta(respostas?: string[]): string | null {
+  if (!respostas || respostas.length === 0) return null;
+  return respostas.slice(0, 2).join(' / ');
 }
 
 export function TelaJogoLocalFazAi({ navigation, route }: Props) {
@@ -217,6 +240,9 @@ export function TelaJogoLocalFazAi({ navigation, route }: Props) {
           cartaVisivel={cartaVisivel}
           cartaTexto={cartaAtual.texto}
           categoria={getCategoriaFazAi(cartaAtual.categoria).nome}
+          dicaAtuacao={dicaModoAtuacao(cartaAtual.modoAtuacao)}
+          nivelAtuacao={textoAtuabilidade(cartaAtual.atuabilidade)}
+          exemploResposta={exemplosResposta(cartaAtual.respostasAceitas)}
           jogadorNome={jogadorAtualNome}
           segundosTotais={publico.duracaoSegundos}
           segundosRestantes={segundosRestantes}
@@ -277,6 +303,9 @@ function TelaAtuando({
   cartaVisivel,
   cartaTexto,
   categoria,
+  dicaAtuacao,
+  nivelAtuacao,
+  exemploResposta,
   jogadorNome,
   segundosTotais,
   segundosRestantes,
@@ -290,6 +319,9 @@ function TelaAtuando({
   cartaVisivel: boolean;
   cartaTexto: string;
   categoria: string;
+  dicaAtuacao: string;
+  nivelAtuacao: string;
+  exemploResposta: string | null;
   jogadorNome: string;
   segundosTotais: number;
   segundosRestantes: number;
@@ -326,7 +358,16 @@ function TelaAtuando({
             accessibilityLabel="Esconder carta"
           >
             <Text style={estilos.categoria}>{categoria}</Text>
+            <View style={estilos.dicasLinha}>
+              <Text style={estilos.dicaChip}>{dicaAtuacao}</Text>
+              <Text style={estilos.dicaChip}>{nivelAtuacao}</Text>
+            </View>
             <Text style={estilos.cartaTexto}>{cartaTexto}</Text>
+            <Text style={estilos.regraAcerto}>
+              {exemploResposta
+                ? `vale algo tipo: ${exemploResposta}`
+                : 'vale acertar a ideia. não precisa ser literal.'}
+            </Text>
             <Text style={estilos.esconderTexto}>toca pra esconder</Text>
           </Pressable>
         ) : (
@@ -375,9 +416,9 @@ function TelaAtuando({
             pressed && estilos.pressionado,
           ]}
           accessibilityRole="button"
-          accessibilityLabel="Marcar acerto"
+          accessibilityLabel="Marcar que acertaram a ideia"
         >
-          <Text style={estilos.botaoAcertouTexto}>acertou</Text>
+          <Text style={estilos.botaoAcertouTexto}>acertou a ideia</Text>
         </Pressable>
       </View>
     </View>
@@ -414,6 +455,17 @@ function TelaResumoTurno({
             style={estilos.itemCarta}
           >
             <Text style={estilos.itemCartaTexto}>{carta.texto}</Text>
+            {carta.resultado === 'passou' &&
+              carta.ideiaCentral !== carta.texto && (
+                <Text style={estilos.itemCartaIdeia}>
+                  ideia: {carta.ideiaCentral}
+                </Text>
+              )}
+            {carta.resultado === 'passou' && carta.respostasAceitas?.length ? (
+              <Text style={estilos.itemCartaIdeia}>
+                valia: {exemplosResposta(carta.respostasAceitas)}
+              </Text>
+            ) : null}
             <Text
               style={[
                 estilos.itemCartaResultado,
@@ -563,6 +615,23 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoBlack,
     letterSpacing: 0,
   },
+  dicaChip: {
+    backgroundColor: cores.superficie,
+    borderColor: cores.borda,
+    borderRadius: raio.pill,
+    borderWidth: 1,
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoBold,
+    paddingHorizontal: espacamento.sm,
+    paddingVertical: 6,
+  },
+  dicasLinha: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: espacamento.xs,
+  },
   esconderTexto: {
     color: cores.textoMudo,
     fontFamily: familias.sans,
@@ -630,6 +699,12 @@ const estilos = StyleSheet.create({
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoBold,
   },
+  itemCartaIdeia: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoMicro,
+    lineHeight: 16,
+  },
   itemCartaTexto: {
     color: cores.texto,
     fontFamily: familias.sans,
@@ -678,6 +753,12 @@ const estilos = StyleSheet.create({
   pressionado: {
     opacity: 0.82,
     transform: [{ scale: 0.98 }],
+  },
+  regraAcerto: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpoMenor,
+    lineHeight: 20,
   },
   resumo: {
     flex: 1,

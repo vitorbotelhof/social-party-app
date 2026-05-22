@@ -42,23 +42,15 @@ const INTENSIDADES: {
   rotulo: string;
 }[] = [
   { valor: 'todas', rotulo: 'mistura' },
+  { valor: 'leve', rotulo: 'leve' },
   { valor: 'social', rotulo: 'social' },
   { valor: 'caotica', rotulo: 'caótica' },
   { valor: 'absurda', rotulo: 'absurda' },
 ];
 
-const CATEGORIAS_INICIAIS: CategoriaFazAiId[] = [
-  'vida_adulta_brasileira',
-  'internet_brasileira',
-  'corporate_chaos',
-  'casal_moderno',
-  'vergonhas_universais',
-  'brainrot_brasileiro',
-  'festa_e_role',
-  'problemas_de_rico',
-  'exposed_cancelamento',
-  'situacoes_muito_especificas',
-];
+const CATEGORIAS_INICIAIS: CategoriaFazAiId[] = CATEGORIAS_FAZ_AI.map(
+  (categoria) => categoria.id,
+);
 
 export function TelaConfiguracaoLocalFazAi({ navigation }: Props) {
   const [nomes, setNomes] = useState<string[]>([]);
@@ -185,7 +177,9 @@ export function TelaConfiguracaoLocalFazAi({ navigation }: Props) {
               ? 'mais corpo, mais exposição, mais gritaria.'
               : intensidade === 'social'
                 ? 'reconhecível sem destruir ninguém.'
-                : 'o app esquenta o grupo aos poucos.'}
+                : intensidade === 'leve'
+                  ? 'mais acertos, menos trava, ótimo começo.'
+                  : 'o app esquenta o grupo aos poucos.'}
         </Text>
       </SecaoConfig>
 

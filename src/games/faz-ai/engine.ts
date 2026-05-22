@@ -94,9 +94,14 @@ function criarHistoricoCarta(
     cartaId: carta.id,
     texto: carta.texto,
     categoria: carta.categoria,
+    ideiaCentral: carta.ideiaCentral,
     intensidadeSocial: carta.intensidadeSocial,
     dificuldadeAtuacao: carta.dificuldadeAtuacao,
     energiaRodada: carta.energiaRodada,
+    tipo: carta.tipo,
+    modoAtuacao: carta.modoAtuacao,
+    atuabilidade: carta.atuabilidade,
+    respostasAceitas: carta.respostasAceitas,
     resultado,
     duracaoMs: Math.max(0, em - (iniciadaEm ?? em)),
   };
@@ -136,6 +141,11 @@ function selecionarProximaCarta(estadoPublico: FazAiPublicState): CartaFazAi {
     estadoPublico.intensidade,
     estadoPublico.turnosJogados,
     estadoPublico.totalTurnos,
+    {
+      acertosTurnoAtual: estadoPublico.acertosTurnoAtual,
+      passesTurnoAtual: estadoPublico.passesTurnoAtual,
+      streakTurnoAtual: estadoPublico.streakTurnoAtual,
+    },
   );
 }
 
@@ -269,6 +279,12 @@ class FazAiEngine extends GameEngine<
       estadoPublico.cartaAtualIniciadaEm,
       em,
     );
+    const proximoAcertosTurnoAtual =
+      estadoPublico.acertosTurnoAtual + (resultado === 'acertou' ? 1 : 0);
+    const proximoPassesTurnoAtual =
+      estadoPublico.passesTurnoAtual + (resultado === 'passou' ? 1 : 0);
+    const novoStreak =
+      resultado === 'acertou' ? estadoPublico.streakTurnoAtual + 1 : 0;
     const proximaCartasUsadas = [...estadoPublico.cartasUsadas];
     const proximaCarta = selecionarCartaFazAi(
       proximaCartasUsadas,
@@ -276,12 +292,15 @@ class FazAiEngine extends GameEngine<
       estadoPublico.intensidade,
       estadoPublico.turnosJogados,
       estadoPublico.totalTurnos,
+      {
+        acertosTurnoAtual: proximoAcertosTurnoAtual,
+        passesTurnoAtual: proximoPassesTurnoAtual,
+        streakTurnoAtual: novoStreak,
+      },
     );
     proximaCartasUsadas.push(proximaCarta.id);
 
     const pontos = { ...estadoPublico.pontos };
-    const novoStreak =
-      resultado === 'acertou' ? estadoPublico.streakTurnoAtual + 1 : 0;
     if (resultado === 'acertou') {
       pontos[jogadorAtualId] = (pontos[jogadorAtualId] ?? 0) + 1;
     }
@@ -297,10 +316,8 @@ class FazAiEngine extends GameEngine<
         pontos,
         cartasUsadas: proximaCartasUsadas,
         cartaAtualIniciadaEm: em,
-        acertosTurnoAtual:
-          estadoPublico.acertosTurnoAtual + (resultado === 'acertou' ? 1 : 0),
-        passesTurnoAtual:
-          estadoPublico.passesTurnoAtual + (resultado === 'passou' ? 1 : 0),
+        acertosTurnoAtual: proximoAcertosTurnoAtual,
+        passesTurnoAtual: proximoPassesTurnoAtual,
         streakTurnoAtual: novoStreak,
         melhorStreak: Math.max(estadoPublico.melhorStreak, novoStreak),
         historicoTurnoAtual: [

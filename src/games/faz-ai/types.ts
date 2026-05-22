@@ -1,6 +1,9 @@
 import type { GameAction, PlayerId } from '@/engine/types';
 
 export type CategoriaFazAiId =
+  | 'classicos_de_mimica'
+  | 'acoes_do_cotidiano'
+  | 'profissoes_e_personagens'
   | 'vida_adulta_brasileira'
   | 'internet_brasileira'
   | 'corporate_chaos'
@@ -15,6 +18,19 @@ export type CategoriaFazAiId =
 export type IntensidadeSocial = 'leve' | 'social' | 'caotica' | 'absurda';
 export type DificuldadeAtuacao = 'facil' | 'media' | 'dificil' | 'surto';
 export type EnergiaRodada = 'aquecimento' | 'ritmo' | 'gritaria' | 'colapso';
+export type TipoCartaFazAi =
+  | 'classica'
+  | 'social_moderna'
+  | 'internet'
+  | 'absurda';
+export type ModoAtuacaoFazAi =
+  | 'gesto'
+  | 'objeto'
+  | 'personagem'
+  | 'emocao'
+  | 'situacao'
+  | 'referencia';
+export type AtuabilidadeFazAi = 'direta' | 'boa' | 'sutil' | 'complexa';
 
 export interface CategoriaFazAi {
   id: CategoriaFazAiId;
@@ -23,15 +39,23 @@ export interface CategoriaFazAi {
   intensidadePadrao: IntensidadeSocial;
   dificuldadePadrao: DificuldadeAtuacao;
   energiaPadrao: EnergiaRodada;
+  tipoPadrao: TipoCartaFazAi;
+  modoPadrao: ModoAtuacaoFazAi;
+  atuabilidadePadrao: AtuabilidadeFazAi;
 }
 
 export interface CartaFazAi {
   id: string;
   texto: string;
   categoria: CategoriaFazAiId;
+  ideiaCentral: string;
   intensidadeSocial: IntensidadeSocial;
   dificuldadeAtuacao: DificuldadeAtuacao;
   energiaRodada: EnergiaRodada;
+  tipo: TipoCartaFazAi;
+  modoAtuacao: ModoAtuacaoFazAi;
+  atuabilidade: AtuabilidadeFazAi;
+  respostasAceitas?: string[];
   tags?: string[];
 }
 
@@ -54,9 +78,14 @@ export interface HistoricoCartaFazAi {
   cartaId: string;
   texto: string;
   categoria: CategoriaFazAiId;
+  ideiaCentral: string;
   intensidadeSocial: IntensidadeSocial;
   dificuldadeAtuacao: DificuldadeAtuacao;
   energiaRodada: EnergiaRodada;
+  tipo: TipoCartaFazAi;
+  modoAtuacao: ModoAtuacaoFazAi;
+  atuabilidade: AtuabilidadeFazAi;
+  respostasAceitas?: string[];
   resultado: ResultadoCartaFazAi;
   duracaoMs: number;
 }

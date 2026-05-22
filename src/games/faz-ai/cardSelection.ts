@@ -1,5 +1,6 @@
 import {
   CARTAS_FAZ_AI,
+  pesoAtuabilidade,
   pesoDificuldade,
   pesoEnergia,
   pesoVergonha,
@@ -12,12 +13,11 @@ import type {
 } from '@/games/faz-ai/types';
 import { sortearUm } from '@/utils/random';
 
-const ORDEM_INTENSIDADE: IntensidadeSocial[] = [
-  'leve',
-  'social',
-  'caotica',
-  'absurda',
-];
+export interface ContextoSelecaoFazAi {
+  acertosTurnoAtual?: number;
+  passesTurnoAtual?: number;
+  streakTurnoAtual?: number;
+}
 
 export function calcularFaseAdaptativaFazAi(
   turnosJogados: number,
@@ -54,29 +54,78 @@ function categoriaPermitida(
   return categorias === 'todas' || categorias.includes(carta.categoria);
 }
 
-function scoreCarta(carta: CartaFazAi, fase: FaseAdaptativaFazAi): number {
+function scoreCarta(
+  carta: CartaFazAi,
+  fase: FaseAdaptativaFazAi,
+  contexto: ContextoSelecaoFazAi,
+): number {
   const energia = pesoEnergia(carta.energiaRodada);
   const vergonha = pesoVergonha(carta.intensidadeSocial);
   const dificuldade = pesoDificuldade(carta.dificuldadeAtuacao);
-  const intensidadeIndex = ORDEM_INTENSIDADE.indexOf(carta.intensidadeSocial);
+  const atuabilidade = pesoAtuabilidade(carta.atuabilidade);
+  const bonusClassica = carta.tipo === 'classica' ? 4 : 0;
+  const bonusDireta = carta.atuabilidade === 'direta' ? 3 : 0;
+  const passes = contexto.passesTurnoAtual ?? 0;
+  const streak = contexto.streakTurnoAtual ?? 0;
+  const precisaResgate = passes >= 2;
+  const grupoEngatou = streak >= 2;
+  const ajusteResgate = precisaResgate
+    ? Math.max(0, 5 - dificuldade - atuabilidade) * 3 + bonusClassica
+    : 0;
+  const ajusteStreak = grupoEngatou
+    ? energia + vergonha - Math.max(0, atuabilidade - 2)
+    : 0;
 
   if (fase === 'aquecimento') {
-    return Math.max(1, 10 - dificuldade * 2 - intensidadeIndex);
+    return Math.max(
+      1,
+      14 +
+        bonusClassica +
+        bonusDireta +
+        ajusteResgate +
+        Math.max(0, ajusteStreak) -
+        dificuldade * 2 -
+        atuabilidade * 2,
+    );
   }
   if (fase === 'crescendo') {
-    return 4 + energia + vergonha - Math.max(0, dificuldade - 2);
+    return (
+      5 +
+      energia +
+      vergonha +
+      Math.max(0, 4 - atuabilidade) -
+      Math.max(0, dificuldade - 2) +
+      (carta.tipo === 'classica' ? 1 : 0) +
+      ajusteResgate +
+      ajusteStreak
+    );
   }
   if (fase === 'pico') {
-    return 3 + energia * 2 + vergonha;
+    return (
+      3 +
+      energia * 2 +
+      vergonha +
+      Math.max(0, 3 - atuabilidade) +
+      ajusteResgate +
+      ajusteStreak
+    );
   }
-  return 2 + energia * 2 + vergonha * 2 + dificuldade;
+  return 2 + energia * 2 + vergonha * 2 + dificuldade + ajusteResgate;
+}
+
+function cartaDeResgate(carta: CartaFazAi): boolean {
+  return (
+    carta.atuabilidade === 'direta' ||
+    (carta.atuabilidade === 'boa' && carta.dificuldadeAtuacao !== 'surto')
+  );
 }
 
 function sortearPonderado(
   candidatos: readonly CartaFazAi[],
   fase: FaseAdaptativaFazAi,
+  contexto: ContextoSelecaoFazAi,
 ): CartaFazAi {
-  const pesos = candidatos.map((carta) => scoreCarta(carta, fase));
+  const pesos = candidatos.map((carta) => scoreCarta(carta, fase, contexto));
   const total = pesos.reduce((acc, peso) => acc + peso, 0);
   let cursor = Math.random() * total;
 
@@ -94,6 +143,7 @@ export function selecionarCartaFazAi(
   intensidade: IntensidadeSocial | 'todas',
   turnosJogados: number,
   totalTurnos: number,
+  contexto: ContextoSelecaoFazAi = {},
 ): CartaFazAi {
   const fase = calcularFaseAdaptativaFazAi(turnosJogados, totalTurnos);
   const usadas = new Set(cartasUsadas);
@@ -105,7 +155,18 @@ export function selecionarCartaFazAi(
       intensidadePermitida(carta, intensidade, fase),
   );
 
-  if (candidatos.length > 0) return sortearPonderado(candidatos, fase);
+  if (candidatos.length > 0) {
+    const candidatosFinais =
+      (contexto.passesTurnoAtual ?? 0) >= 2
+        ? candidatos.filter(cartaDeResgate)
+        : candidatos;
+
+    return sortearPonderado(
+      candidatosFinais.length > 0 ? candidatosFinais : candidatos,
+      fase,
+      contexto,
+    );
+  }
 
   const fallbackSemUso = CARTAS_FAZ_AI.filter(
     (carta) => !usadas.has(carta.id) && categoriaPermitida(carta, categorias),
