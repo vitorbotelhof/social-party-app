@@ -2,7 +2,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { Player } from '@/engine/types';
-import { PALETA_AVATARES, cores, espacamento, raio, tipografia } from '@/theme/colors';
+import {
+  PALETA_AVATARES,
+  cores,
+  espacamento,
+  raio,
+  sombra,
+  tipografia,
+} from '@/theme/colors';
 
 type EstadoVisual = 'normal' | 'voce' | 'votado';
 
@@ -68,11 +75,13 @@ function gradienteAvatarDe(id: string): [string, string] {
     hash = (hash * 31 + id.charCodeAt(i)) | 0;
   }
   const idx = Math.abs(hash) % PALETA_AVATARES.length;
-  const idx2 = (idx + Math.floor(PALETA_AVATARES.length / 2)) % PALETA_AVATARES.length;
+  const idx2 =
+    (idx + Math.floor(PALETA_AVATARES.length / 2)) % PALETA_AVATARES.length;
   return [PALETA_AVATARES[idx]!, PALETA_AVATARES[idx2]!];
 }
 
 const TAMANHO_AVATAR = 44;
+const COR_BADGE_HOST_FUNDO = 'rgba(255, 90, 95, 0.09)';
 
 const estilos = StyleSheet.create({
   avatar: {
@@ -86,13 +95,13 @@ const estilos = StyleSheet.create({
     opacity: 0.45,
   },
   avatarTexto: {
-    color: '#FFFFFF',
+    color: cores.textoSobrePrimaria,
     fontSize: 18,
     fontWeight: tipografia.pesoExtraBold,
   },
   // Badge: usa nova primary, sem hardcode de sienna
   badgeHost: {
-    backgroundColor: 'rgba(255, 90, 95, 0.09)',
+    backgroundColor: COR_BADGE_HOST_FUNDO,
     borderColor: cores.primaria,
     borderRadius: raio.sm,
     borderWidth: 1,
@@ -118,15 +127,11 @@ const estilos = StyleSheet.create({
     borderColor: cores.borda,
     borderRadius: raio.lg,
     borderWidth: 1,
-    elevation: 1,
     flexDirection: 'row',
     gap: espacamento.md,
     paddingHorizontal: espacamento.md,
     paddingVertical: espacamento.md,
-    shadowColor: '#161616',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
+    ...sombra.leve,
   },
   // "Você": destaque da borda com primaria
   cartaoVoce: {

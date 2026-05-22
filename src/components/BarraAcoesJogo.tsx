@@ -14,14 +14,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // /hooks/useRegrasDoJogo() que conheça o gameId atual via context.
 // eslint-disable-next-line import/no-restricted-paths
 import { JOGOS } from '@/games/gameRegistry';
+import { getSomAtivo, observarSomAtivo, setSomAtivo } from '@/services/audio';
 import {
-  getSomAtivo,
-  observarSomAtivo,
-  setSomAtivo,
-} from '@/services/audio';
-import { cores, espacamento, raio, tipografia } from '@/theme/colors';
+  cores,
+  espacamento,
+  raio,
+  sombra,
+  tamanhos,
+  tipografia,
+} from '@/theme/colors';
 
 const JOGO_ID = 'mrwhite';
+const COR_OVERLAY_MODAL = 'rgba(0, 0, 0, 0.5)';
 
 export function BarraAcoesJogo() {
   const [somAtivo, setSom] = useState(getSomAtivo());
@@ -33,10 +37,7 @@ export function BarraAcoesJogo() {
   return (
     <>
       <View
-        style={[
-          estilos.barra,
-          { top: insets.top + 8 },
-        ]}
+        style={[estilos.barra, { top: insets.top + 8 }]}
         pointerEvents="box-none"
       >
         <Pressable
@@ -164,16 +165,12 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: cores.superficie,
     borderColor: cores.borda,
-    borderRadius: 18,
+    borderRadius: tamanhos.botaoVoltar / 2,
     borderWidth: 1,
-    elevation: 2,
-    height: 36,
+    height: tamanhos.botaoVoltar,
     justifyContent: 'center',
-    shadowColor: '#161616',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    width: 36,
+    ...sombra.baixa,
+    width: tamanhos.botaoVoltar,
   },
   botaoPressionado: {
     backgroundColor: cores.fundoSecundario,
@@ -182,7 +179,7 @@ const estilos = StyleSheet.create({
   },
   botaoTexto: {
     color: cores.texto,
-    fontSize: 15,
+    fontSize: tipografia.tamanhoSegmento,
     fontWeight: tipografia.pesoBold,
     textAlign: 'center',
   },
@@ -227,19 +224,15 @@ const estilos = StyleSheet.create({
     borderTopRightRadius: raio.xl,
     bottom: 0,
     // Sombra para separar do overlay
-    elevation: 16,
     left: 0,
     maxHeight: '80%',
     position: 'absolute',
     right: 0,
-    shadowColor: '#161616',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
+    ...sombra.modal,
   },
   // Overlay: 50% preto — universalmente correto para modais sobre qualquer fundo
   modalOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: COR_OVERLAY_MODAL,
     flex: 1,
   },
   objetivo: {
@@ -258,7 +251,7 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: cores.primaria,
     borderRadius: 14,
-    color: '#FFFFFF',
+    color: cores.textoSobrePrimaria,
     fontSize: 13,
     fontWeight: tipografia.pesoExtraBold,
     height: 28,

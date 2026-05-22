@@ -6,12 +6,21 @@ import {
   type PressableProps,
 } from 'react-native';
 
-import { cores, espacamento, raio, tipografia } from '@/theme/colors';
+import {
+  cores,
+  espacamento,
+  raio,
+  sombra,
+  tamanhos,
+  tipografia,
+} from '@/theme/colors';
 
 interface Props extends Omit<PressableProps, 'style' | 'children'> {
   titulo: string;
   carregando?: boolean;
 }
+
+const COR_PRESSIONADO = 'rgba(255, 90, 95, 0.06)';
 
 export function BotaoSecundario({
   titulo,
@@ -46,15 +55,11 @@ const estilos = StyleSheet.create({
     borderColor: cores.borda,
     borderRadius: raio.pill,
     borderWidth: 1.5,
-    elevation: 1,
     justifyContent: 'center',
-    minHeight: 52,
+    minHeight: tamanhos.botaoAcao,
     paddingHorizontal: espacamento.lg,
     paddingVertical: espacamento.md,
-    shadowColor: '#161616',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
+    ...sombra.leve,
     width: '100%',
   },
   desabilitado: {
@@ -62,7 +67,7 @@ const estilos = StyleSheet.create({
   },
   // Warm pressed state — uses current primary, not old sienna
   pressionado: {
-    backgroundColor: 'rgba(255, 90, 95, 0.06)',
+    backgroundColor: COR_PRESSIONADO,
     borderColor: cores.primaria,
     transform: [{ scale: 0.98 }],
   },

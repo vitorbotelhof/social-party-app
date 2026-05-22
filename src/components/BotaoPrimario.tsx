@@ -7,7 +7,15 @@ import {
   type PressableProps,
 } from 'react-native';
 
-import { cores, espacamento, gradientes, raio, tipografia } from '@/theme/colors';
+import {
+  cores,
+  dimensoes,
+  espacamento,
+  gradientes,
+  raio,
+  sombra,
+  tipografia,
+} from '@/theme/colors';
 
 interface Props extends Omit<PressableProps, 'style' | 'children'> {
   titulo: string;
@@ -55,7 +63,7 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     borderRadius: raio.pill,
     justifyContent: 'center',
-    minHeight: 56,
+    minHeight: dimensoes.tocavelPrimario,
     paddingHorizontal: espacamento.lg,
     paddingVertical: espacamento.md,
   },
@@ -72,12 +80,7 @@ const estilos = StyleSheet.create({
   },
   wrapper: {
     borderRadius: raio.pill,
-    // Warm shadow — #161616 at low opacity, not noir black at 0.55
-    elevation: 3,
-    shadowColor: '#161616',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
+    ...sombra.forte,
     width: '100%',
   },
 });

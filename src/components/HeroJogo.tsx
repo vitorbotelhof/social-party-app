@@ -1,10 +1,24 @@
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRef } from 'react';
-import { Animated, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Animated,
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type ImageSourcePropType,
+} from 'react-native';
 
-import type { DefinicaoJogo } from '@/games/gameRegistry';
-import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
+import {
+  cores,
+  espacamento,
+  familias,
+  raio,
+  sombra,
+  tipografia,
+} from '@/theme/colors';
 
 // Social Energy Card — não poster de cinema.
 // 300px: conteúdo presente sem dominar a tela.
@@ -20,9 +34,16 @@ const GRADIENTE_HERO: [string, string, string, string] = [
 ];
 
 interface Props {
-  jogo: DefinicaoJogo;
+  jogo: {
+    nome: string;
+    slogan: string;
+    cover: ImageSourcePropType;
+    destaque?: boolean;
+  };
   onPress: () => void;
 }
+
+const COR_TEXTO_SECUNDARIO_SOBRE_IMAGEM = 'rgba(255,255,255,0.68)';
 
 export function HeroJogo({ jogo, onPress }: Props) {
   const escala = useRef(new Animated.Value(1)).current;
@@ -51,7 +72,9 @@ export function HeroJogo({ jogo, onPress }: Props) {
   }
 
   return (
-    <Animated.View style={[estilos.container, { transform: [{ scale: escala }] }]}>
+    <Animated.View
+      style={[estilos.container, { transform: [{ scale: escala }] }]}
+    >
       <Pressable
         onPress={aoTocar}
         onPressIn={aoPressionar}
@@ -98,12 +121,8 @@ const estilos = StyleSheet.create({
   // Card format: flutuante no scroll, não poster colado na tela
   container: {
     borderRadius: 20,
-    elevation: 4,
     marginBottom: espacamento.xl,
-    shadowColor: '#161616',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.10,
-    shadowRadius: 16,
+    ...sombra.media,
   },
   pressavel: {
     borderRadius: 20,
@@ -134,7 +153,7 @@ const estilos = StyleSheet.create({
     paddingVertical: 4,
   },
   badgeTexto: {
-    color: '#FFFFFF',
+    color: cores.textoSobrePrimaria,
     fontFamily: familias.sans,
     fontSize: 10,
     fontWeight: '700' as const,
@@ -148,15 +167,15 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacamento.md,
   },
   nome: {
-    color: '#FFFFFF',
+    color: cores.textoSobrePrimaria,
     fontFamily: familias.sans,
     fontWeight: '800' as const,
-    fontSize: tipografia.tamanhoTitulo,  // 26px — legível, não cinematográfico
+    fontSize: tipografia.tamanhoTitulo, // 26px — legível, não cinematográfico
     letterSpacing: -0.4,
     lineHeight: 32,
   },
   slogan: {
-    color: 'rgba(255,255,255,0.68)',
+    color: COR_TEXTO_SECUNDARIO_SOBRE_IMAGEM,
     fontSize: tipografia.tamanhoCorpoMenor,
     fontWeight: tipografia.pesoRegular,
     letterSpacing: 0,
@@ -175,7 +194,7 @@ const estilos = StyleSheet.create({
     paddingVertical: 7,
   },
   ctaTexto: {
-    color: '#FFFFFF',
+    color: cores.textoSobrePrimaria,
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCaption,
     fontWeight: '700' as const,

@@ -61,12 +61,7 @@ export function Temporizador({
         />
       </Svg>
       <View style={[estilos.centro, { width: tamanho, height: tamanho }]}>
-        <Text
-          style={[
-            estilos.numero,
-            acabando && estilos.numeroAcabando,
-          ]}
-        >
+        <Text style={[estilos.numero, acabando && estilos.numeroAcabando]}>
           {Math.max(0, Math.ceil(segundosRestantes))}
         </Text>
         <Text style={[estilos.unidade, acabando && estilos.unidadeAcabando]}>
@@ -93,7 +88,7 @@ const estilos = StyleSheet.create({
   },
   unidade: {
     color: cores.textoMudo,
-    fontSize: 11,
+    fontSize: tipografia.tamanhoLabelSecao,
     fontWeight: tipografia.pesoBold,
     letterSpacing: 1.5,
     marginTop: -4,

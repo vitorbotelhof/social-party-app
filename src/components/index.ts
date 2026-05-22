@@ -1,4 +1,10 @@
 export { BadgeUmCelular } from '@/components/BadgeUmCelular';
+export { BotaoVoltar } from '@/components/BotaoVoltar';
+export { CadastroJogadores } from '@/components/CadastroJogadores';
+export { ControladorNumerico } from '@/components/ControladorNumerico';
+export { RodapeConfig } from '@/components/RodapeConfig';
+export { SecaoConfig } from '@/components/SecaoConfig';
+export { SegmentControl } from '@/components/SegmentControl';
 export { BarraAcoesJogo } from '@/components/BarraAcoesJogo';
 export { BotaoPrimario } from '@/components/BotaoPrimario';
 export { BotaoSecundario } from '@/components/BotaoSecundario';
@@ -9,3 +15,4 @@ export { JogadorAnimado } from '@/components/JogadorAnimado';
 export { Logo } from '@/components/Logo';
 export { TelaCarregamento } from '@/components/TelaCarregamento';
 export { Temporizador } from '@/components/Temporizador';
+export { TelaConfigLocal } from '@/components/TelaConfigLocal';
