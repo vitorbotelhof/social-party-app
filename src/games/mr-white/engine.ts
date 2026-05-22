@@ -1,10 +1,5 @@
 import { GameEngine } from '@/engine/GameEngine';
-import type {
-  GameConfig,
-  GameState,
-  Player,
-  PlayerId,
-} from '@/engine/types';
+import type { GameConfig, GameState, Player, PlayerId } from '@/engine/types';
 import { CATEGORIAS } from '@/games/mr-white/categorias';
 import type {
   CategoriaId,
@@ -51,8 +46,15 @@ function ehDificuldadeValida(valor: unknown): valor is Dificuldade {
   return valor === 'facil' || valor === 'medio' || valor === 'dificil';
 }
 
-function ehDificuldadeParValida(valor: unknown): valor is DificuldadeParPalavras {
-  return valor === 'leve' || valor === 'media' || valor === 'hard' || valor === 'insana';
+function ehDificuldadeParValida(
+  valor: unknown,
+): valor is DificuldadeParPalavras {
+  return (
+    valor === 'leve' ||
+    valor === 'media' ||
+    valor === 'hard' ||
+    valor === 'insana'
+  );
 }
 
 /** Dificuldades de par aceitas para cada nível de dificuldade no modo clássico. */
@@ -62,12 +64,20 @@ const PARES_POR_DIFICULDADE: Record<Dificuldade, DificuldadeParPalavras[]> = {
   dificil: ['leve', 'media', 'hard', 'insana'],
 };
 
-function filtrarPares(palavras: ParPalavras[], niveis: DificuldadeParPalavras[]): ParPalavras[] {
-  const filtrado = palavras.filter((p) => !p.dificuldade || niveis.includes(p.dificuldade));
+function filtrarPares(
+  palavras: ParPalavras[],
+  niveis: DificuldadeParPalavras[],
+): ParPalavras[] {
+  const filtrado = palavras.filter(
+    (p) => !p.dificuldade || niveis.includes(p.dificuldade),
+  );
   return filtrado.length > 0 ? filtrado : palavras;
 }
 
-function normalizarOpcoes(opcoes: unknown, totalJogadores: number): OpcoesMrWhite {
+function normalizarOpcoes(
+  opcoes: unknown,
+  totalJogadores: number,
+): OpcoesMrWhite {
   const o = (opcoes ?? {}) as Partial<OpcoesMrWhite>;
   const categoriaId = ehCategoriaValida(o.categoriaId)
     ? o.categoriaId
@@ -92,7 +102,14 @@ function normalizarOpcoes(opcoes: unknown, totalJogadores: number): OpcoesMrWhit
   const dificuldadePar = ehDificuldadeParValida(o.dificuldadePar)
     ? o.dificuldadePar
     : OPCOES_PADRAO.dificuldadePar;
-  return { categoriaId, dificuldade, numeroMrWhites, duracaoTurnoSegundos, modoDualWord, dificuldadePar };
+  return {
+    categoriaId,
+    dificuldade,
+    numeroMrWhites,
+    duracaoTurnoSegundos,
+    modoDualWord,
+    dificuldadePar,
+  };
 }
 
 /** Normaliza texto para comparar palpites (remove acentos, espaços e case). */
@@ -121,7 +138,11 @@ function rotacionarOrdemAtiva(
   const rotacionada = [...ativos.slice(1), ativos[0]!];
 
   // Apenas no primeiro round de transição evita Mr White abrindo.
-  if (rodadaVotacao <= 1 && rotacionada.length > 1 && mrWhiteIds.has(rotacionada[0]!)) {
+  if (
+    rodadaVotacao <= 1 &&
+    rotacionada.length > 1 &&
+    mrWhiteIds.has(rotacionada[0]!)
+  ) {
     const idxCivil = rotacionada.findIndex((id) => !mrWhiteIds.has(id));
     if (idxCivil > 0) {
       const copia = [...rotacionada];
@@ -164,9 +185,7 @@ class MrWhiteEngine extends GameEngine<
     const par = sortearUm(filtrarPares(categoria.palavras, niveisPermitidos));
 
     const idsEmbaralhados = embaralhar(jogadores.map((j) => j.id));
-    const mrWhiteIds = new Set(
-      idsEmbaralhados.slice(0, config.numeroMrWhites),
-    );
+    const mrWhiteIds = new Set(idsEmbaralhados.slice(0, config.numeroMrWhites));
 
     const estadosPrivados: Record<PlayerId, MrWhitePrivateState> = {};
     for (const j of jogadores) {
@@ -175,7 +194,9 @@ class MrWhiteEngine extends GameEngine<
         ehMrWhite,
         // Modo dual-word: Mr White recebe palavra "undercover"; modo clássico: nenhuma.
         palavraSecreta: ehMrWhite
-          ? (config.modoDualWord ? (par.undercover ?? null) : null)
+          ? config.modoDualWord
+            ? (par.undercover ?? null)
+            : null
           : par.civis,
       };
     }
@@ -270,7 +291,8 @@ class MrWhiteEngine extends GameEngine<
     const { estadoPublico } = estado;
     if (estadoPublico.subFase !== 'votando') return estado;
     // Usa ordemAtiva (jogadores que ainda estão no jogo) como total esperado.
-    const total = estadoPublico.ordemAtiva.length || estadoPublico.ordemJogadores.length;
+    const total =
+      estadoPublico.ordemAtiva.length || estadoPublico.ordemJogadores.length;
     if (Object.keys(estadoPublico.votos).length < total) return estado;
     return this.resolverVotacao(estado, estadoPublico.votos, em);
   }
@@ -359,7 +381,10 @@ class MrWhiteEngine extends GameEngine<
         ...estadoPublico,
         pistas,
         indiceTurno: proximoIndice,
-        prazoTurnoEm: calcularPrazoTurno(estadoPublico.duracaoTurnoSegundos, em),
+        prazoTurnoEm: calcularPrazoTurno(
+          estadoPublico.duracaoTurnoSegundos,
+          em,
+        ),
       },
       atualizadoEm: em,
     };
@@ -382,7 +407,8 @@ class MrWhiteEngine extends GameEngine<
     if (ativosSet.size > 0 && !ativosSet.has(alvoId)) return estado;
 
     const votos = { ...estadoPublico.votos, [eleitorId]: alvoId };
-    const totalEsperado = estadoPublico.ordemAtiva.length || estadoPublico.ordemJogadores.length;
+    const totalEsperado =
+      estadoPublico.ordemAtiva.length || estadoPublico.ordemJogadores.length;
     const todosVotaram = Object.keys(votos).length === totalEsperado;
 
     if (!todosVotaram) {
@@ -407,24 +433,36 @@ class MrWhiteEngine extends GameEngine<
       contagem.set(alvoId, (contagem.get(alvoId) ?? 0) + 1);
     }
 
-    // Maior votado; empate resolve pelo mais antigo na sala.
-    let eliminadoId: PlayerId | null = null;
-    let maxVotos = 0;
-    const ordemDesempate =
-      estado.estadoPublico.idsPorAntiguidade?.length > 0
-        ? estado.estadoPublico.idsPorAntiguidade
-        : estado.estadoPublico.ordemJogadores;
-    for (const jogadorId of ordemDesempate) {
-      const c = contagem.get(jogadorId) ?? 0;
-      if (c > maxVotos) {
-        maxVotos = c;
-        eliminadoId = jogadorId;
-      }
+    // Maior votado; empate não elimina ninguém.
+    // A pressão volta para a mesa: nova rodada de dicas com todos ainda ativos.
+    const maxVotos = Math.max(...contagem.values(), 0);
+    const empatados = [...contagem.entries()]
+      .filter(([, total]) => total === maxVotos)
+      .map(([jogadorId]) => jogadorId);
+    if (maxVotos <= 0) return estado;
+    if (empatados.length > 1) {
+      return this.entrarEntreRodadas(
+        {
+          ...estado,
+          fase: 'playing',
+          estadoPublico: {
+            ...estado.estadoPublico,
+            votos,
+            ultimoEliminadoId: null,
+            ultimoEliminadoEraMrWhite: null,
+            prazoTurnoEm: null,
+          },
+          atualizadoEm: em,
+        },
+        em,
+      );
     }
+
+    // Vencedor único da votação.
+    const eliminadoId = empatados[0] ?? null;
     if (!eliminadoId) return estado;
 
-    const eraMrWhite =
-      estado.estadosPrivados[eliminadoId]?.ehMrWhite ?? false;
+    const eraMrWhite = estado.estadosPrivados[eliminadoId]?.ehMrWhite ?? false;
     const eliminadosIds = [...estado.estadoPublico.eliminadosIds, eliminadoId];
 
     // Atualiza contadores de eliminados.
@@ -586,7 +624,10 @@ class MrWhiteEngine extends GameEngine<
         votos: {},
         rodadaVotacao: estadoPublico.rodadaVotacao + 1,
         prazoProximaRodadaEm: null,
-        prazoTurnoEm: calcularPrazoTurno(estadoPublico.duracaoTurnoSegundos, em),
+        prazoTurnoEm: calcularPrazoTurno(
+          estadoPublico.duracaoTurnoSegundos,
+          em,
+        ),
       },
       atualizadoEm: em,
     };

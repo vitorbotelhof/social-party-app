@@ -29,7 +29,11 @@ type EtapaTransicao =
   | { tipo: 'apurando' }
   | { tipo: 'empate'; nomeEliminado: string | null }
   | { tipo: 'descoberto'; nomeMrWhite: string | null }
-  | { tipo: 'eliminado'; nomeEliminado: string | null; eraMrWhite: boolean | null }
+  | {
+      tipo: 'eliminado';
+      nomeEliminado: string | null;
+      eraMrWhite: boolean | null;
+    }
   | null;
 
 const MS_APURANDO = 2000;
@@ -53,10 +57,7 @@ export function GameScreen({ navigation, route }: Props) {
     [roomCode],
   );
 
-  useEffect(
-    () => observarJogadores(roomCode, setJogadores),
-    [roomCode],
-  );
+  useEffect(() => observarJogadores(roomCode, setJogadores), [roomCode]);
 
   useEffect(() => {
     setPartidaAtiva({ roomCode, jogoId, jogadorId });
@@ -89,12 +90,9 @@ export function GameScreen({ navigation, route }: Props) {
     if (anterior !== 'votando' || sub === 'votando') return;
 
     const empate = temEmpate(estado.estadoPublico.votos);
-    const ultimoEliminado =
-      estado.estadoPublico.eliminadosIds[
-        estado.estadoPublico.eliminadosIds.length - 1
-      ] ?? null;
+    const ultimoEliminado = estado.estadoPublico.ultimoEliminadoId;
     const nomeEliminado = ultimoEliminado
-      ? mapaNomes.get(ultimoEliminado) ?? null
+      ? (mapaNomes.get(ultimoEliminado) ?? null)
       : null;
 
     const sequencia: EtapaTransicao[] = [{ tipo: 'apurando' }];
@@ -103,12 +101,10 @@ export function GameScreen({ navigation, route }: Props) {
     }
     if (sub === 'palpite_final') {
       const mrWhiteId = estado.estadoPublico.jogadorAdivinhandoId;
-      const nomeMrWhite = mrWhiteId
-        ? mapaNomes.get(mrWhiteId) ?? null
-        : null;
+      const nomeMrWhite = mrWhiteId ? (mapaNomes.get(mrWhiteId) ?? null) : null;
       sequencia.push({ tipo: 'descoberto', nomeMrWhite });
     }
-    if (sub === 'entre_rodadas') {
+    if (sub === 'entre_rodadas' && !empate) {
       const eraMrWhite = estado.estadoPublico.ultimoEliminadoEraMrWhite;
       sequencia.push({ tipo: 'eliminado', nomeEliminado, eraMrWhite });
     }
@@ -324,11 +320,15 @@ function OverlayTransicao({
     };
   }, [
     etapa.tipo,
-    textoOpacidade, textoY,
-    labelOpacidade, labelY,
+    textoOpacidade,
+    textoY,
+    labelOpacidade,
+    labelY,
     hairlineOpacidade,
-    nomeOpacidade, nomeEscala,
-    subtextoOpacidade, subtextoY,
+    nomeOpacidade,
+    nomeEscala,
+    subtextoOpacidade,
+    subtextoY,
     dicaOpacidade,
   ]);
 
@@ -355,7 +355,9 @@ function OverlayTransicao({
           >
             empate.
           </Animated.Text>
-          <Animated.View style={[estilosOverlay.hairline, { opacity: hairlineOpacidade }]} />
+          <Animated.View
+            style={[estilosOverlay.hairline, { opacity: hairlineOpacidade }]}
+          />
           <Animated.Text
             style={[
               estilosOverlay.nomeDestaque,
@@ -368,7 +370,10 @@ function OverlayTransicao({
           <Animated.Text
             style={[
               estilosOverlay.subtextoFinal,
-              { opacity: subtextoOpacidade, transform: [{ translateY: subtextoY }] },
+              {
+                opacity: subtextoOpacidade,
+                transform: [{ translateY: subtextoY }],
+              },
             ]}
           >
             o mais antigo na sala foi eliminado
@@ -386,7 +391,9 @@ function OverlayTransicao({
           >
             {etapa.eraMrWhite ? 'o mr white era' : 'o inocente era'}
           </Animated.Text>
-          <Animated.View style={[estilosOverlay.hairline, { opacity: hairlineOpacidade }]} />
+          <Animated.View
+            style={[estilosOverlay.hairline, { opacity: hairlineOpacidade }]}
+          />
           <Animated.Text
             style={[
               estilosOverlay.nomeDestaque,
@@ -399,10 +406,15 @@ function OverlayTransicao({
           <Animated.Text
             style={[
               estilosOverlay.subtextoFinal,
-              { opacity: subtextoOpacidade, transform: [{ translateY: subtextoY }] },
+              {
+                opacity: subtextoOpacidade,
+                transform: [{ translateY: subtextoY }],
+              },
             ]}
           >
-            {etapa.eraMrWhite ? 'mas o jogo ainda não acabou.' : 'o jogo ainda não acabou.'}
+            {etapa.eraMrWhite
+              ? 'mas o jogo ainda não acabou.'
+              : 'o jogo ainda não acabou.'}
           </Animated.Text>
         </View>
       )}
@@ -417,7 +429,9 @@ function OverlayTransicao({
           >
             o mr white era
           </Animated.Text>
-          <Animated.View style={[estilosOverlay.hairline, { opacity: hairlineOpacidade }]} />
+          <Animated.View
+            style={[estilosOverlay.hairline, { opacity: hairlineOpacidade }]}
+          />
           <Animated.Text
             style={[
               estilosOverlay.nomeDestaque,
@@ -429,7 +443,10 @@ function OverlayTransicao({
           <Animated.Text
             style={[
               estilosOverlay.subtextoFinal,
-              { opacity: subtextoOpacidade, transform: [{ translateY: subtextoY }] },
+              {
+                opacity: subtextoOpacidade,
+                transform: [{ translateY: subtextoY }],
+              },
             ]}
           >
             ele ainda tem uma última chance.
@@ -437,7 +454,9 @@ function OverlayTransicao({
         </View>
       )}
 
-      <Animated.Text style={[estilosOverlay.dicaPular, { opacity: dicaOpacidade }]}>
+      <Animated.Text
+        style={[estilosOverlay.dicaPular, { opacity: dicaOpacidade }]}
+      >
         toque para continuar
       </Animated.Text>
     </Pressable>
@@ -447,7 +466,8 @@ function OverlayTransicao({
 const estilosOverlay = StyleSheet.create({
   apurandoTexto: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTitulo,
     letterSpacing: 0,
     lineHeight: 38,
@@ -479,7 +499,8 @@ const estilosOverlay = StyleSheet.create({
   },
   nomeDestaque: {
     color: cores.acento,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     letterSpacing: 0,
     lineHeight: 44,
@@ -509,7 +530,8 @@ const estilosOverlay = StyleSheet.create({
   },
   tituloEmpate: {
     color: cores.alerta,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTitulo,
     letterSpacing: 0,
     textAlign: 'center',

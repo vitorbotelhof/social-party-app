@@ -3,8 +3,17 @@ import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BarraAcoesJogo, IndicadorConexao } from '@/components';
-import type { GameId, GameState, Player, PlayerId, RoomCode } from '@/engine/types';
-import type { MrWhitePrivateState, MrWhitePublicState } from '@/games/mr-white/types';
+import type {
+  GameId,
+  GameState,
+  Player,
+  PlayerId,
+  RoomCode,
+} from '@/engine/types';
+import type {
+  MrWhitePrivateState,
+  MrWhitePublicState,
+} from '@/games/mr-white/types';
 import { criarAcao, despacharAcao } from '@/services/gameActions';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
@@ -16,6 +25,16 @@ interface Props {
   jogoId: GameId;
   jogadorId: PlayerId;
   jogadores: Player[];
+}
+
+function temEmpate(votos: Record<PlayerId, PlayerId>): boolean {
+  const contagem = new Map<PlayerId, number>();
+  for (const alvo of Object.values(votos)) {
+    contagem.set(alvo, (contagem.get(alvo) ?? 0) + 1);
+  }
+  const max = Math.max(...contagem.values(), 0);
+  if (max <= 0) return false;
+  return [...contagem.values()].filter((total) => total === max).length > 1;
 }
 
 // Staged reveal timing (ms) — social momentum:
@@ -34,6 +53,7 @@ export function TelaEntreRodadas({
 }: Props) {
   const pub = estado.estadoPublico;
   const avancouRef = useRef(false);
+  const houveEmpate = temEmpate(pub.votos) && !pub.ultimoEliminadoId;
 
   const nomeEliminado = pub.ultimoEliminadoId
     ? (jogadores.find((j) => j.id === pub.ultimoEliminadoId)?.nome ?? '?')
@@ -41,16 +61,17 @@ export function TelaEntreRodadas({
   const eraMrWhite = pub.ultimoEliminadoEraMrWhite;
 
   const mrWhitesVivos = pub.numeroMrWhites - pub.mrWhitesEliminados;
-  const civilsVivos = pub.ordemJogadores.length - pub.numeroMrWhites - pub.civilsEliminados;
+  const civilsVivos =
+    pub.ordemJogadores.length - pub.numeroMrWhites - pub.civilsEliminados;
 
   // Animation values — each beat controls one semantic layer
-  const op1 = useRef(new Animated.Value(0)).current;      // header
-  const op2 = useRef(new Animated.Value(0)).current;      // name
-  const ty2 = useRef(new Animated.Value(28)).current;     // name rise
-  const op3 = useRef(new Animated.Value(0)).current;      // role
-  const opHair = useRef(new Animated.Value(0)).current;   // counts hairline
-  const op4 = useRef(new Animated.Value(0)).current;      // counts
-  const op5 = useRef(new Animated.Value(0)).current;      // button
+  const op1 = useRef(new Animated.Value(0)).current; // header
+  const op2 = useRef(new Animated.Value(0)).current; // name
+  const ty2 = useRef(new Animated.Value(28)).current; // name rise
+  const op3 = useRef(new Animated.Value(0)).current; // role
+  const opHair = useRef(new Animated.Value(0)).current; // counts hairline
+  const op4 = useRef(new Animated.Value(0)).current; // counts
+  const op5 = useRef(new Animated.Value(0)).current; // button
 
   const animRef = useRef<Animated.CompositeAnimation | null>(null);
 
@@ -121,8 +142,9 @@ export function TelaEntreRodadas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pub.prazoProximaRodadaEm]);
 
-  const papelTexto =
-    eraMrWhite === true
+  const papelTexto = houveEmpate
+    ? 'ninguém saiu.'
+    : eraMrWhite === true
       ? 'era o mr white.'
       : eraMrWhite === false
         ? 'era inocente.'
@@ -138,7 +160,9 @@ export function TelaEntreRodadas({
         <Animated.View style={[estilos.cabecalho, { opacity: op1 }]}>
           <Text style={estilos.rodadaTexto}>rodada {pub.rodadaVotacao}</Text>
           <View style={estilos.hairlineCurta} />
-          <Text style={estilos.eliminadoLabel}>eliminado</Text>
+          <Text style={estilos.eliminadoLabel}>
+            {houveEmpate ? 'empate' : 'eliminado'}
+          </Text>
         </Animated.View>
 
         {/* Beat 2 — Name: the person who carried this weight */}
@@ -154,7 +178,7 @@ export function TelaEntreRodadas({
             adjustsFontSizeToFit
             minimumFontScale={0.7}
           >
-            {nomeEliminado ?? '—'}
+            {houveEmpate ? 'votos divididos' : (nomeEliminado ?? '—')}
           </Text>
         </Animated.View>
 
@@ -262,7 +286,8 @@ const estilos = StyleSheet.create({
     marginBottom: espacamento.md,
   },
   nomeTexto: {
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     color: cores.texto,
     textAlign: 'center',
@@ -304,7 +329,8 @@ const estilos = StyleSheet.create({
     gap: espacamento.xs,
   },
   contagemValor: {
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoSubtituloGrande,
     color: cores.texto,
   },

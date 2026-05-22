@@ -55,7 +55,10 @@ export function TelaJogoLocal() {
   const [estado, setEstado] = useState<EstadoMrWhite | null>(null);
   const permitirSaidaRef = useRef(false);
 
-  useEffect(() => observarEstadoLocal((e) => setEstado(e as EstadoMrWhite | null)), []);
+  useEffect(
+    () => observarEstadoLocal((e) => setEstado(e as EstadoMrWhite | null)),
+    [],
+  );
 
   // Intercepta qualquer tentativa de voltar (swipe iOS, hardware back
   // Android, etc.) e pede confirmação, exceto quando a saída é
@@ -64,22 +67,18 @@ export function TelaJogoLocal() {
     const sub = navigation.addListener('beforeRemove', (e) => {
       if (permitirSaidaRef.current) return;
       e.preventDefault();
-      Alert.alert(
-        'Sair da partida?',
-        'O progresso será perdido.',
-        [
-          { text: 'cancelar', style: 'cancel' },
-          {
-            text: 'sair',
-            style: 'destructive',
-            onPress: () => {
-              permitirSaidaRef.current = true;
-              resetarJogoLocal();
-              navigation.dispatch(e.data.action);
-            },
+      Alert.alert('Sair da partida?', 'O progresso será perdido.', [
+        { text: 'cancelar', style: 'cancel' },
+        {
+          text: 'sair',
+          style: 'destructive',
+          onPress: () => {
+            permitirSaidaRef.current = true;
+            resetarJogoLocal();
+            navigation.dispatch(e.data.action);
           },
-        ],
-      );
+        },
+      ]);
     });
     return sub;
   }, [navigation]);
@@ -113,7 +112,7 @@ export function TelaJogoLocal() {
       case 'palpite_final':
         return <FasePalpiteLocal estado={estado} jogadores={jogadores} />;
       case 'entre_rodadas':
-        return null;
+        return <FaseEntreRodadasLocal estado={estado} jogadores={jogadores} />;
       case 'finalizado':
         return (
           <FaseResultadoLocal
@@ -169,9 +168,7 @@ function FaseRevelarLocal({ estado, jogadores }: PropsFase) {
   function confirmarEAvancar() {
     if (!jogadorAtual) return;
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    despacharAcaoLocal(
-      criarAcao('jogador_viu_palavra', jogadorAtual.id, {}),
-    );
+    despacharAcaoLocal(criarAcao('jogador_viu_palavra', jogadorAtual.id, {}));
     // Se não foi o último, o useEffect [indiceAtual] reseta pra 'passe'.
     // Se foi o último, o engine avança subFase e a tela desmonta.
   }
@@ -207,10 +204,7 @@ function FaseRevelarLocal({ estado, jogadores }: PropsFase) {
       );
     case 'vire':
       return (
-        <EtapaVireCelular
-          ehUltimo={ehUltimo}
-          onProximo={confirmarEAvancar}
-        />
+        <EtapaVireCelular ehUltimo={ehUltimo} onProximo={confirmarEAvancar} />
       );
   }
 }
@@ -250,12 +244,14 @@ function EtapaPasse({
   }, [pulso]);
 
   return (
-    <SafeAreaView
-      style={estilos.tela}
-      edges={['top', 'bottom']}
-    >
+    <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
       <View style={estilos.centroFlex}>
-        <Animated.View style={[estilos.passePulsoIndicador, { transform: [{ scale: pulso }] }]} />
+        <Animated.View
+          style={[
+            estilos.passePulsoIndicador,
+            { transform: [{ scale: pulso }] },
+          ]}
+        />
         <Text style={estilos.legendaProgresso}>
           {indice} de {total}
         </Text>
@@ -317,6 +313,8 @@ function EtapaRevelarPalavra({
     return () => clearTimeout(id);
   }, [segurando]);
 
+  const mrWhiteComPalavra = ehMrWhite && !!palavra;
+
   // Fundo sempre neutro — sem cores de papel que vazem fisicamente.
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
@@ -330,10 +328,14 @@ function EtapaRevelarPalavra({
       >
         {segurando ? (
           <View style={estilos.centroFlexInterno}>
-            {ehMrWhite ? (
+            {ehMrWhite && !mrWhiteComPalavra ? (
               <>
                 <Text style={estilos.legendaPalavraReveal}>seu papel</Text>
-                <Text style={estilos.palavraRevealMrWhite} adjustsFontSizeToFit numberOfLines={1}>
+                <Text
+                  style={estilos.palavraRevealMrWhite}
+                  adjustsFontSizeToFit
+                  numberOfLines={1}
+                >
                   mr white
                 </Text>
                 <Text style={estilos.instrucaoMemorize}>
@@ -344,14 +346,19 @@ function EtapaRevelarPalavra({
               <>
                 <Text style={estilos.legendaPalavraReveal}>sua palavra</Text>
                 <Text
-                  style={estilos.palavraReveal}
+                  style={[
+                    estilos.palavraReveal,
+                    mrWhiteComPalavra && estilos.palavraRevealDualWord,
+                  ]}
                   adjustsFontSizeToFit
                   numberOfLines={1}
                 >
                   {palavra ?? ''}
                 </Text>
                 <Text style={estilos.instrucaoMemorize}>
-                  memorize e solte quando terminar.
+                  {mrWhiteComPalavra
+                    ? 'a palavra dos outros é parecida — blefe com cuidado.'
+                    : 'memorize e solte quando terminar.'}
                 </Text>
               </>
             )}
@@ -368,14 +375,9 @@ function EtapaRevelarPalavra({
 
       <View style={estilos.rodapeFlex}>
         {jaSegurouOSuficiente ? (
-          <BotaoPrimario
-            titulo="já memorizei, próximo"
-            onPress={onProximo}
-          />
+          <BotaoPrimario titulo="já memorizei, próximo" onPress={onProximo} />
         ) : (
-          <Text style={estilos.aguardandoSegurar}>
-            segure para confirmar
-          </Text>
+          <Text style={estilos.aguardandoSegurar}>segure para confirmar</Text>
         )}
       </View>
     </SafeAreaView>
@@ -392,19 +394,14 @@ function EtapaVireCelular({
   onProximo: () => void;
 }) {
   return (
-    <SafeAreaView
-      style={estilos.tela}
-      edges={['top', 'bottom']}
-    >
+    <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
       <View style={estilos.centroFlex}>
         <Text style={estilos.passeTitulo}>vire o celular</Text>
         <Text style={estilos.passeSubtitulo}>não deixe ninguém ver</Text>
       </View>
       <View style={estilos.rodapeFlex}>
         <BotaoPrimario
-          titulo={
-            ehUltimo ? 'todos viram, começar o jogo' : 'próximo jogador'
-          }
+          titulo={ehUltimo ? 'todos viram, começar o jogo' : 'próximo jogador'}
           onPress={onProximo}
         />
       </View>
@@ -422,7 +419,10 @@ function EtapaVireCelular({
 // fase de votação.
 
 function FaseRodadaLocal({ estado, jogadores }: PropsFase) {
-  const ordem = estado.estadoPublico.ordemJogadores;
+  const ordem =
+    estado.estadoPublico.ordemAtiva.length > 0
+      ? estado.estadoPublico.ordemAtiva
+      : estado.estadoPublico.ordemJogadores;
   const total = ordem.length;
   const [indiceLocal, setIndiceLocal] = useState(0);
   const [todasDadas, setTodasDadas] = useState(false);
@@ -467,9 +467,7 @@ function FaseRodadaLocal({ estado, jogadores }: PropsFase) {
           edges={['top', 'bottom']}
         >
           <View style={estilos.centroFlex}>
-            <Text style={estilos.tituloTransicao}>
-              todos deram suas dicas
-            </Text>
+            <Text style={estilos.tituloTransicao}>todos deram suas dicas</Text>
             <Text style={estilos.subtituloTransicao}>
               agora é hora de votar
             </Text>
@@ -522,14 +520,24 @@ function FaseRodadaLocal({ estado, jogadores }: PropsFase) {
 type EtapaVotar = 'passe' | 'confirma' | 'votar' | 'registrado';
 
 function FaseVotacaoLocal({ estado, jogadores }: PropsFase) {
-  const ordem = estado.estadoPublico.ordemJogadores;
+  const ordem =
+    estado.estadoPublico.ordemAtiva.length > 0
+      ? estado.estadoPublico.ordemAtiva
+      : estado.estadoPublico.ordemJogadores;
   const total = ordem.length;
   const [indiceVotante, setIndiceVotante] = useState(0);
   const [etapa, setEtapa] = useState<EtapaVotar>('passe');
   const [selecionado, setSelecionado] = useState<PlayerId | null>(null);
   const [votos, setVotos] = useState<Record<PlayerId, PlayerId>>({});
 
-  const votanteAtual = jogadores.find((j) => j.id === ordem[indiceVotante]);
+  const eliminadosIds = new Set(estado.estadoPublico.eliminadosIds);
+  const jogadoresAtivos = ordem
+    .filter((id) => !eliminadosIds.has(id))
+    .map((id) => jogadores.find((j) => j.id === id))
+    .filter((j): j is Player => !!j);
+  const votanteAtual = jogadoresAtivos.find(
+    (j) => j.id === ordem[indiceVotante],
+  );
   const ehUltimo = indiceVotante === total - 1;
   const totalJaVotou = Object.keys(votos).length;
 
@@ -584,7 +592,7 @@ function FaseVotacaoLocal({ estado, jogadores }: PropsFase) {
       return (
         <EtapaVotarSecreto
           votante={votanteAtual}
-          candidatos={jogadores.filter((j) => j.id !== votanteAtual.id)}
+          candidatos={jogadoresAtivos.filter((j) => j.id !== votanteAtual.id)}
           selecionado={selecionado}
           totalJaVotou={totalJaVotou}
           total={total}
@@ -596,9 +604,7 @@ function FaseVotacaoLocal({ estado, jogadores }: PropsFase) {
         />
       );
     case 'registrado':
-      return (
-        <EtapaVotoRegistrado ehUltimo={ehUltimo} onProximo={aoAvancar} />
-      );
+      return <EtapaVotoRegistrado ehUltimo={ehUltimo} onProximo={aoAvancar} />;
   }
 }
 
@@ -679,10 +685,7 @@ function EtapaVotoRegistrado({
   onProximo: () => void;
 }) {
   return (
-    <SafeAreaView
-      style={estilos.tela}
-      edges={['top', 'bottom']}
-    >
+    <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
       <View style={estilos.centroFlex}>
         <Text style={estilos.passeTitulo}>voto registrado</Text>
         <Text style={estilos.passeSubtitulo}>não mostre para ninguém</Text>
@@ -693,6 +696,178 @@ function EtapaVotoRegistrado({
           onPress={onProximo}
         />
       </View>
+    </SafeAreaView>
+  );
+}
+
+function temEmpateLocal(votos: Record<PlayerId, PlayerId>): boolean {
+  const contagem = new Map<PlayerId, number>();
+  for (const alvo of Object.values(votos)) {
+    contagem.set(alvo, (contagem.get(alvo) ?? 0) + 1);
+  }
+  const max = Math.max(...contagem.values(), 0);
+  if (max <= 0) return false;
+  return [...contagem.values()].filter((total) => total === max).length > 1;
+}
+
+// ============================================================
+//  FASE 3.5: Entre rodadas (reveal da eliminação)
+// ============================================================
+
+function FaseEntreRodadasLocal({ estado, jogadores }: PropsFase) {
+  const avancouRef = useRef(false);
+  const pub = estado.estadoPublico;
+  const houveEmpate = temEmpateLocal(pub.votos) && !pub.ultimoEliminadoId;
+  const eliminado = jogadores.find((j) => j.id === pub.ultimoEliminadoId);
+  const eraMrWhite = pub.ultimoEliminadoEraMrWhite;
+  const mrWhitesVivos = Math.max(
+    0,
+    pub.numeroMrWhites - pub.mrWhitesEliminados,
+  );
+  const civisVivos = Math.max(
+    0,
+    pub.ordemJogadores.length - pub.numeroMrWhites - pub.civilsEliminados,
+  );
+
+  const cabecalhoOp = useRef(new Animated.Value(0)).current;
+  const nomeOp = useRef(new Animated.Value(0)).current;
+  const nomeY = useRef(new Animated.Value(18)).current;
+  const papelOp = useRef(new Animated.Value(0)).current;
+  const placarOp = useRef(new Animated.Value(0)).current;
+  const rodapeOp = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.sequence([
+      Animated.timing(cabecalhoOp, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.delay(160),
+      Animated.parallel([
+        Animated.timing(nomeOp, {
+          toValue: 1,
+          duration: 240,
+          useNativeDriver: true,
+        }),
+        Animated.timing(nomeY, {
+          toValue: 0,
+          duration: 240,
+          useNativeDriver: true,
+        }),
+      ]),
+      Animated.delay(120),
+      Animated.timing(papelOp, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
+      Animated.delay(120),
+      Animated.parallel([
+        Animated.timing(placarOp, {
+          toValue: 1,
+          duration: 220,
+          useNativeDriver: true,
+        }),
+        Animated.timing(rodapeOp, {
+          toValue: 1,
+          duration: 220,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+  }, [cabecalhoOp, nomeOp, nomeY, papelOp, placarOp, rodapeOp]);
+
+  function avancar() {
+    if (avancouRef.current) return;
+    avancouRef.current = true;
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    despacharAcaoLocal(criarAcao('avancar_proxima_rodada', 'local-host', {}));
+  }
+
+  useEffect(() => {
+    const prazo = pub.prazoProximaRodadaEm;
+    if (!prazo) return;
+    const delay = prazo - Date.now();
+    if (delay <= 0) {
+      avancar();
+      return;
+    }
+    const id = setTimeout(avancar, delay);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pub.prazoProximaRodadaEm]);
+
+  const textoPapel = houveEmpate
+    ? 'o grupo dividiu os votos.'
+    : eraMrWhite === true
+      ? 'era mr white.'
+      : eraMrWhite === false
+        ? 'era inocente.'
+        : 'o grupo escolheu.';
+
+  return (
+    <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
+      <View style={estilos.centroFlex}>
+        <Animated.View
+          style={[estilos.entreCabecalho, { opacity: cabecalhoOp }]}
+        >
+          <Text style={estilos.entreRodada}>votação {pub.rodadaVotacao}</Text>
+          <View style={estilos.entreLinha} />
+          <Text style={estilos.entreLabel}>
+            {houveEmpate ? 'resultado' : 'eliminado'}
+          </Text>
+        </Animated.View>
+
+        <Animated.Text
+          style={[
+            estilos.entreNome,
+            { opacity: nomeOp, transform: [{ translateY: nomeY }] },
+          ]}
+          numberOfLines={2}
+          adjustsFontSizeToFit
+        >
+          {houveEmpate ? 'ninguém saiu' : (eliminado?.nome ?? 'alguém')}
+        </Animated.Text>
+
+        <Animated.Text
+          style={[
+            estilos.entrePapel,
+            eraMrWhite ? estilos.entrePapelMrWhite : estilos.entrePapelCivil,
+            { opacity: papelOp },
+          ]}
+        >
+          {textoPapel}
+        </Animated.Text>
+
+        <Animated.View style={[estilos.entrePlacar, { opacity: placarOp }]}>
+          <View style={estilos.entrePlacarItem}>
+            <Text style={estilos.entrePlacarValor}>{civisVivos}</Text>
+            <Text style={estilos.entrePlacarRotulo}>
+              {civisVivos === 1 ? 'inocente' : 'inocentes'}
+            </Text>
+          </View>
+          <View style={estilos.entrePlacarDivisor} />
+          <View style={estilos.entrePlacarItem}>
+            <Text
+              style={[
+                estilos.entrePlacarValor,
+                mrWhitesVivos > 0 && estilos.entrePlacarMrWhite,
+              ]}
+            >
+              {mrWhitesVivos}
+            </Text>
+            <Text style={estilos.entrePlacarRotulo}>
+              {mrWhitesVivos === 1 ? 'impostor' : 'impostores'}
+            </Text>
+          </View>
+        </Animated.View>
+      </View>
+
+      <Animated.View style={[estilos.rodapeFlex, { opacity: rodapeOp }]}>
+        <BotaoPrimario titulo="próxima rodada" onPress={avancar} />
+        <Text style={estilos.entreDica}>passem o celular para continuar</Text>
+      </Animated.View>
     </SafeAreaView>
   );
 }
@@ -730,9 +905,7 @@ function FasePalpiteLocal({ estado, jogadores }: PropsFase) {
         <View style={estilos.cabecalhoVez}>
           <Text style={estilos.legendaPalpiteTopo}>você foi descoberto</Text>
           <Text style={estilos.tituloGrande}>{adivinhando.nome},</Text>
-          <Text style={estilos.subtituloPalpite}>
-            qual é a palavra?
-          </Text>
+          <Text style={estilos.subtituloPalpite}>qual é a palavra?</Text>
           <Text style={estilos.dicaPalpite}>
             acertou, vira o jogo. errou, civis vencem.
           </Text>
@@ -805,12 +978,14 @@ function PassePalpite({
   }, [pulso]);
 
   return (
-    <SafeAreaView
-      style={estilos.tela}
-      edges={['top', 'bottom']}
-    >
+    <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
       <View style={estilos.centroFlex}>
-        <Animated.View style={[estilos.passePulsoIndicador, { transform: [{ scale: pulso }] }]} />
+        <Animated.View
+          style={[
+            estilos.passePulsoIndicador,
+            { transform: [{ scale: pulso }] },
+          ]}
+        />
         <Text style={estilos.passeTitulo}>passe o celular</Text>
         <Text style={estilos.passeSubtitulo}>para {nome}</Text>
         <Text style={estilos.dicaMrWhiteDescoberto}>
@@ -864,7 +1039,10 @@ function FaseResultadoLocal({
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setEtapa(ETAPA_RESULTADO.LEGENDA), TEMPOS_RESULTADO.LEGENDA),
+      setTimeout(
+        () => setEtapa(ETAPA_RESULTADO.LEGENDA),
+        TEMPOS_RESULTADO.LEGENDA,
+      ),
       setTimeout(() => setEtapa(ETAPA_RESULTADO.NOME), TEMPOS_RESULTADO.NOME),
       setTimeout(() => {
         setEtapa(ETAPA_RESULTADO.BANNER);
@@ -897,7 +1075,7 @@ function FaseResultadoLocal({
       }, TEMPOS_RESULTADO.CONTEUDO),
     ];
     return () => timers.forEach(clearTimeout);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ehVitoriaMrWhite]);
 
   if (etapa < ETAPA_RESULTADO.LEGENDA) {
@@ -998,9 +1176,7 @@ function FaseResultadoLocal({
                         {nomeDe(eleitor)}
                       </Text>
                       <Text style={estilos.linhaVotoSeta}> → </Text>
-                      <Text style={estilos.linhaVotoNome}>
-                        {nomeDe(alvo)}
-                      </Text>
+                      <Text style={estilos.linhaVotoNome}>{nomeDe(alvo)}</Text>
                     </Text>
                   ))}
                 </View>
@@ -1403,6 +1579,88 @@ const estilos = StyleSheet.create({
     marginTop: espacamento.lg,
     textAlign: 'center',
   },
+  entreCabecalho: {
+    alignItems: 'center',
+    gap: espacamento.sm,
+    marginBottom: espacamento.xl,
+  },
+  entreDica: {
+    color: cores.textoMudo,
+    fontSize: tipografia.tamanhoLegenda,
+    marginTop: espacamento.sm,
+    textAlign: 'center',
+  },
+  entreLabel: {
+    color: cores.textoSecundario,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoBold,
+    letterSpacing: tipografia.letraSpacingLegenda,
+    textAlign: 'center',
+  },
+  entreLinha: {
+    backgroundColor: cores.borda,
+    height: 1,
+    width: 36,
+  },
+  entreNome: {
+    color: cores.texto,
+    fontSize: tipografia.tamanhoHero,
+    fontWeight: tipografia.pesoBlack,
+    letterSpacing: tipografia.spacingTitulo,
+    lineHeight: 52,
+    textAlign: 'center',
+  },
+  entrePapel: {
+    fontSize: tipografia.tamanhoCorpoMaior,
+    fontWeight: tipografia.pesoBold,
+    marginTop: espacamento.md,
+    textAlign: 'center',
+  },
+  entrePapelCivil: {
+    color: cores.textoSecundario,
+  },
+  entrePapelMrWhite: {
+    color: cores.erro,
+  },
+  entrePlacar: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: espacamento.xl,
+    marginTop: espacamento.xxl,
+  },
+  entrePlacarDivisor: {
+    backgroundColor: cores.borda,
+    height: 44,
+    width: 1,
+  },
+  entrePlacarItem: {
+    alignItems: 'center',
+    gap: espacamento.xs,
+    minWidth: 86,
+  },
+  entrePlacarMrWhite: {
+    color: cores.erro,
+  },
+  entrePlacarRotulo: {
+    color: cores.textoMudo,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoBold,
+    letterSpacing: tipografia.letraSpacingLegenda,
+    textAlign: 'center',
+  },
+  entrePlacarValor: {
+    color: cores.texto,
+    fontSize: tipografia.tamanhoSubtituloGrande,
+    fontWeight: tipografia.pesoBlack,
+    textAlign: 'center',
+  },
+  entreRodada: {
+    color: cores.textoMudo,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoBold,
+    letterSpacing: tipografia.letraSpacingLegenda,
+    textAlign: 'center',
+  },
   revelandoTexto: {
     color: cores.texto,
     fontSize: tipografia.tamanhoSubtitulo,
@@ -1585,6 +1843,9 @@ const estilos = StyleSheet.create({
     letterSpacing: tipografia.spacingApertado,
     textAlign: 'center',
     width: '100%',
+  },
+  palavraRevealDualWord: {
+    color: cores.primaria,
   },
   palavraRevealMrWhite: {
     color: cores.primaria,
