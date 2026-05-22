@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BotaoPrimario } from '@/components';
+import { BotaoPrimario, BotaoVoltar } from '@/components';
 import type { ModoMostLikely } from '@/games/most-likely-to/types';
 import type { RootStackParamList } from '@/navigation/types';
 import { iniciarJogo } from '@/services/roomService';
@@ -62,6 +62,8 @@ export function TelaConfiguracaoMostLikely({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={estilos.tela} edges={['bottom']}>
+      <BotaoVoltar onPress={() => navigation.goBack()} />
+
       <ScrollView contentContainerStyle={estilos.conteudo}>
         <Text style={estilos.tituloPagina}>como vai ser?</Text>
 
@@ -76,7 +78,8 @@ export function TelaConfiguracaoMostLikely({ navigation, route }: Props) {
               disabled={totalRodadas <= TOTAL_RODADAS_MIN}
               style={[
                 estilos.stepperBotao,
-                totalRodadas <= TOTAL_RODADAS_MIN && estilos.stepperBotaoDesabilitado,
+                totalRodadas <= TOTAL_RODADAS_MIN &&
+                  estilos.stepperBotaoDesabilitado,
               ]}
             >
               <Text style={estilos.stepperBotaoTexto}>−</Text>
@@ -91,7 +94,8 @@ export function TelaConfiguracaoMostLikely({ navigation, route }: Props) {
               disabled={totalRodadas >= TOTAL_RODADAS_MAX}
               style={[
                 estilos.stepperBotao,
-                totalRodadas >= TOTAL_RODADAS_MAX && estilos.stepperBotaoDesabilitado,
+                totalRodadas >= TOTAL_RODADAS_MAX &&
+                  estilos.stepperBotaoDesabilitado,
               ]}
             >
               <Text style={estilos.stepperBotaoTexto}>+</Text>
@@ -101,8 +105,8 @@ export function TelaConfiguracaoMostLikely({ navigation, route }: Props) {
             {totalRodadas <= 5
               ? 'sessão rápida — alta intensidade.'
               : totalRodadas >= 15
-              ? 'sessão longa — mais revelações.'
-              : 'ritmo ideal para a maioria dos grupos.'}
+                ? 'sessão longa — mais revelações.'
+                : 'ritmo ideal para a maioria dos grupos.'}
           </Text>
         </View>
 
@@ -154,12 +158,14 @@ const estilos = StyleSheet.create({
   },
   conteudo: {
     padding: espacamento.lg,
+    paddingTop: espacamento.xxl,
   },
 
   // Título — mesmo padrão da TelaConfiguracaoJogo
   tituloPagina: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTitulo,
     letterSpacing: 0,
     lineHeight: 36,
@@ -206,7 +212,8 @@ const estilos = StyleSheet.create({
   },
   stepperValor: {
     color: cores.acento,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 48,
     lineHeight: 56,
     minWidth: 64,
@@ -248,7 +255,8 @@ const estilos = StyleSheet.create({
   },
   segmentoTextoAtivo: {
     color: cores.acento,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMenor,
   },
   // Descrição do modo — aparece abaixo, muda com a seleção

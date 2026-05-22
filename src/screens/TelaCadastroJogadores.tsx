@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BotaoPrimario } from '@/components';
+import { BotaoPrimario, BotaoVoltar } from '@/components';
 import type { Player } from '@/engine/types';
 import type { OpcoesMrWhite } from '@/games/mr-white/types';
 import type { RootStackParamList } from '@/navigation/types';
@@ -77,6 +77,8 @@ export function TelaCadastroJogadores({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
+      <BotaoVoltar onPress={() => navigation.goBack()} />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={estilos.flex}
@@ -196,7 +198,7 @@ const estilos = StyleSheet.create({
   },
   cabecalho: {
     paddingHorizontal: espacamento.lg,
-    paddingTop: espacamento.lg,
+    paddingTop: espacamento.xxl,
   },
   contadorLinha: {
     paddingHorizontal: espacamento.lg,

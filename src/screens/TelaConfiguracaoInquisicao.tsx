@@ -26,12 +26,20 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BotaoPrimario, CodigoSala, JogadorAnimado } from '@/components';
+import {
+  BotaoPrimario,
+  BotaoVoltar,
+  CodigoSala,
+  JogadorAnimado,
+} from '@/components';
 import type { Player } from '@/engine/types';
 import { MIN_JOGADORES_INQUISICAO } from '@/games/inquisicao/roleDistribution';
 import type { IntensidadeInquisicao } from '@/games/inquisicao/types';
 import type { RootStackParamList } from '@/navigation/types';
-import { carregarGrupoRecente, salvarGrupoRecente } from '@/services/grupoRecente';
+import {
+  carregarGrupoRecente,
+  salvarGrupoRecente,
+} from '@/services/grupoRecente';
 import { iniciarJogo, observarJogadores } from '@/services/roomService';
 import { RoomServiceError } from '@/types/room';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
@@ -61,6 +69,7 @@ const INTENSIDADES: OpcaoIntensidade[] = [
     descricao: 'ninguém sai igual. joga quem aguenta.',
   },
 ];
+const COR_DESCRICAO_ATIVA = '#C8C4BD';
 
 // ─── Componente ───────────────────────────────────────────────────────────────
 
@@ -70,7 +79,8 @@ export function TelaConfiguracaoInquisicao({ navigation, route }: Props) {
   const { roomCode, jogoId, jogadorId } = route.params;
 
   const [jogadores, setJogadores] = useState<Player[]>([]);
-  const [intensidade, setIntensidade] = useState<IntensidadeInquisicao>('padrao');
+  const [intensidade, setIntensidade] =
+    useState<IntensidadeInquisicao>('padrao');
   const [grupoRecente, setGrupoRecente] = useState<string[] | null>(null);
   const [iniciando, setIniciando] = useState(false);
 
@@ -141,12 +151,13 @@ export function TelaConfiguracaoInquisicao({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
+      <BotaoVoltar onPress={() => navigation.goBack()} />
+
       <ScrollView
         contentContainerStyle={estilos.scroll}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-
         {/* ── Código da sala ──────────────────────────────────────────────── */}
         <View style={estilos.blocoCodigo}>
           <Text style={estilos.legendaCodigo}>código da sala</Text>
@@ -181,7 +192,8 @@ export function TelaConfiguracaoInquisicao({ navigation, route }: Props) {
               {jogadores.length}
               {!podeIniciar && (
                 <Text style={estilos.minimoLabel}>
-                  {' '}/ mín. {MIN_JOGADORES_INQUISICAO}
+                  {' '}
+                  / mín. {MIN_JOGADORES_INQUISICAO}
                 </Text>
               )}
             </Text>
@@ -244,10 +256,7 @@ export function TelaConfiguracaoInquisicao({ navigation, route }: Props) {
 
                 {/* Indicador de seleção */}
                 <View
-                  style={[
-                    estilos.indicador,
-                    ativa && estilos.indicadorAtivo,
-                  ]}
+                  style={[estilos.indicador, ativa && estilos.indicadorAtivo]}
                 />
               </Pressable>
             );
@@ -288,7 +297,7 @@ const estilos = StyleSheet.create({
   },
   scroll: {
     paddingHorizontal: espacamento.lg,
-    paddingTop: espacamento.lg,
+    paddingTop: espacamento.xxl,
   },
 
   // ── Código ───────────────────────────────────────────────────────────────────
@@ -431,7 +440,7 @@ const estilos = StyleSheet.create({
     lineHeight: 18,
   },
   cardIntensidadeDescricaoAtivo: {
-    color: '#C8C4BD', // off-white muted on dark background
+    color: COR_DESCRICAO_ATIVA,
   },
   indicador: {
     borderColor: cores.borda,

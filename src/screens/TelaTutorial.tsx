@@ -2,7 +2,6 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useRef, useState } from 'react';
 import {
   NativeSyntheticEvent,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BotaoPrimario } from '@/components';
+import { BotaoPrimario, BotaoVoltar } from '@/components';
 import type { RootStackParamList } from '@/navigation/types';
 import { marcarTutorialComoVisto } from '@/services/tutorial';
 import { cores, espacamento, tipografia } from '@/theme/colors';
@@ -84,18 +83,7 @@ export function TelaTutorial({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
-      <View style={estilos.cabecalho}>
-        <Pressable
-          onPress={finalizar}
-          hitSlop={12}
-          style={({ pressed }) => [
-            estilos.botaoPular,
-            pressed && estilos.botaoPularPressionado,
-          ]}
-        >
-          <Text style={estilos.botaoPularTexto}>pular</Text>
-        </Pressable>
-      </View>
+      <BotaoVoltar variante="fechar" posicao="direita" onPress={finalizar} />
 
       <ScrollView
         ref={scrollRef}
@@ -148,24 +136,6 @@ const estilos = StyleSheet.create({
   bolinhaAtiva: {
     backgroundColor: cores.primaria,
     width: TAMANHO_BOLINHA * 3,
-  },
-  botaoPular: {
-    paddingHorizontal: espacamento.md,
-    paddingVertical: espacamento.sm,
-  },
-  botaoPularPressionado: {
-    opacity: 0.6,
-  },
-  botaoPularTexto: {
-    color: cores.textoSecundario,
-    fontSize: tipografia.tamanhoCorpoMenor,
-    fontWeight: tipografia.pesoSemibold,
-    letterSpacing: 0.3,
-  },
-  cabecalho: {
-    alignItems: 'flex-end',
-    paddingHorizontal: espacamento.md,
-    paddingTop: espacamento.sm,
   },
   emoji: {
     fontSize: 80,

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BotaoPrimario } from '@/components';
+import { BotaoPrimario, BotaoVoltar } from '@/components';
 import { LISTA_CATEGORIAS } from '@/games/mr-white/categorias';
 import type {
   CategoriaId,
@@ -31,7 +31,10 @@ const ROTULOS_DIFICULDADE: Record<Dificuldade, string> = {
   dificil: 'Difícil',
 };
 
-const ROTULOS_DIFICULDADE_PAR: Record<DificuldadeParPalavras, { rotulo: string; descricao: string }> = {
+const ROTULOS_DIFICULDADE_PAR: Record<
+  DificuldadeParPalavras,
+  { rotulo: string; descricao: string }
+> = {
   leve: { rotulo: 'Fácil', descricao: 'palavras bem diferentes' },
   media: { rotulo: 'Médio', descricao: 'alguma semelhança' },
   hard: { rotulo: 'Difícil', descricao: 'muito próximas' },
@@ -56,13 +59,15 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
   const [numMrWhites, setNumMrWhites] = useState(1);
   const [duracaoTurno, setDuracaoTurno] = useState(60);
   const [modoDualWord, setModoDualWord] = useState(false);
-  const [dificuldadePar, setDificuldadePar] = useState<DificuldadeParPalavras>('media');
+  const [dificuldadePar, setDificuldadePar] =
+    useState<DificuldadeParPalavras>('media');
   const [iniciando, setIniciando] = useState(false);
 
   function sortearCategoria() {
     const atual = categoriaId;
     const disponiveis = LISTA_CATEGORIAS.filter((c) => c.id !== atual);
-    const sorteada = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+    const sorteada =
+      disponiveis[Math.floor(Math.random() * disponiveis.length)];
     if (sorteada) setCategoriaId(sorteada.id);
   }
 
@@ -91,6 +96,8 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={estilos.tela} edges={['bottom']}>
+      <BotaoVoltar onPress={() => navigation.goBack()} />
+
       <ScrollView contentContainerStyle={estilos.conteudo}>
         <Text style={estilos.tituloPagina}>como vai ser?</Text>
 
@@ -105,10 +112,7 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
                   style={[estilos.chip, ativo && estilos.chipAtivo]}
                 >
                   <Text
-                    style={[
-                      estilos.chipTexto,
-                      ativo && estilos.chipTextoAtivo,
-                    ]}
+                    style={[estilos.chipTexto, ativo && estilos.chipTextoAtivo]}
                   >
                     {c.nome}
                   </Text>
@@ -127,7 +131,12 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
               onPress={() => setModoDualWord(false)}
               style={[estilos.segmento, !modoDualWord && estilos.segmentoAtivo]}
             >
-              <Text style={[estilos.segmentoTexto, !modoDualWord && estilos.segmentoTextoAtivo]}>
+              <Text
+                style={[
+                  estilos.segmentoTexto,
+                  !modoDualWord && estilos.segmentoTextoAtivo,
+                ]}
+              >
                 Clássico
               </Text>
             </Pressable>
@@ -135,7 +144,12 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
               onPress={() => setModoDualWord(true)}
               style={[estilos.segmento, modoDualWord && estilos.segmentoAtivo]}
             >
-              <Text style={[estilos.segmentoTexto, modoDualWord && estilos.segmentoTextoAtivo]}>
+              <Text
+                style={[
+                  estilos.segmentoTexto,
+                  modoDualWord && estilos.segmentoTextoAtivo,
+                ]}
+              >
                 Dual Word
               </Text>
             </Pressable>
@@ -150,7 +164,9 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
         {modoDualWord && (
           <Section titulo="Proximidade das Palavras">
             <View style={estilos.linhaSegmentos}>
-              {(Object.keys(ROTULOS_DIFICULDADE_PAR) as DificuldadeParPalavras[]).map((d) => {
+              {(
+                Object.keys(ROTULOS_DIFICULDADE_PAR) as DificuldadeParPalavras[]
+              ).map((d) => {
                 const ativo = d === dificuldadePar;
                 return (
                   <Pressable
@@ -158,7 +174,12 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
                     onPress={() => setDificuldadePar(d)}
                     style={[estilos.segmento, ativo && estilos.segmentoAtivo]}
                   >
-                    <Text style={[estilos.segmentoTexto, ativo && estilos.segmentoTextoAtivo]}>
+                    <Text
+                      style={[
+                        estilos.segmentoTexto,
+                        ativo && estilos.segmentoTextoAtivo,
+                      ]}
+                    >
                       {ROTULOS_DIFICULDADE_PAR[d].rotulo}
                     </Text>
                   </Pressable>
@@ -179,10 +200,7 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
                 <Pressable
                   key={d}
                   onPress={() => setDificuldade(d)}
-                  style={[
-                    estilos.segmento,
-                    ativo && estilos.segmentoAtivo,
-                  ]}
+                  style={[estilos.segmento, ativo && estilos.segmentoAtivo]}
                 >
                   <Text
                     style={[
@@ -233,10 +251,7 @@ export function TelaConfiguracaoJogo({ navigation, route }: Props) {
                 <Pressable
                   key={opcao.valor}
                   onPress={() => setDuracaoTurno(opcao.valor)}
-                  style={[
-                    estilos.segmento,
-                    ativo && estilos.segmentoAtivo,
-                  ]}
+                  style={[estilos.segmento, ativo && estilos.segmentoAtivo]}
                 >
                   <Text
                     style={[
@@ -344,6 +359,7 @@ const estilos = StyleSheet.create({
   },
   conteudo: {
     padding: espacamento.lg,
+    paddingTop: espacamento.xxl,
   },
   controleNumero: {
     alignItems: 'center',

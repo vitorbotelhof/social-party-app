@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   BotaoPrimario,
   BotaoSecundario,
+  BotaoVoltar,
   CodigoSala,
   JogadorAnimado,
 } from '@/components';
@@ -39,7 +40,10 @@ export function TelaLobby({ navigation, route }: Props) {
         return;
       }
       const lista = Object.values(sala.jogadores ?? {});
-      if (lista.length > totalAnteriorRef.current && totalAnteriorRef.current > 0) {
+      if (
+        lista.length > totalAnteriorRef.current &&
+        totalAnteriorRef.current > 0
+      ) {
         void tocar('ping');
       }
       totalAnteriorRef.current = lista.length;
@@ -88,9 +92,7 @@ export function TelaLobby({ navigation, route }: Props) {
     return (
       <SafeAreaView style={[estilos.tela, estilos.telaCentralizada]}>
         <Text style={estilos.titulo}>sala encerrada</Text>
-        <Text style={estilos.subtitulo}>
-          o anfitrião fechou a sala.
-        </Text>
+        <Text style={estilos.subtitulo}>o anfitrião fechou a sala.</Text>
         <BotaoPrimario
           titulo="voltar pro início"
           onPress={() => navigation.popToTop()}
@@ -101,6 +103,14 @@ export function TelaLobby({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
+      <BotaoVoltar
+        variante="fechar"
+        posicao="direita"
+        onPress={() => {
+          void aoSair();
+        }}
+      />
+
       <View style={estilos.cabecalho}>
         <Text style={estilos.legenda}>sala</Text>
         <CodigoSala codigo={roomCode} tamanho="medio" />

@@ -77,6 +77,7 @@ export function TelaConfiguracaoLocalVMC({ navigation }: Props) {
     <TelaConfigLocal
       titulo="você me conhece?"
       subtitulo="prioridades revelam identidade."
+      onVoltar={() => navigation.goBack()}
       rodape={{
         titulo: 'começar',
         disabled: !podeIniciar,

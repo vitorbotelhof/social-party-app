@@ -4,7 +4,6 @@ import { useRef } from 'react';
 import {
   Animated,
   Image,
-  Pressable,
   StyleSheet,
   Text,
   useWindowDimensions,
@@ -12,7 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BotaoPrimario, BotaoSecundario } from '@/components';
+import { BotaoPrimario, BotaoSecundario, BotaoVoltar } from '@/components';
 import { JOGOS } from '@/games/gameRegistry';
 import type { RootStackParamList } from '@/navigation/types';
 import { tutorialFoiVisto } from '@/services/tutorial';
@@ -24,6 +23,7 @@ const FATOR_ALTURA_COVER = 0.45;
 const ALTURA_GRADIENTE_BASE = 96;
 const RAIO_CARD = 24;
 const GRADIENTE_FADE: [string, string] = ['rgba(13, 13, 13, 0)', cores.fundo];
+const COR_TRANSPARENTE = 'rgba(0,0,0,0)';
 
 export function TelaDetalhesJogo({ navigation, route }: Props) {
   const { jogoId } = route.params;
@@ -89,11 +89,7 @@ export function TelaDetalhesJogo({ navigation, route }: Props) {
         ]}
         pointerEvents="none"
       >
-        <Image
-          source={jogo.cover}
-          style={estilos.imagem}
-          resizeMode="cover"
-        />
+        <Image source={jogo.cover} style={estilos.imagem} resizeMode="cover" />
         <LinearGradient
           colors={GRADIENTE_FADE}
           style={[estilos.fadeBase, { height: ALTURA_GRADIENTE_BASE }]}
@@ -107,12 +103,7 @@ export function TelaDetalhesJogo({ navigation, route }: Props) {
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
       >
-        <View
-          style={[
-            estilos.card,
-            { paddingBottom: paddingBottomConteudo },
-          ]}
-        >
+        <View style={[estilos.card, { paddingBottom: paddingBottomConteudo }]}>
           <Text style={estilos.nome}>{jogo.nome}</Text>
           <Text style={estilos.slogan}>{jogo.slogan}</Text>
 
@@ -158,17 +149,10 @@ export function TelaDetalhesJogo({ navigation, route }: Props) {
         </View>
       </Animated.ScrollView>
 
-      <Pressable
+      <BotaoVoltar
         onPress={() => navigation.goBack()}
-        style={({ pressed }) => [
-          estilos.botaoVoltar,
-          { top: insets.top + espacamento.md },
-          pressed && estilos.botaoVoltarPressionado,
-        ]}
-        hitSlop={12}
-      >
-        <Text style={estilos.botaoVoltarIcone}>←</Text>
-      </Pressable>
+        topOffset={espacamento.md}
+      />
 
       <View
         style={[
@@ -203,27 +187,6 @@ const estilos = StyleSheet.create({
     flexWrap: 'wrap',
     gap: espacamento.sm,
     marginTop: espacamento.lg - 4,
-  },
-  botaoVoltar: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
-    borderRadius: raio.pill,
-    height: 40,
-    justifyContent: 'center',
-    left: espacamento.md,
-    position: 'absolute',
-    width: 40,
-    zIndex: 10,
-  },
-  botaoVoltarIcone: {
-    color: cores.textoSobrePrimaria,
-    fontSize: 22,
-    fontWeight: tipografia.pesoBold,
-    lineHeight: 24,
-  },
-  botaoVoltarPressionado: {
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
-    transform: [{ scale: 0.94 }],
   },
   card: {
     backgroundColor: cores.fundo,
@@ -350,7 +313,7 @@ const estilos = StyleSheet.create({
     marginTop: espacamento.xl - 4,
   },
   scroll: {
-    backgroundColor: 'transparent',
+    backgroundColor: COR_TRANSPARENTE,
     flex: 1,
     height: '100%',
     zIndex: 1,

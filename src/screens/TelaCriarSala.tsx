@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
+  BotaoVoltar,
   BotaoPrimario,
   CodigoSala,
   JogadorAnimado,
@@ -74,7 +75,10 @@ export function TelaCriarSala({ navigation, route }: Props) {
         setMeuId(idHost);
         setJogadores(Object.values(sala.jogadores ?? {}));
         cancelarObservador = observarJogadores(sala.codigo, (lista) => {
-          if (lista.length > totalAnteriorRef.current && totalAnteriorRef.current > 0) {
+          if (
+            lista.length > totalAnteriorRef.current &&
+            totalAnteriorRef.current > 0
+          ) {
             void tocar('ping');
           }
           totalAnteriorRef.current = lista.length;
@@ -151,7 +155,13 @@ export function TelaCriarSala({ navigation, route }: Props) {
   const podeIniciar = jogadores.length >= MIN_JOGADORES;
 
   return (
-    <SafeAreaView style={estilos.tela} edges={['top', 'bottom']} >
+    <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
+      <BotaoVoltar
+        variante="fechar"
+        posicao="direita"
+        onPress={() => navigation.goBack()}
+      />
+
       <View style={estilos.blocoCodigo}>
         <Text style={estilos.legenda}>código da sala</Text>
         <CodigoSala codigo={codigoSala} />

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BotaoSecundario } from '@/components';
+import { BotaoSecundario, BotaoVoltar } from '@/components';
 import { JOGOS, type DefinicaoJogo } from '@/games/gameRegistry';
 import type { RootStackParamList } from '@/navigation/types';
 import { cores, espacamento, raio, tipografia } from '@/theme/colors';
@@ -26,6 +26,10 @@ const GRADIENTE_OVERLAY: [string, string, string] = [
   'rgba(0,0,0,0.45)',
   'rgba(0,0,0,0.9)',
 ];
+const COR_BADGE_FUNDO = 'rgba(0, 0, 0, 0.55)';
+const COR_CARD_ATIVO_BORDA = 'rgba(139, 92, 246, 0.5)';
+const COR_OVERLAY_EM_BREVE = 'rgba(0, 0, 0, 0.6)';
+const COR_SELO_FUNDO = 'rgba(255, 255, 255, 0.18)';
 
 export function TelaSelecaoJogo({ navigation }: Props) {
   const headerOp = useRef(new Animated.Value(0)).current;
@@ -87,6 +91,8 @@ export function TelaSelecaoJogo({ navigation }: Props) {
 
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
+      <BotaoVoltar onPress={() => navigation.goBack()} />
+
       <Animated.View
         style={[
           estilos.header,
@@ -215,7 +221,7 @@ function CardJogo({ jogo, onPress }: CardJogoProps) {
 
 const estilos = StyleSheet.create({
   badge: {
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    backgroundColor: COR_BADGE_FUNDO,
     borderRadius: raio.pill,
     paddingHorizontal: espacamento.sm + 2,
     paddingVertical: 4,
@@ -262,23 +268,17 @@ const estilos = StyleSheet.create({
     marginBottom: espacamento.md - 4,
   },
   cardWrapperAtivo: {
-    borderColor: 'rgba(139, 92, 246, 0.5)',
+    borderColor: COR_CARD_ATIVO_BORDA,
     borderWidth: 1.5,
   },
   header: {
     paddingBottom: espacamento.lg,
     paddingHorizontal: espacamento.lg,
-    paddingTop: espacamento.lg,
-  },
-  legenda: {
-    color: cores.textoSecundario,
-    fontSize: tipografia.tamanhoMicro,
-    fontWeight: tipografia.pesoBold,
-    letterSpacing: tipografia.letraSpacingLegenda,
+    paddingTop: espacamento.xxl,
   },
   overlayEmBreve: {
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: COR_OVERLAY_EM_BREVE,
     bottom: 0,
     justifyContent: 'center',
     left: 0,
@@ -306,7 +306,7 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacamento.lg,
   },
   selo: {
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    backgroundColor: COR_SELO_FUNDO,
     borderColor: cores.texto,
     borderRadius: raio.sm,
     borderWidth: 1,

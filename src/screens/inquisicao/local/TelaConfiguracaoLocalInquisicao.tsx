@@ -67,6 +67,7 @@ export function TelaConfiguracaoLocalInquisicao({ navigation }: Props) {
     <TelaConfigLocal
       titulo="inquisição"
       subtitulo="quem não é o que parece?"
+      onVoltar={() => navigation.goBack()}
       rodape={{
         titulo: 'começar',
         disabled: !podeIniciar,

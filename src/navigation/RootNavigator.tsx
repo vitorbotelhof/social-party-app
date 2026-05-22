@@ -142,7 +142,11 @@ export function RootNavigator() {
       <Stack.Screen
         name="Inicio"
         component={TelaInicio}
-        options={{ headerShown: false, animation: 'fade', animationDuration: 250 }}
+        options={{
+          headerShown: false,
+          animation: 'fade',
+          animationDuration: 250,
+        }}
       />
       <Stack.Screen
         name="SelecaoJogo"
@@ -191,7 +195,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="CadastroJogadores"
         component={TelaCadastroJogadores}
-        options={{ title: 'Jogadores' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="JogoLocal"

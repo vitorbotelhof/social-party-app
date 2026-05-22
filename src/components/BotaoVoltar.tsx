@@ -5,15 +5,20 @@ import { cores, tamanhos, tipografia } from '@/theme/colors';
 
 interface Props {
   onPress: () => void;
+  posicao?: 'esquerda' | 'direita';
   topOffset?: number;
+  variante?: 'voltar' | 'fechar';
 }
 
-const COR_FUNDO = 'rgba(255, 255, 255, 0.06)';
-const COR_BORDA = 'rgba(255, 255, 255, 0.18)';
-const COR_PRESSIONADO = 'rgba(255, 255, 255, 0.14)';
-
-export function BotaoVoltar({ onPress, topOffset = 8 }: Props) {
+export function BotaoVoltar({
+  onPress,
+  posicao = 'esquerda',
+  topOffset = 8,
+  variante = 'voltar',
+}: Props) {
   const insets = useSafeAreaInsets();
+  const label = variante === 'fechar' ? 'Fechar' : 'Voltar';
+  const icone = variante === 'fechar' ? '×' : '←';
 
   return (
     <Pressable
@@ -21,13 +26,14 @@ export function BotaoVoltar({ onPress, topOffset = 8 }: Props) {
       style={({ pressed }) => [
         estilos.botao,
         { top: insets.top + topOffset },
+        posicao === 'esquerda' ? estilos.esquerda : estilos.direita,
         pressed && estilos.pressionado,
       ]}
       hitSlop={12}
-      accessibilityLabel="Voltar"
+      accessibilityLabel={label}
       accessibilityRole="button"
     >
-      <Text style={estilos.icone}>←</Text>
+      <Text style={estilos.icone}>{icone}</Text>
     </Pressable>
   );
 }
@@ -35,25 +41,30 @@ export function BotaoVoltar({ onPress, topOffset = 8 }: Props) {
 const estilos = StyleSheet.create({
   botao: {
     alignItems: 'center',
-    backgroundColor: COR_FUNDO,
-    borderColor: COR_BORDA,
+    backgroundColor: cores.superficie,
+    borderColor: cores.borda,
     borderRadius: tamanhos.botaoVoltar / 2,
     borderWidth: 1,
     height: tamanhos.botaoVoltar,
     justifyContent: 'center',
-    left: 16,
     position: 'absolute',
     width: tamanhos.botaoVoltar,
     zIndex: 100,
   },
+  direita: {
+    right: 16,
+  },
+  esquerda: {
+    left: 16,
+  },
   icone: {
     color: cores.texto,
-    fontSize: tipografia.tamanhoIconePequeno,
+    fontSize: tipografia.tamanhoIconeMedio,
     fontWeight: tipografia.pesoBold,
-    lineHeight: 20,
+    lineHeight: 26,
   },
   pressionado: {
-    backgroundColor: COR_PRESSIONADO,
+    backgroundColor: cores.fundoSecundario,
     transform: [{ scale: 0.94 }],
   },
 });
