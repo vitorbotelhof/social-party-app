@@ -32,18 +32,23 @@ import {
   type SecaoJogosItem,
 } from '@/components';
 import {
+  getSecaoCategoriaPrincipalCatalogo,
+  getSecaoContextoCatalogo,
+  getSecaoTagCatalogo,
   getJogoDestaqueDoDia,
   getJogoPorId,
-  getJogosPorCategoriaCatalogo,
+  getJogosPorCategoriaPrincipal,
   getSecoesHomeCatalogo,
   type SecaoCatalogo,
 } from '@/games/catalogo';
+import { type DefinicaoJogo } from '@/games/gameRegistry';
 import {
-  CATEGORIAS_EMOCIONAIS,
-  type CategoriaEmocional,
-  type CategoriaMeta,
-  type DefinicaoJogo,
-} from '@/games/gameRegistry';
+  CATEGORIAS_PRINCIPAIS,
+  type CategoriaPrincipalId,
+  type CategoriaPrincipalMeta,
+  type ContextoSocialId,
+  type TagSocialId,
+} from '@/games/taxonomia';
 import type { RootStackParamList } from '@/navigation/types';
 import { obterOuCriarJogador, salvarNome } from '@/services/jogadorLocal';
 import { tutorialFoiVisto } from '@/services/tutorial';
@@ -66,8 +71,8 @@ const GRADIENTE_SHEET_BANNER: [string, string, string] = [
 
 const destaqueDoDia = getJogoDestaqueDoDia();
 const secoesHome = getSecoesHomeCatalogo();
-const categoriasComJogos = CATEGORIAS_EMOCIONAIS.filter(
-  (categoria) => getJogosPorCategoriaCatalogo(categoria.id).length > 0,
+const categoriasComJogos = CATEGORIAS_PRINCIPAIS.filter(
+  (categoria) => getJogosPorCategoriaPrincipal(categoria.id).length > 0,
 );
 
 function adaptarJogoCatalogo(jogo: DefinicaoJogo): JogoCatalogoItem {
@@ -88,17 +93,19 @@ function buscarJogoCatalogo(item: JogoCatalogoItem): DefinicaoJogo | null {
   return getJogoPorId(item.id);
 }
 
-function montarSecaoFiltrada(categoriaId: CategoriaEmocional): SecaoCatalogo {
-  const meta = CATEGORIAS_EMOCIONAIS.find((c) => c.id === categoriaId);
-
-  return {
-    id: `filtro-${categoriaId}`,
-    titulo: meta?.labelCurto ?? 'jogos',
-    subtitulo: meta?.sublabel,
-    tipo: 'categoria',
-    categoriaId,
-    jogos: getJogosPorCategoriaCatalogo(categoriaId),
-  };
+function montarSecaoFiltrada(secao: SecaoJogosItem): SecaoCatalogo | null {
+  if (secao.categoriaPrincipalId) {
+    return getSecaoCategoriaPrincipalCatalogo(
+      secao.categoriaPrincipalId as CategoriaPrincipalId,
+    );
+  }
+  if (secao.contextoId) {
+    return getSecaoContextoCatalogo(secao.contextoId as ContextoSocialId);
+  }
+  if (secao.tagId) {
+    return getSecaoTagCatalogo(secao.tagId as TagSocialId);
+  }
+  return null;
 }
 
 export function TelaInicio({ navigation }: Props) {
@@ -116,8 +123,7 @@ export function TelaInicio({ navigation }: Props) {
   const [mostrarModalNome, setMostrarModalNome] = useState(false);
   const [nomeDigitado, setNomeDigitado] = useState('');
   const [salvando, setSalvando] = useState(false);
-  const [categoriaAtiva, setCategoriaAtiva] =
-    useState<CategoriaEmocional | null>(null);
+  const [secaoAtiva, setSecaoAtiva] = useState<SecaoCatalogo | null>(null);
   const [temperatura, setTemperatura] = useState<TemperaturaEmocional>('frio');
   const [jogoSelecionado, setJogoSelecionado] = useState<DefinicaoJogo | null>(
     null,
@@ -164,9 +170,7 @@ export function TelaInicio({ navigation }: Props) {
   }, [conteudoOp, headerOp, headerY]);
 
   const nomeValido = nomeDigitado.trim().length >= MIN_TAMANHO_NOME;
-  const secaoFiltrada = categoriaAtiva
-    ? montarSecaoFiltrada(categoriaAtiva)
-    : null;
+  const secaoFiltrada = secaoAtiva;
   const larguraCardFiltro = Math.floor(
     (width - MARGEM_TELA * 2 - espacamento.md) / 2,
   );
@@ -217,8 +221,9 @@ export function TelaInicio({ navigation }: Props) {
   }
 
   function aoVerMais(secao: SecaoJogosItem) {
-    if (!secao.categoriaId) return;
-    setCategoriaAtiva(secao.categoriaId as CategoriaEmocional);
+    const filtro = montarSecaoFiltrada(secao);
+    if (!filtro) return;
+    setSecaoAtiva(filtro);
     void Haptics.selectionAsync();
     Animated.sequence([
       Animated.timing(conteudoOp, {
@@ -235,7 +240,7 @@ export function TelaInicio({ navigation }: Props) {
   }
 
   function limparFiltro() {
-    setCategoriaAtiva(null);
+    setSecaoAtiva(null);
     void Haptics.selectionAsync();
   }
 
@@ -360,7 +365,9 @@ export function TelaInicio({ navigation }: Props) {
               <CategoriaChipsCatalogo
                 categorias={categoriasComJogos}
                 onSelect={(categoriaId) => {
-                  setCategoriaAtiva(categoriaId);
+                  const filtro =
+                    getSecaoCategoriaPrincipalCatalogo(categoriaId);
+                  if (filtro) setSecaoAtiva(filtro);
                   void Haptics.selectionAsync();
                 }}
               />
@@ -520,11 +527,18 @@ function CatalogoFiltrado({
   onLimpar,
   onEscolherJogo,
 }: CatalogoFiltradoProps) {
+  const eyebrow =
+    secao.tipo === 'contexto'
+      ? 'curadoria'
+      : secao.tipo === 'tag'
+        ? 'tag'
+        : 'categoria';
+
   return (
     <View style={estilos.filtroContainer}>
       <View style={estilos.filtroCabecalho}>
         <View style={estilos.filtroTextos}>
-          <Text style={estilos.filtroEyebrow}>categoria</Text>
+          <Text style={estilos.filtroEyebrow}>{eyebrow}</Text>
           <Text style={estilos.filtroTitulo}>{secao.titulo}</Text>
           {secao.subtitulo ? (
             <Text style={estilos.filtroSubtitulo}>{secao.subtitulo}</Text>
@@ -562,8 +576,8 @@ function CatalogoFiltrado({
 }
 
 interface CategoriaChipsCatalogoProps {
-  categorias: ReadonlyArray<CategoriaMeta>;
-  onSelect: (categoriaId: CategoriaEmocional) => void;
+  categorias: ReadonlyArray<CategoriaPrincipalMeta>;
+  onSelect: (categoriaId: CategoriaPrincipalId) => void;
 }
 
 function CategoriaChipsCatalogo({
@@ -582,13 +596,13 @@ function CategoriaChipsCatalogo({
           key={categoria.id}
           onPress={() => onSelect(categoria.id)}
           accessibilityRole="button"
-          accessibilityLabel={`Ver jogos de ${categoria.labelCurto}`}
+          accessibilityLabel={`Ver jogos de ${categoria.nome}`}
           style={({ pressed }) => [
             estilos.chipCategoria,
             pressed && estilos.chipCategoriaPressionado,
           ]}
         >
-          <Text style={estilos.chipCategoriaTexto}>{categoria.labelCurto}</Text>
+          <Text style={estilos.chipCategoriaTexto}>{categoria.nome}</Text>
         </Pressable>
       ))}
     </ScrollView>

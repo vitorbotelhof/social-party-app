@@ -10,8 +10,10 @@ export interface SecaoJogosItem {
   id: string;
   titulo: string;
   subtitulo?: string;
-  tipo: 'recentes' | 'categoria';
-  categoriaId?: string;
+  tipo: 'recentes' | 'categoria_principal' | 'contexto' | 'tag';
+  categoriaPrincipalId?: string;
+  contextoId?: string;
+  tagId?: string;
   jogos: JogoCatalogoItem[];
 }
 
@@ -42,7 +44,7 @@ export function SecaoJogosHorizontal({
           ) : null}
         </View>
 
-        {onVerMais && secao.tipo === 'categoria' ? (
+        {onVerMais && secao.tipo !== 'recentes' ? (
           <Pressable
             onPress={() => onVerMais(secao)}
             hitSlop={10}

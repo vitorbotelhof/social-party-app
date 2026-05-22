@@ -61,6 +61,12 @@ export { gerarDossie } from './dossieDoCapos';
 
 export { detectarVibe, calcularVibe, getVibePorJogo } from './vibeEngine';
 
+// ─── Recomendações ───────────────────────────────────────────────────────────
+
+export { sugerirProximoJogo, sugerirProximosJogos } from './sugestaoJogo';
+
+export type { SugestaoJogoPontuada } from './sugestaoJogo';
+
 // ─── Game adapters ────────────────────────────────────────────────────────────
 
 export { processarResultadoMrWhite } from './mrWhiteAdapter';
