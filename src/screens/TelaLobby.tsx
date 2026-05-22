@@ -39,7 +39,13 @@ export function TelaLobby({ navigation, route }: Props) {
         setSalaRemovida(true);
         return;
       }
-      const lista = Object.values(sala.jogadores ?? {});
+      const lista = Object.entries(sala.jogadores ?? {}).map(
+        ([id, jogador]) => ({
+          ...jogador,
+          id: jogador.id || id,
+          nome: jogador.nome || 'Jogador',
+        }),
+      );
       if (
         lista.length > totalAnteriorRef.current &&
         totalAnteriorRef.current > 0
@@ -126,7 +132,7 @@ export function TelaLobby({ navigation, route }: Props) {
         </View>
         <FlatList
           data={jogadores}
-          keyExtractor={(j) => j.id}
+          keyExtractor={(j, index) => j.id || `jogador-${index}`}
           contentContainerStyle={estilos.listaConteudo}
           ItemSeparatorComponent={() => <View style={estilos.separador} />}
           renderItem={({ item }) => (

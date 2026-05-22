@@ -68,8 +68,11 @@ async function restaurarPartidaSeNecessario(): Promise<void> {
     const rota = navegacaoRef.getCurrentRoute()?.name;
     // Evita navegar se já estamos na tela certa.
     if (rota === 'Game' || rota === 'Lobby') return;
-    const destino = sala.estado.fase === 'lobby' ? 'Lobby' : 'Game';
-    navegacaoRef.navigate(destino, {
+    if (sala.estado.fase === 'lobby') {
+      await limparPartida();
+      return;
+    }
+    navegacaoRef.navigate('Game', {
       roomCode: dados.roomCode,
       jogoId: sala.jogoId,
       jogadorId: dados.jogadorId,
