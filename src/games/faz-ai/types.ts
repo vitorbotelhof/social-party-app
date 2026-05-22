@@ -4,6 +4,8 @@ export type CategoriaFazAiId =
   | 'classicos_de_mimica'
   | 'acoes_do_cotidiano'
   | 'profissoes_e_personagens'
+  | 'filmes'
+  | 'celebridades_personagens'
   | 'vida_adulta_brasileira'
   | 'internet_brasileira'
   | 'corporate_chaos'

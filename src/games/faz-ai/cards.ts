@@ -6,6 +6,8 @@ import type {
   EnergiaRodada,
   IntensidadeSocial,
 } from '@/games/faz-ai/types';
+import { FILMES_FAZ_AI } from '@/games/faz-ai/filmes';
+import { CELEBRIDADES_FAZ_AI } from '@/games/faz-ai/celebridades';
 
 type PerfilCategoria = Pick<
   CartaFazAi,
@@ -66,6 +68,28 @@ export const CATEGORIAS_FAZ_AI: readonly CategoriaFazAi[] = [
     nome: 'Profissões e Personagens',
     descricao: 'papéis fáceis de reconhecer sem explicar nada.',
     intensidadePadrao: 'leve',
+    dificuldadePadrao: 'media',
+    energiaPadrao: 'ritmo',
+    tipoPadrao: 'classica',
+    modoPadrao: 'personagem',
+    atuabilidadePadrao: 'boa',
+  },
+  {
+    id: 'filmes',
+    nome: 'Filmes',
+    descricao: 'títulos famosos pra atuar pelo símbolo, cena ou personagem.',
+    intensidadePadrao: 'social',
+    dificuldadePadrao: 'media',
+    energiaPadrao: 'ritmo',
+    tipoPadrao: 'classica',
+    modoPadrao: 'referencia',
+    atuabilidadePadrao: 'boa',
+  },
+  {
+    id: 'celebridades_personagens',
+    nome: 'Celebridades',
+    descricao: 'pessoas e personagens pra virar postura, voz e gesto.',
+    intensidadePadrao: 'social',
     dificuldadePadrao: 'media',
     energiaPadrao: 'ritmo',
     tipoPadrao: 'classica',
@@ -289,6 +313,8 @@ const CARTAS_BASE: Record<CategoriaFazAiId, readonly CartaSeedFazAi[]> = {
     'mágico fingindo mistério',
     'repórter no meio da confusão',
   ],
+  filmes: FILMES_FAZ_AI,
+  celebridades_personagens: CELEBRIDADES_FAZ_AI,
   vida_adulta_brasileira: [
     'tentando entender a fatura do cartão',
     'fingindo tranquilidade depois do PIX errado',
