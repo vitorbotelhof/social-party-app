@@ -192,6 +192,38 @@ function destaqueCaosFazAi(
   };
 }
 
+function destaquePoliticoAlianca(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort(
+    (a, b) => b.liderancasAlianca - a.liderancasAlianca,
+  )[0];
+  if (!top || top.liderancasAlianca < 2) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o articulador',
+    descricao: `liderou ${top.liderancasAlianca} propostas na aliança`,
+  };
+}
+
+function destaqueTraidorAlianca(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort(
+    (a, b) => b.vezesTraidorAlianca - a.vezesTraidorAlianca,
+  )[0];
+  if (!top || top.vezesTraidorAlianca < 1) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'confiança perigosa',
+    descricao: 'terminou revelado como traidor na aliança',
+  };
+}
+
 function gerarDestaquesJogadores(
   jogadores: SessaoJogador[],
   nomes: Map<PlayerId, string>,
@@ -210,6 +242,9 @@ function gerarDestaquesJogadores(
     destaqueAcertosFazAi(jogadores, nomes),
     destaqueCaosFazAi(jogadores, nomes),
     destaqueAtuacaoDuvidosaFazAi(jogadores, nomes),
+    // Aliança
+    destaquePoliticoAlianca(jogadores, nomes),
+    destaqueTraidorAlianca(jogadores, nomes),
   ].filter((d): d is DestaqueJogador => d !== null);
 
   // Evita destacar a mesma pessoa duas vezes — mantém o primeiro destaque
@@ -245,6 +280,10 @@ const PRIORIDADE_MOMENTO: Record<string, number> = {
   vergonha_coletiva: 72,
   identificacao_imediata: 62,
   atuacao_duvidosa: 48,
+  // Aliança
+  missao_sabotada_alianca: 86,
+  rejeicao_em_cadeia_alianca: 74,
+  confianca_restaurada_alianca: 58,
 };
 
 function escolherMomentoDaSessao(momentos: Momento[]): Momento | null {

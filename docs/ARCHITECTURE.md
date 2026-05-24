@@ -1,360 +1,174 @@
-# ENTRE NÓS — ARCHITECTURE
+# Entre Nós — Architecture
 
-## Core Philosophy
+## Filosofia
 
-The platform is built as a modular social multiplayer engine.
+A arquitetura deve permitir criar muitos jogos sociais sem transformar o app em um sistema rígido demais.
 
-Games evolve gradually from lightweight implementations into reusable multiplayer primitives.
+Prioridades:
 
-Avoid premature abstractions.
-Only consolidate systems after repeated validated patterns.
+- experiência social primeiro;
+- modularidade;
+- TypeScript estrito;
+- engine separado de UI;
+- metadata consistente;
+- SessionStore como camada de inteligência;
+- extração apenas depois de padrão validado.
 
-Architecture priorities:
+## Regra Contra Abstração Prematura
 
-* social experience first
-* multiplayer-first
-* realtime-first
-* reusable abstractions
-* modular systems
-* low coupling
-* scalability
-* mobile performance
+Não extrair sistema antes de existir repetição real.
 
----
+Extrair quando:
 
-# High Level Architecture
+- 3 ou mais jogos repetem padrão;
+- a duplicação causa bug;
+- a API local está estável;
+- o componente reduz fricção futura.
 
-The app is divided into 3 layers:
+Não extrair por estética arquitetural.
 
-1. Core Engines
-2. Features / Games
-3. UI Layer
+## Camadas
 
----
+### Games
 
-# 1. Core Engines
+`src/games/[jogo]`
 
-Reusable multiplayer/social systems shared by all games.
+Contém:
 
-Location:
+- engine;
+- tipos;
+- conteúdo;
+- categorias internas;
+- textos editoriais;
+- helpers;
+- adapters locais quando fizer sentido.
 
-* /engines
+### Screens
 
-Core engines:
+`src/screens/[jogo]`
 
-* RoomEngine
-* VotingEngine
-* TimerEngine
-* PresenceEngine
+Contém:
 
-Rules:
+- orquestração de UI;
+- navegação;
+- telas de configuração;
+- fases visuais.
 
-* engines must be UI-agnostic
-* engines must not contain game-specific logic
-* engines must be reusable across multiple games
+Não deve conter regra central do jogo.
 
----
+### Components
 
-# Current Foundation Systems
+`src/components`
 
-The platform is currently consolidating (Onda B completed):
+Contém:
 
-* room lifecycle
-* multiplayer state ownership
-* player presence
-* deterministic phases
-* realtime synchronization
-* game registry
-* lightweight game orchestration
+- componentes compartilhados;
+- botões universais;
+- configuração local;
+- cadastro de jogadores;
+- controles recorrentes.
 
-The platform intentionally avoids premature engine abstraction.
+### Session
 
-NOT abstracted yet (intentionally):
+`src/session`
 
-* PromptEngine
-* RevealEngine
-* ReactionEngine
+Contém:
 
-These will only be extracted after repeated validated usage.
+- SessionStore;
+- adapters de jogos;
+- emotional tracker;
+- group profile;
+- callback engine;
+- dossiê;
+- recomendação.
 
----
+## Metadata
 
-# 2. Features / Games
+O catálogo deve ser dirigido por metadata.
 
-Each game is implemented as a lightweight feature layer.
+Cada jogo deve expor:
 
-Location:
+- id;
+- nome;
+- descrição;
+- jogadores mínimo/máximo;
+- duração;
+- modos suportados;
+- categoria principal;
+- categorias secundárias;
+- tags sociais;
+- contextos;
+- energia;
+- intensidade;
+- assets.
 
-* /features/[game-name]
+Ver: `GAME_METADATA_SYSTEM.md`.
 
-Each game should only contain:
+## Local Vs Realtime
 
-* rules
-* flows
-* prompts
-* game-specific UI
-* game configuration
+Jogos locais:
 
-Games should consume engines instead of rebuilding systems.
+- priorizam celular circulando;
+- usam engine em memória;
+- protegem segredo por fase;
+- têm pacing mais rápido.
 
-Example:
-Mr White uses:
+Jogos realtime:
 
-* RoomEngine
-* VotingEngine
-* HiddenRoleEngine
-* TimerEngine
+- priorizam múltiplos celulares;
+- usam sala/código;
+- precisam de sincronização;
+- exigem reconexão segura.
 
----
+Ver: `MULTIPLAYER_PHILOSOPHY.md`.
 
-# 3. UI Layer
+## Catálogo
 
-Responsible only for rendering and interaction.
+Home e descoberta devem consumir registry/metadata, não lógica hardcoded espalhada.
 
-Location:
+Categorias, tags e curadorias devem ser adicionadas como dados, não como telas customizadas por jogo.
 
-* /components
-* /screens
-* /ui
+## UI
 
-UI should never contain:
+UI deve traduzir estado em sensação.
 
-* multiplayer logic
-* realtime logic
-* game state management
-* business rules
+Ela pode:
 
-The UI layer is the emotional layer.
-Its job is to translate game state into feeling.
+- animar;
+- organizar;
+- reduzir fricção;
+- proteger segredo visualmente;
+- reforçar feedback.
 
----
+Ela não deve:
 
-# Folder Structure
+- decidir vencedor;
+- armazenar papel secreto;
+- duplicar regra de engine;
+- fazer analytics emocional quando há callback de engine.
 
-/app
-/components
-/ui
-/features
-/engines
-/services
-/hooks
-/types
-/assets
-/docs
+## Assets
 
----
+Cada jogo deve ter pasta própria em `assets/games/[id]`.
 
-# Realtime Architecture
+Recomendado:
 
-Architecture is realtime-first.
+- `cover.png`;
+- `banner.png`;
+- logos auxiliares quando necessário.
 
-Core principles:
+Ver: `ICONOGRAPHY_SYSTEM.md`.
 
-* server-authoritative game state
-* lightweight payloads
-* predictable synchronization
-* reconnect-safe
-* multiplayer-safe state transitions
+## Documentação
 
-Realtime responsibilities:
+Docs são parte da arquitetura.
 
-* room sync
-* player presence
-* voting synchronization
-* turn synchronization
-* timer synchronization
-* reactions
-* reveals
+Ao criar novo jogo, consultar:
 
----
+- `GAME_CREATION_FRAMEWORK.md`;
+- `GAME_ENGINE.md`;
+- `GAME_METADATA_SYSTEM.md`;
+- `SOCIAL_PACING.md`;
+- `CONTENT_DIFFICULTY_SYSTEM.md`;
+- `PARTY_DYNAMICS.md`.
 
-# Realtime Philosophy
-
-Realtime systems should evolve incrementally.
-
-Avoid:
-
-* speculative abstractions
-* enterprise-style engine systems
-* generalized multiplayer frameworks too early
-
-Prefer:
-
-* incremental consolidation
-* measured refactors
-* architecture guided by real pain
-
----
-
-# Multiplayer Ownership Philosophy
-
-Ownership must remain explicit.
-
-Current ownership:
-
-GameScreen owns:
-
-* active multiplayer session
-* player presence
-* gameplay subscriptions
-* realtime listeners
-
-Sub-screens should:
-
-* receive props
-* remain transport-agnostic
-* avoid direct realtime subscriptions
-
-Avoid duplicated realtime listeners.
-
----
-
-# State Management
-
-Separate:
-
-* local UI state
-* multiplayer state
-* persistent state
-
-Rules:
-
-* avoid global state overuse
-* isolate realtime state
-* keep game state predictable
-* prefer explicit state transitions
-
----
-
-# Game Architecture
-
-Games should follow this structure:
-
-/features/[game-name]
-
-* config
-* rules
-* prompts
-* hooks
-* components
-* phases
-* screens
-
-Avoid:
-
-* duplicated multiplayer logic
-* duplicated voting logic
-* duplicated timer logic
-
----
-
-# Navigation Architecture
-
-Navigation should be:
-
-* lightweight
-* predictable
-* multiplayer-aware
-* emotion-first
-
-Main flows:
-
-* home (game catalog)
-* game detail
-* social dynamic selection
-* session configuration
-* lobby
-* game
-* results
-
-Navigation follows social intent:
-
-Game Selection
-↓
-Social Dynamic Selection
-↓
-Session Configuration
-↓
-Gameplay
-
-The app must not expose multiplayer infrastructure early in the flow.
-
----
-
-# Services Layer
-
-Location:
-
-* /services
-
-Responsibilities:
-
-* API communication
-* realtime providers
-* persistence
-* analytics
-* auth
-* storage
-
-Never place business logic inside services.
-
----
-
-# Hooks Layer
-
-Location:
-
-* /hooks
-
-Hooks should:
-
-* encapsulate reusable logic
-* simplify UI components
-* isolate state orchestration
-
-Avoid:
-
-* giant hooks
-* business-heavy hooks
-* tightly coupled hooks
-
----
-
-# Types Layer
-
-Location:
-
-* /types
-
-Centralized shared types:
-
-* Player
-* Room
-* GameSession
-* Vote
-* Prompt
-* Timer
-* Reveal
-* GamePhase
-
-Avoid duplicated type definitions.
-
----
-
-# Scalability Philosophy
-
-Always build:
-
-* reusable systems
-* multiplayer primitives
-* scalable abstractions
-
-Never build:
-
-* isolated game implementations
-* tightly coupled flows
-* temporary hacks that break scalability
-* engines for games that don't exist yet
-
-Platform-first always.
-Emotion-first always.

@@ -278,6 +278,8 @@ export function TelaInicio({ navigation }: Props) {
         navigation.navigate('ConfiguracaoLocalVMC');
       } else if (jogoId === 'faz-ai') {
         navigation.navigate('ConfiguracaoLocalFazAi');
+      } else if (jogoId === 'alianca') {
+        navigation.navigate('ConfiguracaoLocalAlianca');
       } else {
         navigation.navigate('ConfiguracaoLocal');
       }

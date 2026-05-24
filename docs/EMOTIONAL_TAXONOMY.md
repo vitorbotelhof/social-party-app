@@ -1,449 +1,239 @@
-# ENTRE NÓS — EMOTIONAL TAXONOMY
-
-Entre Nós — Emotional Taxonomy System
-1. Objetivo
-
-O Entre Nós NÃO organiza experiências por:
-
-gênero
-mecânica
-regras
-complexidade técnica
-
-O produto organiza experiências por:
-
-energia emocional social.
-
-A taxonomia emocional existe para:
-
-modular sessões
-organizar pacing
-escolher jogos
-adaptar intensidade
-criar progressão emocional
-aumentar replayability
-melhorar dinâmica de grupo
-2. Filosofia Central
-
-O produto NÃO entrega:
-
-gameplay.
-
-Ele entrega:
-
-transformação emocional coletiva.
-
-Toda sessão deve criar:
-
-mudança de energia
-mudança de comportamento
-memória coletiva
-reação social
-inside jokes
-tensão
-vulnerabilidade
-caos
-3. Regra Principal
-Emoções devem emergir:
-das pessoas.
-
-E NÃO:
-
-da interface tentando forçar emoção.
-4. Estrutura da Taxonomia
-
-Toda emoção do sistema pertence a um destes pilares:
-
-Pilar	Função
-Social Energy	ativa o grupo
-Social Tension	cria pressão
-Social Exposure	gera vulnerabilidade
-Cognitive Chaos	cria colapso mental
-Group Identity	fortalece memória coletiva
-Emotional Escalation	aumenta intensidade
-Emotional Release	libera tensão
-5. Social Energy
-Objetivo
-
-Aumentar:
-
-velocidade social
-espontaneidade
-volume emocional
-participação do grupo
-Sensação correta
-pessoas falando juntas
-respostas rápidas
-energia viva
-caos leve
-improviso
-Jogos mais conectados
-Na Ponta da Língua
-Most Likely To
-A interface deve:
-acelerar
-simplificar
-reagir rápido
-A interface NÃO deve:
-contemplar
-pausar demais
-dramatizar excessivamente
-6. Social Tension
-Objetivo
-
-Criar:
-
-suspeita
-hesitação
-pressão social
-silêncio estratégico
-leitura humana
-Sensação correta
-“alguém está mentindo”
-“ninguém sabe em quem confiar”
-paranoia divertida
-Jogos mais conectados
-Mr White
-A tensão deve vir:
-do grupo
-do contexto
-da votação
-da observação humana
-
-E NÃO:
-
-da UI exagerada
-7. Social Exposure
-Objetivo
-
-Gerar:
-
-vulnerabilidade leve
-revelação pessoal
-julgamento social divertido
-intimidade progressiva
-Sensação correta
-“isso ficou pessoal”
-“eu não esperava essa resposta”
-Jogos mais conectados
-Most Likely To
-jogos íntimos
-Importante
-
-A exposição:
-
-nunca deve parecer cruel.
-8. Cognitive Chaos
-Objetivo
-
-Criar:
-
-improviso sob pressão
-cérebro superaquecendo
-linguagem falhando
-pensamento acelerado
-desespero social divertido
-Sensação correta
-“a palavra estava vindo”
-“meu cérebro travou”
-“eu sabia isso”
-Jogos mais conectados
-Na Ponta da Língua
-O caos deve parecer:
-divertido
-coletivo
-humano
-
-E NÃO:
-
-impossível
-frustrante
-injusto
-9. Group Identity
-Objetivo
-
-Transformar:
-
-um grupo aleatório
-
-em:
-
-uma sessão memorável.
-O produto deve detectar:
-grupo caótico
-grupo competitivo
-grupo silencioso
-grupo eficiente
-grupo paranoico
-grupo íntimo
-grupo destrutivo
-Isso influencia:
-commentary
-pacing
-intensidade
-callbacks
-aftermath
-10. Emotional Escalation
-Objetivo
-
-Toda sessão deve:
-
-crescer emocionalmente.
-Estrutura ideal
-Início
-
-leve
-rápido
-social
-
-Meio
-
-flow
-caos
-confiança
-
-Depois
-
-pressão
-desespero
-colapso
-
-Final
+# Entre Nós — Emotional Taxonomy
 
-aftermath
-memória
-alívio
+## Objetivo
 
-11. Emotional Release
-Objetivo
+A taxonomia emocional organiza o catálogo por dinâmica humana, não por mecânica.
 
-Liberar tensão acumulada.
+Ela serve para:
 
-Formas comuns
-risada coletiva
-reveal
-acusação absurda
-colapso engraçado
-erro impossível
-clutch
-Importante
+- classificar jogos;
+- montar fileiras da home;
+- recomendar próximas experiências;
+- calibrar pacing;
+- escrever conteúdo;
+- detectar identidade do grupo;
+- criar dossiê e callbacks.
 
-Release:
+## Princípio
 
-é essencial.
+Emoção boa emerge das pessoas.
 
-Sem release:
-o produto vira:
+A interface não deve "performar emoção". Ela deve criar condições para o grupo sentir, reagir e lembrar.
 
-cansativo
-pesado
-intenso demais
-12. Ritmo Emocional
-
-O app deve:
+## Famílias Emocionais
 
-acelerar
-respirar
-aliviar
-pressionar
-voltar a acelerar
-O produto NÃO pode:
-ficar intenso o tempo inteiro
-ficar lento o tempo inteiro
-13. Filosofia de Intensidade
-Intensidade NÃO é:
-UI dramática
-som alto
-excesso visual
+### Paranoia Social
 
-Intensidade É:
+Sensação:
 
-consequência social
-expectativa
-tempo
-hesitação
-julgamento humano
-14. Design Anti-Cringe
+"tem algo estranho aqui."
 
-Evitar:
+Usada em:
 
-teatralidade excessiva
-emoção forçada
-pseudo profundidade
-atmosfera exagerada
-“cinema social cult”
-O produto deve parecer:
-socialmente vivo.
+- Mr White;
+- Inquisição;
+- Aliança.
 
-E NÃO:
+Sinais:
 
-artisticamente performático.
-15. Estados Emocionais Fundamentais
-1. Curiosidade
+- acusação;
+- hesitação;
+- leitura corporal;
+- defesa excessiva;
+- voto desconfiado.
 
-“o que vai acontecer?”
+Risco:
 
-2. Reconhecimento
+- complexidade demais;
+- regras escondidas demais;
+- sensação de aleatoriedade.
 
-“eu conheço isso.”
+### Política Social
 
-3. Vulnerabilidade
+Sensação:
 
-“agora ficou pessoal.”
+"eu não sei se estou sendo manipulado."
 
-4. Paranoia
+Usada em:
 
-“alguém está mentindo.”
+- Aliança;
+- Inquisição em fases avançadas.
 
-5. Improviso
+Sinais:
 
-“fala qualquer coisa.”
+- alianças;
+- defesa de terceiros;
+- narrativa;
+- liderança;
+- pressão coletiva.
 
-6. Colapso
+Risco:
 
-“meu cérebro parou.”
+- virar boardgame pesado;
+- debate longo demais;
+- grupo rejeitar tudo sem avançar.
 
-7. Julgamento
+### Vergonha Social Divertida
 
-“o grupo decidiu.”
+Sensação:
 
-8. Explosão
+"isso ficou pessoal, mas dá para rir."
 
-“isso saiu do controle.”
+Usada em:
 
-9. Aftermath
+- Most Likely To;
+- Faz Aí;
+- jogos de exposição leve.
 
-“ninguém supera essa rodada.”
+Sinais:
 
-16. Emoções que DEVEMOS EVITAR
+- risada nervosa;
+- reconhecimento;
+- acusação brincalhona;
+- "isso é muito você".
 
-❌ vergonha real
-❌ humilhação
-❌ ansiedade excessiva
-❌ exclusão
-❌ silêncio constrangedor longo
-❌ frustração injusta
-❌ sensação de burrice
-❌ punição emocional
+Risco:
 
-17. Emoções Prioritárias
+- crueldade;
+- exposição real demais;
+- cartas ambíguas.
 
-✅ caos divertido
-✅ paranoia leve
-✅ improviso coletivo
-✅ tensão social divertida
-✅ vulnerabilidade segura
-✅ energia humana
-✅ inside jokes
-✅ memória coletiva
-✅ sensação de “essa noite foi absurda”
+### Caos Performático
 
-18. Emotional Temperature System
+Sensação:
 
-Toda sessão possui:
+"alguém precisa fazer isso agora e vai ficar ridículo."
 
-temperatura emocional.
-Frio
+Usada em:
 
-leve
-social
-seguro
+- Faz Aí;
+- mímica/atuação social;
+- cartas físicas.
 
-Morno
+Sinais:
 
-energia crescente
-participação coletiva
+- movimento;
+- gritaria;
+- tentativa ruim engraçada;
+- respostas aproximadas.
 
-Quente
+Risco:
 
-caos
-gritaria
-pressão
+- exigir criatividade demais;
+- virar teatro;
+- cartas boas de ler, ruins de atuar.
 
-Colapso
+### Gritaria Cognitiva
 
-desespero divertido
-improviso extremo
-explosão emocional
+Sensação:
 
-19. Regras de Pacing
-Nunca começar:
-no colapso.
-Toda sessão deve:
-aquecer
-acelerar
-intensificar
-colapsar
-aliviar
-20. Filosofia de Memória
+"a resposta está quase saindo."
 
-O produto existe para criar:
+Usada em:
 
-memória coletiva.
+- Na Ponta da Língua;
+- jogos de pressão verbal.
 
-O usuário deve sair pensando:
+Sinais:
 
-“essa rodada foi absurda”
-“ninguém esperava aquilo”
-“o grupo perdeu o controle”
-“isso virou piada interna”
-21. Filosofia de Replayability
+- interrupção;
+- resposta atravessada;
+- cérebro travando;
+- grupo falando junto.
 
-Replayability NÃO vem de:
+Risco:
 
-grind
-ranking
-reward loop artificial
+- frustração;
+- dificuldade alta demais;
+- tempo morto entre tentativas.
 
-Ela vem de:
+### Intimidade E Reconhecimento
 
-novas dinâmicas humanas emergentes.
-22. Emoção > Mecânica
+Sensação:
 
-Ao tomar decisões de produto:
+"vocês me conhecem mesmo?"
 
-Priorizar:
+Usada em:
 
-impacto emocional social.
+- Você Me Conhece?;
+- jogos de casal/intimidade;
+- cartas de preferência.
 
-Mesmo quando:
-a solução mecânica parece menos “gamey”.
+Sinais:
 
-23. Sessão > Match
+- surpresa;
+- leitura perfeita;
+- revelação leve;
+- "eu não sabia disso".
 
-O produto NÃO é:
+Risco:
 
-baseado em partidas.
+- perguntas ambíguas;
+- exigir explicação demais;
+- intimidade sem segurança social.
 
-É:
+### Confiança E Colapso
 
-baseado em noites sociais.
+Sensação:
 
-Toda decisão deve considerar:
+"a estrutura social do grupo está quebrando."
 
-progressão emocional da noite
-energia do grupo
-desgaste emocional
-intensidade acumulada
-24. Filosofia Final
+Usada em:
 
-O Entre Nós NÃO cria:
+- Inquisição;
+- Aliança.
 
-jogos.
+Sinais:
 
-Ele cria:
+- mudança de comportamento;
+- defesa suspeita;
+- silêncio virando culpa;
+- manipulação percebida.
 
-ambientes emocionais sociais.
+Risco:
 
-A verdadeira experiência acontece:
+- impotência;
+- eliminação passiva;
+- lado oculto forte demais.
 
-entre olhares
-nas acusações
-nas hesitações
-nas risadas
-nos colapsos
-nas histórias que surgem depois
+## Estados Do Grupo
 
-O app apenas:
+O grupo pode ser:
 
-facilita isso da forma mais invisível possível.
+- caótico;
+- competitivo;
+- silencioso;
+- eficiente;
+- paranoico;
+- íntimo;
+- destrutivo.
+
+Esses estados alimentam:
+
+- callbacks;
+- recomendação;
+- dossiê;
+- temperatura emocional.
+
+## Curva Emocional Saudável
+
+1. Entrada leve.
+2. Primeiro reconhecimento.
+3. Aumento de energia.
+4. Pressão ou exposição.
+5. Reveal/release.
+6. Continuidade para o próximo jogo.
+
+Nem todo jogo precisa ir ao colapso. O app precisa alternar pressão e alívio.
+
+## Emoções A Evitar
+
+- vergonha real;
+- exclusão social;
+- humilhação;
+- confusão mecânica;
+- tédio;
+- impotência;
+- leitura longa;
+- sensação de injustiça sem graça.
+

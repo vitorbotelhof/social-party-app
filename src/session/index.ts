@@ -99,6 +99,18 @@ export type {
   ResultadoFazAiFinalizado,
 } from '@/games/faz-ai/types';
 
+export {
+  processarRodadaAlianca,
+  processarRejeicaoAlianca,
+  processarResultadoAlianca,
+} from './aliancaAdapter';
+
+export type {
+  EquipeAliancaRejeitada,
+  RodadaAliancaResolvida,
+  ResultadoAliancaFinalizado,
+} from '@/games/alianca';
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type {
@@ -115,6 +127,7 @@ export type {
   NPLSessaoStats,
   InquisicaoSessaoStats,
   FazAiSessaoStats,
+  AliancaSessaoStats,
   DestaqueJogador,
   DossieDoCapos,
   MomentoCallback,

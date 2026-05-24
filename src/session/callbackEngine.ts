@@ -523,6 +523,90 @@ const TEMPLATES: CallbackTemplate[] = [
     },
   },
 
+  // ── Aliança: pós-jogo ─────────────────────────────────────────────────────
+
+  {
+    id: 'alianca_pos_traidores',
+    momento: 'pos_jogo',
+    prioridade: 96,
+    condicao: (s) => {
+      const ultimo = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'alianca' && j.finalizadoEm !== null);
+      return ultimo?.alianca?.vencedor === 'traidores';
+    },
+    gerar: (s) => {
+      const alianca = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'alianca')?.alianca;
+      const sabotagens = alianca?.sabotagensTraidores ?? 0;
+      return `${sabotagens} sabotagens. vocês aprovaram a própria derrota.`;
+    },
+  },
+
+  {
+    id: 'alianca_pos_leais',
+    momento: 'pos_jogo',
+    prioridade: 87,
+    condicao: (s) => {
+      const ultimo = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'alianca' && j.finalizadoEm !== null);
+      return ultimo?.alianca?.vencedor === 'leais';
+    },
+    gerar: () =>
+      'os leais venceram. confiar em alguém ainda funciona, às vezes.',
+  },
+
+  {
+    id: 'alianca_pos_sabotagem_em_cadeia',
+    momento: 'pos_jogo',
+    prioridade: 91,
+    condicao: (s) =>
+      s.momentosMemoraveis.filter((m) => m.tipo === 'missao_sabotada_alianca')
+        .length >= 2,
+    gerar: (s) => {
+      const n = s.momentosMemoraveis.filter(
+        (m) => m.tipo === 'missao_sabotada_alianca',
+      ).length;
+      return `${n} missões sabotadas. a política falhou bastante.`;
+    },
+  },
+
+  // ── Aliança: entre jogos ──────────────────────────────────────────────────
+
+  {
+    id: 'alianca_entre_paranoico',
+    momento: 'entre_jogos',
+    prioridade: 74,
+    condicao: (s) =>
+      s.grupoIdentidade === 'paranoico' &&
+      s.jogosDaSessao.some((j) => j.jogoId === 'alianca'),
+    gerar: () => 'depois da Aliança, qualquer defesa parece manipulação.',
+  },
+
+  // ── Aliança: dossiê ───────────────────────────────────────────────────────
+
+  {
+    id: 'alianca_dossie_sabotagens',
+    momento: 'dossie',
+    prioridade: 93,
+    condicao: (s) =>
+      s.jogosDaSessao.some(
+        (j) =>
+          j.jogoId === 'alianca' &&
+          j.finalizadoEm !== null &&
+          (j.alianca?.missoesSabotadas ?? 0) >= 2,
+      ),
+    gerar: (s) => {
+      const alianca = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'alianca')?.alianca;
+      const n = alianca?.missoesSabotadas ?? 0;
+      return `${n} sabotagens depois, ninguém deveria sair daqui achando que convence bem.`;
+    },
+  },
+
   // ── Dossiê ──────────────────────────────────────────────────────────────────
 
   {

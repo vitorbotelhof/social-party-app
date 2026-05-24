@@ -1,600 +1,180 @@
-# ENTRE NÓS — DESIGN SYSTEM
+# Entre Nós — Design System
 
-Entre Nós — Design System v2
-Social Energy System
-1. Filosofia Central
+## Filosofia Visual
 
-O Entre Nós NÃO é:
+O Entre Nós deve parecer um produto social premium, não um app gamer.
 
-um catálogo de jogos
-um SaaS gamificado
-um trivia app
-uma experiência cinematográfica contemplativa
-um “clube de jazz noir”
-uma interface gamer neon
+A interface deve ser:
 
-O Entre Nós É:
+- clara em ambiente barulhento;
+- bonita sem roubar a cena;
+- rápida de escanear;
+- confortável no iPhone;
+- consistente entre jogos;
+- viva o bastante para parecer social;
+- contida o bastante para não virar espetáculo visual.
 
-uma plataforma de energia social.
+## Princípio Central
 
-O produto existe para:
+Design deve amplificar momentum social.
 
-gerar conexão
-facilitar caos social saudável
-criar memória coletiva
-desbloquear conversas
-acelerar intimidade
-provocar risadas
-transformar grupos em experiências
+Boas telas:
 
-O app:
+- mostram o que importa primeiro;
+- reduzem decisão desnecessária;
+- usam poucos textos;
+- mantêm alinhamento e respiro;
+- deixam o gesto principal óbvio;
+- somem quando o grupo precisa agir.
 
-media energia social humana.
-2. Princípio Central
-O app é rápido.
-As emoções são profundas.
+## Home Como Streaming Social
 
-A interface nunca deve:
+A home deve seguir lógica de catálogo:
 
-competir com as pessoas
-exigir atenção contínua
-dramatizar excessivamente
-parecer mais importante que o grupo
+- header simples com marca e entrada por código;
+- jogo em destaque com banner forte, descrição curta e CTA;
+- "jogados recentemente";
+- fileiras horizontais por categorias estáveis;
+- curadorias dinâmicas;
+- "ver mais" aplicando filtro/contexto;
+- cards com imagem, título, descrição curta e metadados essenciais.
 
-O app deve:
+Não usar home como grid seco de apps.
 
-desaparecer no momento certo
-entregar estímulos claros
-acelerar o fluxo social
-reduzir fricção
-amplificar reações humanas
-3. Assinatura Emocional
+## Layout
 
-O produto deve parecer:
+Regras:
 
-humano
-social
-rápido
-vivo
-tátil
-espontâneo
-inteligente
-brasileiro
-energético
-divertido
-elegante sem pretensão
+- margens horizontais consistentes;
+- conteúdo alinhado pelo mesmo eixo visual;
+- seções em bandas ou listas, não cards dentro de cards;
+- botões fixos no rodapé quando a decisão principal é iniciar/continuar;
+- texto grande apenas quando é o foco real da tela;
+- listas horizontais com começo claramente alinhado;
+- nada deve parecer cortado por acidente.
 
-E NÃO:
+## Paleta
 
-contemplativo
-misterioso demais
-“cult”
-thriller constante
-atmosférico excessivo
-místico
-frio
-corporativo
-cyberpunk
-gamer neon
-4. Referência de Sensação
+Base:
 
-A experiência deve lembrar:
+- Fundo: `#F6F3EE`
+- Superfície: `#FFFFFF`
+- Texto primário: `#161616`
+- Texto secundário: `#5E5E5E`
+- Texto mudo: tons cinza quentes
+- Borda: `#E7E2DA`
 
-amigos falando alto no sofá
-barulho de resenha
-improviso coletivo
-caos organizado
-inside jokes surgindo
-alguém tentando explicar algo desesperadamente
-energia social viva
+Acentos:
 
-Mistura ideal:
-
-50% social energy
-25% minimalismo premium
-15% caos divertido
-10% sofisticação emocional
-5. Filosofia Visual
-Clean Social Chaos
-
-Minimalismo rápido e social.
-
-A interface deve:
-
-respirar
-ser extremamente legível
-funcionar alcoolizado
-funcionar no escuro
-funcionar em grupos grandes
-funcionar em ambientes barulhentos
-
-O foco visual principal SEMPRE é:
-
-o estímulo social.
-
-Nunca:
-
-o botão
-a UI
-a decoração
-6. Sistema de Cores
-Filosofia
-
-As cores devem:
-
-parecer humanas
-quentes
-sociais
-energéticas
-contemporâneas
+- Vermelho social: `#FF5A5F`
+- Azul confiança/conversa: `#4D7CFE`
+- Verde acerto/alívio: `#22C55E`
+- Amarelo energia: `#FFBE0B`
+- Roxo caos cognitivo: `#8B5CF6`
 
 Evitar:
 
-preto absoluto
-vinho pesado
-gradientes neon
-roxo cyberpunk
-glow gamer
-excesso de contraste agressivo
-Base
-Fundo Principal
+- neon gamer;
+- roxo dominante em todo o app;
+- preto absoluto como fundo padrão;
+- gradientes decorativos sem função;
+- paletas monocromáticas por tela.
 
-#F6F3EE
+## Tipografia
 
-Warm paper.
+A tipografia deve ser expressiva, mas legível.
 
-Fundo Secundário
+Usar:
 
-#FFFFFF
-
-Texto Primário
-
-#161616
-
-Texto Secundário
-
-#5E5E5E
-
-Bordas
-
-#E7E2DA
-
-7. Acentos Emocionais
-Vermelho Social
-
-#FF5A5F
-
-Energia humana.
-Caos social.
-Paranoia leve.
-Urgência.
-
-Azul Conversa
-
-#4D7CFE
-
-Flow.
-Comunicação.
-Leveza social.
-
-Verde Reação
-
-#22C55E
-
-Alívio.
-Acerto.
-Confirmação.
-
-Amarelo Caos
-
-#FFBE0B
-
-Improviso.
-Humor.
-Energia coletiva.
-
-Roxo Energia
-
-#8B5CF6
-
-Colapso cognitivo.
-Pressão mental.
-Criatividade sob tensão.
-
-8. Temperaturas por Jogo
-
-Cada jogo possui:
-
-temperatura emocional
-cor dominante
-micro comportamentos próprios
-
-Mas:
-
-todos pertencem ao mesmo universo visual.
-Mr White
-
-Dominante:
-#FF5A5F
-
-Sensação:
-paranoia social rápida.
-
-Most Likely To
-
-Dominante:
-#FFBE0B
-
-Sensação:
-julgamento social divertido.
-
-Na Ponta da Língua
-
-Dominante:
-#8B5CF6
-
-Sensação:
-colapso cognitivo coletivo.
-
-Jogos íntimos
-
-Dominante:
-tons quentes suaves.
-
-Sensação:
-conversa humana.
-
-9. Tipografia
-Filosofia
-
-A tipografia deve parecer:
-
-viva
-humana
-moderna
-rápida
-expressiva
-extremamente legível
+- display para títulos de alto impacto;
+- sans para corpo, labels, botões e metadados;
+- pesos fortes para decisões e nomes de jogos;
+- labels pequenos apenas como apoio, nunca como informação essencial.
 
 Evitar:
 
-serifas dramáticas
-estética fashion editorial
-contemplação excessiva
-Headlines
-Família recomendada:
-Satoshi
-Cabinet Grotesk
-General Sans
+- textos longos em gameplay;
+- heading gigante dentro de cards compactos;
+- texto cortado em cards;
+- letter spacing negativo.
 
-Características:
+## Cards De Jogos
 
-bold
-expressiva
-amigável
-contemporânea
-Corpo
-Inter
+Todo card de jogo deve ter:
 
-Porque:
+- imagem ou logo premium;
+- título claro;
+- descrição curta;
+- metadados mínimos quando úteis;
+- tamanho estável;
+- clipping intencional;
+- raio consistente.
 
-desaparece visualmente
-extremamente legível
-escala bem
-funciona em qualquer contexto
-10. Hierarquia Visual
-Regra principal:
-Um estímulo social por tela.
+Cards devem vender uma experiência social, não explicar regra.
 
-Nunca:
+## Banners
 
-múltiplos focos principais
-HUD excessivo
-UI ruidosa
-O elemento dominante SEMPRE é:
-pergunta
-palavra
-acusação
-prompt
-momento social
-11. Layout
-O app deve parecer:
-leve
-respirável
-rápido
-organizado
-social
-Preferir:
-spacing generoso
-grids simples
-cards claros
-alinhamentos fortes
-grandes áreas de respiro
+Banners devem:
+
+- usar imagem horizontal 2:1;
+- permitir texto sobre imagem com overlay legível;
+- preservar o sujeito principal sem corte estranho;
+- ter área segura para título, descrição e CTA;
+- evitar imagem genérica escura demais.
+
+## Logos E Ícones
+
+Cada jogo deve ter identidade visual própria, mas pertencer ao mesmo universo.
+
+Regras rápidas:
+
+- logos quadradas;
+- composição central;
+- iluminação premium;
+- fundo limpo ou transparente controlado;
+- sem bordas acidentais;
+- sem recortes inesperados;
+- assets padronizados por pasta do jogo.
+
+Ver também: `ICONOGRAPHY_SYSTEM.md`.
+
+## Telas De Configuração
+
+Configuração deve ser:
+
+- mínima;
+- direta;
+- familiar entre jogos;
+- baseada em componentes compartilhados.
+
+Usar:
+
+- `TelaConfigLocal`;
+- `CadastroJogadores`;
+- `SecaoConfig`;
+- `SegmentControl`;
+- `ControladorNumerico`;
+- botão universal de voltar/fechar.
+
+## Gameplay UI
+
+Durante gameplay:
+
+- tela deve priorizar instrução de ação;
+- botões devem ser grandes e inequívocos;
+- fases privadas devem esconder informação com clareza;
+- reveals devem ser curtos;
+- haptics podem reforçar sucesso, sabotagem, erro ou tensão;
+- confirmações só entram para ações destrutivas ou saída de jogo.
+
+## Anti-Padrões
+
 Evitar:
-telas pretas contemplativas
-centralização dramática
-excesso de vazio “cinematográfico”
-layouts densos
-12. Motion System
-Filosofia
 
-Motion:
+- explicar funcionalidades em texto visível;
+- transformar cada jogo em visual isolado demais;
+- hero marketing sem jogo real;
+- cards aninhados;
+- estados vazios sem ação;
+- tela bonita que desacelera a mesa.
 
-rápido
-responsivo
-tátil
-energético
-divertido
-
-E NÃO:
-
-lento
-cinematográfico demais
-atmosférico
-contemplativo
-Duração
-Micro transitions
-
-120ms–220ms
-
-Standard transitions
-
-220ms–320ms
-
-Emotional transitions
-
-máximo 450ms
-
-Motion feeling
-
-Mistura de:
-
-iMessage
-apps sociais modernos
-jogos físicos premium
-interfaces vivas
-13. Feedback Tátil
-
-Haptics são:
-
-essenciais.
-
-O app deve parecer:
-
-físico
-responsivo
-vivo
-Regras
-Acerto
-
-pulse curto.
-
-Revelação
-
-impacto médio.
-
-Colapso
-
-vibração instável leve.
-
-Erro
-
-feedback seco.
-
-14. Sound Design
-Filosofia
-
-Som NÃO é:
-
-trilha sonora
-música constante
-ambience cinematográfica pesada
-
-Som É:
-
-energia
-ritmo
-tensão social
-resposta emocional
-Preferir:
-micro sons
-pulsos
-feedback rápido
-pressão crescente
-silêncio estratégico
-15. Cards
-
-Os cards devem parecer:
-
-objetos sociais físicos premium.
-
-E NÃO:
-
-widgets
-dashboards
-componentes de SaaS
-Características
-cantos suaves
-profundidade sutil
-sombras leves
-contraste forte
-foco absoluto no conteúdo
-16. Ícones e Ilustrações
-Filosofia
-
-As ilustrações devem representar:
-
-energia
-improviso
-tensão humana
-caos social
-movimento
-Evitar:
-mascotes
-cartoon infantil
-ilustração corporate
-personagens genéricos
-noir dramático
-Preferir:
-abstração social
-formas orgânicas
-silhuetas expressivas
-energia visual
-composição dinâmica
-17. Copywriting
-O app fala como:
-o amigo inteligente e social do grupo.
-O tom deve ser:
-rápido
-humano
-observador
-divertido
-levemente provocador
-Evitar:
-frases profundas demais
-linguagem cult
-tom místico
-“frases de filme”
-excesso de dramaticidade
-Bom exemplo:
-
-“isso saiu do controle rápido.”
-
-Mau exemplo:
-
-“o silêncio tomou conta da sala.”
-
-18. UX Philosophy
-
-O app deve:
-
-iniciar rápido
-ensinar jogando
-reduzir setup
-maximizar reação humana
-minimizar burocracia
-O usuário nunca deve sentir:
-onboarding longo
-excesso de regra
-configuração complexa
-excesso de menus
-19. Vibe System
-
-O usuário não escolhe apenas:
-
-um jogo.
-
-Ele escolhe:
-
-uma energia social.
-Exemplos
-Quebra-Gelo
-Caos
-Date
-Intimidade
-After
-Amigos Próximos
-Festa
-Vergonha Alheia
-Paranoia
-Destruição Psicológica
-20. Social-First Design
-
-O app existe para:
-
-melhorar o ambiente físico.
-
-E NÃO:
-
-prender atenção na tela.
-
-Toda decisão deve responder:
-
-“isso melhora a interação entre pessoas reais?”
-
-Se não:
-remover.
-
-21. Performance Percebida
-
-O app deve parecer:
-
-instantâneo
-leve
-contínuo
-Evitar:
-loading evidente
-delays artificiais
-waits desnecessários
-Priorizar:
-fluidez
-continuidade
-momentum social
-22. Sessão > Partida
-
-O produto não é estruturado em:
-
-“matches”.
-
-O produto é estruturado em:
-
-sessões sociais.
-
-Toda UX deve considerar:
-
-energia da noite
-identidade do grupo
-progressão emocional
-memória coletiva
-23. Dossiê do Caos
-
-Ao final da sessão:
-o app gera:
-
-memória social compartilhável.
-
-Exemplos:
-
-quem mais colapsou
-quem foi mais julgado
-rodada mais caótica
-maior clutch
-momento da noite
-
-Objetivo:
-
-memória coletiva
-compartilhamento
-viralidade
-retenção emocional
-24. Design Anti-Cringe
-
-O produto deve evitar:
-
-pretensão estética
-“cool demais”
-excesso de atmosfera
-teatralidade
-tom espiritualizado
-
-O humor e o caos social brasileiro:
-
-sempre vencem a estética.
-25. Princípio Final
-
-O Entre Nós NÃO é:
-
-um app de jogos.
-
-É:
-
-uma plataforma de experiências sociais presenciais.
-
-O design existe para:
-
-amplificar pessoas
-acelerar emoções
-facilitar histórias
-criar memórias coletivas
-
-E desaparecer no momento certo.

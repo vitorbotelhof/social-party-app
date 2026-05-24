@@ -58,6 +58,9 @@ function pontuar(): PontuacaoIdentidade[] {
   const vergonhasFazAi = contarMomentos('vergonha_coletiva');
   const atuacoesDuvidosas = contarMomentos('atuacao_duvidosa');
   const identificacoesImediatas = contarMomentos('identificacao_imediata');
+  const sabotagensAlianca = contarMomentos('missao_sabotada_alianca');
+  const confiancasAlianca = contarMomentos('confianca_restaurada_alianca');
+  const rejeicoesAlianca = contarMomentos('rejeicao_em_cadeia_alianca');
 
   const totalMomentos =
     unanimidades +
@@ -76,7 +79,10 @@ function pontuar(): PontuacaoIdentidade[] {
     surtosFazAi +
     vergonhasFazAi +
     atuacoesDuvidosas +
-    identificacoesImediatas;
+    identificacoesImediatas +
+    sabotagensAlianca +
+    confiancasAlianca +
+    rejeicoesAlianca;
 
   const jogosCompletos = getJogosCompletos().length;
 
@@ -91,7 +97,9 @@ function pontuar(): PontuacaoIdentidade[] {
         colapsos_inq * 3 +
         corrupcoes +
         surtosFazAi * 3 +
-        vergonhasFazAi * 2,
+        vergonhasFazAi * 2 +
+        sabotagensAlianca * 2 +
+        rejeicoesAlianca,
     },
     {
       identidade: 'competitivo',
@@ -114,11 +122,16 @@ function pontuar(): PontuacaoIdentidade[] {
     {
       identidade: 'paranoico',
       // Inquisição: empates e votações espalhadas definem o grupo paranoico
-      pontos: paranoia * 3 + paranoia_max * 3 + colapsos_inq,
+      pontos:
+        paranoia * 3 +
+        paranoia_max * 3 +
+        colapsos_inq +
+        sabotagensAlianca * 2 +
+        rejeicoesAlianca * 2,
     },
     {
       identidade: 'intimo',
-      pontos: unanimidades * 3,
+      pontos: unanimidades * 3 + confiancasAlianca * 2,
     },
     {
       identidade: 'destrutivo',
@@ -128,7 +141,8 @@ function pontuar(): PontuacaoIdentidade[] {
         viradas +
         inversoes * 3 +
         corrupcoes * 2 +
-        atuacoesDuvidosas * 2,
+        atuacoesDuvidosas * 2 +
+        sabotagensAlianca * 2,
     },
   ];
 

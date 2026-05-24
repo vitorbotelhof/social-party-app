@@ -1,466 +1,218 @@
-# ENTRE NÓS — EDITORIAL EXECUTION SYSTEM
+# Entre Nós — Editorial Execution System
 
-Entre Nós — Editorial Execution System
-Social Energy Writing System
-1. Filosofia Central
+## Função Do Editorial
 
-O editorial do Entre Nós NÃO existe para:
+O editorial existe para criar gameplay social.
 
-soar profundo
-parecer cinematográfico
-criar frases “cool”
-parecer misterioso
-dramatizar excessivamente
-parecer um roteiro da A24
-soar como IA tentando ser inteligente
+Ele não existe para:
 
-O editorial existe para:
+- soar profundo;
+- parecer cinematográfico;
+- escrever frases bonitas;
+- explicar demais;
+- performar humor.
 
-amplificar energia social humana.
+Ele existe para:
 
-O sistema de escrita deve:
+- provocar ação;
+- criar reação;
+- reduzir ambiguidade;
+- acelerar o grupo;
+- transformar uma carta em comportamento jogável.
 
-acelerar interação
-provocar reação
-aumentar caos social
-gerar timing cômico
-reforçar tensão leve
-criar memória coletiva
-comentar o grupo de forma inteligente
-2. O App NÃO É o Protagonista
+## Regra Mais Importante
 
-O app:
+Divertido de ler não é igual a divertido de jogar.
 
-nunca deve roubar a cena.
+Uma boa carta precisa ser:
 
-A escrita:
+- clara;
+- atuável ou respondível;
+- adivinhável quando o jogo exige;
+- socialmente reconhecível;
+- curta o bastante para não matar ritmo;
+- específica sem virar charada impossível.
 
-facilita
-reage
-provoca
-comenta
-direciona energia
+## Boa Carta De Gameplay
 
-Mas:
+Uma boa carta:
 
-as pessoas são o espetáculo.
-3. Tom Central
+- gera imagem mental imediata;
+- permite ação física, verbal ou social;
+- aceita respostas aproximadas quando apropriado;
+- cria vitória frequente;
+- dá chance ao jogador médio;
+- escala bem em grupo barulhento.
+
+Exemplo bom para Faz Aí:
+
+"fingindo que entendeu a explicação"
+
+Por quê:
+
+- todo mundo reconhece;
+- dá para atuar rápido;
+- o grupo pode acertar por aproximação;
+- não depende de resposta literal.
+
+## Carta Ruim
+
+Uma carta ruim:
+
+- é engraçada só quando lida;
+- exige criatividade teatral;
+- depende de contexto muito específico;
+- tem resposta literal difícil;
+- gera silêncio;
+- cria derrota frequente;
+- força explicação.
+
+## Clareza
+
+O texto deve deixar claro:
+
+- quem age;
+- qual situação;
+- qual resposta esperada;
+- se aproximação vale;
+- qual é o gesto social.
+
+Evitar:
+
+- perguntas com dois sentidos;
+- pronomes ambíguos;
+- referências que metade do grupo não entende;
+- cartas longas demais.
+
+## Atuação
+
+Para cartas performáticas, perguntar:
+
+- dá para atuar em 3 segundos?
+- o gesto é visível?
+- o grupo consegue gritar respostas?
+- há caminho físico claro?
+- uma pessoa tímida consegue tentar?
+
+Se não, a carta talvez seja editorialmente boa, mas mecanicamente ruim.
+
+## Adivinhabilidade
+
+O grupo deve conseguir acertar por:
+
+- conceito;
+- gesto;
+- situação;
+- referência;
+- categoria.
+
+Evitar exigir:
+
+- frase exata;
+- nome completo;
+- detalhe obscuro;
+- leitura mental do autor.
+
+## Resposta Aproximada
+
+Em jogos sociais, frequentemente o correto é "capturar a ideia".
+
+O sistema deve favorecer:
+
+- respostas aproximadas;
+- sinônimos;
+- nomes populares;
+- conceito reconhecido;
+- decisão do grupo.
+
+Usar resposta exata apenas quando o jogo depende disso.
+
+## Dificuldade Editorial
+
+Classificar conteúdo por:
+
+- clareza;
+- atuabilidade;
+- repertório necessário;
+- intensidade social;
+- energia física;
+- risco de ambiguidade.
+
+Ver também: `CONTENT_DIFFICULTY_SYSTEM.md`.
+
+## Tom
 
 O tom deve ser:
 
-humano
-rápido
-social
-brasileiro
-inteligente
-observador
-espontâneo
-levemente provocador
-divertido
-emocionalmente consciente
-O tom NÃO deve ser:
+- brasileiro;
+- direto;
+- observador;
+- social;
+- humano;
+- levemente provocador;
+- sem caricatura.
 
-❌ místico
-❌ contemplativo
-❌ filosófico
-❌ dramático demais
-❌ thriller constante
-❌ frase de filme
-❌ coach emocional
-❌ IA engraçadinha
-❌ sarcasmo forçado
-❌ humor memeiro exagerado
+Evitar:
 
-4. A Referência Correta
+- meme pronto;
+- gíria forçada;
+- voz de narrador;
+- humor de IA;
+- frase de trailer.
 
-O app deve soar como:
-
-o amigo socialmente inteligente do grupo.
-
-Aquele amigo que:
-
-percebe padrões
-comenta o caos
-aumenta o clima
-faz observações perfeitas
-entende a energia da sala
-
-Mas:
-
-sem monopolizar atenção
-sem parecer performer
-sem tentar ser mais engraçado que o grupo
-5. Regra Mais Importante
-O editorial deve parecer:
-reação social.
-
-E NÃO:
-
-texto escrito.
-6. Filosofia de Timing
-
-O timing editorial é:
-
-mais importante que o texto.
-
-O app deve:
-
-saber quando falar
-saber quando sumir
-saber quando acelerar
-saber quando deixar silêncio
-O silêncio é ferramenta editorial.
-
-Nem todo momento precisa:
-
-comentário
-punchline
-observação
-
-Às vezes:
-
-o grupo completa emocionalmente o espaço sozinho.
-7. Tipos de Intervenção Editorial
-1. Energia
-
-Amplifica o momento.
-
-Exemplo:
-
-“isso ficou perigosamente eficiente.”
-
-2. Observação
-
-Percebe dinâmica social.
-
-Exemplo:
-
-“ninguém aqui sabe lidar bem com pressão.”
-
-3. Caos
-
-Reconhece colapso.
-
-Exemplo:
-
-“isso saiu do controle muito rápido.”
-
-4. Vulnerabilidade
-
-Reconhece exposição humana.
-
-Exemplo:
-
-“agora ficou pessoal.”
-
-5. Aftermath
-
-Ajuda o grupo a sentir o momento.
-
-Exemplo:
-
-“ninguém volta igual depois dessa rodada.”
-
-8. O Que EVITAR
-
-Nunca escrever como:
-
-❌ narrador de filme
-❌ mestre de RPG
-❌ locutor gamer
-❌ coach emocional
-❌ stand-up comedian
-❌ poeta contemplativo
-❌ inteligência artificial autoconsciente
-
-9. Ritmo Editorial
-
-O editorial deve:
-
-entrar rápido
-sair rápido
-nunca bloquear fluxo
-Regra:
-o grupo sempre vem antes da frase bonita.
-10. Comprimento Ideal
-Ideal:
-
-1 linha.
-
-Excelente:
-
-3–6 palavras.
-
-Máximo:
-
-2 linhas curtas.
-
-O app NÃO deve:
-discursar
-explicar emoção
-narrar demais
-interromper energia social
-11. Filosofia de Humor
-
-O humor deve surgir de:
-
-reconhecimento social.
-
-E NÃO:
-
-piada escrita.
-Bom humor:
-
-✅ “isso virou ataque pessoal.”
-✅ “ninguém estava preparado pra isso.”
-✅ “o grupo claramente perdeu o controle.”
-
-Humor ruim:
-
-❌ meme pronto
-❌ piada forçada
-❌ ironia internet demais
-❌ sarcasmo excessivo
-❌ “humor de IA”
-
-12. Filosofia Brasileira
-
-O editorial deve soar:
-
-brasileiro real.
-
-Mas:
-sem caricatura.
+## Comprimento
 
 Preferir:
-oralidade leve
-observação cotidiana
-timing social brasileiro
-caos humano reconhecível
-Evitar:
-gíria forçada
-excesso de internetês
-personagem artificial
-13. Filosofia de Intensidade
 
-O app acompanha:
+- 3 a 9 palavras em gameplay rápido;
+- 1 linha em cards;
+- 2 linhas curtas no máximo em explicações.
 
-a energia da sessão.
+Textos longos pertencem a descrição de jogo, não a rodada.
 
-Nunca:
-o contrário.
+## Editorial Por Tipo De Jogo
 
-Sessão leve:
+### Dedução Social
 
-editorial leve.
+Escrever para gerar:
 
-Sessão caótica:
+- suspeita;
+- defesa;
+- acusação;
+- narrativa.
 
-editorial mais intenso.
+### Atuação Social
 
-Sessão íntima:
+Escrever para gerar:
 
-editorial mais humano.
+- gesto;
+- corpo;
+- reconhecimento;
+- respostas aproximadas.
 
-Sessão paranoica:
+### Perguntas Pessoais
 
-editorial mais observador.
+Escrever para gerar:
 
-14. Editorial por Jogo
-Mr White
+- escolha clara;
+- baixa ambiguidade;
+- conversa posterior.
 
-Tom:
-paranoia divertida.
+### Pressão Verbal
 
-Exemplos:
+Escrever para gerar:
 
-“agora ninguém confia em ninguém.”
-“isso foi suspeitamente rápido.”
-“tem alguém mentindo muito bem.”
-Most Likely To
+- resposta rápida;
+- categoria clara;
+- sensação de quase acerto.
 
-Tom:
-julgamento social engraçado.
+## Checklist Antes De Aprovar Conteúdo
 
-Exemplos:
+- O jogador entende em menos de 2 segundos?
+- O grupo entende o que precisa fazer?
+- Há chance real de vitória?
+- A carta funciona em voz alta?
+- A carta funciona em ambiente barulhento?
+- Ela cria comportamento, não só leitura?
+- A dificuldade está adequada à fase?
 
-“isso pareceu consenso demais.”
-“essa amizade não sobreviveu.”
-“o grupo já tinha essa resposta pronta.”
-Na Ponta da Língua
-
-Tom:
-colapso cognitivo coletivo.
-
-Exemplos:
-
-“o cérebro desistiu primeiro.”
-“a palavra estava vindo.”
-“isso virou sobrevivência.”
-Jogos íntimos
-
-Tom:
-humano e vulnerável.
-
-Exemplos:
-
-“agora ficou real.”
-“ninguém esperava essa resposta.”
-“isso mudou o clima.”
-15. Filosofia de Pressão
-
-Pressão NÃO vem:
-
-do texto.
-
-Ela vem:
-
-do tempo
-da situação social
-do grupo
-da expectativa
-da hesitação
-
-O editorial apenas:
-
-reconhece isso.
-16. Filosofia de Recompensa
-
-O app NÃO celebra como:
-
-videogame
-cassino
-app de produtividade
-NÃO:
-
-❌ “incrível!!!”
-❌ “perfeito!!”
-❌ “você venceu!”
-
-SIM:
-
-✅ “isso foi absurdo.”
-✅ “ninguém esperava isso.”
-✅ “vocês entraram no ritmo.”
-
-17. Filosofia de Fracasso
-
-Fracasso:
-
-é socialmente divertido.
-
-O app nunca deve:
-
-punir emocionalmente
-humilhar
-constranger de forma cruel
-O erro deve parecer:
-caos humano
-improviso falhando
-pressão vencendo
-18. Sistema de Sessão Viva
-
-O editorial deve lembrar:
-
-colapsos passados
-clutch moments
-julgamentos absurdos
-paranoia acumulada
-energia do grupo
-
-Objetivo:
-
-parecer que o app acompanhou a noite inteira.
-19. Sistema de Callback
-
-O app deve ocasionalmente dizer coisas como:
-
-“vocês continuam piorando.”
-“o time azul ainda não se recuperou.”
-“ninguém superou aquela rodada.”
-“isso começou leve demais.”
-
-Objetivo:
-
-criar narrativa emergente.
-20. Filosofia de Onboarding
-
-O app NÃO explica demais.
-
-O usuário:
-
-aprende jogando.
-O editorial deve:
-guiar
-sugerir
-provocar
-
-Nunca:
-
-dar tutorial excessivo
-virar manual
-21. Filosofia de Energia
-
-O editorial existe para:
-
-modular energia social.
-
-Ele pode:
-
-acelerar
-aliviar
-provocar
-respirar
-amplificar
-
-Mas nunca:
-
-dominar o ambiente.
-22. Design Anti-Cringe
-
-Sempre perguntar:
-
-“isso parece uma frase que um humano realmente falaria numa resenha?”
-
-Se não:
-remover.
-
-23. Regras de Ouro
-1.
-
-Curto > bonito.
-
-2.
-
-Timing > inteligência.
-
-3.
-
-Humano > cinematográfico.
-
-4.
-
-Social > estético.
-
-5.
-
-Reação > narração.
-
-6.
-
-Caos humano > texto sofisticado.
-
-24. O Objetivo Final
-
-O usuário nunca deve pensar:
-
-“esse app escreve bem.”
-
-Ele deve pensar:
-
-“essa noite saiu completamente do controle.”
-
-Porque:
-o editorial perfeito:
-
-desaparece dentro da experiência social.

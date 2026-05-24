@@ -5,10 +5,11 @@
  *
  * Layout:
  *   — Cabeçalho: modo, jogadores, vencedor, duração total
- *   — Hipóteses: 6 cards com status validada/alerta/refutada
+ *   — Hipóteses: cards com status validada/alerta/refutada
  *   — Timeline: duração de cada fase por loop
  *   — Noites: ação registrada, bloqueio, contaminação por loop
  *   — Anomalias: lista de sinais que precisam de atenção
+ *   — Recomendações: ações para calibrar o próximo playtest
  */
 
 import React, { useState } from 'react';
@@ -25,6 +26,7 @@ import type {
   PlaytestReport,
   HipoteseResult,
   LoopRelatorio,
+  RecomendacaoPlaytest,
   StatusHipotese,
 } from '@/games/inquisicao/local/playtestTracker';
 
@@ -46,13 +48,18 @@ const D = {
   erro: '#EF4444',
   info: '#60A5FA',
   branco: '#F5F5F5',
+  badgeErroFundo: '#3F1A1A',
+  anomaliaFundo: '#1A1200',
+  anomaliaBorda: '#3D2800',
+  okFundo: '#0A1F0A',
+  okBorda: '#1A4D1A',
 } as const;
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 
 export function TelaPlaytestLocal({ relatorio, onVoltar }: Props) {
   const [secaoAberta, setSecaoAberta] = useState<
-    'hipoteses' | 'timeline' | 'noites' | 'anomalias'
+    'hipoteses' | 'timeline' | 'noites' | 'anomalias' | 'recs'
   >('hipoteses');
 
   const { metricas, vencedor, modo, numJogadores } = relatorio;
@@ -60,12 +67,14 @@ export function TelaPlaytestLocal({ relatorio, onVoltar }: Props) {
 
   return (
     <SafeAreaView style={e.container}>
-
       {/* Cabeçalho — identidade da partida */}
       <View style={e.cabecalho}>
         <View style={e.cabecalhoTopo}>
           <Text style={e.titulo}>playtest</Text>
-          <TouchableOpacity onPress={onVoltar} hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}>
+          <TouchableOpacity
+            onPress={onVoltar}
+            hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }}
+          >
             <Text style={e.fechar}>fechar</Text>
           </TouchableOpacity>
         </View>
@@ -74,7 +83,13 @@ export function TelaPlaytestLocal({ relatorio, onVoltar }: Props) {
           <Chip label={`${numJogadores} jogadores`} />
           <Chip
             label={vencedor ? `${vencedor} venceram` : '—'}
-            cor={vencedor === 'corrompidos' ? D.erro : vencedor === 'inocentes' ? D.ok : D.mudo}
+            cor={
+              vencedor === 'corrompidos'
+                ? D.erro
+                : vencedor === 'inocentes'
+                  ? D.ok
+                  : D.mudo
+            }
           />
           <Chip label={`${duracaoMin}min`} />
           <Chip label={`${metricas.totalLoops} loops`} />
@@ -82,7 +97,8 @@ export function TelaPlaytestLocal({ relatorio, onVoltar }: Props) {
         {relatorio.anomalias.length > 0 && (
           <View style={e.badgeAnomalias}>
             <Text style={e.badgeAnomaliastexto}>
-              {relatorio.anomalias.length} anomalia{relatorio.anomalias.length > 1 ? 's' : ''}
+              {relatorio.anomalias.length} anomalia
+              {relatorio.anomalias.length > 1 ? 's' : ''}
             </Text>
           </View>
         )}
@@ -90,14 +106,22 @@ export function TelaPlaytestLocal({ relatorio, onVoltar }: Props) {
 
       {/* Tabs */}
       <View style={e.tabs}>
-        {(['hipoteses', 'timeline', 'noites', 'anomalias'] as const).map((secao) => (
+        {(
+          ['hipoteses', 'timeline', 'noites', 'anomalias', 'recs'] as const
+        ).map((secao) => (
           <TouchableOpacity
             key={secao}
             style={[e.tab, secaoAberta === secao && e.tabAtiva]}
             onPress={() => setSecaoAberta(secao)}
           >
-            <Text style={[e.tabLabel, secaoAberta === secao && e.tabLabelAtiva]}>
-              {secao === 'hipoteses' ? 'hipóteses' : secao}
+            <Text
+              style={[e.tabLabel, secaoAberta === secao && e.tabLabelAtiva]}
+            >
+              {secao === 'hipoteses'
+                ? 'hipóteses'
+                : secao === 'recs'
+                  ? 'ações'
+                  : secao}
             </Text>
           </TouchableOpacity>
         ))}
@@ -115,14 +139,14 @@ export function TelaPlaytestLocal({ relatorio, onVoltar }: Props) {
         {secaoAberta === 'timeline' && (
           <SecaoTimeline loops={relatorio.loops} />
         )}
-        {secaoAberta === 'noites' && (
-          <SecaoNoites loops={relatorio.loops} />
-        )}
+        {secaoAberta === 'noites' && <SecaoNoites loops={relatorio.loops} />}
         {secaoAberta === 'anomalias' && (
           <SecaoAnomalias anomalias={relatorio.anomalias} />
         )}
+        {secaoAberta === 'recs' && (
+          <SecaoRecomendacoes recomendacoes={relatorio.recomendacoes} />
+        )}
       </ScrollView>
-
     </SafeAreaView>
   );
 }
@@ -183,25 +207,44 @@ function SecaoTimeline({ loops }: { loops: LoopRelatorio[] }) {
           <Text style={[e.tabelaCell, e.tabelaLoop, e.tabelaValor]}>
             {loop.numero}
           </Text>
-          <Text style={[e.tabelaCell, e.tabelaFase, e.tabelaValor,
-            (loop.duracaoDiaMs ?? 0) > 300_000 && { color: D.alerta },
-          ]}>
+          <Text
+            style={[
+              e.tabelaCell,
+              e.tabelaFase,
+              e.tabelaValor,
+              (loop.duracaoDiaMs ?? 0) > 300_000 && { color: D.alerta },
+            ]}
+          >
             {s(loop.duracaoDiaMs)}
           </Text>
-          <Text style={[e.tabelaCell, e.tabelaFase, e.tabelaValor,
-            (loop.duracaoVotacaoMs ?? 0) > 30_000 && { color: D.alerta },
-          ]}>
+          <Text
+            style={[
+              e.tabelaCell,
+              e.tabelaFase,
+              e.tabelaValor,
+              (loop.duracaoVotacaoMs ?? 0) > 30_000 && { color: D.alerta },
+            ]}
+          >
             {s(loop.duracaoVotacaoMs)}
           </Text>
-          <Text style={[e.tabelaCell, e.tabelaFase, e.tabelaValor,
-            loop.duracaoNoiteMs !== null &&
-            Math.abs((loop.duracaoNoiteMs) - 8000) > 3000 && { color: D.alerta },
-          ]}>
+          <Text
+            style={[
+              e.tabelaCell,
+              e.tabelaFase,
+              e.tabelaValor,
+              (loop.duracaoNoiteMs ?? 0) > 45_000 && { color: D.alerta },
+            ]}
+          >
             {s(loop.duracaoNoiteMs)}
           </Text>
-          <Text style={[e.tabelaCell, e.tabelaFase, e.tabelaValor,
-            (loop.duracaoMensagemMs ?? 0) > 20_000 && { color: D.alerta },
-          ]}>
+          <Text
+            style={[
+              e.tabelaCell,
+              e.tabelaFase,
+              e.tabelaValor,
+              (loop.duracaoMensagemMs ?? 0) > 20_000 && { color: D.alerta },
+            ]}
+          >
             {s(loop.duracaoMensagemMs)}
           </Text>
           <Text style={[e.tabelaCell, e.tabelaTotal, e.tabelaValor]}>
@@ -213,9 +256,7 @@ function SecaoTimeline({ loops }: { loops: LoopRelatorio[] }) {
       ))}
 
       <View style={e.legenda}>
-        <Text style={e.legendaTexto}>
-          amarelo = valor fora do esperado
-        </Text>
+        <Text style={e.legendaTexto}>amarelo = valor fora do esperado</Text>
       </View>
     </View>
   );
@@ -240,29 +281,70 @@ function SecaoNoites({ loops }: { loops: LoopRelatorio[] }) {
 
       {loopsComNoite.map((loop) => {
         const papel = loop.eliminadoEraPapel;
-        const corPapel = papel === 'corrompido' ? D.erro : papel != null ? D.ok : D.mudo;
+        const corPapel =
+          papel === 'corrompido' ? D.erro : papel != null ? D.ok : D.mudo;
 
         return (
           <View key={loop.numero} style={e.tabelaLinha}>
             <Text style={[e.tabelaCell, e.tabelaLoop, e.tabelaValor]}>
               {loop.numero}
             </Text>
-            <Text style={[e.tabelaCell, e.noiteCol, e.tabelaValor,
-              { color: loop.corrompidoAgiu ? D.ok : loop.corrompidoAgiu === false ? D.erro : D.mudo },
-            ]}>
-              {loop.corrompidoAgiu === null ? '—' : loop.corrompidoAgiu ? 'sim' : 'não'}
+            <Text
+              style={[
+                e.tabelaCell,
+                e.noiteCol,
+                e.tabelaValor,
+                {
+                  color: loop.corrompidoAgiu
+                    ? D.ok
+                    : loop.corrompidoAgiu === false
+                      ? D.erro
+                      : D.mudo,
+                },
+              ]}
+            >
+              {loop.corrompidoAgiu === null
+                ? '—'
+                : loop.corrompidoAgiu
+                  ? 'sim'
+                  : 'não'}
             </Text>
-            <Text style={[e.tabelaCell, e.noiteCol, e.tabelaValor,
-              { color: loop.bloqueioGuardiao ? D.info : D.mudo },
-            ]}>
-              {loop.bloqueioGuardiao === null ? '—' : loop.bloqueioGuardiao ? 'sim' : 'não'}
+            <Text
+              style={[
+                e.tabelaCell,
+                e.noiteCol,
+                e.tabelaValor,
+                { color: loop.bloqueioGuardiao ? D.info : D.mudo },
+              ]}
+            >
+              {loop.bloqueioGuardiao === null
+                ? '—'
+                : loop.bloqueioGuardiao
+                  ? 'sim'
+                  : 'não'}
             </Text>
-            <Text style={[e.tabelaCell, e.noiteCol, e.tabelaValor,
-              { color: loop.contaminacao ? D.alerta : D.mudo },
-            ]}>
-              {loop.contaminacao === null ? '—' : loop.contaminacao ? 'sim' : 'não'}
+            <Text
+              style={[
+                e.tabelaCell,
+                e.noiteCol,
+                e.tabelaValor,
+                { color: loop.contaminacao ? D.alerta : D.mudo },
+              ]}
+            >
+              {loop.contaminacao === null
+                ? '—'
+                : loop.contaminacao
+                  ? 'sim'
+                  : 'não'}
             </Text>
-            <Text style={[e.tabelaCell, e.noiteEliminado, { color: corPapel, fontSize: 11 }]}>
+            <Text
+              style={[
+                e.tabelaCell,
+                e.noiteEliminado,
+                e.noiteEliminadoValor,
+                { color: corPapel },
+              ]}
+            >
               {loop.eliminadoId
                 ? `${loop.eliminadoId.slice(0, 8)} (${loop.eliminadoEraPapel ?? '?'})`
                 : '—'}
@@ -300,6 +382,37 @@ function SecaoAnomalias({ anomalias }: { anomalias: string[] }) {
           <Text style={e.anomaliaTexto}>{a}</Text>
         </View>
       ))}
+    </View>
+  );
+}
+
+function SecaoRecomendacoes({
+  recomendacoes,
+}: {
+  recomendacoes: RecomendacaoPlaytest[];
+}) {
+  if (recomendacoes.length === 0) {
+    return <TextVazio>nenhuma recomendação gerada.</TextVazio>;
+  }
+
+  return (
+    <View style={e.secao}>
+      {recomendacoes.map((r) => {
+        const cor = corPrioridade(r.prioridade);
+        return (
+          <View key={r.id} style={e.cardRecomendacao}>
+            <View style={e.recomendacaoTopo}>
+              <Text style={[e.recomendacaoPrioridade, { color: cor }]}>
+                {r.prioridade}
+              </Text>
+              <Text style={e.hipoteseId}>{r.id}</Text>
+            </View>
+            <Text style={e.hipoteseTitulo}>{r.titulo}</Text>
+            <Text style={e.hipoteseDescricao}>{r.acao}</Text>
+            <MetricaRow label="motivo" valor={r.motivo} corValor={D.mudo} />
+          </View>
+        );
+      })}
     </View>
   );
 }
@@ -352,19 +465,38 @@ function TextVazio({ children }: { children: string }) {
 
 function corStatus(status: StatusHipotese): string {
   switch (status) {
-    case 'validada': return D.ok;
-    case 'alerta': return D.alerta;
-    case 'refutada': return D.erro;
-    case 'inconclusiva': return D.mudo;
+    case 'validada':
+      return D.ok;
+    case 'alerta':
+      return D.alerta;
+    case 'refutada':
+      return D.erro;
+    case 'inconclusiva':
+      return D.mudo;
   }
 }
 
 function labelStatus(status: StatusHipotese): string {
   switch (status) {
-    case 'validada': return '✓ validada';
-    case 'alerta': return '△ alerta';
-    case 'refutada': return '✕ refutada';
-    case 'inconclusiva': return '◌ inconclusiva';
+    case 'validada':
+      return '✓ validada';
+    case 'alerta':
+      return '△ alerta';
+    case 'refutada':
+      return '✕ refutada';
+    case 'inconclusiva':
+      return '◌ inconclusiva';
+  }
+}
+
+function corPrioridade(prioridade: RecomendacaoPlaytest['prioridade']): string {
+  switch (prioridade) {
+    case 'alta':
+      return D.erro;
+    case 'media':
+      return D.alerta;
+    case 'baixa':
+      return D.info;
   }
 }
 
@@ -421,7 +553,7 @@ const e = StyleSheet.create({
   badgeAnomalias: {
     marginTop: 8,
     alignSelf: 'flex-start',
-    backgroundColor: '#3F1A1A',
+    backgroundColor: D.badgeErroFundo,
     borderWidth: 1,
     borderColor: D.erro,
     borderRadius: 4,
@@ -562,6 +694,9 @@ const e = StyleSheet.create({
     flex: 2,
     textAlign: 'right',
   },
+  noiteEliminadoValor: {
+    fontSize: 11,
+  },
   // ── Legenda ──
   legenda: {
     marginTop: 8,
@@ -585,13 +720,31 @@ const e = StyleSheet.create({
   // ── Anomalias ──
   cardAnomalia: {
     flexDirection: 'row',
-    backgroundColor: '#1A1200',
+    backgroundColor: D.anomaliaFundo,
     borderWidth: 1,
-    borderColor: '#3D2800',
+    borderColor: D.anomaliaBorda,
     borderRadius: 6,
     padding: 12,
     gap: 10,
     alignItems: 'flex-start',
+  },
+  cardRecomendacao: {
+    backgroundColor: D.superfície,
+    borderWidth: 1,
+    borderColor: D.borda,
+    borderRadius: 6,
+    padding: 14,
+    gap: 6,
+  },
+  recomendacaoTopo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  recomendacaoPrioridade: {
+    fontSize: 11,
+    fontFamily: 'monospace',
+    letterSpacing: 0.5,
   },
   anomaliaLabel: {
     fontSize: 14,
@@ -607,9 +760,9 @@ const e = StyleSheet.create({
   },
   // ── Estado ok ──
   cardOk: {
-    backgroundColor: '#0A1F0A',
+    backgroundColor: D.okFundo,
     borderWidth: 1,
-    borderColor: '#1A4D1A',
+    borderColor: D.okBorda,
     borderRadius: 6,
     padding: 14,
   },

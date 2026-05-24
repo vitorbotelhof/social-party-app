@@ -1,17 +1,17 @@
 /**
- * TelaNoiteLocal — Fase noturna completa (3 estados internos).
+ * TelaNoiteLocal — Fase noturna completa.
  *
  * Estados cobertos:
- *   noite_corrompidos → tela de ação do corrompido (2 toques: tipo + alvo)
- *   noite_guardioes   → tela do guardião (1 toque: alvo) ou tela neutra
+ *   noite_corrompidos → passagem escura + ação do corrompido
+ *   noite_guardioes   → passagem escura + guardião ou tela neutra
  *   encerrando_noite  → mensagem ambígua + botão continuar
  *
  * Design anti-vazamento:
  *   - Fundo #0D0D0D em todos os estados — luminosidade uniforme
- *   - Todos os papéis ativos fazem exatamente 2 toques (normalização)
+ *   - Todos passam por uma tela de protocolo antes de agir
  *   - Tela neutra idêntica visualmente às telas de ação
  *   - Sem haptic, sem som, sem animação de transição
- *   - Após ação: tela permanece ativa até engine avançar (janela fixa)
+ *   - Após ação: jogador confirma e baixa o celular
  */
 
 import React, { useState } from 'react';
@@ -73,7 +73,7 @@ export function TelaNoiteLocal({ engine, estado, mapaNomes }: Props) {
 
   if (fase === 'noite_guardioes') {
     const ator = engine.getAtorFaseAtual();
-    if (!ator) return <TelaNeutra />;
+    if (!ator) return <TelaNeutra engine={engine} />;
     return (
       <TelaAcaoGuardiao engine={engine} estado={estado} mapaNomes={mapaNomes} />
     );
@@ -85,15 +85,32 @@ export function TelaNoiteLocal({ engine, estado, mapaNomes }: Props) {
 // ── Tela neutra — aparece quando não há ator na fase (modo Leve sem guardião) ──
 // Visual idêntico às telas de ação para não revelar ausência de papéis.
 
-function TelaNeutra() {
-  return <SafeAreaView style={estilos.container} />;
+type EtapaNeutra = 'passagem' | 'confirmado';
+
+function TelaNeutra({ engine }: { engine: InquisicaoLocalEngine }) {
+  const [etapa, setEtapa] = useState<EtapaNeutra>('passagem');
+
+  if (etapa === 'confirmado') {
+    return <TelaConfirmado onContinuar={() => engine.confirmarFaseNoite()} />;
+  }
+
+  return (
+    <TelaPassagemNoite
+      titulo="a noite continua."
+      subtitulo="toque para seguir"
+      onPress={() => setEtapa('confirmado')}
+    />
+  );
 }
 
 // ── Ação do corrompido ────────────────────────────────────────────────────────
-// 2 toques obrigatórios: (1) tipo de ação, (2) alvo.
-// Normaliza tap count com o guardião (que também faz 2 toques).
+// Protocolo: passagem escura → tipo de ação → alvo → confirmação manual.
 
-type EtapaCorrompido = 'escolhendo_tipo' | 'escolhendo_alvo' | 'confirmado';
+type EtapaCorrompido =
+  | 'passagem'
+  | 'escolhendo_tipo'
+  | 'escolhendo_alvo'
+  | 'confirmado';
 
 function TelaAcaoCorrompido({
   engine,
@@ -103,10 +120,12 @@ function TelaAcaoCorrompido({
   estado?: EstadoLocalPublico;
   mapaNomes: Map<PlayerId, string>;
 }) {
-  const [etapa, setEtapa] = useState<EtapaCorrompido>('escolhendo_tipo');
+  const [etapa, setEtapa] = useState<EtapaCorrompido>('passagem');
   const [tipoEscolhido, setTipoEscolhido] = useState<TipoAcaoLocal | null>(
     null,
   );
+  const ator = engine.getAtorFaseAtual();
+  const nomeAtor = ator ? (mapaNomes.get(ator) ?? ator) : 'alguém';
 
   const handleEscolherTipo = (tipo: TipoAcaoLocal) => {
     setTipoEscolhido(tipo);
@@ -117,8 +136,6 @@ function TelaAcaoCorrompido({
     if (!tipoEscolhido || etapa !== 'escolhendo_alvo') return;
     engine.registrarAcaoNoturna(tipoEscolhido, alvo);
     setEtapa('confirmado');
-    // Tela permanece ativa (sem fechar) até engine avançar via timer.
-    // Isso mantém a janela de 4s uniforme independente de quando o toque ocorreu.
   };
 
   const alvos =
@@ -128,20 +145,23 @@ function TelaAcaoCorrompido({
           tipoEscolhido,
         )
       : [];
-  const ator = engine.getAtorFaseAtual();
   const acoes: TipoAcaoLocal[] = ator
     ? engine.getAcoesCorrompidoDisponiveis(ator)
     : ['eliminar'];
 
-  // ── Confirmado — aguardar timer do engine ────────────────────────────────
-  if (etapa === 'confirmado') {
+  if (etapa === 'passagem') {
     return (
-      <SafeAreaView style={estilos.container}>
-        <View style={estilos.centroCinfirmado}>
-          <View style={estilos.confirmadoDot} />
-        </View>
-      </SafeAreaView>
+      <TelaPassagemNoite
+        titulo={nomeAtor}
+        subtitulo="toque para agir"
+        onPress={() => setEtapa('escolhendo_tipo')}
+      />
     );
+  }
+
+  // ── Confirmado — jogador avança quando baixar o celular ─────────────────
+  if (etapa === 'confirmado') {
+    return <TelaConfirmado onContinuar={() => engine.confirmarFaseNoite()} />;
   }
 
   // ── Escolhendo alvo ──────────────────────────────────────────────────────
@@ -198,11 +218,13 @@ function TelaAcaoCorrompido({
 }
 
 // ── Ação do guardião ──────────────────────────────────────────────────────────
-// Toque 1: botão "proteger" (normalizador de tap count — espelha o primeiro
-// toque do corrompido na escolha de tipo de ação).
-// Toque 2: alvo.
+// Protocolo: passagem escura → intenção → alvo → confirmação manual.
 
-type EtapaGuardiao = 'confirmar_intencao' | 'escolhendo_alvo' | 'confirmado';
+type EtapaGuardiao =
+  | 'passagem'
+  | 'confirmar_intencao'
+  | 'escolhendo_alvo'
+  | 'confirmado';
 
 function TelaAcaoGuardiao({
   engine,
@@ -212,9 +234,12 @@ function TelaAcaoGuardiao({
   estado?: EstadoLocalPublico;
   mapaNomes: Map<PlayerId, string>;
 }) {
-  const [etapa, setEtapa] = useState<EtapaGuardiao>('confirmar_intencao');
+  const [etapa, setEtapa] = useState<EtapaGuardiao>('passagem');
 
   const guardiao = engine.getAtorFaseAtual();
+  const nomeGuardiao = guardiao
+    ? (mapaNomes.get(guardiao) ?? guardiao)
+    : 'alguém';
   const alvos = guardiao
     ? engine.getAlvosDisponiveis(guardiao, 'proteger')
     : [];
@@ -225,14 +250,18 @@ function TelaAcaoGuardiao({
     setEtapa('confirmado');
   };
 
-  if (etapa === 'confirmado') {
+  if (etapa === 'passagem') {
     return (
-      <SafeAreaView style={estilos.container}>
-        <View style={estilos.centroCinfirmado}>
-          <View style={estilos.confirmadoDot} />
-        </View>
-      </SafeAreaView>
+      <TelaPassagemNoite
+        titulo={nomeGuardiao}
+        subtitulo="toque para agir"
+        onPress={() => setEtapa('confirmar_intencao')}
+      />
     );
+  }
+
+  if (etapa === 'confirmado') {
+    return <TelaConfirmado onContinuar={() => engine.confirmarFaseNoite()} />;
   }
 
   if (etapa === 'escolhendo_alvo') {
@@ -273,6 +302,48 @@ function TelaAcaoGuardiao({
   );
 }
 
+function TelaPassagemNoite({
+  titulo,
+  subtitulo,
+  onPress,
+}: {
+  titulo: string;
+  subtitulo: string;
+  onPress: () => void;
+}) {
+  return (
+    <SafeAreaView style={estilos.container}>
+      <TouchableOpacity
+        style={estilos.areaTouch}
+        onPress={onPress}
+        activeOpacity={0.9}
+      >
+        <View style={estilos.centroPassagem}>
+          <Text style={estilos.tituloPassagem}>{titulo}</Text>
+          <Text style={estilos.subtituloPassagem}>{subtitulo}</Text>
+        </View>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+}
+
+function TelaConfirmado({ onContinuar }: { onContinuar: () => void }) {
+  return (
+    <SafeAreaView style={estilos.container}>
+      <TouchableOpacity
+        style={estilos.areaTouch}
+        onPress={onContinuar}
+        activeOpacity={0.9}
+      >
+        <View style={estilos.centroCinfirmado}>
+          <View style={estilos.confirmadoDot} />
+          <Text style={estilos.textoConfirmado}>feito</Text>
+        </View>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+}
+
 // ── Encerrando noite — mensagem ambígua ───────────────────────────────────────
 // Fundo claro: sinal visual de que a noite terminou.
 // Host lê a mensagem em voz alta antes de tocar continuar.
@@ -307,6 +378,28 @@ const estilos = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: N.fundo,
+  },
+  areaTouch: {
+    flex: 1,
+  },
+  centroPassagem: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: espacamento.xl,
+  },
+  tituloPassagem: {
+    fontSize: 34,
+    fontFamily: familias.serifDisplay,
+    fontWeight: tipografia.pesoBold,
+    color: N.texto,
+    textAlign: 'center',
+  },
+  subtituloPassagem: {
+    marginTop: espacamento.xs,
+    fontSize: tipografia.tamanhoCorpo,
+    fontFamily: familias.sans,
+    color: N.mudo,
+    textAlign: 'center',
   },
   acoesContainer: {
     flex: 1,
@@ -371,6 +464,12 @@ const estilos = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     backgroundColor: N.mudo,
+  },
+  textoConfirmado: {
+    marginTop: espacamento.md,
+    fontSize: tipografia.tamanhoCorpo,
+    fontFamily: familias.sans,
+    color: N.mudo,
   },
   // ── Encerrando noite (fundo claro — amanheceu) ─────────────────────────
   containerDia: {

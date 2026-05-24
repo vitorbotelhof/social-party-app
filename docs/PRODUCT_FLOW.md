@@ -1,430 +1,157 @@
-# ENTRE NÓS — PRODUCT FLOW
+# Entre Nós — Product Flow
 
-Entre Nós — Product Flow System
-1. Filosofia Central
+## Tese
 
-O fluxo do Entre Nós NÃO deve parecer:
+O fluxo do Entre Nós deve parecer um streaming de experiências sociais, não um launcher de jogos.
 
-menu de minigames
-catálogo de party games
-dashboard
-launcher de partidas
-sistema técnico
+O usuário chega com uma pergunta emocional:
 
-O fluxo deve parecer:
+"o que a gente quer viver agora?"
 
-energia social sendo organizada.
+E não:
 
-O usuário não entra no app pensando:
+"qual minigame vamos abrir?"
 
-“qual jogo vamos jogar?”
+## Macro Fluxo
 
-O usuário entra pensando:
+1. Abrir app.
+2. Ver jogo em destaque.
+3. Navegar por recentes, categorias e curadorias.
+4. Abrir descrição do jogo.
+5. Entender energia, grupo ideal e promessa.
+6. Tocar em jogar.
+7. Escolher modo: 1 celular, cada um no seu celular, entrar em sala.
+8. Configurar o mínimo necessário.
+9. Jogar.
+10. Ver resultado/aftermath.
+11. Receber sugestão de próxima energia.
 
-“qual vibe queremos viver hoje?”
+## Home
 
-2. O Produto NÃO É Match-Based
+A home tem três funções:
 
-O Entre Nós NÃO é estruturado em:
+- descoberta;
+- retomada;
+- curadoria.
 
-partidas isoladas.
+Ela deve conter:
 
-O produto é estruturado em:
+- marca;
+- entrada por código;
+- jogo em destaque rotativo;
+- descrição curta do destaque;
+- CTA claro;
+- jogados recentemente;
+- categorias principais;
+- fileiras horizontais;
+- filtros por "ver mais";
+- curadorias contextuais.
 
-sessões sociais completas.
+## Página De Descrição Do Jogo
 
-Uma sessão possui:
+Antes de escolher modo, o usuário deve entender:
 
-energia
-progressão emocional
-aquecimento
-colapso
-aftermath
-memória coletiva
+- qual é a promessa emocional;
+- como o jogo se sente;
+- para quantas pessoas funciona;
+- quanto tempo costuma durar;
+- por que vale jogar agora.
 
-Toda arquitetura de fluxo deve considerar:
-
-a noite inteira.
-3. Estrutura Global do Produto
+Essa tela não é tutorial. É venda emocional do jogo.
 
-Fluxo macro ideal:
+Boa descrição:
 
-Entrada
-↓
-Escolha da energia
-↓
-Configuração social
-↓
-Lobby vivo
-↓
-Sessão
-↓
-Escalada emocional
-↓
-Aftermath
-↓
-Dossiê do caos
-↓
-Compartilhamento
-4. Entrada do Produto
-
-A entrada do app deve ser:
-
-rápida
-leve
-social
-clara
-O usuário NÃO deve sentir:
-onboarding longo
-excesso de menus
-excesso de escolha
-setup técnico
-O usuário deve sentir:
-“vamos começar rápido”
-“isso parece fácil”
-“isso parece vivo”
-5. Home Screen Philosophy
-
-A home NÃO é:
-
-uma loja de jogos.
-
-A home É:
-
-um organizador de energia social.
-A home deve responder:
-
-“como está a energia do grupo?”
-
-E NÃO:
-
-“qual jogo você quer abrir?”
-
-6. Sistema de Vibes
-
-A principal organização do produto deve ser:
-
-por energia emocional.
-Exemplos de vibes
-Vibe	Objetivo
-Quebra-Gelo	iniciar interação
-Caos	gerar energia alta
-Paranoia	criar tensão social
-Intimidade	aprofundar conexão
-Date	vulnerabilidade leve
-After	energia pós-rolê
-Vergonha Alheia	julgamento divertido
-Destruição Psicológica	colapso coletivo
-7. Flow de Escolha
-
-Fluxo ideal:
-
-Qual a vibe?
-↓
-Quantas pessoas?
-↓
-Quão intenso?
-↓
-Sugestão de jogos
-↓
-Começar sessão
-8. Filosofia de Setup
-
-Setup deve ser:
-
-invisível.
-O usuário NÃO deve:
-configurar demais
-preencher muitas opções
-estudar regras
-navegar profundamente
-O usuário DEVE:
-tocar
-começar
-aprender jogando
-9. Lobby System
-
-O lobby NÃO deve parecer:
-
-sala técnica
-multiplayer backend
-waiting room fria
-O lobby deve parecer:
-energia se formando.
-O lobby deve:
-gerar expectativa
-criar clima
-aumentar participação
-facilitar entrada social
-O lobby NÃO deve:
-ficar parado
-parecer loading
-parecer vazio
-10. Onboarding Philosophy
-
-O onboarding ideal é:
-
-invisível.
-O usuário aprende:
-enquanto joga.
-O app NÃO deve:
-explicar demais
-mostrar tutorial longo
-interromper energia social
-O app DEVE:
-sugerir
-conduzir
-simplificar
-contextualizar
-11. Gameplay Philosophy
-
-Durante gameplay:
-
-a interface perde protagonismo.
-O foco principal deve ser:
-pessoas
-reações
-acusações
-hesitação
-improviso
-caos
-A UI deve:
-acelerar
-organizar
-amplificar
-
-Mas:
-
-nunca dominar.
-12. Pacing System
-
-Toda sessão deve seguir:
-
-uma curva emocional.
-Estrutura ideal
-Início
-
-leve
-rápido
-seguro
-
-Meio
-
-energia
-flow
-participação
-
-Depois
-
-caos
-pressão
-colapso
-
-Final
-
-aftermath
-memória
-alívio
-
-13. Multi-Game Session Philosophy
-
-O produto deve incentivar:
-
-continuidade entre jogos.
-O usuário NÃO deve sentir:
-“acabou a partida.”
-
-E sim:
-
-“vamos continuar.”
-“qual o próximo clima?”
-Idealmente:
-
-um jogo alimenta o próximo emocionalmente.
-
-Exemplo:
-
-Quebra-gelo
-↓
-Most Likely To
-↓
-Mr White
-↓
-Na Ponta da Língua
-↓
-Jogo íntimo
-14. Session Intelligence
-
-No futuro:
-o produto deve entender:
-
-energia do grupo
-intensidade atual
-fadiga social
-nível de caos
-abertura emocional
-E sugerir:
-próximos jogos
-intensidade ideal
-pacing correto
-mudanças de vibe
-15. Social Momentum
-
-O app deve:
-
-preservar momentum social.
-Evitar:
-loading
-menus profundos
-waits longos
-telas mortas
-confirmações excessivas
-Toda interação deve:
-continuar energia
-manter fluxo
-acelerar reação
-16. Game Switching
-
-Trocar de jogo deve parecer:
-
-continuidade emocional.
-
-E NÃO:
-
-trocar de aplicativo mentalmente.
-O sistema inteiro deve parecer:
-um único ecossistema social.
-17. Failure States
-
-O produto deve evitar:
-
-silêncio constrangedor longo
-setup travado
-espera técnica
-confusão
-regras difíceis
-excesso de texto
-Se houver confusão:
-
-o app deve:
-
-simplificar
-acelerar
-resumir
-recuperar energia rapidamente
-18. End of Session Philosophy
-
-O final da sessão é:
-
-extremamente importante.
-O usuário NÃO deve sair pensando:
-“acabou.”
-
-O usuário deve sair pensando:
-
-“essa noite foi absurda.”
-“precisamos jogar de novo.”
-“olha o que aconteceu.”
-19. Dossiê do Caos
-
-Ao final:
-o app gera:
-
-memória coletiva compartilhável.
-Exemplos:
-maior colapso
-mais julgado
-rodada mais absurda
-clutch da noite
-traidor oficial
-cérebro mais destruído
-Objetivos:
-replayability
-viralidade
-inside jokes
-compartilhamento
-retenção emocional
-20. Compartilhamento
-
-O compartilhamento ideal NÃO é:
-
-score.
-
-É:
-
-história social.
-O usuário deve querer compartilhar:
-caos
-traições
-julgamentos
-frases
-momentos absurdos
-21. Mobile Philosophy
-
-O celular:
-
-não é o centro da experiência.
-
-Ele é:
-
-mediador
-facilitador
-organizador
-provocador
-A experiência real acontece:
-nos olhares
-nas acusações
-nos gritos
-nas hesitações
-nas risadas
-22. Local-First Philosophy
-
-O produto é:
-
-presencial-first.
-
-Mesmo no multiplayer:
-o foco continua sendo:
-
-pessoas no mesmo ambiente físico.
-23. Replayability Philosophy
-
-Replayability vem de:
-
-comportamento humano imprevisível.
-
-E NÃO:
-
-grind
-reward loops artificiais
-progressão fake
-desbloqueáveis vazios
-24. Flow Anti-Patterns
+- curta;
+- concreta;
+- social;
+- orientada a reação;
+- sem regra excessiva.
+
+## Seleção De Modo
+
+Depois da descrição, o usuário escolhe:
+
+- 1 celular;
+- cada jogador no seu celular;
+- entrar em sala.
+
+Cada modo deve dizer pouco, mas o suficiente:
+
+- "rápido, celular passando na mão";
+- "cada um responde no seu";
+- "entrar com código".
+
+## Configuração
+
+Setup deve ser o menor possível.
+
+Configurar apenas:
+
+- jogadores;
+- categorias/modo quando isso muda bastante o jogo;
+- duração/rodadas quando necessário.
 
 Evitar:
 
-❌ excesso de setup
-❌ menus profundos
-❌ excesso de tutorial
-❌ fluxo técnico
-❌ waiting screens mortas
-❌ “host fazendo burocracia”
-❌ excesso de confirmação
-❌ excesso de configuração
+- excesso de toggles;
+- textos longos;
+- opções avançadas cedo;
+- pedir decisões que o usuário não entende ainda.
 
-25. Product Principle
+## Gameplay
 
-O produto NÃO entrega:
+Durante o jogo:
 
-jogos.
+- app conduz;
+- grupo reage;
+- celular aparece e desaparece;
+- estados privados são protegidos;
+- reveals são rápidos;
+- o fluxo deve tolerar barulho e distração.
 
-Ele entrega:
+## Encerrar Jogo No Meio
 
-noites memoráveis entre pessoas reais.
+Todo jogo deve permitir saída discreta com confirmação.
 
-Toda decisão de flow deve responder:
+Padrão:
 
-“isso melhora a energia social da sessão?”
+- botão de fechar discreto;
+- confirmação clara;
+- voltar à home/sessão;
+- não exigir fechar app;
+- não destruir sessão social inteira sem intenção.
 
-Se não:
-remover.
+## Pós-Jogo
+
+O pós-jogo deve:
+
+- mostrar resultado;
+- reforçar momento memorável;
+- sugerir continuidade;
+- alimentar SessionStore;
+- permitir escolher outro jogo rapidamente.
+
+O produto deve evitar sensação de "fim seco".
+
+## Descoberta Multicamada
+
+O catálogo deve ser organizado por:
+
+- categorias principais estáveis;
+- tags sociais flexíveis;
+- contextos dinâmicos;
+- curadorias editoriais;
+- recomendações baseadas em sessão.
+
+Ver também: `GAME_CATEGORY_PHILOSOPHY.md` e `GAME_METADATA_SYSTEM.md`.
+
+## Princípio De Pacing
+
+Tempo morto mata o produto.
+
+Toda tela precisa justificar:
+
+- por que aparece;
+- quanto tempo fica;
+- qual ação social provoca.
+

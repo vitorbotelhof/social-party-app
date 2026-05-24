@@ -31,6 +31,7 @@ const JOGO_POR_VIBE: Record<string, CategoriaEmocional> = {
   'na-ponta-da-lingua': 'festa_barulho',
   inquisicao: 'tensao_misterio',
   'faz-ai': 'festa_barulho',
+  alianca: 'tensao_misterio',
 };
 
 // ─── Pontuação de vibe ────────────────────────────────────────────────────────
@@ -118,6 +119,25 @@ function pontuarVibes(): Map<CategoriaEmocional, number> {
   if (identificacoesImediatas >= 2) {
     add('quem_voces_sao', identificacoesImediatas);
     add('festa_barulho', identificacoesImediatas);
+  }
+
+  // Aliança: política social, confiança quebrada e rejeição coletiva
+  const sabotagensAlianca = contarMomentos('missao_sabotada_alianca');
+  const confiancasAlianca = contarMomentos('confianca_restaurada_alianca');
+  const rejeicoesAlianca = contarMomentos('rejeicao_em_cadeia_alianca');
+
+  if (sabotagensAlianca >= 1) {
+    add('tensao_misterio', sabotagensAlianca * 3);
+    add('quem_voces_sao', sabotagensAlianca * 2);
+    add('revelacoes_caos', sabotagensAlianca);
+  }
+  if (confiancasAlianca >= 1) {
+    add('conversa_profunda', confiancasAlianca);
+    add('quem_voces_sao', confiancasAlianca);
+  }
+  if (rejeicoesAlianca >= 1) {
+    add('revelacoes_caos', rejeicoesAlianca * 2);
+    add('tensao_misterio', rejeicoesAlianca);
   }
 
   // Temperatura geral → revelacoes_caos

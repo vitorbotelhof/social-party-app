@@ -62,7 +62,11 @@ export type TipoMomento =
   | 'surto_faz_ai' // carta absurda/caótica acertada rápido
   | 'vergonha_coletiva' // sequência com alta exposição social
   | 'atuacao_duvidosa' // turno com muitos passes e pouco acerto
-  | 'identificacao_imediata'; // carta reconhecida em poucos segundos
+  | 'identificacao_imediata' // carta reconhecida em poucos segundos
+  // ── Aliança ────────────────────────────────────────────────────────────────
+  | 'missao_sabotada_alianca' // missão aprovada falhou sem revelar autoria
+  | 'confianca_restaurada_alianca' // equipe suspeita passou limpa
+  | 'rejeicao_em_cadeia_alianca'; // grupo recusou equipes em sequência
 
 export interface Momento {
   id: string;
@@ -133,6 +137,19 @@ export interface FazAiSessaoStats {
   categoriasFavoritas: string[];
 }
 
+export interface AliancaSessaoStats {
+  vencedor: 'leais' | 'traidores';
+  totalRodadas: number;
+  totalJogadores: number;
+  sucessosLeais: number;
+  sabotagensTraidores: number;
+  rejeicoesSeguidas: number;
+  totalRejeicoes: number;
+  missoesSabotadas: number;
+  liderMaisAprovadoId: PlayerId | null;
+  traidoresIds: PlayerId[];
+}
+
 export interface JogoSessao {
   jogoId: GameId;
   iniciadoEm: number;
@@ -145,6 +162,7 @@ export interface JogoSessao {
   inquisicao?: InquisicaoSessaoStats;
   vmc?: VMCSessaoStats;
   fazAi?: FazAiSessaoStats;
+  alianca?: AliancaSessaoStats;
 }
 
 // ─── Jogador na sessão ────────────────────────────────────────────────────────
@@ -183,6 +201,11 @@ export interface SessaoJogador {
   acertosFazAi: number; // cartas reconhecidas durante atuações
   passesFazAi: number; // cartas puladas ou perdidas no tempo
   turnosCaoticosFazAi: number; // turnos de alta energia/vergonha
+
+  // Aliança
+  liderancasAlianca: number; // liderou proposta de missão
+  missoesAlianca: number; // participou de missões aprovadas
+  vezesTraidorAlianca: number; // terminou revelado como traidor
 }
 
 // ─── Sessão ───────────────────────────────────────────────────────────────────

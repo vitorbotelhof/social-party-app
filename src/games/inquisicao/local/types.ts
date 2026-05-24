@@ -27,6 +27,12 @@ export type ModoLocal = 'leve' | 'padrao' | 'paranoia';
 /** Tipo de ação noturna. Proteger é exclusivo do guardião. */
 export type TipoAcaoLocal = 'eliminar' | 'contaminar' | 'proteger';
 
+export type TipoEventoSocialLocal =
+  | 'suspeita'
+  | 'pressao'
+  | 'caos'
+  | 'corrupcao_sugerida';
+
 // ─────────────────────────────────────────────────────────────────────────────
 // §2  FASES DO JOGO
 // ─────────────────────────────────────────────────────────────────────────────
@@ -40,8 +46,8 @@ export type TipoAcaoLocal = 'eliminar' | 'contaminar' | 'proteger';
  *     → chamando_votacao
  *     → resultado_votacao
  *     → aguardando_noite
- *     → noite_corrompidos        [4s — engine timer]
- *     → noite_guardioes          [4s — engine timer, sempre narrado]
+ *     → noite_corrompidos        [microfase manual — corrompido ativo age]
+ *     → noite_guardioes          [microfase manual — sempre narrada]
  *     → encerrando_noite
  *     → distribuindo_papeis (próximo loop)
  *     → finalizado
@@ -57,8 +63,8 @@ export type FaseLocal =
   | 'chamando_votacao' // host registra o eliminado após apontamento físico
   | 'resultado_votacao' // eliminação, empate ou ninguém caiu
   | 'aguardando_noite' // beat entre revelação e início da noite
-  | 'noite_corrompidos' // janela de 4s — corrompido ativo age
-  | 'noite_guardioes' // janela de 4s — guardião age (narrado mesmo sem guardião)
+  | 'noite_corrompidos' // microfase manual — corrompido ativo age
+  | 'noite_guardioes' // microfase manual — guardião age (narrado mesmo sem guardião)
   | 'encerrando_noite' // mensagem ambígua — host lê em voz alta
   | 'finalizado'; // vencedor determinado
 
@@ -84,9 +90,8 @@ export interface ConfiguracaoLocal {
   maxContaminacoes: number;
 
   /**
-   * Duração de cada janela de ação noturna em ms.
-   * Fixo em 4000ms. Engine controla — nunca o UI.
-   * Garantia de timing uniforme entre papéis.
+   * Referência editorial de duração para microfases noturnas.
+   * A UI pode usar para futuras animações, mas o avanço é manual.
    */
   duracaoJanelaNoiteMs: number;
 
@@ -120,6 +125,12 @@ export type ResultadoVotacaoLocal =
       tipo: 'empate' | 'sem_eliminacao';
       eliminado: null;
     };
+
+export interface EventoSocialLocal {
+  id: string;
+  tipo: TipoEventoSocialLocal;
+  texto: string;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // §4  ESTADO PÚBLICO (lido pelo UI sem restrição)
@@ -155,13 +166,16 @@ export interface EstadoLocalPublico {
 
   /**
    * Eliminado aguardando reveal explícito (votação).
-   * Presente apenas durante revelando_eliminacao.
+   * Presente apenas durante resultado_votacao com eliminação.
    * Eliminações noturnas NÃO passam por este campo — são silenciosas.
    */
   eliminadoPendente: EliminadoLocal | null;
 
   /** Resultado público da votação física deste loop. */
   resultadoVotacao: ResultadoVotacaoLocal | null;
+
+  /** Frase curta que provoca a conversa do dia. */
+  eventoDia: EventoSocialLocal | null;
 
   vencedor: 'corrompidos' | 'inocentes' | null;
   revelacaoFinal: RevelacaoFinalLocal | null;

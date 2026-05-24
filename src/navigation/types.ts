@@ -1,6 +1,10 @@
 import type { CategoriaIdNPL } from '@/games/na-ponta-da-lingua/types';
 import type { CategoriaFazAiId, IntensidadeSocial } from '@/games/faz-ai/types';
 import type {
+  ConfiguracaoAlianca,
+  JogadorAlianca,
+} from '@/games/alianca/local/types';
+import type {
   ConfiguracaoLocal,
   JogadorLocal,
 } from '@/games/inquisicao/local/types';
@@ -42,6 +46,11 @@ export type RootStackParamList = {
   };
   ConfiguracaoLocalVMC: undefined;
   ConfiguracaoLocalFazAi: undefined;
+  ConfiguracaoLocalAlianca: undefined;
+  JogoLocalAlianca: {
+    jogadores: JogadorAlianca[];
+    config: ConfiguracaoAlianca;
+  };
   JogoLocalVMC: {
     jogadores: JogadorVMC[];
     config: ConfiguracaoVMC;

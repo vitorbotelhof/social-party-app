@@ -15,10 +15,10 @@
  * Consultas pontuais   — UI chama getPapelAtribuido(id) e getAlvosDisponiveis()
  *                        apenas quando o celular está nas mãos daquele jogador.
  *
- * ── Ownership de timers ───────────────────────────────────────────────────
+ * ── Ownership de pacing ───────────────────────────────────────────────────
  *
- * Engine controla:  janelas noturnas (4s fixos — anti-timing-leak)
- * UI controla:      auto-avanço da distribuição (chama avancarDistribuicao())
+ * Engine controla:  validação e resolução das microfases noturnas
+ * UI controla:      passagem física do celular e confirmação curta das ações
  * Ninguém controla: fase de dia (host-driven, sem timer)
  *
  * ── Corrupção diferida ───────────────────────────────────────────────────
@@ -36,11 +36,12 @@
  *
  * ── Eliminação silenciosa vs. pública ───────────────────────────────────
  *
- * Votação:  revelando_eliminacao → papel revelado explicitamente.
+ * Votação:  resultado_votacao → eliminação, empate ou ninguém caiu.
  * Noite:    encerrando_noite → ausência descoberta na próxima distribuição.
  */
 
 import { sortearMensagemNoite } from './mensagens';
+import { sortearEventoDia } from './socialEvents';
 import type {
   PlayerId,
   PapelLocal,
@@ -92,6 +93,9 @@ interface EstadoPrivadoEngine {
 
   /** Última mensagem pós-noite — para anti-repetição. */
   ultimaMensagemNoite: string | null;
+
+  /** Último evento social exibido no dia — anti-repetição. */
+  ultimoEventoDiaId: string | null;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -114,7 +118,6 @@ export class InquisicaoLocalEngine {
   private readonly _config: ConfiguracaoLocal;
   private _priv: EstadoPrivadoEngine;
   private _estado: EstadoLocalPublico;
-  private _timerNoite: ReturnType<typeof setTimeout> | null = null;
   private readonly _onMudanca: (estado: EstadoLocalPublico) => void;
   private readonly _callbacks: EngineCallbacks;
 
@@ -177,6 +180,7 @@ export class InquisicaoLocalEngine {
       acoesNoturnas: [],
       atorNoite,
       ultimaMensagemNoite: null,
+      ultimoEventoDiaId: null,
     };
 
     this._estado = {
@@ -188,6 +192,7 @@ export class InquisicaoLocalEngine {
       mensagemNoite: null,
       eliminadoPendente: null,
       resultadoVotacao: null,
+      eventoDia: null,
       vencedor: null,
       revelacaoFinal: null,
       configuracao: config,
@@ -208,7 +213,11 @@ export class InquisicaoLocalEngine {
     const proximo = dist.indiceAtual + 1;
 
     if (proximo >= dist.jogadoresOrdem.length) {
-      this._emit({ fase: 'dia', distribuicao: null });
+      this._emit({
+        fase: 'dia',
+        distribuicao: null,
+        eventoDia: this._sortearEventoDia(this._estado.loop),
+      });
     } else {
       this._emit({ distribuicao: { ...dist, indiceAtual: proximo } });
     }
@@ -259,6 +268,7 @@ export class InquisicaoLocalEngine {
       eliminados: [...this._estado.eliminados, eliminado],
       eliminadoPendente: eliminado,
       resultadoVotacao: { tipo: 'eliminacao', eliminado },
+      eventoDia: null,
     });
   }
 
@@ -270,6 +280,7 @@ export class InquisicaoLocalEngine {
       fase: 'resultado_votacao',
       eliminadoPendente: null,
       resultadoVotacao: { tipo: 'empate', eliminado: null },
+      eventoDia: null,
     });
   }
 
@@ -281,6 +292,7 @@ export class InquisicaoLocalEngine {
       fase: 'resultado_votacao',
       eliminadoPendente: null,
       resultadoVotacao: { tipo: 'sem_eliminacao', eliminado: null },
+      eventoDia: null,
     });
   }
 
@@ -303,13 +315,14 @@ export class InquisicaoLocalEngine {
       fase: 'aguardando_noite',
       eliminadoPendente: null,
       resultadoVotacao: null,
+      eventoDia: null,
     });
   }
 
   /**
    * Host inicia a noite após todos estarem com cabeças baixas.
-   * Engine toma controle do timing — janelas de 4s cada, sem possibilidade
-   * de o host ou UI acelerar. Garante timing uniforme entre papéis.
+   * A UI conduz cada microfase por confirmação manual curta para não punir
+   * o tempo real de passar o celular entre jogadores.
    */
   iniciarNoite(): void {
     if (this._estado.fase !== 'aguardando_noite') return;
@@ -321,15 +334,10 @@ export class InquisicaoLocalEngine {
     this._priv.atorNoite = this._escolherAtorNoite();
 
     this._emit({ fase: 'noite_corrompidos' });
-
-    this._timerNoite = setTimeout(
-      () => this._avancarParaGuardioes(),
-      this._config.duracaoJanelaNoiteMs,
-    );
   }
 
   /**
-   * Jogador ativo registra sua ação dentro da janela noturna.
+   * Jogador ativo registra sua ação na microfase noturna.
    * Se o mesmo agente já registrou ação (mudou de ideia), substitui.
    * Engine valida que a fase está correta antes de aceitar.
    */
@@ -353,6 +361,22 @@ export class InquisicaoLocalEngine {
   }
 
   /**
+   * Confirma a microfase noturna atual.
+   * noite_corrompidos → noite_guardioes
+   * noite_guardioes   → resolução da noite
+   */
+  confirmarFaseNoite(): void {
+    if (this._estado.fase === 'noite_corrompidos') {
+      this._avancarParaGuardioes();
+      return;
+    }
+
+    if (this._estado.fase === 'noite_guardioes') {
+      this._resolverNoite();
+    }
+  }
+
+  /**
    * Host confirma após ler a mensagem em voz alta.
    * Inicia novo loop: aplica contaminação pendente, distribui papéis.
    */
@@ -361,14 +385,9 @@ export class InquisicaoLocalEngine {
     this._iniciarNovoLoop();
   }
 
-  /**
-   * Libera timers. Chamar no cleanup do componente (useEffect return).
-   */
+  /** Mantido como API de cleanup do componente. Engine local não retém timers. */
   destroy(): void {
-    if (this._timerNoite !== null) {
-      clearTimeout(this._timerNoite);
-      this._timerNoite = null;
-    }
+    // Sem recursos persistentes para liberar no modo local atual.
   }
 
   // ── API de consulta — UI chama apenas com o celular nas mãos corretas ────
@@ -480,18 +499,12 @@ export class InquisicaoLocalEngine {
   // ── Internals — fluxo noturno ─────────────────────────────────────────────
 
   /**
-   * Fim da janela dos corrompidos.
+   * Fim da microfase dos corrompidos.
    * Narra guardiões — sempre, mesmo em modo Leve — criando ambiguidade
    * sobre se existem guardiões na sessão.
    */
   private _avancarParaGuardioes(): void {
-    this._limparTimerNoite();
     this._emit({ fase: 'noite_guardioes' });
-
-    this._timerNoite = setTimeout(
-      () => this._resolverNoite(),
-      this._config.duracaoJanelaNoiteMs,
-    );
   }
 
   /**
@@ -506,8 +519,6 @@ export class InquisicaoLocalEngine {
    * no próximo loop. A ausência é o anúncio.
    */
   private _resolverNoite(): void {
-    this._limparTimerNoite();
-
     const acaoGuardiao = this._priv.acoesNoturnas.find(
       (a) => a.tipo === 'proteger',
     );
@@ -604,6 +615,7 @@ export class InquisicaoLocalEngine {
       eliminados: novosEliminados,
       mensagemNoite: mensagem,
       fase: 'encerrando_noite',
+      eventoDia: null,
     });
   }
 
@@ -636,6 +648,7 @@ export class InquisicaoLocalEngine {
       distribuicao: this._novaDistribuicao(ativos),
       eliminadoPendente: null,
       resultadoVotacao: null,
+      eventoDia: null,
     });
   }
 
@@ -813,6 +826,22 @@ export class InquisicaoLocalEngine {
     return { papeisPorJogador, totalLoops: this._estado.loop };
   }
 
+  private _sortearEventoDia(
+    loop: number,
+    resultadoVotacaoAnterior: ResultadoVotacaoLocal['tipo'] = this
+      ._resultadoVotacaoLoop,
+  ) {
+    const evento = sortearEventoDia({
+      loop,
+      modo: this._config.modo,
+      resultadoVotacaoAnterior,
+      ultimoEventoId: this._priv.ultimoEventoDiaId,
+    });
+
+    if (evento) this._priv.ultimoEventoDiaId = evento.id;
+    return evento;
+  }
+
   private _encerrarJogo(
     vencedor: 'corrompidos' | 'inocentes',
     extra: Partial<EstadoLocalPublico> = {},
@@ -852,13 +881,6 @@ export class InquisicaoLocalEngine {
 
   private _novaDistribuicao(ativos: PlayerId[]): EstadoDistribuicao {
     return { indiceAtual: 0, jogadoresOrdem: [...ativos] };
-  }
-
-  private _limparTimerNoite(): void {
-    if (this._timerNoite !== null) {
-      clearTimeout(this._timerNoite);
-      this._timerNoite = null;
-    }
   }
 
   private _emit(parcial: Partial<EstadoLocalPublico>): void {

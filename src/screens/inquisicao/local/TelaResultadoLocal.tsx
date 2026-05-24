@@ -6,6 +6,7 @@
  *   - N loops jogados (contexto mínimo)
  *   - Lista de todos os jogadores com papel final
  *   - Conversão marcada para jogadores contaminados
+ *   - Dossiê curto da partida
  *   - Botão "nova partida" — retorna imediatamente
  */
 
@@ -20,7 +21,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import type { EstadoLocalPublico, JogadorLocal } from '@/games/inquisicao/local/types';
+import type {
+  EstadoLocalPublico,
+  JogadorLocal,
+} from '@/games/inquisicao/local/types';
 import { cores, espacamento, familias, tipografia } from '@/theme/colors';
 
 const COR_CORROMPIDO = '#FF5A5F';
@@ -41,13 +45,31 @@ interface Props {
   onVerRelatorio?: () => void;
 }
 
-export function TelaResultadoLocal({ estado, jogadores, onVoltar, onVerRelatorio }: Props) {
+export function TelaResultadoLocal({
+  estado,
+  jogadores,
+  onVoltar,
+  onVerRelatorio,
+}: Props) {
   const revelacao = estado.revelacaoFinal;
   const vencedor = estado.vencedor;
   const totalLoops = revelacao?.totalLoops ?? estado.loop;
 
-  const corVencedor = vencedor === 'corrompidos' ? COR_CORROMPIDO : COR_INOCENTE;
-  const textoVencedor = vencedor === 'corrompidos' ? 'corrompidos.' : 'inocentes.';
+  const corVencedor =
+    vencedor === 'corrompidos' ? COR_CORROMPIDO : COR_INOCENTE;
+  const textoVencedor =
+    vencedor === 'corrompidos' ? 'corrompidos.' : 'inocentes.';
+  const totalContaminados = revelacao
+    ? Object.values(revelacao.papeisPorJogador).filter(
+        (p) => p.convertidoNoLoop !== null,
+      ).length
+    : 0;
+  const eliminadosPorVotacao = estado.eliminados.filter(
+    (e) => e.origem === 'votacao',
+  ).length;
+  const eliminadosNaNoite = estado.eliminados.filter(
+    (e) => e.origem === 'noite',
+  ).length;
 
   const opacidade = useRef(new Animated.Value(0)).current;
 
@@ -62,7 +84,6 @@ export function TelaResultadoLocal({ estado, jogadores, onVoltar, onVerRelatorio
   return (
     <Animated.View style={[estilos.flex1, { opacity: opacidade }]}>
       <SafeAreaView style={estilos.container}>
-
         {/* Vencedor */}
         <View style={estilos.cabecalho}>
           <Text style={[estilos.textoVencedor, { color: corVencedor }]}>
@@ -79,6 +100,15 @@ export function TelaResultadoLocal({ estado, jogadores, onVoltar, onVerRelatorio
           contentContainerStyle={estilos.listaConteudo}
           showsVerticalScrollIndicator={false}
         >
+          <View style={estilos.dossie}>
+            <Text style={estilos.dossieTitulo}>o que aconteceu</Text>
+            <View style={estilos.dossieGrid}>
+              <DadoDossie label="contaminações" valor={totalContaminados} />
+              <DadoDossie label="votação" valor={eliminadosPorVotacao} />
+              <DadoDossie label="noite" valor={eliminadosNaNoite} />
+            </View>
+          </View>
+
           {jogadores.map((jogador, index) => {
             const dados = revelacao?.papeisPorJogador[jogador.id];
             const papelFinal = dados?.papelFinal;
@@ -95,7 +125,12 @@ export function TelaResultadoLocal({ estado, jogadores, onVoltar, onVerRelatorio
                   <Text style={estilos.nomeJogador}>{jogador.nome}</Text>
 
                   {papelFinal && (
-                    <Text style={[estilos.papelJogador, { color: corDoPapel(papelFinal) }]}>
+                    <Text
+                      style={[
+                        estilos.papelJogador,
+                        { color: corDoPapel(papelFinal) },
+                      ]}
+                    >
                       {papelFinal}
                     </Text>
                   )}
@@ -106,7 +141,9 @@ export function TelaResultadoLocal({ estado, jogadores, onVoltar, onVerRelatorio
                     </Text>
                   )}
                 </View>
-                {index < jogadores.length - 1 && <View style={estilos.divisor} />}
+                {index < jogadores.length - 1 && (
+                  <View style={estilos.divisor} />
+                )}
               </View>
             );
           })}
@@ -129,13 +166,23 @@ export function TelaResultadoLocal({ estado, jogadores, onVoltar, onVerRelatorio
               onPress={onVerRelatorio}
               activeOpacity={0.7}
             >
-              <Text style={estilos.textoBotaoPlaytest}>ver relatório de playtest</Text>
+              <Text style={estilos.textoBotaoPlaytest}>
+                ver relatório de playtest
+              </Text>
             </TouchableOpacity>
           )}
         </View>
-
       </SafeAreaView>
     </Animated.View>
+  );
+}
+
+function DadoDossie({ label, valor }: { label: string; valor: number }) {
+  return (
+    <View style={estilos.dossieItem}>
+      <Text style={estilos.dossieValor}>{valor}</Text>
+      <Text style={estilos.dossieLabel}>{label}</Text>
+    </View>
   );
 }
 
@@ -168,6 +215,42 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacamento.lg,
     paddingTop: espacamento.md,
     paddingBottom: espacamento.lg,
+  },
+  dossie: {
+    paddingBottom: espacamento.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: cores.borda,
+    marginBottom: espacamento.sm,
+  },
+  dossieTitulo: {
+    fontSize: 12,
+    fontFamily: familias.sans,
+    color: cores.textoMudo,
+    marginBottom: espacamento.sm,
+  },
+  dossieGrid: {
+    flexDirection: 'row',
+    gap: espacamento.sm,
+  },
+  dossieItem: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: cores.borda,
+    borderRadius: 8,
+    paddingVertical: espacamento.sm,
+    paddingHorizontal: espacamento.sm,
+    backgroundColor: cores.superficie,
+  },
+  dossieValor: {
+    fontSize: tipografia.tamanhoSubtituloGrande,
+    fontFamily: familias.serifDisplay,
+    color: cores.texto,
+  },
+  dossieLabel: {
+    fontSize: 11,
+    fontFamily: familias.sans,
+    color: cores.textoMudo,
+    marginTop: 2,
   },
   linhaJogador: {
     paddingVertical: espacamento.md,

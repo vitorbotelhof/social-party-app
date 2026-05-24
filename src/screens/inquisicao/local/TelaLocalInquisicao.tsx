@@ -231,6 +231,9 @@ function TelaDiaInline({
       {/* Cabeçalho mínimo — loop number only */}
       <View style={estilosDia.cabecalho}>
         <Text style={estilosDia.labelLoop}>loop {estado.loop}</Text>
+        {estado.eventoDia && (
+          <Text style={estilosDia.eventoDia}>{estado.eventoDia.texto}</Text>
+        )}
       </View>
 
       {/* Lista de jogadores vivos — referência visual para o apontamento físico */}
@@ -297,7 +300,7 @@ function TelaRegistrarVoto({
               {mapaNomes.get(id) ?? id}
             </Text>
           </TouchableOpacity>
-          )}
+        )}
       />
 
       <View style={estilosVoto.rodape}>
@@ -346,7 +349,8 @@ function TelaResultadoVotacaoInline({
   mapaNomes: Map<PlayerId, string>;
 }) {
   const resultado = estado.resultadoVotacao;
-  const eliminado = resultado?.tipo === 'eliminacao' ? resultado.eliminado : null;
+  const eliminado =
+    resultado?.tipo === 'eliminacao' ? resultado.eliminado : null;
   const [revelarPapelPadrao, setRevelarPapelPadrao] = useState(
     estado.configuracao.modo === 'leve',
   );
@@ -367,17 +371,17 @@ function TelaResultadoVotacaoInline({
   const deveRevelarPapel =
     eliminado !== null &&
     (estado.configuracao.modo === 'leve' ||
-    (estado.configuracao.modo === 'padrao' && revelarPapelPadrao);
+      (estado.configuracao.modo === 'padrao' && revelarPapelPadrao));
   const textoRevelacao =
     eliminado === null
       ? resultado.tipo === 'empate'
         ? 'o grupo rachou.'
         : 'a dúvida venceu.'
       : deveRevelarPapel
-    ? `${eliminado.papel}.`
-    : estado.configuracao.modo === 'paranoia'
-      ? 'saiu.'
-      : 'ninguém sabe ainda.';
+        ? `${eliminado.papel}.`
+        : estado.configuracao.modo === 'paranoia'
+          ? 'saiu.'
+          : 'ninguém sabe ainda.';
 
   return (
     <SafeAreaView style={estilosRevelacao.container}>
@@ -454,6 +458,13 @@ const estilosDia = StyleSheet.create({
     fontFamily: familias.sans,
     color: cores.textoMudo,
   },
+  eventoDia: {
+    fontSize: tipografia.tamanhoTitulo,
+    fontFamily: familias.serifDisplay,
+    color: cores.texto,
+    marginTop: espacamento.lg,
+    letterSpacing: tipografia.spacingTitulo,
+  },
   lista: {
     flex: 1,
   },
@@ -498,6 +509,17 @@ const estilosVoto = StyleSheet.create({
     flex: 1,
     backgroundColor: cores.fundo,
   },
+  cabecalho: {
+    paddingHorizontal: espacamento.lg,
+    paddingTop: espacamento.lg,
+    paddingBottom: espacamento.sm,
+  },
+  titulo: {
+    fontSize: tipografia.tamanhoTitulo,
+    fontFamily: familias.serifDisplay,
+    color: cores.texto,
+    letterSpacing: tipografia.spacingTitulo,
+  },
   lista: {
     flex: 1,
   },
@@ -516,6 +538,27 @@ const estilosVoto = StyleSheet.create({
     fontFamily: familias.sans,
     fontWeight: '500',
     color: cores.texto,
+  },
+  rodape: {
+    paddingHorizontal: espacamento.lg,
+    paddingBottom: espacamento.xl,
+    paddingTop: espacamento.md,
+    gap: espacamento.sm,
+  },
+  botaoSecundario: {
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: cores.borda,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: cores.superficie,
+  },
+  textoBotaoSecundario: {
+    fontSize: tipografia.tamanhoCorpo,
+    fontFamily: familias.sans,
+    fontWeight: tipografia.pesoBold,
+    color: cores.textoSecundario,
   },
 });
 

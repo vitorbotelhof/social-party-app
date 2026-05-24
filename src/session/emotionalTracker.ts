@@ -66,6 +66,10 @@ const PESO_MOMENTOS_CAOS: Partial<Record<TipoMomento, number>> = {
   vergonha_coletiva: 1,
   atuacao_duvidosa: 1,
   identificacao_imediata: 1,
+  // Aliança
+  missao_sabotada_alianca: 2,
+  rejeicao_em_cadeia_alianca: 1,
+  confianca_restaurada_alianca: 1,
 };
 
 // ─── Cálculo de peso total ────────────────────────────────────────────────────

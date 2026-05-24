@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import type { RootStackParamList } from '@/navigation/types';
 import { TelaInquisicao } from '@/screens/inquisicao/TelaInquisicao';
+import { TelaConfiguracaoLocalAlianca } from '@/screens/alianca/local/TelaConfiguracaoLocalAlianca';
+import { TelaLocalAlianca } from '@/screens/alianca/local/TelaLocalAlianca';
 import { TelaConfiguracaoLocalInquisicao } from '@/screens/inquisicao/local/TelaConfiguracaoLocalInquisicao';
 import { TelaLocalInquisicao } from '@/screens/inquisicao/local/TelaLocalInquisicao';
 import { TelaConfiguracaoLocalVMC } from '@/screens/voce-me-conhece/local/TelaConfiguracaoLocalVMC';
@@ -109,6 +111,20 @@ function JogoLocalInquisicaoScreen({
   const { jogadores, config } = route.params;
   return (
     <TelaLocalInquisicao
+      jogadores={jogadores}
+      config={config}
+      onVoltar={() => navigation.navigate('Inicio')}
+    />
+  );
+}
+
+function JogoLocalAliancaScreen({
+  route,
+  navigation,
+}: NativeStackScreenProps<RootStackParamList, 'JogoLocalAlianca'>) {
+  const { jogadores, config } = route.params;
+  return (
+    <TelaLocalAlianca
       jogadores={jogadores}
       config={config}
       onVoltar={() => navigation.navigate('Inicio')}
@@ -248,6 +264,11 @@ export function RootNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
+        name="ConfiguracaoLocalAlianca"
+        component={TelaConfiguracaoLocalAlianca}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="JogoLocalVMC"
         component={JogoLocalVMCScreen}
         options={{
@@ -277,6 +298,15 @@ export function RootNavigator() {
       <Stack.Screen
         name="JogoLocalFazAi"
         component={TelaJogoLocalFazAi}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
+      />
+      <Stack.Screen
+        name="JogoLocalAlianca"
+        component={JogoLocalAliancaScreen}
         options={{
           headerShown: false,
           animation: 'fade_from_bottom',

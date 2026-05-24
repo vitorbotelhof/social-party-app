@@ -59,6 +59,9 @@ export function iniciarSessao(
     acertosFazAi: 0,
     passesFazAi: 0,
     turnosCaoticosFazAi: 0,
+    liderancasAlianca: 0,
+    missoesAlianca: 0,
+    vezesTraidorAlianca: 0,
   }));
 
   sessaoAtual = {
