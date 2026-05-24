@@ -14,7 +14,6 @@ import type {
   ResultadoFazAiFinalizado,
   ResultadoTurnoFazAi,
 } from '@/games/faz-ai/types';
-import { embaralhar } from '@/utils/random';
 
 type FazAiState = GameState<FazAiPublicState, FazAiPrivateState>;
 
@@ -170,7 +169,7 @@ class FazAiEngine extends GameEngine<
     opcoes?: unknown,
   ): FazAiState {
     const config = normalizarOpcoes(opcoes);
-    const ordemJogadores = embaralhar(jogadores.map((j) => j.id));
+    const ordemJogadores = jogadores.map((j) => j.id);
     const totalTurnos = ordemJogadores.length * config.rodadasPorJogador;
     const agora = Date.now();
 

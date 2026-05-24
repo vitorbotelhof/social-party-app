@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BotaoEncerrarJogo } from '@/components';
 import { FeedbackSessao } from '@/components/FeedbackSessao';
 import { selecionarCartaInteligente } from '@/games/na-ponta-da-lingua/cardSelection';
 import {
@@ -26,14 +27,22 @@ import {
   tocarRoubo,
 } from '@/games/na-ponta-da-lingua/audioEngine';
 import { calcularIntensidade } from '@/games/na-ponta-da-lingua/types';
-import type { Carta, DificuldadeNPL, HistoricoTurnoItem, IntensidadeVisual } from '@/games/na-ponta-da-lingua/types';
+import type {
+  Carta,
+  DificuldadeNPL,
+  HistoricoTurnoItem,
+  IntensidadeVisual,
+} from '@/games/na-ponta-da-lingua/types';
 import type { RootStackParamList } from '@/navigation/types';
 import { processarResultadoNPL } from '@/session/nplAdapter';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 const SCREEN_W = Dimensions.get('window').width;
 
-type Props = NativeStackScreenProps<RootStackParamList, 'JogoLocalNaPontaDaLingua'>;
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'JogoLocalNaPontaDaLingua'
+>;
 type Fase = 'preparo' | 'jogando' | 'roubo' | 'resumo_turno' | 'entre' | 'fim';
 
 interface TimesConfig {
@@ -61,53 +70,61 @@ interface TurnoSessao {
   intensidadeFinal: IntensidadeVisual;
 }
 
-interface Jogador { id: string; nome: string }
+interface Jogador {
+  id: string;
+  nome: string;
+}
 
 // ─── Paleta de intensidade ────────────────────────────────────────────────────
 
 const COR_TIMER: Record<IntensidadeVisual, string> = {
-  calmo:   '#C9893A',
+  calmo: '#C9893A',
   pressao: '#D4633A',
-  panico:  '#E86A5A',
+  panico: '#E86A5A',
   colapso: '#FF4040',
 };
 
 const OPACIDADE_VIGNETTE: Record<IntensidadeVisual, number> = {
-  calmo:   0,
+  calmo: 0,
   pressao: 0.18,
-  panico:  0.42,
+  panico: 0.42,
   colapso: 0.62,
 };
 
 const COR_BORDA_PROIBIDA: Record<IntensidadeVisual, string> = {
-  calmo:   'transparent',
+  calmo: 'transparent',
   pressao: 'rgba(201,137,58,0.35)',
-  panico:  'rgba(232,106,90,0.6)',
+  panico: 'rgba(232,106,90,0.6)',
   colapso: 'rgba(255,64,64,0.85)',
 };
 
 const BG_PROIBIDA: Record<IntensidadeVisual, string> = {
-  calmo:   'transparent',
+  calmo: 'transparent',
   pressao: 'rgba(201,137,58,0.04)',
-  panico:  'rgba(232,106,90,0.08)',
+  panico: 'rgba(232,106,90,0.08)',
   colapso: 'rgba(255,64,64,0.12)',
 };
 
 // ─── Utilitários ──────────────────────────────────────────────────────────────
 
-
 function escolher<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]!;
 }
 
-function gerarMomentoDaSessao(historico: TurnoSessao[], jogadores: Jogador[]): string | null {
+function gerarMomentoDaSessao(
+  historico: TurnoSessao[],
+  jogadores: Jogador[],
+): string | null {
   if (historico.length < 3) return null;
 
   // momento impossível: streak >= 3 em colapso
-  const impossivel = historico.find((t) => t.intensidadeFinal === 'colapso' && t.melhorStreak >= 3);
+  const impossivel = historico.find(
+    (t) => t.intensidadeFinal === 'colapso' && t.melhorStreak >= 3,
+  );
   if (impossivel) {
     const j = jogadores.find((p) => p.id === impossivel.jogadorId);
-    if (j) return `${j.nome} fez ${impossivel.melhorStreak} seguidas em colapso. o grupo não vai esquecer.`;
+    if (j)
+      return `${j.nome} fez ${impossivel.melhorStreak} seguidas em colapso. o grupo não vai esquecer.`;
   }
 
   // rodada mais caótica
@@ -115,7 +132,10 @@ function gerarMomentoDaSessao(historico: TurnoSessao[], jogadores: Jogador[]): s
   let maisCaros: TurnoSessao | null = null;
   for (const t of historico) {
     const tot = t.acertos + t.passados;
-    if (tot > maxTotal) { maxTotal = tot; maisCaros = t; }
+    if (tot > maxTotal) {
+      maxTotal = tot;
+      maisCaros = t;
+    }
   }
   if (maisCaros && maxTotal >= 8) {
     const j = jogadores.find((p) => p.id === maisCaros!.jogadorId);
@@ -124,17 +144,24 @@ function gerarMomentoDaSessao(historico: TurnoSessao[], jogadores: Jogador[]): s
 
   // virada após zeros consecutivos
   for (let i = 1; i < historico.length; i++) {
-    if ((historico[i - 1]?.acertos ?? 1) === 0 && (historico[i]?.acertos ?? 0) >= 4) {
+    if (
+      (historico[i - 1]?.acertos ?? 1) === 0 &&
+      (historico[i]?.acertos ?? 0) >= 4
+    ) {
       const j = jogadores.find((p) => p.id === historico[i]!.jogadorId);
-      if (j) return `${j.nome} acertou ${historico[i]!.acertos} após rodada zerada. virada.`;
+      if (j)
+        return `${j.nome} acertou ${historico[i]!.acertos} após rodada zerada. virada.`;
     }
   }
 
   // colapso com zero
-  const colapsoZero = historico.find((t) => t.intensidadeFinal === 'colapso' && t.acertos === 0);
+  const colapsoZero = historico.find(
+    (t) => t.intensidadeFinal === 'colapso' && t.acertos === 0,
+  );
   if (colapsoZero) {
     const j = jogadores.find((p) => p.id === colapsoZero.jogadorId);
-    if (j) return `${j.nome} não acertou nenhuma em colapso. o timer ganhou essa.`;
+    if (j)
+      return `${j.nome} não acertou nenhuma em colapso. o timer ganhou essa.`;
   }
 
   return null;
@@ -156,131 +183,182 @@ function gerarComentarioTurno(
   const isTvT = modoJogo === 'time_vs_time';
   const sessFinal = progressaoSessao > 0.75;
 
-  if (total === 0) return escolher([
-    'nenhuma palavra tentada.',
-    'o timer passou em silêncio.',
-    sessFinal ? 'paralisia nas últimas rodadas. o timer venceu.' : 'paralisia total. acontece.',
-  ]);
+  if (total === 0)
+    return escolher([
+      'nenhuma palavra tentada.',
+      'o timer passou em silêncio.',
+      sessFinal
+        ? 'paralisia nas últimas rodadas. o timer venceu.'
+        : 'paralisia total. acontece.',
+    ]);
 
-  if (acertos === 0) return escolher([
-    'bloqueou em tudo. as proibidas sabem o que fazem.',
-    sessFinal ? 'zero acertos. nas últimas rodadas, isso pesa.' : 'zero acertos. a pressão cobrou.',
-    isTvT ? 'o adversário não perdoa isso.' : 'as proibidas venceram essa rodada.',
-    coletivo ? 'o grupo ficou em silêncio.' : 'bloqueio total.',
-  ]);
+  if (acertos === 0)
+    return escolher([
+      'bloqueou em tudo. as proibidas sabem o que fazem.',
+      sessFinal
+        ? 'zero acertos. nas últimas rodadas, isso pesa.'
+        : 'zero acertos. a pressão cobrou.',
+      isTvT
+        ? 'o adversário não perdoa isso.'
+        : 'as proibidas venceram essa rodada.',
+      coletivo ? 'o grupo ficou em silêncio.' : 'bloqueio total.',
+    ]);
 
   // sequência coletiva em andamento
-  if (streakColetivo >= 5) return escolher([
-    `${streakColetivo} rodadas seguidas. o grupo é perigoso.`,
-    'esse nível de ritmo é raro.',
-    coletivo ? `${streakColetivo} seguidas. o grupo está em outro patamar.` : `${streakColetivo} rodadas acertando. o ritmo tomou conta.`,
-  ]);
-  if (streakColetivo >= 3 && acertos > 0) return escolher([
-    `${streakColetivo} rodadas no ritmo. o grupo não para.`,
-    coletivo ? 'o grupo entrou em flow. isso é real.' : `${streakColetivo} seguidas acertando.`,
-    'encadeou. a dinâmica mudou.',
-  ]);
-  if (streakColetivo >= 2 && acertos > 0) return escolher([
-    'segunda rodada acertando. o ritmo começa.',
-    coletivo ? 'o grupo respondeu de novo. algo aconteceu.' : 'segunda seguida. não é coincidência.',
-  ]);
+  if (streakColetivo >= 5)
+    return escolher([
+      `${streakColetivo} rodadas seguidas. o grupo é perigoso.`,
+      'esse nível de ritmo é raro.',
+      coletivo
+        ? `${streakColetivo} seguidas. o grupo está em outro patamar.`
+        : `${streakColetivo} rodadas acertando. o ritmo tomou conta.`,
+    ]);
+  if (streakColetivo >= 3 && acertos > 0)
+    return escolher([
+      `${streakColetivo} rodadas no ritmo. o grupo não para.`,
+      coletivo
+        ? 'o grupo entrou em flow. isso é real.'
+        : `${streakColetivo} seguidas acertando.`,
+      'encadeou. a dinâmica mudou.',
+    ]);
+  if (streakColetivo >= 2 && acertos > 0)
+    return escolher([
+      'segunda rodada acertando. o ritmo começa.',
+      coletivo
+        ? 'o grupo respondeu de novo. algo aconteceu.'
+        : 'segunda seguida. não é coincidência.',
+    ]);
 
   // streak individual forte
-  if (melhorStreak >= 5) return escolher([
-    `${melhorStreak} seguidas sem parar. isso é pressão real.`,
-    `sequência de ${melhorStreak}. o timer quase não importou.`,
-    `${melhorStreak} consecutivas. o grupo não sabia o que estava vindo.`,
-  ]);
-  if (melhorStreak >= 3) return escolher([
-    `${melhorStreak} seguidas. bom ritmo.`,
-    `sequência de ${melhorStreak}. ${coletivo ? 'o grupo respondeu.' : 'limpo.'}`,
-  ]);
+  if (melhorStreak >= 5)
+    return escolher([
+      `${melhorStreak} seguidas sem parar. isso é pressão real.`,
+      `sequência de ${melhorStreak}. o timer quase não importou.`,
+      `${melhorStreak} consecutivas. o grupo não sabia o que estava vindo.`,
+    ]);
+  if (melhorStreak >= 3)
+    return escolher([
+      `${melhorStreak} seguidas. bom ritmo.`,
+      `sequência de ${melhorStreak}. ${coletivo ? 'o grupo respondeu.' : 'limpo.'}`,
+    ]);
 
   // clutch
-  if (intensidadeFinal === 'colapso' && acertos > 0) return escolher([
-    'acertou no caos. isso tem valor.',
-    'sobreviveu ao colapso. o grupo não esperava.',
-    'o timer quase ganhou. quase.',
-    coletivo ? 'o grupo respondeu quando o relógio já gritava.' : 'no limite. funcionou.',
-  ]);
+  if (intensidadeFinal === 'colapso' && acertos > 0)
+    return escolher([
+      'acertou no caos. isso tem valor.',
+      'sobreviveu ao colapso. o grupo não esperava.',
+      'o timer quase ganhou. quase.',
+      coletivo
+        ? 'o grupo respondeu quando o relógio já gritava.'
+        : 'no limite. funcionou.',
+    ]);
 
   // callbacks de sessão — memória editorial
   if (ultimoTurno) {
-    if (ultimoTurno.acertos === 0 && acertos >= 3) return escolher([
-      'redenção. o grupo não esperava.',
-      `zerou antes. ${acertos} agora. a virada foi real.`,
-      'o turno anterior assombrou. esse limpou.',
-    ]);
-    if (ultimoTurno.acertos === 0 && acertos === 0) return escolher([
-      'dois zeros seguidos. o grupo está com medo.',
-      'outra rodada zerada. as proibidas ganharam de novo.',
-      coletivo ? 'o grupo travou duas vezes.' : 'bloqueio consecutivo. a pressão chegou.',
-    ]);
-    if (ultimoTurno.melhorStreak >= 4 && melhorStreak <= 1 && acertos < 3) return escolher([
-      `a sequência de ${ultimoTurno.melhorStreak} ficou no passado.`,
-      'o ritmo não voltou. pelo menos por enquanto.',
-    ]);
-    if (ultimoTurno.intensidadeFinal === 'colapso' && intensidadeFinal !== 'colapso' && acertos > 0) return escolher([
-      'saiu do colapso ainda de pé.',
-      'depois do colapso, o grupo respirou.',
-    ]);
+    if (ultimoTurno.acertos === 0 && acertos >= 3)
+      return escolher([
+        'redenção. o grupo não esperava.',
+        `zerou antes. ${acertos} agora. a virada foi real.`,
+        'o turno anterior assombrou. esse limpou.',
+      ]);
+    if (ultimoTurno.acertos === 0 && acertos === 0)
+      return escolher([
+        'dois zeros seguidos. o grupo está com medo.',
+        'outra rodada zerada. as proibidas ganharam de novo.',
+        coletivo
+          ? 'o grupo travou duas vezes.'
+          : 'bloqueio consecutivo. a pressão chegou.',
+      ]);
+    if (ultimoTurno.melhorStreak >= 4 && melhorStreak <= 1 && acertos < 3)
+      return escolher([
+        `a sequência de ${ultimoTurno.melhorStreak} ficou no passado.`,
+        'o ritmo não voltou. pelo menos por enquanto.',
+      ]);
+    if (
+      ultimoTurno.intensidadeFinal === 'colapso' &&
+      intensidadeFinal !== 'colapso' &&
+      acertos > 0
+    )
+      return escolher([
+        'saiu do colapso ainda de pé.',
+        'depois do colapso, o grupo respirou.',
+      ]);
   }
 
   // recuperação no pânico
-  if (intensidadeFinal === 'panico' && acertos >= 2) return escolher([
-    'manteve a cabeça em pânico.',
-    'a pressão estava alta. a resposta veio.',
-    coletivo ? 'o grupo não travou.' : 'controlou no pânico.',
-  ]);
+  if (intensidadeFinal === 'panico' && acertos >= 2)
+    return escolher([
+      'manteve a cabeça em pânico.',
+      'a pressão estava alta. a resposta veio.',
+      coletivo ? 'o grupo não travou.' : 'controlou no pânico.',
+    ]);
 
   const taxa = acertos / total;
 
   // round perfeita
-  if (taxa === 1 && acertos >= 4) return escolher([
-    `${acertos} palavras, zero erros. o grupo vai compensar isso.`,
-    `sem uma passada. ${acertos} direto.`,
-    coletivo ? `${acertos} palavras. o grupo estava afiado.` : 'rodada limpa.',
-  ]);
+  if (taxa === 1 && acertos >= 4)
+    return escolher([
+      `${acertos} palavras, zero erros. o grupo vai compensar isso.`,
+      `sem uma passada. ${acertos} direto.`,
+      coletivo
+        ? `${acertos} palavras. o grupo estava afiado.`
+        : 'rodada limpa.',
+    ]);
 
   // alto volume + boa taxa
-  if (taxa >= 0.75 && acertos >= 6) return escolher([
-    `${acertos} palavras. em ritmo. difícil de parar.`,
-    coletivo ? `${acertos} palavras. o grupo estava acordado.` : 'palavra atrás de palavra.',
-    'velocidade e precisão. raro.',
-  ]);
+  if (taxa >= 0.75 && acertos >= 6)
+    return escolher([
+      `${acertos} palavras. em ritmo. difícil de parar.`,
+      coletivo
+        ? `${acertos} palavras. o grupo estava acordado.`
+        : 'palavra atrás de palavra.',
+      'velocidade e precisão. raro.',
+    ]);
 
-  if (taxa >= 0.75 && acertos >= 3) return escolher([
-    `${acertos} palavras. sólido.`,
-    'quase tudo acertado.',
-    'foi bem. o grupo vai cobrar mais.',
-  ]);
+  if (taxa >= 0.75 && acertos >= 3)
+    return escolher([
+      `${acertos} palavras. sólido.`,
+      'quase tudo acertado.',
+      'foi bem. o grupo vai cobrar mais.',
+    ]);
 
-  if (taxa >= 0.75) return escolher(['quase tudo acertado.', 'sólido.', 'limpou bem.']);
+  if (taxa >= 0.75)
+    return escolher(['quase tudo acertado.', 'sólido.', 'limpou bem.']);
 
   // muitas passadas
-  if (passados >= 5) return escolher([
-    `${passados} descartadas. as proibidas fecharam caminhos.`,
-    `muitas passadas. cada bloqueio custa.`,
-    coletivo ? `${passados} palavras devolvidas. o grupo ficou esperando.` : `${passados} descartadas. foi seletivo demais.`,
-  ]);
-  if (passados >= 3) return escolher([
-    `${passados} descartadas. a pressão aumenta.`,
-    coletivo ? 'o grupo esperou, mas as palavras não vieram.' : 'muitas passadas. o grupo está observando.',
-  ]);
+  if (passados >= 5)
+    return escolher([
+      `${passados} descartadas. as proibidas fecharam caminhos.`,
+      `muitas passadas. cada bloqueio custa.`,
+      coletivo
+        ? `${passados} palavras devolvidas. o grupo ficou esperando.`
+        : `${passados} descartadas. foi seletivo demais.`,
+    ]);
+  if (passados >= 3)
+    return escolher([
+      `${passados} descartadas. a pressão aumenta.`,
+      coletivo
+        ? 'o grupo esperou, mas as palavras não vieram.'
+        : 'muitas passadas. o grupo está observando.',
+    ]);
 
   // tensão acumulada alta
-  if (sessaoTensao > 0.65 && acertos > 0) return escolher([
-    'nesse clima, não era fácil.',
-    'depois de tanta tensão, cada acerto pesa.',
-    coletivo ? 'o grupo respondeu mesmo assim.' : 'conseguiu se manter.',
-  ]);
+  if (sessaoTensao > 0.65 && acertos > 0)
+    return escolher([
+      'nesse clima, não era fácil.',
+      'depois de tanta tensão, cada acerto pesa.',
+      coletivo ? 'o grupo respondeu mesmo assim.' : 'conseguiu se manter.',
+    ]);
 
   // desempenho mediano — tom escala com sessão
-  if (sessFinal) return escolher([
-    isTvT ? 'o adversário está observando cada rodada.' : 'nas últimas rodadas. cada palavra conta.',
-    `${acertos} acerto${acertos !== 1 ? 's' : ''}. não é o suficiente.`,
-    'o timer está ficando menor. o erro também.',
-  ]);
+  if (sessFinal)
+    return escolher([
+      isTvT
+        ? 'o adversário está observando cada rodada.'
+        : 'nas últimas rodadas. cada palavra conta.',
+      `${acertos} acerto${acertos !== 1 ? 's' : ''}. não é o suficiente.`,
+      'o timer está ficando menor. o erro também.',
+    ]);
 
   return escolher([
     `${acertos} acerto${acertos !== 1 ? 's' : ''}.`,
@@ -330,18 +408,23 @@ function gerarDestaques(
 ): string[] {
   const destaques: string[] = [];
 
-  const ranking = [...jogadores].sort((a, b) => (pontos[b.id] ?? 0) - (pontos[a.id] ?? 0));
+  const ranking = [...jogadores].sort(
+    (a, b) => (pontos[b.id] ?? 0) - (pontos[a.id] ?? 0),
+  );
   const top = ranking[0];
   if (top && (pontos[top.id] ?? 0) > 0) {
     const pts = pontos[top.id] ?? 0;
-    const frase = modoJogo === 'todos_juntos'
-      ? `${top.nome} puxou mais — ${pts} acerto${pts !== 1 ? 's' : ''}.`
-      : `${top.nome} carregou — ${pts} acerto${pts !== 1 ? 's' : ''}.`;
+    const frase =
+      modoJogo === 'todos_juntos'
+        ? `${top.nome} puxou mais — ${pts} acerto${pts !== 1 ? 's' : ''}.`
+        : `${top.nome} carregou — ${pts} acerto${pts !== 1 ? 's' : ''}.`;
     destaques.push(frase);
   }
 
   if (melhorStreakColetivo >= 4 && modoJogo === 'todos_juntos') {
-    destaques.push(`${melhorStreakColetivo} rodadas seguidas acertando. o grupo entrou em flow.`);
+    destaques.push(
+      `${melhorStreakColetivo} rodadas seguidas acertando. o grupo entrou em flow.`,
+    );
   }
 
   let globalBestStreak = 0;
@@ -355,14 +438,19 @@ function gerarDestaques(
   if (globalBestStreak >= 3 && globalBestStreakId && destaques.length < 3) {
     const j = jogadores.find((p) => p.id === globalBestStreakId);
     if (j) {
-      destaques.push(`${j.nome} fez sequência de ${globalBestStreak}. o grupo ficou nervoso.`);
+      destaques.push(
+        `${j.nome} fez sequência de ${globalBestStreak}. o grupo ficou nervoso.`,
+      );
     }
   }
 
-  const clutch = historico.find((t) => t.intensidadeFinal === 'colapso' && t.acertos > 0);
+  const clutch = historico.find(
+    (t) => t.intensidadeFinal === 'colapso' && t.acertos > 0,
+  );
   if (clutch && destaques.length < 3) {
     const j = jogadores.find((p) => p.id === clutch.jogadorId);
-    if (j) destaques.push(`${j.nome} acertou em colapso. o grupo vai falar nisso.`);
+    if (j)
+      destaques.push(`${j.nome} acertou em colapso. o grupo vai falar nisso.`);
   }
 
   const zerados = historico.filter((t) => t.acertos === 0).length;
@@ -372,7 +460,9 @@ function gerarDestaques(
 
   const totalPassadas = historico.reduce((acc, t) => acc + t.passados, 0);
   if (totalPassadas >= 5 && destaques.length < 3) {
-    destaques.push(`${totalPassadas} palavras descartadas. o grupo é seletivo.`);
+    destaques.push(
+      `${totalPassadas} palavras descartadas. o grupo é seletivo.`,
+    );
   }
 
   return destaques.slice(0, 3);
@@ -389,39 +479,52 @@ function detectarIdentidade(historico: TurnoSessao[]): IdentidadeGrupo {
   const total = historico.length;
   if (total === 0) return { frase: 'sessão encerrada.', aftermath: '' };
 
-  const zerados   = historico.filter((t) => t.acertos === 0).length;
-  const colapsos  = historico.filter((t) => t.intensidadeFinal === 'colapso').length;
+  const zerados = historico.filter((t) => t.acertos === 0).length;
+  const colapsos = historico.filter(
+    (t) => t.intensidadeFinal === 'colapso',
+  ).length;
   const totalAcertos = historico.reduce((a, t) => a + t.acertos, 0);
-  const totalPalavras = historico.reduce((a, t) => a + t.acertos + t.passados, 0);
+  const totalPalavras = historico.reduce(
+    (a, t) => a + t.acertos + t.passados,
+    0,
+  );
   const totalPassadas = historico.reduce((a, t) => a + t.passados, 0);
   const taxa = totalPalavras > 0 ? totalAcertos / totalPalavras : 0;
-  const clutches = historico.filter((t) => t.intensidadeFinal === 'colapso' && t.acertos > 0).length;
+  const clutches = historico.filter(
+    (t) => t.intensidadeFinal === 'colapso' && t.acertos > 0,
+  ).length;
   const mediaPalavras = totalPalavras / total;
 
-  if (zerados >= total * 0.5 || colapsos >= total * 0.65) return {
-    frase: 'esse grupo claramente entra em pânico.',
-    aftermath: 'o timer venceu mais batalhas do que deveria.',
-  };
-  if (taxa >= 0.78 && colapsos <= 1) return {
-    frase: 'vocês ficaram perigosamente eficientes.',
-    aftermath: 'o grupo funcionou como uma máquina.',
-  };
-  if (clutches >= 2) return {
-    frase: 'vocês sobreviveram no caos.',
-    aftermath: 'o grupo não cedeu quando deveria ter cedido.',
-  };
-  if (totalPassadas >= totalAcertos * 1.6 || taxa < 0.38) return {
-    frase: 'isso saiu do controle muito rápido.',
-    aftermath: 'as proibidas ganharam mais do que perderam.',
-  };
-  if (mediaPalavras < 3) return {
-    frase: 'esse grupo opera no silêncio.',
-    aftermath: 'as palavras vieram devagar. mas vieram.',
-  };
-  if (zerados === 0 && totalPalavras >= total * 3) return {
-    frase: 'nenhuma rodada zerada. raro.',
-    aftermath: 'o grupo aguentou tudo o que o timer jogou.',
-  };
+  if (zerados >= total * 0.5 || colapsos >= total * 0.65)
+    return {
+      frase: 'esse grupo claramente entra em pânico.',
+      aftermath: 'o timer venceu mais batalhas do que deveria.',
+    };
+  if (taxa >= 0.78 && colapsos <= 1)
+    return {
+      frase: 'vocês ficaram perigosamente eficientes.',
+      aftermath: 'o grupo funcionou como uma máquina.',
+    };
+  if (clutches >= 2)
+    return {
+      frase: 'vocês sobreviveram no caos.',
+      aftermath: 'o grupo não cedeu quando deveria ter cedido.',
+    };
+  if (totalPassadas >= totalAcertos * 1.6 || taxa < 0.38)
+    return {
+      frase: 'isso saiu do controle muito rápido.',
+      aftermath: 'as proibidas ganharam mais do que perderam.',
+    };
+  if (mediaPalavras < 3)
+    return {
+      frase: 'esse grupo opera no silêncio.',
+      aftermath: 'as palavras vieram devagar. mas vieram.',
+    };
+  if (zerados === 0 && totalPalavras >= total * 3)
+    return {
+      frase: 'nenhuma rodada zerada. raro.',
+      aftermath: 'o grupo aguentou tudo o que o timer jogou.',
+    };
   return {
     frase: 'ninguém manteve a calma por muito tempo.',
     aftermath: 'foi tenso do começo ao fim.',
@@ -439,12 +542,18 @@ function gerarObservacaoEntre(
 ): string | null {
   if (historico.length < 2) return null;
 
-  const last    = historico[historico.length - 1]!;
-  const penult  = historico[historico.length - 2]!;
+  const last = historico[historico.length - 1]!;
+  const penult = historico[historico.length - 2]!;
 
-  if (last.acertos === 0 && penult.acertos === 0) return 'vocês continuam piorando.';
+  if (last.acertos === 0 && penult.acertos === 0)
+    return 'vocês continuam piorando.';
 
-  if (modoJogo === 'time_vs_time' && times && pontosA !== undefined && pontosB !== undefined) {
+  if (
+    modoJogo === 'time_vs_time' &&
+    times &&
+    pontosA !== undefined &&
+    pontosB !== undefined
+  ) {
     const diff = Math.abs(pontosA - pontosB);
     if (diff >= 5) {
       const lider = pontosA > pontosB ? times.nomeA : times.nomeB;
@@ -453,7 +562,9 @@ function gerarObservacaoEntre(
   }
 
   const recentes = historico.slice(-3);
-  const colapsosRecentes = recentes.filter((t) => t.intensidadeFinal === 'colapso').length;
+  const colapsosRecentes = recentes.filter(
+    (t) => t.intensidadeFinal === 'colapso',
+  ).length;
   if (colapsosRecentes >= 2) return 'ninguém sobrevive bem ao colapso.';
 
   if (penult.acertos === 0 && last.acertos >= 4) return 'a virada chegou.';
@@ -463,7 +574,8 @@ function gerarObservacaoEntre(
 
   const ultimasTres = historico.slice(-3);
   const totalPassadasRecentes = ultimasTres.reduce((a, t) => a + t.passados, 0);
-  if (totalPassadasRecentes >= 9) return 'o grupo é seletivo demais. as proibidas sabem.';
+  if (totalPassadasRecentes >= 9)
+    return 'o grupo é seletivo demais. as proibidas sabem.';
 
   return null;
 }
@@ -471,7 +583,15 @@ function gerarObservacaoEntre(
 // ─── Componente principal ─────────────────────────────────────────────────────
 
 export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
-  const { jogadores, duracaoSegundos, rodadasPorJogador, dificuldade, categorias, modoJogo, times } = route.params;
+  const {
+    jogadores,
+    duracaoSegundos,
+    rodadasPorJogador,
+    dificuldade,
+    categorias,
+    modoJogo,
+    times,
+  } = route.params;
   const insets = useSafeAreaInsets();
   const duracaoMs = duracaoSegundos * 1000;
   const totalTurnos = jogadores.length * rodadasPorJogador;
@@ -484,7 +604,8 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
   );
   const [historico, setHistorico] = useState<TurnoSessao[]>([]);
   const [sessaoTensao, setSessaoTensao] = useState(0);
-  const [turnoAtualSummary, setTurnoAtualSummary] = useState<TurnoSummary | null>(null);
+  const [turnoAtualSummary, setTurnoAtualSummary] =
+    useState<TurnoSummary | null>(null);
   const [comentarioTurno, setComentarioTurno] = useState('');
 
   const cartasUsadasRef = useRef<string[]>([]);
@@ -524,19 +645,33 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
     Animated.parallel([
       dir !== 0
         ? Animated.spring(phaseSlideX, {
-            toValue: 0, damping: 28, mass: 0.75, stiffness: 190, useNativeDriver: true,
+            toValue: 0,
+            damping: 28,
+            mass: 0.75,
+            stiffness: 190,
+            useNativeDriver: true,
           })
-        : Animated.timing(phaseSlideX, { toValue: 0, duration: 0, useNativeDriver: true }),
-      Animated.timing(phaseOp, { toValue: 1, duration: 220, useNativeDriver: true }),
+        : Animated.timing(phaseSlideX, {
+            toValue: 0,
+            duration: 0,
+            useNativeDriver: true,
+          }),
+      Animated.timing(phaseOp, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }),
     ]).start();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fase]);
 
   // Inicialização do áudio
   useEffect(() => {
     void inicializarAudio();
-    return () => { void liberarAudio(); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      void liberarAudio();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function getTimeDoJogador(id: string): 'A' | 'B' {
@@ -545,7 +680,9 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
 
   function getNomeTimeAdversario(): string {
     const timeAtual = getTimeDoJogador(jogadorAtual.id);
-    return timeAtual === 'A' ? (times?.nomeB ?? 'Time B') : (times?.nomeA ?? 'Time A');
+    return timeAtual === 'A'
+      ? (times?.nomeB ?? 'Time B')
+      : (times?.nomeA ?? 'Time A');
   }
 
   const jogadorAtual = jogadores[indiceTurno % jogadores.length]!;
@@ -568,9 +705,13 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
     passados: number,
   ) {
     const peso =
-      intensidade === 'colapso' ? 0.3 :
-      intensidade === 'panico'  ? 0.2 :
-      intensidade === 'pressao' ? 0.1 : 0.05;
+      intensidade === 'colapso'
+        ? 0.3
+        : intensidade === 'panico'
+          ? 0.2
+          : intensidade === 'pressao'
+            ? 0.1
+            : 0.05;
     const total = acertos + passados;
     const taxa = total > 0 ? acertos / total : 0;
     const delta = taxa < 0.3 ? peso : taxa > 0.7 ? -0.05 : 0;
@@ -598,7 +739,11 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
 
     const sessao: TurnoSessao = { jogadorId: jogadorAtual.id, ...summary };
     setHistorico((h) => [...h, sessao]);
-    atualizarTensao(summary.intensidadeFinal, summary.acertos, summary.passados);
+    atualizarTensao(
+      summary.intensidadeFinal,
+      summary.acertos,
+      summary.passados,
+    );
 
     // Session progression
     const novaProgressao = Math.min(1, (turnosJogados + 1) / totalTurnos);
@@ -608,7 +753,10 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
     if (summary.acertos > 0) {
       const novoStreak = streakColetivoRef.current + 1;
       streakColetivoRef.current = novoStreak;
-      melhorStreakColetivoRef.current = Math.max(melhorStreakColetivoRef.current, novoStreak);
+      melhorStreakColetivoRef.current = Math.max(
+        melhorStreakColetivoRef.current,
+        novoStreak,
+      );
       setStreakColetivo(novoStreak);
       setMelhorStreakColetivo(melhorStreakColetivoRef.current);
     } else {
@@ -641,7 +789,8 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
 
   function aoRoubou() {
     if (!times) return;
-    const timeAdversario = getTimeDoJogador(jogadorAtual.id) === 'A' ? 'B' : 'A';
+    const timeAdversario =
+      getTimeDoJogador(jogadorAtual.id) === 'A' ? 'B' : 'A';
     if (timeAdversario === 'A') {
       pontosTimeARef.current += 1;
       setPontosTimeA(pontosTimeARef.current);
@@ -692,11 +841,15 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
   const proximoJogador = jogadores[(indiceTurno + 1) % jogadores.length];
 
   return (
-    <View style={[estilos.tela, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    <View
+      style={[
+        estilos.tela,
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+    >
+      <BotaoEncerrarJogo onConfirmar={sairLimpo} />
+
       <View style={estilos.cabecalho}>
-        <Pressable onPress={sairLimpo} hitSlop={12} style={estilos.botaoSair}>
-          <Text style={estilos.botaoSairTexto}>×</Text>
-        </Pressable>
         <Text style={estilos.progresso}>
           {turnosJogados} / {totalTurnos}
         </Text>
@@ -708,64 +861,64 @@ export function TelaJogoLocalNaPontaDaLingua({ navigation, route }: Props) {
           { transform: [{ translateX: phaseSlideX }], opacity: phaseOp },
         ]}
       >
-      {fase === 'preparo' && (
-        <FasePreparo
-          jogador={jogadorAtual}
-          sessaoTensao={sessaoTensao}
-          isFirst={primeiroTurnoRef.current}
-          modoJogo={modoJogo}
-          streakColetivo={streakColetivo}
-          progressaoSessao={progressaoSessao}
-          times={times}
-          onPronto={() => setFase('jogando')}
-        />
-      )}
-      {fase === 'jogando' && (
-        <FaseJogando
-          sortearProxima={sortearProxima}
-          duracaoMs={duracaoMs}
-          modoJogo={modoJogo}
-          progressaoSessao={progressaoSessao}
-          onTurnoCompleto={aoTurnoCompleto}
-        />
-      )}
-      {fase === 'resumo_turno' && turnoAtualSummary && (
-        <FaseTurnoSummary
-          jogadorNome={jogadorAtual.nome}
-          summary={turnoAtualSummary}
-          comentario={comentarioTurno}
-          duracaoSegundos={duracaoSegundos}
-          modoJogo={modoJogo}
-          streakColetivo={streakColetivo}
-          onProximo={proximoTurno}
-          isUltimo={turnosJogados + 1 >= totalTurnos}
-        />
-      )}
-      {fase === 'roubo' && (
-        <FaseRoubo
-          nomeTimeAdversario={getNomeTimeAdversario()}
-          palavraParaRoubo={palavraParaRoubo}
-          onRoubou={aoRoubou}
-          onNinguem={aoNinguemRoubou}
-        />
-      )}
-      {fase === 'entre' && (
-        <FaseEntre
-          jogadores={jogadores}
-          pontos={pontos}
-          proximoJogador={proximoJogador ?? jogadores[0]!}
-          modoJogo={modoJogo}
-          streakColetivo={streakColetivo}
-          times={times}
-          pontosTimeA={pontosTimeA}
-          pontosTimeB={pontosTimeB}
-          historico={historico}
-          onPronto={() => {
-            setIndiceTurno((i) => i + 1);
-            setFase('preparo');
-          }}
-        />
-      )}
+        {fase === 'preparo' && (
+          <FasePreparo
+            jogador={jogadorAtual}
+            sessaoTensao={sessaoTensao}
+            isFirst={primeiroTurnoRef.current}
+            modoJogo={modoJogo}
+            streakColetivo={streakColetivo}
+            progressaoSessao={progressaoSessao}
+            times={times}
+            onPronto={() => setFase('jogando')}
+          />
+        )}
+        {fase === 'jogando' && (
+          <FaseJogando
+            sortearProxima={sortearProxima}
+            duracaoMs={duracaoMs}
+            modoJogo={modoJogo}
+            progressaoSessao={progressaoSessao}
+            onTurnoCompleto={aoTurnoCompleto}
+          />
+        )}
+        {fase === 'resumo_turno' && turnoAtualSummary && (
+          <FaseTurnoSummary
+            jogadorNome={jogadorAtual.nome}
+            summary={turnoAtualSummary}
+            comentario={comentarioTurno}
+            duracaoSegundos={duracaoSegundos}
+            modoJogo={modoJogo}
+            streakColetivo={streakColetivo}
+            onProximo={proximoTurno}
+            isUltimo={turnosJogados + 1 >= totalTurnos}
+          />
+        )}
+        {fase === 'roubo' && (
+          <FaseRoubo
+            nomeTimeAdversario={getNomeTimeAdversario()}
+            palavraParaRoubo={palavraParaRoubo}
+            onRoubou={aoRoubou}
+            onNinguem={aoNinguemRoubou}
+          />
+        )}
+        {fase === 'entre' && (
+          <FaseEntre
+            jogadores={jogadores}
+            pontos={pontos}
+            proximoJogador={proximoJogador ?? jogadores[0]!}
+            modoJogo={modoJogo}
+            streakColetivo={streakColetivo}
+            times={times}
+            pontosTimeA={pontosTimeA}
+            pontosTimeB={pontosTimeB}
+            historico={historico}
+            onPronto={() => {
+              setIndiceTurno((i) => i + 1);
+              setFase('preparo');
+            }}
+          />
+        )}
       </Animated.View>
     </View>
   );
@@ -798,53 +951,84 @@ function FasePreparo({
   useEffect(() => {
     Animated.parallel([
       Animated.timing(op, { toValue: 1, duration: 260, useNativeDriver: true }),
-      Animated.timing(nomeY, { toValue: 0, duration: 260, useNativeDriver: true }),
+      Animated.timing(nomeY, {
+        toValue: 0,
+        duration: 260,
+        useNativeDriver: true,
+      }),
     ]).start();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isTvT = modoJogo === 'time_vs_time';
   const isColetivo = modoJogo === 'todos_juntos' || isTvT;
 
-  const teamDoJogador = isTvT && times
-    ? (times.idsA.includes(jogador.id) ? times.nomeA : times.nomeB)
-    : null;
+  const teamDoJogador =
+    isTvT && times
+      ? times.idsA.includes(jogador.id)
+        ? times.nomeA
+        : times.nomeB
+      : null;
 
   const instrucao =
-    streakColetivo >= 4 ? 'o grupo está quente. mantém.' :
-    streakColetivo >= 2 ? 'o ritmo está bom. não quebra.' :
-    progressaoSessao > 0.75 ? (isTvT ? 'o adversário está contando os seus erros.' : 'as últimas rodadas. não dá pra voltar.') :
-    progressaoSessao > 0.5 ? (isTvT ? 'o adversário observa cada palavra.' : 'o grupo já sente a pressão.') :
-    sessaoTensao < 0.3 ? (isColetivo ? 'grupo todo responde. outros viram.' : 'outros virem o celular.') :
-    sessaoTensao < 0.65 ? (isColetivo ? isTvT ? 'só o time pode responder.' : 'o grupo vai responder junto.' : 'o grupo está te observando.') :
-    isTvT ? 'o timer está contra vocês dois.' : isColetivo ? 'o grupo está tenso. você também.' : 'o grupo não vai te ajudar.';
+    streakColetivo >= 4
+      ? 'o grupo está quente. mantém.'
+      : streakColetivo >= 2
+        ? 'o ritmo está bom. não quebra.'
+        : progressaoSessao > 0.75
+          ? isTvT
+            ? 'o adversário está contando os seus erros.'
+            : 'as últimas rodadas. não dá pra voltar.'
+          : progressaoSessao > 0.5
+            ? isTvT
+              ? 'o adversário observa cada palavra.'
+              : 'o grupo já sente a pressão.'
+            : sessaoTensao < 0.3
+              ? isColetivo
+                ? 'grupo todo responde. outros viram.'
+                : 'outros virem o celular.'
+              : sessaoTensao < 0.65
+                ? isColetivo
+                  ? isTvT
+                    ? 'só o time pode responder.'
+                    : 'o grupo vai responder junto.'
+                  : 'o grupo está te observando.'
+                : isTvT
+                  ? 'o timer está contra vocês dois.'
+                  : isColetivo
+                    ? 'o grupo está tenso. você também.'
+                    : 'o grupo não vai te ajudar.';
 
   const tutorial = isTvT
     ? 'faça seu time adivinhar o máximo.\nse não acertarem — o adversário pode roubar.'
     : isColetivo
-    ? 'faça o grupo adivinhar o máximo de palavras.\ntodos podem responder. o timer não para.'
-    : 'faça o grupo adivinhar o máximo de palavras\nsem dizer as proibidas. o timer não para.';
+      ? 'faça o grupo adivinhar o máximo de palavras.\ntodos podem responder. o timer não para.'
+      : 'faça o grupo adivinhar o máximo de palavras\nsem dizer as proibidas. o timer não para.';
 
   const label = isTvT
-    ? (teamDoJogador ? `${teamDoJogador} explica` : 'explica agora')
+    ? teamDoJogador
+      ? `${teamDoJogador} explica`
+      : 'explica agora'
     : isColetivo
-    ? 'explica agora'
-    : 'é a vez de';
+      ? 'explica agora'
+      : 'é a vez de';
 
   return (
     <Pressable style={estilos.faseTela} onPress={onPronto}>
       <Animated.View style={[estilos.preparoContainer, { opacity: op }]}>
         <Text style={estilos.preparoLabel}>{label}</Text>
-        <Animated.Text style={[estilos.preparoNome, { transform: [{ translateY: nomeY }] }]}>
+        <Animated.Text
+          style={[estilos.preparoNome, { transform: [{ translateY: nomeY }] }]}
+        >
           {jogador.nome}
         </Animated.Text>
-        {isFirst && (
-          <Text style={estilos.preparoTutorial}>{tutorial}</Text>
-        )}
+        {isFirst && <Text style={estilos.preparoTutorial}>{tutorial}</Text>}
         {streakColetivo >= 2 && (
           <View style={estilos.preparoMomentumBadge}>
             <Text style={estilos.preparoMomentumTexto}>
-              {streakColetivo >= 4 ? `${streakColetivo} rodadas em ritmo` : `${streakColetivo} seguidas`}
+              {streakColetivo >= 4
+                ? `${streakColetivo} rodadas em ritmo`
+                : `${streakColetivo} seguidas`}
             </Text>
           </View>
         )}
@@ -888,8 +1072,8 @@ function FaseJogando({
   const [surtoAtivo, setSurtoAtivo] = useState(
     () => cartaAtual.condicao === 'surto',
   );
-  const [colapsoVisualExtra, setColapsoVisualExtra] = useState(
-    () => (cartaAtual.condicao === 'colapso_visual' ? 0.3 : 0),
+  const [colapsoVisualExtra, setColapsoVisualExtra] = useState(() =>
+    cartaAtual.condicao === 'colapso_visual' ? 0.3 : 0,
   );
   const proibidasTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -932,7 +1116,7 @@ function FaseJogando({
       void pararDrone();
       if (proibidasTimerRef.current) clearTimeout(proibidasTimerRef.current);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const shakeLoopRef = useRef<Animated.CompositeAnimation | null>(null);
@@ -942,9 +1126,14 @@ function FaseJogando({
   const pct = tempoRestanteMs / duracaoMs;
   // Session escalation: pressure kicks in earlier in later rounds
   // colapso_visual cards add extra offset to make UI collapse sooner
-  const pctVisual = Math.max(0, pct - progressaoSessao * 0.12 - colapsoVisualExtra);
+  const pctVisual = Math.max(
+    0,
+    pct - progressaoSessao * 0.12 - colapsoVisualExtra,
+  );
   // surto cards force colapso intensity from the very first second
-  const intensidadeVisual: IntensidadeVisual = surtoAtivo ? 'colapso' : calcularIntensidade(pctVisual);
+  const intensidadeVisual: IntensidadeVisual = surtoAtivo
+    ? 'colapso'
+    : calcularIntensidade(pctVisual);
   const corTimer = COR_TIMER[intensidadeVisual];
   const segundosExibidos = Math.ceil(tempoRestanteMs / 1000);
 
@@ -961,33 +1150,72 @@ function FaseJogando({
       const segundoAtual = Math.ceil(restante / 1000);
       if (segundoAtual < ultimoSegundoRef.current && restante > 0) {
         ultimoSegundoRef.current = segundoAtual;
-        if (segundoAtual <= 12 && calcularIntensidade(restante / duracaoMs) !== 'calmo') {
+        if (
+          segundoAtual <= 12 &&
+          calcularIntensidade(restante / duracaoMs) !== 'calmo'
+        ) {
           void tocarTick();
         }
       }
 
       // Quase falou: idle > 7s during active play, not in final 15%
       const idleSecs = (Date.now() - lastActionRef.current) / 1000;
-      if (idleSecs > 7 && !quaseFalouFiredRef.current && pctNow > 0.15 && pctNow < 0.85 && !terminouRef.current) {
+      if (
+        idleSecs > 7 &&
+        !quaseFalouFiredRef.current &&
+        pctNow > 0.15 &&
+        pctNow < 0.85 &&
+        !terminouRef.current
+      ) {
         quaseFalouFiredRef.current = true;
         void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         Animated.sequence([
-          Animated.timing(shakeX, { toValue: 5, duration: 70, useNativeDriver: true }),
-          Animated.timing(shakeX, { toValue: -5, duration: 70, useNativeDriver: true }),
-          Animated.timing(shakeX, { toValue: 3, duration: 55, useNativeDriver: true }),
-          Animated.timing(shakeX, { toValue: 0, duration: 55, useNativeDriver: true }),
+          Animated.timing(shakeX, {
+            toValue: 5,
+            duration: 70,
+            useNativeDriver: true,
+          }),
+          Animated.timing(shakeX, {
+            toValue: -5,
+            duration: 70,
+            useNativeDriver: true,
+          }),
+          Animated.timing(shakeX, {
+            toValue: 3,
+            duration: 55,
+            useNativeDriver: true,
+          }),
+          Animated.timing(shakeX, {
+            toValue: 0,
+            duration: 55,
+            useNativeDriver: true,
+          }),
         ]).start();
         Animated.sequence([
-          Animated.timing(proibidasPulse, { toValue: 1.05, duration: 180, useNativeDriver: true }),
-          Animated.timing(proibidasPulse, { toValue: 0.96, duration: 200, useNativeDriver: true }),
-          Animated.timing(proibidasPulse, { toValue: 1.0, duration: 140, useNativeDriver: true }),
+          Animated.timing(proibidasPulse, {
+            toValue: 1.05,
+            duration: 180,
+            useNativeDriver: true,
+          }),
+          Animated.timing(proibidasPulse, {
+            toValue: 0.96,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(proibidasPulse, {
+            toValue: 1.0,
+            duration: 140,
+            useNativeDriver: true,
+          }),
         ]).start();
       }
 
       if (restante <= 0 && !terminouRef.current) {
         terminouRef.current = true;
         clearInterval(interval);
-        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        void Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Warning,
+        );
         onTurnoCompleto({
           acertos: acertosRef.current,
           passados: passadosRef.current,
@@ -999,7 +1227,7 @@ function FaseJogando({
       }
     }, 80);
     return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Hesitation pulse at 40% elapsed
@@ -1008,13 +1236,25 @@ function FaseJogando({
       if (terminouRef.current) return;
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       Animated.sequence([
-        Animated.timing(proibidasPulse, { toValue: 1.025, duration: 150, useNativeDriver: true }),
-        Animated.timing(proibidasPulse, { toValue: 0.985, duration: 200, useNativeDriver: true }),
-        Animated.timing(proibidasPulse, { toValue: 1.0, duration: 150, useNativeDriver: true }),
+        Animated.timing(proibidasPulse, {
+          toValue: 1.025,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+        Animated.timing(proibidasPulse, {
+          toValue: 0.985,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(proibidasPulse, {
+          toValue: 1.0,
+          duration: 150,
+          useNativeDriver: true,
+        }),
       ]).start();
     }, duracaoMs * 0.4);
     return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Intensity transitions — visual uses session-escalated pctVisual; stored uses true pct for summary
@@ -1028,7 +1268,7 @@ function FaseJogando({
     if (novaVisual !== intensidade) {
       aplicarIntensidade(novaVisual);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tempoRestanteMs]);
 
   function pararAnimacoesPressao() {
@@ -1052,7 +1292,10 @@ function FaseJogando({
 
     // Proibidas invasion — palavras proibidas sobem em direção à palavra
     const invasaoTargets: Record<IntensidadeVisual, number> = {
-      calmo: 0, pressao: -5, panico: -12, colapso: -22,
+      calmo: 0,
+      pressao: -5,
+      panico: -12,
+      colapso: -22,
     };
     Animated.timing(proibidasInvasaoY, {
       toValue: invasaoTargets[nivel],
@@ -1069,15 +1312,31 @@ function FaseJogando({
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       pulsoRef.current = Animated.loop(
         Animated.sequence([
-          Animated.timing(palavraScale, { toValue: 1.02, duration: 320, useNativeDriver: true }),
-          Animated.timing(palavraScale, { toValue: 1.0, duration: 320, useNativeDriver: true }),
+          Animated.timing(palavraScale, {
+            toValue: 1.02,
+            duration: 320,
+            useNativeDriver: true,
+          }),
+          Animated.timing(palavraScale, {
+            toValue: 1.0,
+            duration: 320,
+            useNativeDriver: true,
+          }),
         ]),
       );
       pulsoRef.current.start();
       respiracaoRef.current = Animated.loop(
         Animated.sequence([
-          Animated.timing(respiracaoOp, { toValue: 0.97, duration: 500, useNativeDriver: true }),
-          Animated.timing(respiracaoOp, { toValue: 1.0, duration: 500, useNativeDriver: true }),
+          Animated.timing(respiracaoOp, {
+            toValue: 0.97,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(respiracaoOp, {
+            toValue: 1.0,
+            duration: 500,
+            useNativeDriver: true,
+          }),
         ]),
       );
       respiracaoRef.current.start();
@@ -1088,15 +1347,31 @@ function FaseJogando({
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       pulsoRef.current = Animated.loop(
         Animated.sequence([
-          Animated.timing(palavraScale, { toValue: 1.045, duration: 280, useNativeDriver: true }),
-          Animated.timing(palavraScale, { toValue: 0.97, duration: 280, useNativeDriver: true }),
+          Animated.timing(palavraScale, {
+            toValue: 1.045,
+            duration: 280,
+            useNativeDriver: true,
+          }),
+          Animated.timing(palavraScale, {
+            toValue: 0.97,
+            duration: 280,
+            useNativeDriver: true,
+          }),
         ]),
       );
       pulsoRef.current.start();
       respiracaoRef.current = Animated.loop(
         Animated.sequence([
-          Animated.timing(respiracaoOp, { toValue: 0.93, duration: 700, useNativeDriver: true }),
-          Animated.timing(respiracaoOp, { toValue: 1.0, duration: 700, useNativeDriver: true }),
+          Animated.timing(respiracaoOp, {
+            toValue: 0.93,
+            duration: 700,
+            useNativeDriver: true,
+          }),
+          Animated.timing(respiracaoOp, {
+            toValue: 1.0,
+            duration: 700,
+            useNativeDriver: true,
+          }),
         ]),
       );
       respiracaoRef.current.start();
@@ -1108,23 +1383,51 @@ function FaseJogando({
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     pulsoRef.current = Animated.loop(
       Animated.sequence([
-        Animated.timing(palavraScale, { toValue: 1.06, duration: 150, useNativeDriver: true }),
-        Animated.timing(palavraScale, { toValue: 0.96, duration: 150, useNativeDriver: true }),
+        Animated.timing(palavraScale, {
+          toValue: 1.06,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+        Animated.timing(palavraScale, {
+          toValue: 0.96,
+          duration: 150,
+          useNativeDriver: true,
+        }),
       ]),
     );
     pulsoRef.current.start();
     respiracaoRef.current = Animated.loop(
       Animated.sequence([
-        Animated.timing(respiracaoOp, { toValue: 0.87, duration: 400, useNativeDriver: true }),
-        Animated.timing(respiracaoOp, { toValue: 1.0, duration: 400, useNativeDriver: true }),
+        Animated.timing(respiracaoOp, {
+          toValue: 0.87,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        Animated.timing(respiracaoOp, {
+          toValue: 1.0,
+          duration: 400,
+          useNativeDriver: true,
+        }),
       ]),
     );
     respiracaoRef.current.start();
     iniciarShake(7);
     Animated.sequence([
-      Animated.timing(timerScale, { toValue: 1.1, duration: 80, useNativeDriver: true }),
-      Animated.timing(timerScale, { toValue: 0.93, duration: 100, useNativeDriver: true }),
-      Animated.timing(timerScale, { toValue: 1.0, duration: 80, useNativeDriver: true }),
+      Animated.timing(timerScale, {
+        toValue: 1.1,
+        duration: 80,
+        useNativeDriver: true,
+      }),
+      Animated.timing(timerScale, {
+        toValue: 0.93,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(timerScale, {
+        toValue: 1.0,
+        duration: 80,
+        useNativeDriver: true,
+      }),
     ]).start();
   }
 
@@ -1159,10 +1462,26 @@ function FaseJogando({
   function iniciarShake(amplitude: number) {
     shakeLoopRef.current = Animated.loop(
       Animated.sequence([
-        Animated.timing(shakeX, { toValue: amplitude, duration: 55, useNativeDriver: true }),
-        Animated.timing(shakeX, { toValue: -amplitude * 0.8, duration: 55, useNativeDriver: true }),
-        Animated.timing(shakeX, { toValue: amplitude * 0.4, duration: 45, useNativeDriver: true }),
-        Animated.timing(shakeX, { toValue: 0, duration: 45, useNativeDriver: true }),
+        Animated.timing(shakeX, {
+          toValue: amplitude,
+          duration: 55,
+          useNativeDriver: true,
+        }),
+        Animated.timing(shakeX, {
+          toValue: -amplitude * 0.8,
+          duration: 55,
+          useNativeDriver: true,
+        }),
+        Animated.timing(shakeX, {
+          toValue: amplitude * 0.4,
+          duration: 45,
+          useNativeDriver: true,
+        }),
+        Animated.timing(shakeX, {
+          toValue: 0,
+          duration: 45,
+          useNativeDriver: true,
+        }),
       ]),
     );
     shakeLoopRef.current.start();
@@ -1175,12 +1494,18 @@ function FaseJogando({
     quaseFalouFiredRef.current = false;
 
     const cartaAnterior = cartaRef.current;
-    historicoRef.current = [...historicoRef.current, { palavra: cartaAnterior.palavra, resultado }];
+    historicoRef.current = [
+      ...historicoRef.current,
+      { palavra: cartaAnterior.palavra, resultado },
+    ];
 
     if (resultado === 'acertou') {
       acertosRef.current += 1;
       streakRef.current += 1;
-      melhorStreakRef.current = Math.max(melhorStreakRef.current, streakRef.current);
+      melhorStreakRef.current = Math.max(
+        melhorStreakRef.current,
+        streakRef.current,
+      );
       setAcertosDisplay(acertosRef.current);
       setStreakAtual(streakRef.current);
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -1199,8 +1524,16 @@ function FaseJogando({
     const enterX = resultado === 'acertou' ? SCREEN_W * 0.6 : -SCREEN_W * 0.6;
 
     Animated.parallel([
-      Animated.timing(cardSlideX, { toValue: exitX, duration: 110, useNativeDriver: true }),
-      Animated.timing(cardOp, { toValue: 0, duration: 90, useNativeDriver: true }),
+      Animated.timing(cardSlideX, {
+        toValue: exitX,
+        duration: 110,
+        useNativeDriver: true,
+      }),
+      Animated.timing(cardOp, {
+        toValue: 0,
+        duration: 90,
+        useNativeDriver: true,
+      }),
     ]).start(() => {
       const novaCarta = sortearProxima();
       cartaRef.current = novaCarta;
@@ -1209,8 +1542,16 @@ function FaseJogando({
       cardSlideX.setValue(enterX);
       cardOp.setValue(0);
       Animated.parallel([
-        Animated.timing(cardSlideX, { toValue: 0, duration: 160, useNativeDriver: true }),
-        Animated.timing(cardOp, { toValue: 1, duration: 140, useNativeDriver: true }),
+        Animated.timing(cardSlideX, {
+          toValue: 0,
+          duration: 160,
+          useNativeDriver: true,
+        }),
+        Animated.timing(cardOp, {
+          toValue: 1,
+          duration: 140,
+          useNativeDriver: true,
+        }),
       ]).start(() => {
         isTransitioningRef.current = false;
       });
@@ -1233,11 +1574,21 @@ function FaseJogando({
             </View>
           )}
         </View>
-        <Animated.Text style={[estilos.timerNumero, { color: corTimer, transform: [{ scale: timerScale }] }]}>
+        <Animated.Text
+          style={[
+            estilos.timerNumero,
+            { color: corTimer, transform: [{ scale: timerScale }] },
+          ]}
+        >
           {segundosExibidos}
         </Animated.Text>
         <View style={estilos.jogandoHeaderSide}>
-          <Text style={[estilos.acertosCounter, { color: acertosDisplay > 0 ? cores.acento : cores.textoMudo }]}>
+          <Text
+            style={[
+              estilos.acertosCounter,
+              { color: acertosDisplay > 0 ? cores.acento : cores.textoMudo },
+            ]}
+          >
             {acertosDisplay > 0 ? `${acertosDisplay} ✓` : '—'}
           </Text>
         </View>
@@ -1273,11 +1624,18 @@ function FaseJogando({
         <Animated.View
           style={[
             estilos.proibidasBloco,
-            { transform: [{ scale: proibidasPulse }, { translateY: proibidasInvasaoY }] },
+            {
+              transform: [
+                { scale: proibidasPulse },
+                { translateY: proibidasInvasaoY },
+              ],
+            },
           ]}
         >
           {proibidasOcultas ? (
-            <Text style={estilos.proibidasOcultasTexto}>proibidas ocultas por 10s…</Text>
+            <Text style={estilos.proibidasOcultasTexto}>
+              proibidas ocultas por 10s…
+            </Text>
           ) : (
             cartaAtual.proibidas.map((p, i) => (
               <ProibidaItem
@@ -1295,13 +1653,19 @@ function FaseJogando({
       <View style={estilos.controlesContainer}>
         <Pressable
           onPress={() => registrarEAvancar('passou')}
-          style={({ pressed }) => [estilos.btnPassou, pressed && estilos.btnPressionado]}
+          style={({ pressed }) => [
+            estilos.btnPassou,
+            pressed && estilos.btnPressionado,
+          ]}
         >
           <Text style={estilos.btnPassouTexto}>passou</Text>
         </Pressable>
         <Pressable
           onPress={() => registrarEAvancar('acertou')}
-          style={({ pressed }) => [estilos.btnAcertou, pressed && estilos.btnPressionado]}
+          style={({ pressed }) => [
+            estilos.btnAcertou,
+            pressed && estilos.btnPressionado,
+          ]}
         >
           <Text style={estilos.btnAcertouTexto}>acertou ✓</Text>
         </Pressable>
@@ -1310,7 +1674,11 @@ function FaseJogando({
       {/* Vignette overlay */}
       <Animated.View
         pointerEvents="none"
-        style={[StyleSheet.absoluteFill, estilos.vignette, { opacity: vignetteOp }]}
+        style={[
+          StyleSheet.absoluteFill,
+          estilos.vignette,
+          { opacity: vignetteOp },
+        ]}
       />
     </Animated.View>
   );
@@ -1349,8 +1717,16 @@ function ProibidaItem({
       const t = setTimeout(() => {
         flickerRef.current = Animated.loop(
           Animated.sequence([
-            Animated.timing(flickerOp, { toValue: 0.55 + index * 0.06, duration: 320 + index * 60, useNativeDriver: true }),
-            Animated.timing(flickerOp, { toValue: 1, duration: 380 + index * 45, useNativeDriver: true }),
+            Animated.timing(flickerOp, {
+              toValue: 0.55 + index * 0.06,
+              duration: 320 + index * 60,
+              useNativeDriver: true,
+            }),
+            Animated.timing(flickerOp, {
+              toValue: 1,
+              duration: 380 + index * 45,
+              useNativeDriver: true,
+            }),
             Animated.delay(300 + index * 70),
           ]),
         );
@@ -1365,8 +1741,16 @@ function ProibidaItem({
       const t = setTimeout(() => {
         flickerRef.current = Animated.loop(
           Animated.sequence([
-            Animated.timing(flickerOp, { toValue: 0.15 + index * 0.04, duration: 55 + index * 22, useNativeDriver: true }),
-            Animated.timing(flickerOp, { toValue: 1, duration: 90 + index * 12, useNativeDriver: true }),
+            Animated.timing(flickerOp, {
+              toValue: 0.15 + index * 0.04,
+              duration: 55 + index * 22,
+              useNativeDriver: true,
+            }),
+            Animated.timing(flickerOp, {
+              toValue: 1,
+              duration: 90 + index * 12,
+              useNativeDriver: true,
+            }),
             Animated.delay(120 + index * 65),
           ]),
         );
@@ -1376,7 +1760,7 @@ function ProibidaItem({
     }
 
     return undefined;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [intensidade]);
 
   return (
@@ -1425,24 +1809,40 @@ function FaseRoubo({
 
   useEffect(() => {
     // Entrada direta — sem silêncio atmosférico
-    Animated.timing(fundoOp, { toValue: 1, duration: 240, useNativeDriver: true }).start();
+    Animated.timing(fundoOp, {
+      toValue: 1,
+      duration: 240,
+      useNativeDriver: true,
+    }).start();
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     void tocarRoubo();
 
     // "tempo." aparece
     const t1 = setTimeout(() => {
-      Animated.timing(tempoOp, { toValue: 1, duration: 240, useNativeDriver: true }).start();
+      Animated.timing(tempoOp, {
+        toValue: 1,
+        duration: 240,
+        useNativeDriver: true,
+      }).start();
     }, 200);
 
     // palavra revelada
     const t2 = setTimeout(() => {
-      Animated.timing(palavraOp, { toValue: 1, duration: 240, useNativeDriver: true }).start();
+      Animated.timing(palavraOp, {
+        toValue: 1,
+        duration: 240,
+        useNativeDriver: true,
+      }).start();
     }, 500);
 
     // time adversário pode roubar
     const t3 = setTimeout(() => {
       setRouboFase('reveal');
-      Animated.timing(teamOp, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+      Animated.timing(teamOp, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }).start();
     }, 700);
 
     // countdown começa
@@ -1450,20 +1850,41 @@ function FaseRoubo({
       setRouboFase('countdown');
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       Animated.parallel([
-        Animated.timing(contagemOp, { toValue: 1, duration: 220, useNativeDriver: true }),
-        Animated.spring(contagemScale, { toValue: 1, friction: 6, useNativeDriver: true }),
+        Animated.timing(contagemOp, {
+          toValue: 1,
+          duration: 220,
+          useNativeDriver: true,
+        }),
+        Animated.spring(contagemScale, {
+          toValue: 1,
+          friction: 6,
+          useNativeDriver: true,
+        }),
       ]).start();
       // botão aparece logo após
       setTimeout(() => {
         Animated.parallel([
-          Animated.timing(btnOp, { toValue: 1, duration: 200, useNativeDriver: true }),
-          Animated.spring(btnScale, { toValue: 1, friction: 5, useNativeDriver: true }),
+          Animated.timing(btnOp, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.spring(btnScale, {
+            toValue: 1,
+            friction: 5,
+            useNativeDriver: true,
+          }),
         ]).start();
       }, 200);
     }, 900);
 
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Countdown tick
@@ -1478,13 +1899,21 @@ function FaseRoubo({
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       // Pulse the countdown number
       Animated.sequence([
-        Animated.timing(contagemScale, { toValue: 1.18, duration: 80, useNativeDriver: true }),
-        Animated.timing(contagemScale, { toValue: 1.0, duration: 160, useNativeDriver: true }),
+        Animated.timing(contagemScale, {
+          toValue: 1.18,
+          duration: 80,
+          useNativeDriver: true,
+        }),
+        Animated.timing(contagemScale, {
+          toValue: 1.0,
+          duration: 160,
+          useNativeDriver: true,
+        }),
       ]).start();
       setContagem((c) => c - 1);
     }, 1000);
     return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rouboFase, contagem, roubado]);
 
   function aoRoubar() {
@@ -1493,8 +1922,16 @@ function FaseRoubo({
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     // flash
     Animated.sequence([
-      Animated.timing(fundoOp, { toValue: 0.6, duration: 60, useNativeDriver: true }),
-      Animated.timing(fundoOp, { toValue: 1, duration: 100, useNativeDriver: true }),
+      Animated.timing(fundoOp, {
+        toValue: 0.6,
+        duration: 60,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fundoOp, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
     ]).start(() => onRoubou());
   }
 
@@ -1527,7 +1964,9 @@ function FaseRoubo({
             {contagem}
           </Animated.Text>
 
-          <Animated.View style={{ opacity: btnOp, transform: [{ scale: btnScale }] }}>
+          <Animated.View
+            style={{ opacity: btnOp, transform: [{ scale: btnScale }] }}
+          >
             <Pressable
               onPress={aoRoubar}
               style={({ pressed }) => [
@@ -1541,9 +1980,7 @@ function FaseRoubo({
         </>
       )}
 
-      {roubado && (
-        <Text style={estilos.rouboConfirmado}>roubado.</Text>
-      )}
+      {roubado && <Text style={estilos.rouboConfirmado}>roubado.</Text>}
     </Animated.View>
   );
 }
@@ -1561,24 +1998,41 @@ function HistoricoItemAnimado({
   const y = useRef(new Animated.Value(6)).current;
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      Animated.parallel([
-        Animated.timing(op, { toValue: 1, duration: 280, useNativeDriver: true }),
-        Animated.timing(y, { toValue: 0, duration: 280, useNativeDriver: true }),
-      ]).start();
-    }, 280 + index * 75);
+    const t = setTimeout(
+      () => {
+        Animated.parallel([
+          Animated.timing(op, {
+            toValue: 1,
+            duration: 280,
+            useNativeDriver: true,
+          }),
+          Animated.timing(y, {
+            toValue: 0,
+            duration: 280,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      },
+      280 + index * 75,
+    );
     return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const corResultado = item.resultado === 'acertou' ? cores.sucesso : cores.textoMudo;
+  const corResultado =
+    item.resultado === 'acertou' ? cores.sucesso : cores.textoMudo;
   const simbolo = item.resultado === 'acertou' ? '✓' : '—';
 
   return (
     <Animated.View
-      style={[estilos.historicoItem, { opacity: op, transform: [{ translateY: y }] }]}
+      style={[
+        estilos.historicoItem,
+        { opacity: op, transform: [{ translateY: y }] },
+      ]}
     >
-      <Text style={[estilos.historicoSimbolo, { color: corResultado }]}>{simbolo}</Text>
+      <Text style={[estilos.historicoSimbolo, { color: corResultado }]}>
+        {simbolo}
+      </Text>
       <Text style={estilos.historicoPalavra}>{item.palavra}</Text>
     </Animated.View>
   );
@@ -1604,20 +2058,29 @@ function FaseTurnoSummary({
   isUltimo: boolean;
 }) {
   // Silence gate: turno zerado → pausa contemplativa antes do resumo
-  const ehColapsoTotal = summary.acertos === 0 && summary.intensidadeFinal === 'colapso';
+  const ehColapsoTotal =
+    summary.acertos === 0 && summary.intensidadeFinal === 'colapso';
   const [silencioAtivo, setSilencioAtivo] = useState(ehColapsoTotal);
   const silencioOp = useRef(new Animated.Value(ehColapsoTotal ? 0 : 1)).current;
 
   useEffect(() => {
     if (!ehColapsoTotal) return;
-    Animated.timing(silencioOp, { toValue: 1, duration: 260, useNativeDriver: true }).start();
+    Animated.timing(silencioOp, {
+      toValue: 1,
+      duration: 260,
+      useNativeDriver: true,
+    }).start();
     const t = setTimeout(() => {
-      Animated.timing(silencioOp, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
+      Animated.timing(silencioOp, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start(() => {
         setSilencioAtivo(false);
       });
     }, 800);
     return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (silencioAtivo) {
@@ -1638,22 +2101,38 @@ function FaseTurnoSummary({
   const botaoDelay = Math.max(2200, comentarioDelay + 700);
 
   useEffect(() => {
-    Animated.timing(tituloOp, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+    Animated.timing(tituloOp, {
+      toValue: 1,
+      duration: 220,
+      useNativeDriver: true,
+    }).start();
     const t1 = setTimeout(() => {
-      Animated.timing(comentarioOp, { toValue: 1, duration: 260, useNativeDriver: true }).start();
+      Animated.timing(comentarioOp, {
+        toValue: 1,
+        duration: 260,
+        useNativeDriver: true,
+      }).start();
     }, comentarioDelay);
     const t2 = setTimeout(() => {
-      Animated.timing(botaoOp, { toValue: 1, duration: 200, useNativeDriver: true }).start();
+      Animated.timing(botaoOp, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
     }, botaoDelay);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const titulo = gerarTituloTurno(summary.acertos);
   const totalPalavras = summary.acertos + summary.passados;
   const velocidade = calcularVelocidade(totalPalavras, duracaoSegundos);
   const tensaoLabel = gerarTituloTurnoIntensidade(summary.intensidadeFinal);
-  const nomeLabel = modoJogo === 'todos_juntos' ? `o grupo com ${jogadorNome}` : jogadorNome;
+  const nomeLabel =
+    modoJogo === 'todos_juntos' ? `o grupo com ${jogadorNome}` : jogadorNome;
   const showMomentum = streakColetivo >= 2 && summary.acertos > 0;
 
   return (
@@ -1676,7 +2155,9 @@ function FaseTurnoSummary({
           {showMomentum && (
             <>
               <Text style={estilos.resumoMetaDivisor}>·</Text>
-              <Text style={estilos.resumoMetaMomentum}>{streakColetivo}× ritmo</Text>
+              <Text style={estilos.resumoMetaMomentum}>
+                {streakColetivo}× ritmo
+              </Text>
             </>
           )}
         </View>
@@ -1685,19 +2166,28 @@ function FaseTurnoSummary({
       {summary.historico.length > 0 && (
         <View style={estilos.historicoBlocoContainer}>
           {summary.historico.map((item, i) => (
-            <HistoricoItemAnimado key={`${item.palavra}-${i}`} item={item} index={i} />
+            <HistoricoItemAnimado
+              key={`${item.palavra}-${i}`}
+              item={item}
+              index={i}
+            />
           ))}
         </View>
       )}
 
-      <Animated.Text style={[estilos.resumoComentario, { opacity: comentarioOp }]}>
+      <Animated.Text
+        style={[estilos.resumoComentario, { opacity: comentarioOp }]}
+      >
         {comentario}
       </Animated.Text>
 
       <Animated.View style={{ opacity: botaoOp, marginTop: espacamento.xl }}>
         <Pressable
           onPress={onProximo}
-          style={({ pressed }) => [estilos.btnProximo, pressed && { opacity: 0.6 }]}
+          style={({ pressed }) => [
+            estilos.btnProximo,
+            pressed && { opacity: 0.6 },
+          ]}
         >
           <Text style={estilos.btnProximoTexto}>
             {isUltimo ? 'ver resultado →' : 'próximo →'}
@@ -1734,23 +2224,46 @@ function FaseEntre({
   onPronto: () => void;
 }) {
   const isTvT = modoJogo === 'time_vs_time';
-  const observacao = gerarObservacaoEntre(historico, modoJogo, times, pontosTimeA, pontosTimeB);
-  const ranking = [...jogadores].sort((a, b) => (pontos[b.id] ?? 0) - (pontos[a.id] ?? 0));
+  const observacao = gerarObservacaoEntre(
+    historico,
+    modoJogo,
+    times,
+    pontosTimeA,
+    pontosTimeB,
+  );
+  const ranking = [...jogadores].sort(
+    (a, b) => (pontos[b.id] ?? 0) - (pontos[a.id] ?? 0),
+  );
   const totalAcertos = ranking.reduce((acc, j) => acc + (pontos[j.id] ?? 0), 0);
   const tituloOp = useRef(new Animated.Value(0)).current;
   const rankingOp = useRef(new Animated.Value(0)).current;
   const proximoOp = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.timing(tituloOp, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+    Animated.timing(tituloOp, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
     const t1 = setTimeout(() => {
-      Animated.timing(rankingOp, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+      Animated.timing(rankingOp, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
     }, 250);
     const t2 = setTimeout(() => {
-      Animated.timing(proximoOp, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+      Animated.timing(proximoOp, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
     }, 600);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -1760,7 +2273,9 @@ function FaseEntre({
           {isTvT ? 'times' : 'placar'}
         </Animated.Text>
         {modoJogo === 'todos_juntos' && (
-          <Animated.Text style={[estilos.entreTotalColetivo, { opacity: tituloOp }]}>
+          <Animated.Text
+            style={[estilos.entreTotalColetivo, { opacity: tituloOp }]}
+          >
             {totalAcertos} coletivos
           </Animated.Text>
         )}
@@ -1781,7 +2296,9 @@ function FaseEntre({
         </Animated.View>
       )}
       {observacao && (
-        <Animated.View style={[estilos.entreObservacao, { opacity: rankingOp }]}>
+        <Animated.View
+          style={[estilos.entreObservacao, { opacity: rankingOp }]}
+        >
           <Text style={estilos.entreObservacaoTexto}>{observacao}</Text>
         </Animated.View>
       )}
@@ -1805,7 +2322,9 @@ function FaseEntre({
       </Animated.View>
       <Animated.View style={[estilos.entreRodape, { opacity: proximoOp }]}>
         <Text style={estilos.entreProximo}>
-          {modoJogo === 'todos_juntos' ? `explica ${proximoJogador.nome} →` : `vez de ${proximoJogador.nome} →`}
+          {modoJogo === 'todos_juntos'
+            ? `explica ${proximoJogador.nome} →`
+            : `vez de ${proximoJogador.nome} →`}
         </Text>
         <Text style={estilos.entreContinuar}>toque para continuar</Text>
       </Animated.View>
@@ -1841,19 +2360,31 @@ function FaseFim({
   const adaptadorChamado = useRef(false);
   const isTvT = modoJogo === 'time_vs_time';
   const totalAcertos = historico.reduce((acc, t) => acc + t.acertos, 0);
-  const totalPalavras = historico.reduce((acc, t) => acc + t.acertos + t.passados, 0);
+  const totalPalavras = historico.reduce(
+    (acc, t) => acc + t.acertos + t.passados,
+    0,
+  );
   const totalPassadas = historico.reduce((acc, t) => acc + t.passados, 0);
   const titulo = isTvT
-    ? (pontosTimeA > pontosTimeB
-        ? `${times?.nomeA ?? 'Time A'} venceu.`
-        : pontosTimeB > pontosTimeA
+    ? pontosTimeA > pontosTimeB
+      ? `${times?.nomeA ?? 'Time A'} venceu.`
+      : pontosTimeB > pontosTimeA
         ? `${times?.nomeB ?? 'Time B'} venceu.`
-        : 'empate.')
+        : 'empate.'
     : gerarTituloFim(totalAcertos, totalPalavras);
-  const destaques = gerarDestaques(jogadores, pontos, historico, melhorStreakColetivo, modoJogo);
+  const destaques = gerarDestaques(
+    jogadores,
+    pontos,
+    historico,
+    melhorStreakColetivo,
+    modoJogo,
+  );
   const momentoDaSessao = gerarMomentoDaSessao(historico, jogadores);
-  const ranking = [...jogadores].sort((a, b) => (pontos[b.id] ?? 0) - (pontos[a.id] ?? 0));
-  const taxa = totalPalavras > 0 ? Math.round((totalAcertos / totalPalavras) * 100) : 0;
+  const ranking = [...jogadores].sort(
+    (a, b) => (pontos[b.id] ?? 0) - (pontos[a.id] ?? 0),
+  );
+  const taxa =
+    totalPalavras > 0 ? Math.round((totalAcertos / totalPalavras) * 100) : 0;
   const identidade = detectarIdentidade(historico);
 
   // Social momentum — revelação rápida, conteúdo disponível imediatamente
@@ -1868,41 +2399,73 @@ function FaseFim({
     if (adaptadorChamado.current) return;
     adaptadorChamado.current = true;
 
-    const totalPalavrasTotal = historico.reduce((acc, t) => acc + t.acertos + t.passados, 0);
+    const totalPalavrasTotal = historico.reduce(
+      (acc, t) => acc + t.acertos + t.passados,
+      0,
+    );
     const totalAcertosTotal = historico.reduce((acc, t) => acc + t.acertos, 0);
 
     // Jogador com mais pontos = mais acertos
     let maisAcertosId: string | null = null;
     let maiorPontos = -1;
     for (const [id, pts] of Object.entries(pontos)) {
-      if (pts > maiorPontos) { maiorPontos = pts; maisAcertosId = id; }
+      if (pts > maiorPontos) {
+        maiorPontos = pts;
+        maisAcertosId = id;
+      }
     }
 
     processarResultadoNPL({
       totalTurnos: historico.length,
       melhorStreak: melhorStreakColetivo,
       jogadorMaisAcertos: maisAcertosId as string | null,
-      taxaAcerto: totalPalavrasTotal > 0 ? totalAcertosTotal / totalPalavrasTotal : 0,
+      taxaAcerto:
+        totalPalavrasTotal > 0 ? totalAcertosTotal / totalPalavrasTotal : 0,
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    Animated.timing(identidadeOp, { toValue: 1, duration: 280, useNativeDriver: true }).start();
+    Animated.timing(identidadeOp, {
+      toValue: 1,
+      duration: 280,
+      useNativeDriver: true,
+    }).start();
     const t0 = setTimeout(() => {
-      Animated.timing(tituloOp, { toValue: 1, duration: 260, useNativeDriver: true }).start();
+      Animated.timing(tituloOp, {
+        toValue: 1,
+        duration: 260,
+        useNativeDriver: true,
+      }).start();
     }, 300);
     const t1 = setTimeout(() => {
-      Animated.timing(aftermathOp, { toValue: 1, duration: 240, useNativeDriver: true }).start();
+      Animated.timing(aftermathOp, {
+        toValue: 1,
+        duration: 240,
+        useNativeDriver: true,
+      }).start();
     }, 600);
     const t2 = setTimeout(() => {
-      Animated.timing(destaquesOp, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+      Animated.timing(destaquesOp, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: true,
+      }).start();
     }, 900);
     const t3 = setTimeout(() => {
-      Animated.timing(rankingOp, { toValue: 1, duration: 200, useNativeDriver: true }).start();
+      Animated.timing(rankingOp, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
     }, 1200);
-    return () => { clearTimeout(t0); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      clearTimeout(t0);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -1916,7 +2479,9 @@ function FaseFim({
     >
       {/* Abertura: identidade do grupo — o app como observador */}
       {historico.length >= 3 && (
-        <Animated.View style={[estilos.fimIdentidade, { opacity: identidadeOp }]}>
+        <Animated.View
+          style={[estilos.fimIdentidade, { opacity: identidadeOp }]}
+        >
           <Text style={estilos.fimIdentidadeFrase}>{identidade.frase}</Text>
         </Animated.View>
       )}
@@ -1932,12 +2497,22 @@ function FaseFim({
         {/* TvT team scoreboard */}
         {isTvT && times && (
           <View style={estilos.tvtScoreboardFim}>
-            <View style={[estilos.tvtTimeFim, pontosTimeA > pontosTimeB && estilos.tvtTimeVencedor]}>
+            <View
+              style={[
+                estilos.tvtTimeFim,
+                pontosTimeA > pontosTimeB && estilos.tvtTimeVencedor,
+              ]}
+            >
               <Text style={estilos.tvtTimeNomeFim}>{times.nomeA}</Text>
               <Text style={estilos.tvtTimePontosFim}>{pontosTimeA}</Text>
             </View>
             <Text style={estilos.tvtVsFim}>vs</Text>
-            <View style={[estilos.tvtTimeFim, pontosTimeB > pontosTimeA && estilos.tvtTimeVencedor]}>
+            <View
+              style={[
+                estilos.tvtTimeFim,
+                pontosTimeB > pontosTimeA && estilos.tvtTimeVencedor,
+              ]}
+            >
               <Text style={estilos.tvtTimeNomeFim}>{times.nomeB}</Text>
               <Text style={estilos.tvtTimePontosFim}>{pontosTimeB}</Text>
             </View>
@@ -1984,7 +2559,9 @@ function FaseFim({
       {destaques.length > 0 && (
         <Animated.View style={[estilos.fimDestaques, { opacity: destaquesOp }]}>
           {destaques.map((d, i) => (
-            <Text key={i} style={estilos.fimDestaqueTexto}>{d}</Text>
+            <Text key={i} style={estilos.fimDestaqueTexto}>
+              {d}
+            </Text>
           ))}
         </Animated.View>
       )}
@@ -2029,7 +2606,8 @@ const estilos = StyleSheet.create({
   },
   silencioTexto: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 40,
     letterSpacing: -1,
     textAlign: 'center',
@@ -2048,11 +2626,10 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacamento.lg,
     paddingVertical: espacamento.sm,
   },
-  botaoSair: { alignItems: 'center', height: 40, justifyContent: 'center', width: 40 },
-  botaoSairTexto: { color: cores.textoMudo, fontSize: 28, lineHeight: 30 },
   progresso: {
     color: cores.textoMudo,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 16,
     letterSpacing: 0.5,
   },
@@ -2104,7 +2681,8 @@ const estilos = StyleSheet.create({
   },
   preparoNome: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 44,
     letterSpacing: -1,
     textAlign: 'center',
@@ -2207,13 +2785,20 @@ const estilos = StyleSheet.create({
   },
   palavraPrincipal: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 52,
     letterSpacing: -1.5,
     marginBottom: espacamento.xl,
     textAlign: 'center',
   },
-  proibidasOcultasTexto: { color: cores.textoMudo, fontSize: 14, fontStyle: 'italic', textAlign: 'center', paddingVertical: espacamento.lg },
+  proibidasOcultasTexto: {
+    color: cores.textoMudo,
+    fontSize: 14,
+    fontStyle: 'italic',
+    textAlign: 'center',
+    paddingVertical: espacamento.lg,
+  },
   proibidasBloco: { alignSelf: 'stretch', gap: espacamento.xs },
   proibidaItem: {
     borderLeftWidth: 3,
@@ -2275,14 +2860,16 @@ const estilos = StyleSheet.create({
   },
   rouboTempoTexto: {
     color: cores.textoMudo,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 22,
     letterSpacing: -0.5,
     textAlign: 'center',
   },
   rouboPalavra: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 44,
     letterSpacing: -1.5,
     textAlign: 'center',
@@ -2296,7 +2883,8 @@ const estilos = StyleSheet.create({
   },
   rouboContagem: {
     color: cores.primaria,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 72,
     letterSpacing: -3,
     textAlign: 'center',
@@ -2318,7 +2906,8 @@ const estilos = StyleSheet.create({
   },
   rouboConfirmado: {
     color: cores.sucesso,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 28,
     letterSpacing: -0.5,
     textAlign: 'center',
@@ -2335,7 +2924,8 @@ const estilos = StyleSheet.create({
   },
   resumoTitulo: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 36,
     letterSpacing: -0.5,
     marginBottom: espacamento.xs,
@@ -2432,9 +3022,26 @@ const estilos = StyleSheet.create({
     paddingVertical: espacamento.md,
   },
   tvtTime: { alignItems: 'center', flex: 1 },
-  tvtTimeNome: { color: cores.textoMudo, fontSize: 11, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase' },
-  tvtTimePontos: { color: cores.acento, fontFamily: familias.sans, fontWeight: '800' as const, fontSize: 36, lineHeight: 42 },
-  tvtVs: { color: cores.borda, fontSize: 14, fontWeight: '700', letterSpacing: 1 },
+  tvtTimeNome: {
+    color: cores.textoMudo,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  tvtTimePontos: {
+    color: cores.acento,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
+    fontSize: 36,
+    lineHeight: 42,
+  },
+  tvtVs: {
+    color: cores.borda,
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
 
   // Entre
   entreObservacao: {
@@ -2493,7 +3100,11 @@ const estilos = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
   },
-  entreRanking: { alignSelf: 'stretch', gap: espacamento.sm, marginBottom: espacamento.xl },
+  entreRanking: {
+    alignSelf: 'stretch',
+    gap: espacamento.sm,
+    marginBottom: espacamento.xl,
+  },
   entreItem: {
     alignItems: 'center',
     backgroundColor: cores.superficie,
@@ -2517,7 +3128,12 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoSemibold,
     marginLeft: espacamento.sm,
   },
-  entrePontos: { color: cores.acento, fontFamily: familias.sans, fontWeight: '800' as const, fontSize: 22 },
+  entrePontos: {
+    color: cores.acento,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
+    fontSize: 22,
+  },
   entreRodape: { alignItems: 'center' },
   entreProximo: {
     color: cores.primaria,
@@ -2552,9 +3168,28 @@ const estilos = StyleSheet.create({
     backgroundColor: 'rgba(201,137,58,0.1)',
     borderColor: 'rgba(201,137,58,0.4)',
   },
-  tvtTimeNomeFim: { color: cores.textoMudo, fontSize: 11, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase' },
-  tvtTimePontosFim: { color: cores.acento, fontFamily: familias.sans, fontWeight: '800' as const, fontSize: 40, lineHeight: 48 },
-  tvtVsFim: { alignSelf: 'center', color: cores.textoMudo, fontSize: 13, fontWeight: '700', letterSpacing: 1, paddingHorizontal: espacamento.sm },
+  tvtTimeNomeFim: {
+    color: cores.textoMudo,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  tvtTimePontosFim: {
+    color: cores.acento,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
+    fontSize: 40,
+    lineHeight: 48,
+  },
+  tvtVsFim: {
+    alignSelf: 'center',
+    color: cores.textoMudo,
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 1,
+    paddingHorizontal: espacamento.sm,
+  },
 
   // Fim — identidade do grupo + aftermath
   fimIdentidade: {
@@ -2587,7 +3222,8 @@ const estilos = StyleSheet.create({
   fimTela: { alignItems: 'center', paddingHorizontal: espacamento.lg },
   fimTitulo: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 30,
     marginBottom: espacamento.xs,
     textAlign: 'center',
@@ -2612,8 +3248,17 @@ const estilos = StyleSheet.create({
     width: '100%',
   },
   fimStat: { alignItems: 'center', flex: 1, gap: 2 },
-  fimStatNumero: { color: cores.texto, fontFamily: familias.sans, fontWeight: '800' as const, fontSize: 28 },
-  fimStatLabel: { color: cores.textoMudo, fontSize: tipografia.tamanhoMicro, letterSpacing: 0.5 },
+  fimStatNumero: {
+    color: cores.texto,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
+    fontSize: 28,
+  },
+  fimStatLabel: {
+    color: cores.textoMudo,
+    fontSize: tipografia.tamanhoMicro,
+    letterSpacing: 0.5,
+  },
   fimStatDivisor: { backgroundColor: cores.borda, width: 1 },
   fimMomento: {
     alignSelf: 'stretch',
@@ -2634,7 +3279,8 @@ const estilos = StyleSheet.create({
   },
   fimMomentoTexto: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 20,
     lineHeight: 28,
     letterSpacing: -0.3,
@@ -2654,7 +3300,11 @@ const estilos = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
   },
-  fimRanking: { alignSelf: 'stretch', gap: espacamento.sm, marginBottom: espacamento.xl },
+  fimRanking: {
+    alignSelf: 'stretch',
+    gap: espacamento.sm,
+    marginBottom: espacamento.xl,
+  },
   fimRankingItem: {
     alignItems: 'center',
     backgroundColor: cores.superficie,
@@ -2678,7 +3328,12 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoSemibold,
     marginLeft: espacamento.sm,
   },
-  fimRankingPontos: { color: cores.acento, fontFamily: familias.sans, fontWeight: '800' as const, fontSize: 22 },
+  fimRankingPontos: {
+    color: cores.acento,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
+    fontSize: 22,
+  },
   fimSair: {
     borderColor: cores.primaria,
     borderRadius: raio.pill,

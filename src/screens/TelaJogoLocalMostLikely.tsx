@@ -1,18 +1,16 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState } from 'react';
-import {
-  Animated,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BotaoEncerrarJogo } from '@/components';
 import { FeedbackSessao } from '@/components/FeedbackSessao';
 import { PROMPTS } from '@/games/most-likely-to/prompts';
-import type { EnergiaPrompt, ModoMostLikely } from '@/games/most-likely-to/types';
+import type {
+  EnergiaPrompt,
+  ModoMostLikely,
+} from '@/games/most-likely-to/types';
 import type { RootStackParamList } from '@/navigation/types';
 import { processarResultadoMLT } from '@/session/mltAdapter';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
@@ -37,19 +35,28 @@ interface ResultadoRodada {
   vencedorId: string | null; // null = empate
 }
 
-function selecionarPrompt(usados: number[], rodada: number, modo: ModoMostLikely): { texto: string; indice: number } {
+function selecionarPrompt(
+  usados: number[],
+  rodada: number,
+  modo: ModoMostLikely,
+): { texto: string; indice: number } {
   const energias: EnergiaPrompt[] = (() => {
     if (rodada === 1) return ['leve'];
     if (rodada <= 3) return ['leve', 'medio'];
-    return modo === 'sincero' ? ['leve', 'medio', 'intenso'] : ['leve', 'medio'];
+    return modo === 'sincero'
+      ? ['leve', 'medio', 'intenso']
+      : ['leve', 'medio'];
   })();
 
   const candidatos = PROMPTS.map((p, i) => ({ p, i })).filter(
     ({ p, i }) => energias.includes(p.energia) && !usados.includes(i),
   );
-  const pool = candidatos.length > 0
-    ? candidatos
-    : PROMPTS.map((p, i) => ({ p, i })).filter(({ p }) => energias.includes(p.energia));
+  const pool =
+    candidatos.length > 0
+      ? candidatos
+      : PROMPTS.map((p, i) => ({ p, i })).filter(({ p }) =>
+          energias.includes(p.energia),
+        );
 
   const escolhido = pool[Math.floor(Math.random() * pool.length)]!;
   return { texto: escolhido.p.texto, indice: escolhido.i };
@@ -80,8 +87,12 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
     const { texto, indice } = selecionarPrompt([], rodadaAtual, modo);
     setPromptTexto(texto);
     setIndicesUsados([indice]);
-    Animated.timing(promptOp, { toValue: 1, duration: 240, useNativeDriver: true }).start();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    Animated.timing(promptOp, {
+      toValue: 1,
+      duration: 240,
+      useNativeDriver: true,
+    }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ─── Apontando ────────────────────────────────────────────────────────────
@@ -123,17 +134,34 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
       // B1: nome/empate aparece
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Animated.parallel([
-        Animated.timing(nomeOp, { toValue: 1, duration: 220, useNativeDriver: true }),
-        Animated.spring(nomeScale, { toValue: 1, speed: 22, bounciness: 4, useNativeDriver: true }),
+        Animated.timing(nomeOp, {
+          toValue: 1,
+          duration: 220,
+          useNativeDriver: true,
+        }),
+        Animated.spring(nomeScale, {
+          toValue: 1,
+          speed: 22,
+          bounciness: 4,
+          useNativeDriver: true,
+        }),
       ]).start();
 
       // B2: cristalização após 400ms
       setTimeout(() => {
-        Animated.timing(cristalizacaoOp, { toValue: 1, duration: 200, useNativeDriver: true }).start();
+        Animated.timing(cristalizacaoOp, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
 
         // B3: "próxima" após 700ms
         setTimeout(() => {
-          Animated.timing(proximaOp, { toValue: 1, duration: 180, useNativeDriver: true }).start();
+          Animated.timing(proximaOp, {
+            toValue: 1,
+            duration: 180,
+            useNativeDriver: true,
+          }).start();
         }, 700);
       }, 400);
     }, 100);
@@ -177,7 +205,11 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
     setVencedorId(null);
     setFoiEmpate(false);
     promptOp.setValue(0);
-    Animated.timing(promptOp, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+    Animated.timing(promptOp, {
+      toValue: 1,
+      duration: 220,
+      useNativeDriver: true,
+    }).start();
     setFase('prompt');
   }
 
@@ -188,16 +220,27 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
   // ─── Renders por fase ─────────────────────────────────────────────────────
 
   if (fase === 'resultado') {
-    return <FaseResultado resultados={resultados} jogadores={jogadores} onSair={sairLimpo} insets={insets} />;
+    return (
+      <FaseResultado
+        resultados={resultados}
+        jogadores={jogadores}
+        onSair={sairLimpo}
+        insets={insets}
+      />
+    );
   }
 
   return (
-    <View style={[estilos.tela, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    <View
+      style={[
+        estilos.tela,
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+    >
+      <BotaoEncerrarJogo onConfirmar={sairLimpo} />
+
       {/* Cabeçalho: rodada + sair */}
       <View style={estilos.cabecalho}>
-        <Pressable onPress={sairLimpo} hitSlop={12} style={estilos.botaoSair}>
-          <Text style={estilos.botaoSairTexto}>×</Text>
-        </Pressable>
         <Text style={estilos.rodadaLabel}>
           {rodadaAtual} / {totalRodadas}
         </Text>
@@ -205,20 +248,30 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
 
       {/* Conteúdo por fase */}
       {fase === 'prompt' && (
-        <FasePrompt promptTexto={promptTexto} promptOp={promptOp} onPress={irParaApontando} />
+        <FasePrompt
+          promptTexto={promptTexto}
+          promptOp={promptOp}
+          onPress={irParaApontando}
+        />
       )}
 
-      {fase === 'apontando' && (
-        <FaseApontando onJa={irParaSelecionar} />
-      )}
+      {fase === 'apontando' && <FaseApontando onJa={irParaSelecionar} />}
 
       {fase === 'selecionar' && (
-        <FaseSelecionar jogadores={jogadores} onSelecionar={selecionarVencedor} onEmpate={declararEmpate} />
+        <FaseSelecionar
+          jogadores={jogadores}
+          onSelecionar={selecionarVencedor}
+          onEmpate={declararEmpate}
+        />
       )}
 
       {fase === 'reveal' && (
         <FaseReveal
-          vencedorNome={vencedorId ? (jogadores.find((j) => j.id === vencedorId)?.nome ?? '') : null}
+          vencedorNome={
+            vencedorId
+              ? (jogadores.find((j) => j.id === vencedorId)?.nome ?? '')
+              : null
+          }
           foiEmpate={foiEmpate}
           promptTexto={promptTexto}
           nomeOp={nomeOp}
@@ -231,7 +284,11 @@ export function TelaJogoLocalMostLikely({ navigation, route }: Props) {
 
       {fase === 'pos_reveal' && (
         <FasePosReveal
-          vencedorNome={vencedorId ? (jogadores.find((j) => j.id === vencedorId)?.nome ?? '') : null}
+          vencedorNome={
+            vencedorId
+              ? (jogadores.find((j) => j.id === vencedorId)?.nome ?? '')
+              : null
+          }
           foiEmpate={foiEmpate}
           segundos={posRevealSegundos}
           onProxima={proximaRodada}
@@ -269,10 +326,14 @@ function FaseApontando({ onJa }: { onJa: () => void }) {
   useEffect(() => {
     const t = setTimeout(() => {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      Animated.timing(jaOp, { toValue: 1, duration: 180, useNativeDriver: true }).start();
+      Animated.timing(jaOp, {
+        toValue: 1,
+        duration: 180,
+        useNativeDriver: true,
+      }).start();
     }, 400);
     return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -302,14 +363,23 @@ function FaseSelecionar({
           <Pressable
             key={j.id}
             onPress={() => onSelecionar(j.id)}
-            style={({ pressed }) => [estilos.selecionarItem, pressed && estilos.selecionarItemPressionado]}
+            style={({ pressed }) => [
+              estilos.selecionarItem,
+              pressed && estilos.selecionarItemPressionado,
+            ]}
           >
             <Text style={estilos.selecionarNome}>{j.nome}</Text>
             <Text style={estilos.selecionarSeta}>→</Text>
           </Pressable>
         ))}
       </View>
-      <Pressable onPress={onEmpate} style={({ pressed }) => [estilos.empateBtn, pressed && { opacity: 0.6 }]}>
+      <Pressable
+        onPress={onEmpate}
+        style={({ pressed }) => [
+          estilos.empateBtn,
+          pressed && { opacity: 0.6 },
+        ]}
+      >
         <Text style={estilos.empateTexto}>foi empate</Text>
       </Pressable>
     </View>
@@ -346,19 +416,23 @@ function FaseReveal({
         ]}
       >
         {foiEmpate ? (
-          <Text style={estilos.revealEmpate}>o grupo não{'\n'}conseguiu decidir.</Text>
+          <Text style={estilos.revealEmpate}>
+            o grupo não{'\n'}conseguiu decidir.
+          </Text>
         ) : (
           <Text style={estilos.revealNome}>{vencedorNome}</Text>
         )}
       </Animated.View>
 
-      <Animated.Text style={[estilos.revealCristalizacao, { opacity: cristalizacaoOp }]}>
-        {foiEmpate
-          ? 'às vezes o grupo é honesto demais.'
-          : 'o grupo falou.'}
+      <Animated.Text
+        style={[estilos.revealCristalizacao, { opacity: cristalizacaoOp }]}
+      >
+        {foiEmpate ? 'às vezes o grupo é honesto demais.' : 'o grupo falou.'}
       </Animated.Text>
 
-      <Animated.View style={[estilos.revealProximaBloco, { opacity: proximaOp }]}>
+      <Animated.View
+        style={[estilos.revealProximaBloco, { opacity: proximaOp }]}
+      >
         <Pressable onPress={onProxima} style={estilos.revealProximaBtn}>
           <Text style={estilos.revealProximaTexto}>próxima →</Text>
         </Pressable>
@@ -388,7 +462,9 @@ function FasePosReveal({
       <Text style={estilos.posRevealFrase}>30 segundos.{'\n'}se defendam.</Text>
       <Text style={estilos.posRevealTimer}>{segundos}s</Text>
       <Text style={estilos.posRevealContinuar}>
-        {isUltimaRodada ? 'toque para ver o resultado →' : 'toque para a próxima →'}
+        {isUltimaRodada
+          ? 'toque para ver o resultado →'
+          : 'toque para a próxima →'}
       </Text>
     </Pressable>
   );
@@ -421,7 +497,10 @@ function FaseResultado({
     let julgadoMax = 0;
     let julgadoMaisVezes: string | null = null;
     for (const [id, n] of contagemId) {
-      if (n > julgadoMax) { julgadoMax = n; julgadoMaisVezes = id; }
+      if (n > julgadoMax) {
+        julgadoMax = n;
+        julgadoMaisVezes = id;
+      }
     }
     processarResultadoMLT({
       totalRodadas: resultados.length,
@@ -429,7 +508,7 @@ function FaseResultado({
       julgadoMaisVezes: julgadoMaisVezes as string | null,
       rodadasComEmpate: resultados.filter((r) => r.vencedorId === null).length,
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const contagem = new Map<string, number>();
@@ -447,14 +526,21 @@ function FaseResultado({
   const maxVotos = maisNomeado ? (contagem.get(maisNomeado.id) ?? 0) : 0;
 
   return (
-    <View style={[estilos.resultadoTela, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }]}>
+    <View
+      style={[
+        estilos.resultadoTela,
+        { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 },
+      ]}
+    >
       <Text style={estilos.resultadoTitulo}>a noite decidiu.</Text>
 
       {maisNomeado && maxVotos > 0 && (
         <View style={estilos.resultadoDestaqueBloco}>
           <Text style={estilos.resultadoDestaquePre}>mais votado</Text>
           <Text style={estilos.resultadoDestaqueNome}>{maisNomeado.nome}</Text>
-          <Text style={estilos.resultadoDestaqueVotos}>{maxVotos}× o grupo escolheu você.</Text>
+          <Text style={estilos.resultadoDestaqueVotos}>
+            {maxVotos}× o grupo escolheu você.
+          </Text>
         </View>
       )}
 
@@ -473,7 +559,13 @@ function FaseResultado({
 
       <FeedbackSessao jogoId="most-likely-to" />
 
-      <Pressable onPress={onSair} style={({ pressed }) => [estilos.resultadoSair, pressed && { opacity: 0.6 }]}>
+      <Pressable
+        onPress={onSair}
+        style={({ pressed }) => [
+          estilos.resultadoSair,
+          pressed && { opacity: 0.6 },
+        ]}
+      >
         <Text style={estilos.resultadoSairTexto}>jogar de novo →</Text>
       </Pressable>
     </View>
@@ -492,21 +584,11 @@ const estilos = StyleSheet.create({
   },
   apontandoTexto: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 56,
     letterSpacing: -1,
     textAlign: 'center',
-  },
-  botaoSair: {
-    alignItems: 'center',
-    height: 40,
-    justifyContent: 'center',
-    width: 40,
-  },
-  botaoSairTexto: {
-    color: cores.textoMudo,
-    fontSize: 28,
-    lineHeight: 30,
   },
   cabecalho: {
     alignItems: 'center',
@@ -557,13 +639,15 @@ const estilos = StyleSheet.create({
   },
   posRevealNome: {
     color: cores.mostLikely,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 36,
     textAlign: 'center',
   },
   posRevealTimer: {
     color: cores.textoMudo,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 28,
     marginTop: espacamento.sm,
     textAlign: 'center',
@@ -574,7 +658,8 @@ const estilos = StyleSheet.create({
   },
   promptTexto: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 26,
     letterSpacing: 0.2,
     lineHeight: 36,
@@ -593,7 +678,8 @@ const estilos = StyleSheet.create({
   },
   resultadoDestaqueNome: {
     color: cores.mostLikely,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 36,
     textAlign: 'center',
   },
@@ -639,7 +725,8 @@ const estilos = StyleSheet.create({
   },
   resultadoRankingVotos: {
     color: cores.textoMudo,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 18,
   },
   resultadoSair: {
@@ -663,7 +750,8 @@ const estilos = StyleSheet.create({
   },
   resultadoTitulo: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 32,
     marginBottom: espacamento.xl,
     textAlign: 'center',
@@ -692,7 +780,8 @@ const estilos = StyleSheet.create({
   },
   revealNome: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 52,
     letterSpacing: -1,
     textAlign: 'center',
@@ -725,7 +814,8 @@ const estilos = StyleSheet.create({
   },
   rodadaLabel: {
     color: cores.textoMudo,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: 16,
     letterSpacing: 0.5,
   },

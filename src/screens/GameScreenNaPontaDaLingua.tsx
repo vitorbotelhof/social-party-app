@@ -22,7 +22,7 @@ import {
   View,
 } from 'react-native';
 
-import { TelaCarregamento } from '@/components';
+import { ControleEncerrarJogo, TelaCarregamento } from '@/components';
 import type { GameState, Player, PlayerId } from '@/engine/types';
 import type {
   Carta,
@@ -43,9 +43,13 @@ import {
   tocarAcerto,
 } from '@/games/na-ponta-da-lingua/audioEngine';
 import { criarAcao, despacharAcao } from '@/services/gameActions';
+import { encerrarPartidaRealtime } from '@/services/encerrarPartida';
 import { setPartidaAtiva } from '@/services/partidaAtiva';
 import { configurarPresenca } from '@/services/presenca';
-import { observarEstadoDoJogo, observarJogadores } from '@/services/roomService';
+import {
+  observarEstadoDoJogo,
+  observarJogadores,
+} from '@/services/roomService';
 import { cores, espacamento, familias, raio, tipografia } from '@/theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
@@ -60,19 +64,27 @@ function nomePorId(jogadores: Player[], id: PlayerId | null): string {
 
 function corIntensidade(nivel: IntensidadeVisual): string {
   switch (nivel) {
-    case 'calmo':   return cores.textoMudo;
-    case 'pressao': return cores.acento;
-    case 'panico':  return cores.acentoQuente;
-    case 'colapso': return cores.erro;
+    case 'calmo':
+      return cores.textoMudo;
+    case 'pressao':
+      return cores.acento;
+    case 'panico':
+      return cores.acentoQuente;
+    case 'colapso':
+      return cores.erro;
   }
 }
 
 function labelIntensidade(nivel: IntensidadeVisual): string {
   switch (nivel) {
-    case 'calmo':   return 'calmo';
-    case 'pressao': return 'pressão';
-    case 'panico':  return 'pânico';
-    case 'colapso': return 'colapso';
+    case 'calmo':
+      return 'calmo';
+    case 'pressao':
+      return 'pressão';
+    case 'panico':
+      return 'pânico';
+    case 'colapso':
+      return 'colapso';
   }
 }
 
@@ -120,7 +132,9 @@ export function GameScreenNaPontaDaLingua({ navigation, route }: Props) {
 
   useEffect(() => {
     void inicializarAudio();
-    return () => { void liberarAudio(); };
+    return () => {
+      void liberarAudio();
+    };
   }, []);
 
   // ── Client-side timer from server deadline ──────────────────────────────────
@@ -153,7 +167,13 @@ export function GameScreenNaPontaDaLingua({ navigation, route }: Props) {
     setTempoRestanteMs(Math.max(0, prazo - Date.now()));
 
     return () => clearInterval(tick);
-  }, [estado?.estadoPublico.subFase, estado?.estadoPublico.prazoTurnoEm, roomCode, jogoId, jogadorId]);
+  }, [
+    estado?.estadoPublico.subFase,
+    estado?.estadoPublico.prazoTurnoEm,
+    roomCode,
+    jogoId,
+    jogadorId,
+  ]);
 
   // ── Derived state ───────────────────────────────────────────────────────────
 
@@ -161,9 +181,10 @@ export function GameScreenNaPontaDaLingua({ navigation, route }: Props) {
   const jogadorAtualId = pub?.ordemJogadores[pub.indiceTurno] ?? null;
   const estatico = jogadorAtualId === jogadorId;
   const duracaoMs = (pub?.duracaoSegundos ?? 60) * 1000;
-  const intensidade = pub?.subFase === 'jogando'
-    ? calcularIntensidade(tempoRestanteMs / duracaoMs)
-    : 'calmo';
+  const intensidade =
+    pub?.subFase === 'jogando'
+      ? calcularIntensidade(tempoRestanteMs / duracaoMs)
+      : 'calmo';
 
   // Private card — only visible if this device is the active player
   const carta: Carta | null =
@@ -177,6 +198,17 @@ export function GameScreenNaPontaDaLingua({ navigation, route }: Props) {
     void despacharAcao(roomCode, jogoId, criarAcao(tipo, jogadorId, {}));
   }
 
+  async function encerrarJogo() {
+    await encerrarPartidaRealtime({
+      roomCode,
+      jogadorId,
+      ehAnfitriao:
+        jogadores.find((jogador) => jogador.id === jogadorId)?.ehAnfitriao ??
+        false,
+    });
+    navigation.navigate('Inicio');
+  }
+
   // ── Render ──────────────────────────────────────────────────────────────────
 
   if (!estado || !pub) {
@@ -186,49 +218,57 @@ export function GameScreenNaPontaDaLingua({ navigation, route }: Props) {
   switch (pub.subFase) {
     case 'preparando':
       return (
-        <FasePreparando
-          eAtivo={estatico}
-          nomeAtivo={nomePorId(jogadores, jogadorAtualId)}
-          turnoAtual={pub.turnosJogados + 1}
-          totalTurnos={pub.totalTurnos}
-          onPronto={() => despachar('pronto')}
-        />
+        <ControleEncerrarJogo onConfirmar={encerrarJogo}>
+          <FasePreparando
+            eAtivo={estatico}
+            nomeAtivo={nomePorId(jogadores, jogadorAtualId)}
+            turnoAtual={pub.turnosJogados + 1}
+            totalTurnos={pub.totalTurnos}
+            onPronto={() => despachar('pronto')}
+          />
+        </ControleEncerrarJogo>
       );
 
     case 'jogando':
       return (
-        <FaseJogando
-          eAtivo={estatico}
-          carta={carta}
-          nomeAtivo={nomePorId(jogadores, jogadorAtualId)}
-          tempoRestanteMs={tempoRestanteMs}
-          intensidade={intensidade}
-          acertosTurno={pub.acertosTurnoAtual}
-          onAcertou={() => {
-            void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            void tocarAcerto();
-            despachar('acertou');
-          }}
-          onPassou={() => {
-            // Medium impact — dismissal, not a hit
-            void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            void tocarFalha();
-            despachar('passou');
-          }}
-        />
+        <ControleEncerrarJogo onConfirmar={encerrarJogo}>
+          <FaseJogando
+            eAtivo={estatico}
+            carta={carta}
+            nomeAtivo={nomePorId(jogadores, jogadorAtualId)}
+            tempoRestanteMs={tempoRestanteMs}
+            intensidade={intensidade}
+            acertosTurno={pub.acertosTurnoAtual}
+            onAcertou={() => {
+              void Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success,
+              );
+              void tocarAcerto();
+              despachar('acertou');
+            }}
+            onPassou={() => {
+              // Medium impact — dismissal, not a hit
+              void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              void tocarFalha();
+              despachar('passou');
+            }}
+          />
+        </ControleEncerrarJogo>
       );
 
     case 'resumo_turno':
       return (
-        <FaseResumoTurno
-          eAtivo={estatico}
-          nomeAtivo={nomePorId(jogadores, jogadorAtualId)}
-          acertos={pub.acertosTurnoAtual}
-          passou={pub.passousTurnoAtual}
-          melhorStreak={pub.melhorStreakTurnoAtual}
-          historicoPalavras={pub.historicoTurnoAtual}
-          onAvancar={estatico ? () => despachar('avancar') : undefined}
-        />
+        <ControleEncerrarJogo onConfirmar={encerrarJogo}>
+          <FaseResumoTurno
+            eAtivo={estatico}
+            nomeAtivo={nomePorId(jogadores, jogadorAtualId)}
+            acertos={pub.acertosTurnoAtual}
+            passou={pub.passousTurnoAtual}
+            melhorStreak={pub.melhorStreakTurnoAtual}
+            historicoPalavras={pub.historicoTurnoAtual}
+            onAvancar={estatico ? () => despachar('avancar') : undefined}
+          />
+        </ControleEncerrarJogo>
       );
 
     case 'finalizado':
@@ -249,7 +289,11 @@ export function GameScreenNaPontaDaLingua({ navigation, route }: Props) {
 // ─── FasePreparando ────────────────────────────────────────────────────────────
 
 function FasePreparando({
-  eAtivo, nomeAtivo, turnoAtual, totalTurnos, onPronto,
+  eAtivo,
+  nomeAtivo,
+  turnoAtual,
+  totalTurnos,
+  onPronto,
 }: {
   eAtivo: boolean;
   nomeAtivo: string;
@@ -260,7 +304,11 @@ function FasePreparando({
   const op = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.timing(op, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+    Animated.timing(op, {
+      toValue: 1,
+      duration: 220,
+      useNativeDriver: true,
+    }).start();
   }, [op]);
 
   return (
@@ -276,7 +324,10 @@ function FasePreparando({
             pegue o celular. os outros olham para o lado.
           </Text>
           <Pressable
-            style={({ pressed }) => [estilos.botaoPronto, pressed && estilos.botaoProntoPressionado]}
+            style={({ pressed }) => [
+              estilos.botaoPronto,
+              pressed && estilos.botaoProntoPressionado,
+            ]}
             onPress={onPronto}
           >
             <Text style={estilos.botaoProntoTexto}>pronto</Text>
@@ -306,16 +357,40 @@ function AguardandoDots() {
     const anim = Animated.loop(
       Animated.stagger(120, [
         Animated.sequence([
-          Animated.timing(dot1, { toValue: 1, duration: 220, useNativeDriver: true }),
-          Animated.timing(dot1, { toValue: 0.2, duration: 220, useNativeDriver: true }),
+          Animated.timing(dot1, {
+            toValue: 1,
+            duration: 220,
+            useNativeDriver: true,
+          }),
+          Animated.timing(dot1, {
+            toValue: 0.2,
+            duration: 220,
+            useNativeDriver: true,
+          }),
         ]),
         Animated.sequence([
-          Animated.timing(dot2, { toValue: 1, duration: 220, useNativeDriver: true }),
-          Animated.timing(dot2, { toValue: 0.2, duration: 220, useNativeDriver: true }),
+          Animated.timing(dot2, {
+            toValue: 1,
+            duration: 220,
+            useNativeDriver: true,
+          }),
+          Animated.timing(dot2, {
+            toValue: 0.2,
+            duration: 220,
+            useNativeDriver: true,
+          }),
         ]),
         Animated.sequence([
-          Animated.timing(dot3, { toValue: 1, duration: 220, useNativeDriver: true }),
-          Animated.timing(dot3, { toValue: 0.2, duration: 220, useNativeDriver: true }),
+          Animated.timing(dot3, {
+            toValue: 1,
+            duration: 220,
+            useNativeDriver: true,
+          }),
+          Animated.timing(dot3, {
+            toValue: 0.2,
+            duration: 220,
+            useNativeDriver: true,
+          }),
         ]),
       ]),
     );
@@ -335,8 +410,14 @@ function AguardandoDots() {
 // ─── FaseJogando ───────────────────────────────────────────────────────────────
 
 function FaseJogando({
-  eAtivo, carta, nomeAtivo, tempoRestanteMs,
-  intensidade, acertosTurno, onAcertou, onPassou,
+  eAtivo,
+  carta,
+  nomeAtivo,
+  tempoRestanteMs,
+  intensidade,
+  acertosTurno,
+  onAcertou,
+  onPassou,
 }: {
   eAtivo: boolean;
   carta: Carta | null;
@@ -361,7 +442,9 @@ function FaseJogando({
       droneIniciado.current = true;
       void iniciarDrone();
     }
-    return () => { void pararDrone(); };
+    return () => {
+      void pararDrone();
+    };
   }, []);
 
   // Intensity → drone volume
@@ -379,8 +462,17 @@ function FaseJogando({
       timerScale.setValue(1.08);
       timerOp.setValue(1);
       Animated.parallel([
-        Animated.spring(timerScale, { toValue: 1, useNativeDriver: true, tension: 80, friction: 6 }),
-        Animated.timing(timerOp, { toValue: intensidade === 'colapso' ? 0.7 : 1, duration: 400, useNativeDriver: true }),
+        Animated.spring(timerScale, {
+          toValue: 1,
+          useNativeDriver: true,
+          tension: 80,
+          friction: 6,
+        }),
+        Animated.timing(timerOp, {
+          toValue: intensidade === 'colapso' ? 0.7 : 1,
+          duration: 400,
+          useNativeDriver: true,
+        }),
       ]).start();
     }
   }, [seg, tempoRestanteMs, intensidade, timerScale, timerOp]);
@@ -392,7 +484,11 @@ function FaseJogando({
         <Animated.Text
           style={[
             estilos.timerGrande,
-            { color: corTimer, transform: [{ scale: timerScale }], opacity: timerOp },
+            {
+              color: corTimer,
+              transform: [{ scale: timerScale }],
+              opacity: timerOp,
+            },
           ]}
         >
           {seg}
@@ -427,13 +523,19 @@ function FaseJogando({
         {/* Ações */}
         <View style={estilos.acoesBloco}>
           <Pressable
-            style={({ pressed }) => [estilos.botaoPassou, pressed && estilos.botaoPassouPressionado]}
+            style={({ pressed }) => [
+              estilos.botaoPassou,
+              pressed && estilos.botaoPassouPressionado,
+            ]}
             onPress={onPassou}
           >
             <Text style={estilos.botaoPassouTexto}>passou</Text>
           </Pressable>
           <Pressable
-            style={({ pressed }) => [estilos.botaoAcertou, pressed && estilos.botaoAcertouPressionado]}
+            style={({ pressed }) => [
+              estilos.botaoAcertou,
+              pressed && estilos.botaoAcertouPressionado,
+            ]}
             onPress={onAcertou}
           >
             <Text style={estilos.botaoAcertouTexto}>acertou</Text>
@@ -458,7 +560,11 @@ function FaseJogando({
       <Animated.Text
         style={[
           estilos.timerGrande,
-          { color: corTimer, transform: [{ scale: timerScale }], opacity: timerOp },
+          {
+            color: corTimer,
+            transform: [{ scale: timerScale }],
+            opacity: timerOp,
+          },
         ]}
       >
         {seg}
@@ -485,7 +591,11 @@ function IntensidadeVignette({ nivel }: { nivel: 'panico' | 'colapso' }) {
 
   useEffect(() => {
     const target = nivel === 'colapso' ? 0.35 : 0.18;
-    Animated.timing(op, { toValue: target, duration: 350, useNativeDriver: true }).start();
+    Animated.timing(op, {
+      toValue: target,
+      duration: 350,
+      useNativeDriver: true,
+    }).start();
   }, [nivel, op]);
 
   return (
@@ -499,14 +609,23 @@ function IntensidadeVignette({ nivel }: { nivel: 'panico' | 'colapso' }) {
 // ─── FaseResumoTurno ───────────────────────────────────────────────────────────
 
 function FaseResumoTurno({
-  eAtivo, nomeAtivo, acertos, passou, melhorStreak, historicoPalavras, onAvancar,
+  eAtivo,
+  nomeAtivo,
+  acertos,
+  passou,
+  melhorStreak,
+  historicoPalavras,
+  onAvancar,
 }: {
   eAtivo: boolean;
   nomeAtivo: string;
   acertos: number;
   passou: number;
   melhorStreak: number;
-  historicoPalavras: Array<{ palavra: string; resultado: 'acertou' | 'passou' }>;
+  historicoPalavras: Array<{
+    palavra: string;
+    resultado: 'acertou' | 'passou';
+  }>;
   onAvancar?: () => void;
 }) {
   const op = useRef(new Animated.Value(0)).current;
@@ -515,12 +634,20 @@ function FaseResumoTurno({
   useEffect(() => {
     Animated.parallel([
       Animated.timing(op, { toValue: 1, duration: 350, useNativeDriver: true }),
-      Animated.spring(translateY, { toValue: 0, damping: 26, mass: 0.8, stiffness: 180, useNativeDriver: true }),
+      Animated.spring(translateY, {
+        toValue: 0,
+        damping: 26,
+        mass: 0.8,
+        stiffness: 180,
+        useNativeDriver: true,
+      }),
     ]).start();
   }, [op, translateY]);
 
   return (
-    <Animated.View style={[estilos.tela, { opacity: op, transform: [{ translateY }] }]}>
+    <Animated.View
+      style={[estilos.tela, { opacity: op, transform: [{ translateY }] }]}
+    >
       <Text style={estilos.resumoTitulo}>
         {eAtivo ? 'seu turno acabou.' : `vez de ${nomeAtivo}.`}
       </Text>
@@ -540,7 +667,9 @@ function FaseResumoTurno({
           <>
             <View style={estilos.resumoSeparador} />
             <View style={estilos.resumoNumeroItem}>
-              <Text style={[estilos.resumoNumero, { color: cores.acento }]}>{melhorStreak}</Text>
+              <Text style={[estilos.resumoNumero, { color: cores.acento }]}>
+                {melhorStreak}
+              </Text>
               <Text style={estilos.resumoNumeroLabel}>streak</Text>
             </View>
           </>
@@ -549,13 +678,21 @@ function FaseResumoTurno({
 
       {/* Word list */}
       {historicoPalavras.length > 0 && (
-        <ScrollView style={estilos.historicoScroll} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={estilos.historicoScroll}
+          showsVerticalScrollIndicator={false}
+        >
           {historicoPalavras.map((item, i) => (
             <View key={i} style={estilos.historicoItem}>
               <View
                 style={[
                   estilos.historicoIndicador,
-                  { backgroundColor: item.resultado === 'acertou' ? cores.sucesso : cores.textoMudo },
+                  {
+                    backgroundColor:
+                      item.resultado === 'acertou'
+                        ? cores.sucesso
+                        : cores.textoMudo,
+                  },
                 ]}
               />
               <Text
@@ -573,7 +710,10 @@ function FaseResumoTurno({
 
       {onAvancar && (
         <Pressable
-          style={({ pressed }) => [estilos.botaoProximo, pressed && estilos.botaoProximoPressionado]}
+          style={({ pressed }) => [
+            estilos.botaoProximo,
+            pressed && estilos.botaoProximoPressionado,
+          ]}
           onPress={onAvancar}
         >
           <Text style={estilos.botaoProximoTexto}>próximo</Text>
@@ -592,7 +732,10 @@ function FaseResumoTurno({
 // ─── FaseFinalizado ────────────────────────────────────────────────────────────
 
 function FaseFinalizado({
-  jogadores, pontos, jogadorId, onVoltar,
+  jogadores,
+  pontos,
+  jogadorId,
+  onVoltar,
 }: {
   jogadores: Player[];
   pontos: Record<PlayerId, number>;
@@ -603,8 +746,9 @@ function FaseFinalizado({
   const tituloY = useRef(new Animated.Value(20)).current;
 
   const ranking = useMemo(() => {
-    return [...jogadores]
-      .sort((a, b) => (pontos[b.id] ?? 0) - (pontos[a.id] ?? 0));
+    return [...jogadores].sort(
+      (a, b) => (pontos[b.id] ?? 0) - (pontos[a.id] ?? 0),
+    );
   }, [jogadores, pontos]);
 
   const maxPontos = ranking[0] ? (pontos[ranking[0].id] ?? 0) : 0;
@@ -614,8 +758,18 @@ function FaseFinalizado({
     Animated.sequence([
       Animated.delay(100),
       Animated.parallel([
-        Animated.timing(op, { toValue: 1, duration: 260, useNativeDriver: true }),
-        Animated.spring(tituloY, { toValue: 0, damping: 24, mass: 0.9, stiffness: 160, useNativeDriver: true }),
+        Animated.timing(op, {
+          toValue: 1,
+          duration: 260,
+          useNativeDriver: true,
+        }),
+        Animated.spring(tituloY, {
+          toValue: 0,
+          damping: 24,
+          mass: 0.9,
+          stiffness: 160,
+          useNativeDriver: true,
+        }),
       ]),
     ]).start();
   }, [op, tituloY]);
@@ -626,12 +780,16 @@ function FaseFinalizado({
       contentContainerStyle={estilos.finalizadoConteudo}
       showsVerticalScrollIndicator={false}
     >
-      <Animated.View style={{ opacity: op, transform: [{ translateY: tituloY }] }}>
+      <Animated.View
+        style={{ opacity: op, transform: [{ translateY: tituloY }] }}
+      >
         {/* Vencedor */}
         {vencedores.length === 1 && (
           <View style={estilos.vencedorBloco}>
             <Text style={estilos.vencedorLabel}>vencedor</Text>
-            <Text style={estilos.vencedorNome}>{vencedores[0]?.nome ?? '...'}</Text>
+            <Text style={estilos.vencedorNome}>
+              {vencedores[0]?.nome ?? '...'}
+            </Text>
             <Text style={estilos.vencedorPontos}>{maxPontos} acertos</Text>
           </View>
         )}
@@ -640,7 +798,9 @@ function FaseFinalizado({
           <View style={estilos.vencedorBloco}>
             <Text style={estilos.vencedorLabel}>empate</Text>
             {vencedores.map((v) => (
-              <Text key={v.id} style={estilos.vencedorNome}>{v.nome}</Text>
+              <Text key={v.id} style={estilos.vencedorNome}>
+                {v.nome}
+              </Text>
             ))}
             <Text style={estilos.vencedorPontos}>{maxPontos} acertos cada</Text>
           </View>
@@ -652,7 +812,9 @@ function FaseFinalizado({
         <View style={estilos.rankingBloco}>
           {ranking.map((j, i) => (
             <View key={j.id} style={estilos.rankingItem}>
-              <Text style={[estilos.rankingPos, i === 0 && { color: cores.acento }]}>
+              <Text
+                style={[estilos.rankingPos, i === 0 && { color: cores.acento }]}
+              >
                 {i + 1}
               </Text>
               <Text
@@ -671,7 +833,10 @@ function FaseFinalizado({
 
         {/* Only host can restart — for now both can exit */}
         <Pressable
-          style={({ pressed }) => [estilos.botaoVoltar, pressed && estilos.botaoVoltarPressionado]}
+          style={({ pressed }) => [
+            estilos.botaoVoltar,
+            pressed && estilos.botaoVoltarPressionado,
+          ]}
           onPress={onVoltar}
         >
           <Text style={estilos.botaoVoltarTexto}>voltar aos jogos</Text>
@@ -707,7 +872,8 @@ const estilos = StyleSheet.create({
   // Preparando
   preparandoLabel: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTitulo,
     letterSpacing: tipografia.spacingTitulo,
     marginBottom: espacamento.md,
@@ -747,14 +913,16 @@ const estilos = StyleSheet.create({
   },
   botaoProntoTexto: {
     color: cores.textoSobrePrimaria,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMaior,
     letterSpacing: tipografia.spacingLeve,
   },
 
   // Timer
   timerGrande: {
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoHero,
     letterSpacing: tipografia.spacingHero,
     lineHeight: 56,
@@ -773,7 +941,8 @@ const estilos = StyleSheet.create({
   },
   observadorNome: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoSubtituloGrande,
     letterSpacing: tipografia.spacingTitulo,
     marginBottom: espacamento.xs,
@@ -788,7 +957,8 @@ const estilos = StyleSheet.create({
   },
   observadorAcertos: {
     color: cores.sucesso,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpo,
     letterSpacing: tipografia.spacingLeve,
     marginTop: espacamento.md,
@@ -803,7 +973,8 @@ const estilos = StyleSheet.create({
   },
   palavraPrincipal: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     letterSpacing: tipografia.spacingTitulo,
     textAlign: 'center',
@@ -840,7 +1011,8 @@ const estilos = StyleSheet.create({
   },
   proibidaTexto: {
     color: cores.erro,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: tipografia.spacingLeve,
   },
@@ -848,7 +1020,8 @@ const estilos = StyleSheet.create({
   // Acertos em tempo real
   acertosTurno: {
     color: cores.sucesso,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoSubtitulo,
     letterSpacing: tipografia.spacingTitulo,
     marginBottom: espacamento.md,
@@ -874,7 +1047,8 @@ const estilos = StyleSheet.create({
   },
   botaoPassouTexto: {
     color: cores.textoSecundario,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMaior,
     letterSpacing: tipografia.spacingLeve,
   },
@@ -890,7 +1064,8 @@ const estilos = StyleSheet.create({
   },
   botaoAcertouTexto: {
     color: cores.textoSobrePrimaria,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMaior,
     letterSpacing: tipografia.spacingLeve,
   },
@@ -908,7 +1083,8 @@ const estilos = StyleSheet.create({
   // Resumo turno
   resumoTitulo: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTitulo,
     letterSpacing: tipografia.spacingTitulo,
     marginBottom: espacamento.xl,
@@ -926,7 +1102,8 @@ const estilos = StyleSheet.create({
   },
   resumoNumero: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     letterSpacing: tipografia.spacingTitulo,
   },
@@ -961,7 +1138,8 @@ const estilos = StyleSheet.create({
   },
   historicoPalavra: {
     color: cores.texto,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpo,
     letterSpacing: tipografia.spacingLeve,
   },
@@ -981,7 +1159,8 @@ const estilos = StyleSheet.create({
   },
   botaoProximoTexto: {
     color: cores.textoSobrePrimaria,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMaior,
     letterSpacing: tipografia.spacingLeve,
   },
@@ -1018,7 +1197,8 @@ const estilos = StyleSheet.create({
   },
   vencedorNome: {
     color: cores.acento,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoTituloGrande,
     letterSpacing: tipografia.spacingTitulo,
     textAlign: 'center',
@@ -1049,7 +1229,8 @@ const estilos = StyleSheet.create({
   },
   rankingPos: {
     color: cores.textoMudo,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMenor,
     minWidth: 24,
     textAlign: 'center',
@@ -1057,13 +1238,15 @@ const estilos = StyleSheet.create({
   rankingNome: {
     color: cores.texto,
     flex: 1,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpo,
     letterSpacing: tipografia.spacingLeve,
   },
   rankingPontos: {
     color: cores.textoSecundario,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: tipografia.spacingLeve,
   },
@@ -1082,7 +1265,8 @@ const estilos = StyleSheet.create({
   },
   botaoVoltarTexto: {
     color: cores.textoSecundario,
-    fontFamily: familias.sans, fontWeight: '800' as const,
+    fontFamily: familias.sans,
+    fontWeight: '800' as const,
     fontSize: tipografia.tamanhoCorpoMenor,
     letterSpacing: tipografia.spacingLeve,
   },

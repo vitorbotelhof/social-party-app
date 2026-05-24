@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   BotaoPrimario,
   BotaoSecundario,
-  BotaoVoltar,
+  BotaoEncerrarJogo,
   FeedbackSessao,
   Temporizador,
 } from '@/components';
@@ -223,7 +223,9 @@ export function TelaJogoLocalFazAi({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
-      <BotaoVoltar onPress={sair} variante="fechar" />
+      {publico.subFase !== 'finalizado' ? (
+        <BotaoEncerrarJogo onConfirmar={sair} />
+      ) : null}
 
       {publico.subFase === 'preparando' && (
         <TelaPreparando

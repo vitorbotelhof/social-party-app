@@ -26,6 +26,54 @@ export type TipoEscolha = 'top1' | 'last';
 
 export type CategoriaVMCId = string;
 
+export type TagEditorialVMC =
+  | 'comportamento'
+  | 'preferencia'
+  | 'grupo'
+  | 'conflito'
+  | 'intimidade'
+  | 'rotina'
+  | 'dinheiro'
+  | 'amor'
+  | 'amizade'
+  | 'trabalho'
+  | 'familia'
+  | 'autoimagem'
+  | 'decisao'
+  | 'vergonha-leve'
+  | 'valor-pessoal'
+  | 'festa'
+  | 'viagem'
+  | 'digital'
+  | 'cuidado'
+  | 'controle';
+
+export type FamiliaEditorialVMC =
+  | 'quebra-gelo'
+  | 'preferencias'
+  | 'leitura-social'
+  | 'vida-pratica'
+  | 'valores';
+
+export type IntensidadeEditorialVMC = 'baixa' | 'media' | 'alta';
+
+export type RiscoRepeticaoVMC = 'baixo' | 'medio' | 'alto';
+
+export type ModoEscolhaRecomendadoVMC = 'top1' | 'ambos';
+
+export interface MetadadosEditoriaisVMC {
+  /** Família usada pelo futuro seletor para variar a sensação das rodadas. */
+  familia: FamiliaEditorialVMC;
+  /** Tags flexíveis para recomendação, anti-repetição e curadoria. */
+  tags: TagEditorialVMC[];
+  /** Peso editorial, não necessariamente igual à temperatura da categoria. */
+  intensidade: IntensidadeEditorialVMC;
+  /** Risco de cansar se aparecer perto de cartas parecidas. */
+  riscoRepeticao: RiscoRepeticaoVMC;
+  /** Modo mais fluido para a carta, mesmo quando o card ainda permite ambos. */
+  modoRecomendado: ModoEscolhaRecomendadoVMC;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // §2  ENTIDADES
 // ─────────────────────────────────────────────────────────────────────────────
@@ -40,6 +88,7 @@ export interface CartaoVMC {
   id: string;
   categoriaId: CategoriaVMCId;
   temperatura: TemperaturaVMC;
+  editorial: MetadadosEditoriaisVMC;
   /** Exatamente 4. Curtas: 1–4 palavras cada. */
   opcoes: [string, string, string, string];
   /**
@@ -86,24 +135,24 @@ export interface EstadoColetandoPrevisoes {
  * Calculada pela proporção de previsões corretas.
  */
 export type LeituraVMC =
-  | 'leitura_perfeita'  // todos acertaram
-  | 'sincronizados'     // maioria acertou
-  | 'divididos'         // metade acertou (apenas quando total par)
-  | 'surpresa'          // minoria acertou
-  | 'leitura_solo'      // exatamente uma pessoa acertou
-  | 'desconhecido';     // ninguém acertou
+  | 'leitura_perfeita' // todos acertaram
+  | 'sincronizados' // maioria acertou
+  | 'divididos' // metade acertou (apenas quando total par)
+  | 'surpresa' // minoria acertou
+  | 'leitura_solo' // exatamente uma pessoa acertou
+  | 'desconhecido'; // ninguém acertou
 
 // ─────────────────────────────────────────────────────────────────────────────
 // §5  FASES DO JOGO
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type FaseVMC =
-  | 'aguardando_ranqueador'   // "passe o celular para [nome]"
-  | 'ranqueador_escolhendo'   // ranqueador vê card e escolhe em segredo
-  | 'coletando_previsoes'     // cada não-ranqueador prevê sequencialmente
-  | 'revelando'               // resposta aparece com framing emocional
-  | 'resultado_rodada'        // placar leve, botão "próxima"
-  | 'finalizado';             // jogo encerrado
+  | 'aguardando_ranqueador' // "passe o celular para [nome]"
+  | 'ranqueador_escolhendo' // ranqueador vê card e escolhe em segredo
+  | 'coletando_previsoes' // cada não-ranqueador prevê sequencialmente
+  | 'revelando' // resposta aparece com framing emocional
+  | 'resultado_rodada' // placar leve, botão "próxima"
+  | 'finalizado'; // jogo encerrado
 
 // ─────────────────────────────────────────────────────────────────────────────
 // §6  HISTÓRICO POR RODADA

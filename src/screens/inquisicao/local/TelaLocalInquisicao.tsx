@@ -30,6 +30,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // eslint-disable-next-line no-undef -- __DEV__ é global do React Native
 declare const __DEV__: boolean;
 
+import { ControleEncerrarJogo } from '@/components';
 import { InquisicaoLocalEngine } from '@/games/inquisicao/local/localEngine';
 import {
   processarLoopLocalInquisicao,
@@ -119,59 +120,63 @@ export function TelaLocalInquisicao({ jogadores, config, onVoltar }: Props) {
 
   const engine = engineRef.current;
 
+  function comEncerrar(children: React.ReactNode) {
+    return (
+      <ControleEncerrarJogo onConfirmar={onVoltar}>
+        {children}
+      </ControleEncerrarJogo>
+    );
+  }
+
   // ── Routing ──────────────────────────────────────────────────────────────
 
   switch (estado.fase) {
     case 'distribuindo_papeis':
-      return (
+      return comEncerrar(
         <TelaDistribuicaoLocal
           // key garante remount completo a cada troca de jogador
           key={estado.distribuicao?.indiceAtual ?? 0}
           engine={engine}
           estado={estado}
           mapaNomes={mapaNomes}
-        />
+        />,
       );
 
     case 'dia':
-      return (
-        <TelaDiaInline
-          engine={engine}
-          estado={estado}
-          mapaNomes={mapaNomes}
-        />
+      return comEncerrar(
+        <TelaDiaInline engine={engine} estado={estado} mapaNomes={mapaNomes} />,
       );
 
     case 'chamando_votacao':
-      return (
+      return comEncerrar(
         <TelaRegistrarVoto
           engine={engine}
           estado={estado}
           mapaNomes={mapaNomes}
-        />
+        />,
       );
 
     case 'revelando_eliminacao':
-      return (
+      return comEncerrar(
         <TelaRevelacaoInline
           engine={engine}
           estado={estado}
           mapaNomes={mapaNomes}
-        />
+        />,
       );
 
     case 'aguardando_noite':
-      return <TelaAguardandoNoite engine={engine} />;
+      return comEncerrar(<TelaAguardandoNoite engine={engine} />);
 
     case 'noite_corrompidos':
     case 'noite_guardioes':
     case 'encerrando_noite':
-      return (
+      return comEncerrar(
         <TelaNoiteLocal
           engine={engine}
           estado={estado}
           mapaNomes={mapaNomes}
-        />
+        />,
       );
 
     case 'finalizado':
@@ -188,7 +193,9 @@ export function TelaLocalInquisicao({ jogadores, config, onVoltar }: Props) {
           estado={estado}
           jogadores={jogadores}
           onVoltar={onVoltar}
-          onVerRelatorio={__DEV__ && relatorio ? () => setVerRelatorio(true) : undefined}
+          onVerRelatorio={
+            __DEV__ && relatorio ? () => setVerRelatorio(true) : undefined
+          }
         />
       );
 
@@ -216,7 +223,6 @@ function TelaDiaInline({
 }) {
   return (
     <SafeAreaView style={estilosDia.container}>
-
       {/* Cabeçalho mínimo — loop number only */}
       <View style={estilosDia.cabecalho}>
         <Text style={estilosDia.labelLoop}>loop {estado.loop}</Text>
@@ -247,7 +253,6 @@ function TelaDiaInline({
           <Text style={estilosDia.textoBotaoVotacao}>apontar</Text>
         </TouchableOpacity>
       </View>
-
     </SafeAreaView>
   );
 }
@@ -322,7 +327,6 @@ function TelaRevelacaoInline({
 
   return (
     <SafeAreaView style={estilosRevelacao.container}>
-
       <View style={estilosRevelacao.centro}>
         <Text style={estilosRevelacao.nomeEliminado}>{nome}</Text>
         <Text
@@ -344,7 +348,6 @@ function TelaRevelacaoInline({
           <Text style={estilosRevelacao.textoContinuar}>continuar</Text>
         </TouchableOpacity>
       </View>
-
     </SafeAreaView>
   );
 }
@@ -356,7 +359,6 @@ function TelaRevelacaoInline({
 function TelaAguardandoNoite({ engine }: { engine: InquisicaoLocalEngine }) {
   return (
     <SafeAreaView style={estilosAguardando.container}>
-
       <View style={estilosAguardando.centro}>
         <Text style={estilosAguardando.instrucao}>fechem os olhos.</Text>
       </View>
@@ -370,7 +372,6 @@ function TelaAguardandoNoite({ engine }: { engine: InquisicaoLocalEngine }) {
           <Text style={estilosAguardando.textoBotao}>iniciar noite</Text>
         </TouchableOpacity>
       </View>
-
     </SafeAreaView>
   );
 }

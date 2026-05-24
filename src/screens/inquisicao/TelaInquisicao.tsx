@@ -9,14 +9,25 @@
  *  - [DEV] Integrar debug panel e pacing tracker
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { onValue, ref, set } from 'firebase/database';
 
+import { ControleEncerrarJogo } from '@/components';
 import type { PlayerId, Player, RoomCode } from '@/engine/types';
 import { inquisicaoEngine } from '@/games/inquisicao/engine';
-import type { EstadoFirebaseInquisicao, EstadoPrivadoInquisicao } from '@/games/inquisicao/types';
+import type {
+  EstadoFirebaseInquisicao,
+  EstadoPrivadoInquisicao,
+} from '@/games/inquisicao/types';
+import { encerrarPartidaRealtime } from '@/services/encerrarPartida';
 import { getRealtimeDb } from '@/services/firebase';
 import { criarInquisicaoRealtime } from '@/services/inquisicaoRealtime';
 import type { InquisicaoRealtimeService } from '@/services/inquisicaoRealtime';
@@ -34,7 +45,10 @@ import { TelaFinalizado } from './TelaFinalizado';
 // Debug imports — tree-shaken em produção via __DEV__ guards internos
 import { DebugPanelInquisicao } from '@/debug/inquisicao/DebugPanelInquisicao';
 import { adicionarEmocionalLog } from '@/debug/inquisicao/debugStore';
-import { logMudancaSubFase, resetPhaseLogger } from '@/debug/inquisicao/phaseLogger';
+import {
+  logMudancaSubFase,
+  resetPhaseLogger,
+} from '@/debug/inquisicao/phaseLogger';
 import {
   finalizarSubFase,
   iniciarSubFase,
@@ -42,7 +56,10 @@ import {
   registrarReplay,
   resetPacingTracker,
 } from '@/debug/inquisicao/pacingTracker';
-import { processarEstadoParaReplay, resetLoopReplay } from '@/debug/inquisicao/loopReplay';
+import {
+  processarEstadoParaReplay,
+  resetLoopReplay,
+} from '@/debug/inquisicao/loopReplay';
 import { resetDebugSession } from '@/debug/inquisicao/debugStore';
 
 interface Props {
@@ -58,8 +75,10 @@ interface Props {
 export function TelaInquisicao({ roomCode, jogadorId, onVoltar }: Props) {
   const [anfitriaoId, setAnfitriaoId] = useState<PlayerId | null>(null);
   const [jogadores, setJogadores] = useState<Player[]>([]);
-  const [estadoPublico, setEstadoPublico] = useState<EstadoFirebaseInquisicao | null>(null);
-  const [estadoPrivado, setEstadoPrivado] = useState<EstadoPrivadoInquisicao | null>(null);
+  const [estadoPublico, setEstadoPublico] =
+    useState<EstadoFirebaseInquisicao | null>(null);
+  const [estadoPrivado, setEstadoPrivado] =
+    useState<EstadoPrivadoInquisicao | null>(null);
 
   const realtimeRef = useRef<InquisicaoRealtimeService | null>(null);
   const engineIniciadoRef = useRef(false);
@@ -144,7 +163,9 @@ export function TelaInquisicao({ roomCode, jogadorId, onVoltar }: Props) {
     const unsubPub = svc.observarEstadoPublico((e) => setEstadoPublico(e));
 
     // Observar estado privado do próprio jogador
-    const unsubPriv = svc.observarPrivado(jogadorId, (p) => setEstadoPrivado(p));
+    const unsubPriv = svc.observarPrivado(jogadorId, (p) =>
+      setEstadoPrivado(p),
+    );
 
     return () => {
       unsubPub();
@@ -228,7 +249,10 @@ export function TelaInquisicao({ roomCode, jogadorId, onVoltar }: Props) {
 
   // ── Handler: jogador confirmou ver o papel ───────────────────────────────────
   const handlePronto = useCallback(async () => {
-    const papelVistoRef = ref(getRealtimeDb(), `salas/${roomCode}/papelVisto/${jogadorId}`);
+    const papelVistoRef = ref(
+      getRealtimeDb(),
+      `salas/${roomCode}/papelVisto/${jogadorId}`,
+    );
     await set(papelVistoRef, true);
   }, [roomCode, jogadorId]);
 
@@ -237,6 +261,17 @@ export function TelaInquisicao({ roomCode, jogadorId, onVoltar }: Props) {
     if (__DEV__) registrarReplay();
     onVoltar();
   }, [onVoltar]);
+
+  const handleEncerrarJogo = useCallback(async () => {
+    inquisicaoEngine.parar();
+    realtimeRef.current?.limpar();
+    await encerrarPartidaRealtime({
+      roomCode,
+      jogadorId,
+      ehAnfitriao: isHost,
+    });
+    onVoltar();
+  }, [isHost, jogadorId, onVoltar, roomCode]);
 
   // ── Aguardar estado mínimo ───────────────────────────────────────────────────
   // Tela escura enquanto Firebase sincroniza — sem loader visível.
@@ -249,7 +284,7 @@ export function TelaInquisicao({ roomCode, jogadorId, onVoltar }: Props) {
   const subFase = estadoPublico.subFase;
 
   // ── Roteamento de sub-fases ──────────────────────────────────────────────────
-  return (
+  const conteudo = (
     <View style={estilos.container}>
       {subFase === 'revelando_papeis' && (
         <TelaDistribuindoPapeis
@@ -315,6 +350,16 @@ export function TelaInquisicao({ roomCode, jogadorId, onVoltar }: Props) {
         />
       )}
     </View>
+  );
+
+  if (subFase === 'finalizado') {
+    return conteudo;
+  }
+
+  return (
+    <ControleEncerrarJogo onConfirmar={handleEncerrarJogo}>
+      {conteudo}
+    </ControleEncerrarJogo>
   );
 }
 

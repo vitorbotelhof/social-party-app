@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   BadgeUmCelular,
+  BotaoEncerrarJogo,
   BotaoPrimario,
   BotaoSecundario,
   TelaCarregamento,
@@ -128,6 +129,9 @@ export function TelaJogoLocal() {
   return (
     <View style={estilos.flex}>
       {renderFase()}
+      {estado.estadoPublico.subFase !== 'finalizado' ? (
+        <BotaoEncerrarJogo onConfirmar={() => sairLimpo('encerrar')} />
+      ) : null}
       <BadgeUmCelular />
     </View>
   );

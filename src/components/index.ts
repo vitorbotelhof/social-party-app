@@ -4,6 +4,10 @@ export type {
   DestaqueCatalogoItem,
   JogoDestaqueItem,
 } from '@/components/BannerJogoDestaque';
+export {
+  BotaoEncerrarJogo,
+  ControleEncerrarJogo,
+} from '@/components/BotaoEncerrarJogo';
 export { BotaoVoltar } from '@/components/BotaoVoltar';
 export { CardJogoCatalogo } from '@/components/CardJogoCatalogo';
 export type { JogoCatalogoItem } from '@/components/CardJogoCatalogo';

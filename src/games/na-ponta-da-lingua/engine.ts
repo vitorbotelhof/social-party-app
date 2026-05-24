@@ -1,10 +1,5 @@
 import { GameEngine } from '@/engine/GameEngine';
-import type {
-  GameConfig,
-  GameState,
-  Player,
-  PlayerId,
-} from '@/engine/types';
+import type { GameConfig, GameState, Player, PlayerId } from '@/engine/types';
 import { selecionarCartaInteligente } from '@/games/na-ponta-da-lingua/cardSelection';
 import type {
   HistoricoTurnoItem,
@@ -13,7 +8,6 @@ import type {
   NPLPublicState,
   OpoesNPL,
 } from '@/games/na-ponta-da-lingua/types';
-import { embaralhar } from '@/utils/random';
 
 type NPLState = GameState<NPLPublicState, NPLPrivateState>;
 
@@ -28,19 +22,31 @@ const DURACAO_VALIDAS = new Set([45, 60, 90]);
 
 function normalizarOpcoes(opcoes: unknown): OpoesNPL {
   const o = (opcoes ?? {}) as Partial<OpoesNPL>;
-  const duracaoSegundos = (DURACAO_VALIDAS.has(o.duracaoSegundos as number)
-    ? o.duracaoSegundos
-    : OPCOES_PADRAO.duracaoSegundos) as OpoesNPL['duracaoSegundos'];
+  const duracaoSegundos = (
+    DURACAO_VALIDAS.has(o.duracaoSegundos as number)
+      ? o.duracaoSegundos
+      : OPCOES_PADRAO.duracaoSegundos
+  ) as OpoesNPL['duracaoSegundos'];
   const rodadasPorJogador = Math.max(
     1,
-    Math.min(10, Number.isFinite(o.rodadasPorJogador) ? Number(o.rodadasPorJogador) : OPCOES_PADRAO.rodadasPorJogador),
+    Math.min(
+      10,
+      Number.isFinite(o.rodadasPorJogador)
+        ? Number(o.rodadasPorJogador)
+        : OPCOES_PADRAO.rodadasPorJogador,
+    ),
   );
   const dificuldade =
-    o.dificuldade === 'facil' || o.dificuldade === 'medio' || o.dificuldade === 'dificil' || o.dificuldade === 'colapso' || o.dificuldade === 'todas'
+    o.dificuldade === 'facil' ||
+    o.dificuldade === 'medio' ||
+    o.dificuldade === 'dificil' ||
+    o.dificuldade === 'colapso' ||
+    o.dificuldade === 'todas'
       ? o.dificuldade
       : OPCOES_PADRAO.dificuldade;
   const categorias =
-    o.categorias === 'todas' || (Array.isArray(o.categorias) && o.categorias.length > 0)
+    o.categorias === 'todas' ||
+    (Array.isArray(o.categorias) && o.categorias.length > 0)
       ? o.categorias
       : OPCOES_PADRAO.categorias;
   return { duracaoSegundos, rodadasPorJogador, dificuldade, categorias };
@@ -48,7 +54,9 @@ function normalizarOpcoes(opcoes: unknown): OpoesNPL {
 
 // ─── State helpers ────────────────────────────────────────────────────────────
 
-function estadosPrivadosVazios(jogadores: Player[]): Record<PlayerId, NPLPrivateState> {
+function estadosPrivadosVazios(
+  jogadores: Player[],
+): Record<PlayerId, NPLPrivateState> {
   return Object.fromEntries(jogadores.map((j) => [j.id, { carta: null }]));
 }
 
@@ -64,7 +72,11 @@ function perTurnoVazio() {
 
 // ─── Engine ───────────────────────────────────────────────────────────────────
 
-class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, NPLAction> {
+class NaPontaDaLinguaEngine extends GameEngine<
+  NPLPublicState,
+  NPLPrivateState,
+  NPLAction
+> {
   readonly config: GameConfig = {
     id: 'na-ponta-da-lingua',
     nome: 'Na Ponta da Língua',
@@ -75,9 +87,13 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
     tempoDeRodadaSegundos: 60,
   };
 
-  criarEstadoInicial(jogadores: Player[], anfitriaoId: PlayerId, opcoes?: unknown): NPLState {
+  criarEstadoInicial(
+    jogadores: Player[],
+    anfitriaoId: PlayerId,
+    opcoes?: unknown,
+  ): NPLState {
     const config = normalizarOpcoes(opcoes);
-    const ordemJogadores = embaralhar(jogadores.map((j) => j.id));
+    const ordemJogadores = jogadores.map((j) => j.id);
     const totalTurnos = ordemJogadores.length * config.rodadasPorJogador;
     const agora = Date.now();
 
@@ -135,10 +151,15 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
 
   // ─── Handlers ─────────────────────────────────────────────────────────────
 
-  private tratarPronto(estado: NPLState, jogadorId: PlayerId, em: number): NPLState {
+  private tratarPronto(
+    estado: NPLState,
+    jogadorId: PlayerId,
+    em: number,
+  ): NPLState {
     const { estadoPublico } = estado;
     if (estadoPublico.subFase !== 'preparando') return estado;
-    const jogadorAtual = estadoPublico.ordemJogadores[estadoPublico.indiceTurno];
+    const jogadorAtual =
+      estadoPublico.ordemJogadores[estadoPublico.indiceTurno];
     if (jogadorId !== jogadorAtual) return estado;
 
     const carta = selecionarCartaInteligente(
@@ -176,13 +197,20 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
     const { estadoPublico } = estado;
     if (estadoPublico.subFase !== 'jogando') return estado;
 
-    const jogadorAtualId = estadoPublico.ordemJogadores[estadoPublico.indiceTurno]!;
+    const jogadorAtualId =
+      estadoPublico.ordemJogadores[estadoPublico.indiceTurno]!;
     const cartaAtual = estado.estadosPrivados[jogadorAtualId]?.carta;
 
     const novoStreak = estadoPublico.streakTurnoAtual + 1;
-    const novoMelhorStreak = Math.max(novoStreak, estadoPublico.melhorStreakTurnoAtual);
+    const novoMelhorStreak = Math.max(
+      novoStreak,
+      estadoPublico.melhorStreakTurnoAtual,
+    );
     const novoHistorico: HistoricoTurnoItem[] = cartaAtual
-      ? [...estadoPublico.historicoTurnoAtual, { palavra: cartaAtual.palavra, resultado: 'acertou' }]
+      ? [
+          ...estadoPublico.historicoTurnoAtual,
+          { palavra: cartaAtual.palavra, resultado: 'acertou' },
+        ]
       : estadoPublico.historicoTurnoAtual;
 
     const novaCartasUsadas = [...estadoPublico.cartasUsadas];
@@ -224,11 +252,15 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
     const { estadoPublico } = estado;
     if (estadoPublico.subFase !== 'jogando') return estado;
 
-    const jogadorAtualId = estadoPublico.ordemJogadores[estadoPublico.indiceTurno]!;
+    const jogadorAtualId =
+      estadoPublico.ordemJogadores[estadoPublico.indiceTurno]!;
     const cartaAtual = estado.estadosPrivados[jogadorAtualId]?.carta;
 
     const novoHistorico: HistoricoTurnoItem[] = cartaAtual
-      ? [...estadoPublico.historicoTurnoAtual, { palavra: cartaAtual.palavra, resultado: 'passou' }]
+      ? [
+          ...estadoPublico.historicoTurnoAtual,
+          { palavra: cartaAtual.palavra, resultado: 'passou' },
+        ]
       : estadoPublico.historicoTurnoAtual;
 
     const novaCartasUsadas = [...estadoPublico.cartasUsadas];
@@ -289,12 +321,14 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
       return this.finalizarPartida(estado, turnosJogados, em);
     }
 
-    const proximoIndice = (estadoPublico.indiceTurno + 1) % estadoPublico.ordemJogadores.length;
+    const proximoIndice =
+      (estadoPublico.indiceTurno + 1) % estadoPublico.ordemJogadores.length;
     const proximoJogadorId = estadoPublico.ordemJogadores[proximoIndice]!;
     const proximaRodada = estado.rodada + (proximoIndice === 0 ? 1 : 0);
 
     const novosPrivados = { ...estado.estadosPrivados };
-    const jogadorAnteriorId = estadoPublico.ordemJogadores[estadoPublico.indiceTurno]!;
+    const jogadorAnteriorId =
+      estadoPublico.ordemJogadores[estadoPublico.indiceTurno]!;
     novosPrivados[jogadorAnteriorId] = { carta: null };
 
     return {
@@ -315,7 +349,11 @@ class NaPontaDaLinguaEngine extends GameEngine<NPLPublicState, NPLPrivateState, 
     };
   }
 
-  private finalizarPartida(estado: NPLState, turnosJogados: number, em: number): NPLState {
+  private finalizarPartida(
+    estado: NPLState,
+    turnosJogados: number,
+    em: number,
+  ): NPLState {
     const { estadoPublico } = estado;
 
     let maxPontos = 0;

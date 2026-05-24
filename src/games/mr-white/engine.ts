@@ -203,7 +203,7 @@ class MrWhiteEngine extends GameEngine<
 
     // Regra clássica: Mr White nunca começa dando dica (entregaria de cara).
     const ordemTurnos = this.ordemSemMrWhiteNoComeco(
-      embaralhar(jogadores.map((j) => j.id)),
+      jogadores.map((j) => j.id),
       mrWhiteIds,
     );
 

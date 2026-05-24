@@ -24,6 +24,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ControleEncerrarJogo } from '@/components';
 import { VMCLocalEngine } from '@/games/voce-me-conhece/local/localEngine';
 import type {
   ConfiguracaoVMC,
@@ -62,21 +63,27 @@ const COR_ACERTO = '#22C55E';
 /** Cor emocional por tipo de leitura — usada no cabeçalho do reveal. */
 const COR_LEITURA: Record<LeituraVMC, string> = {
   leitura_perfeita: '#22C55E',
-  sincronizados:    '#4D7CFE',
-  divididos:        '#F59E0B',
-  surpresa:         '#EF4444',
-  leitura_solo:     '#F97316',
-  desconhecido:     cores.textoMudo,
+  sincronizados: '#4D7CFE',
+  divididos: '#F59E0B',
+  surpresa: '#EF4444',
+  leitura_solo: '#F97316',
+  desconhecido: cores.textoMudo,
 };
 
 function textoLeitura(leitura: LeituraVMC): string {
   switch (leitura) {
-    case 'leitura_perfeita': return 'leitura perfeita.';
-    case 'sincronizados':    return 'sincronizados.';
-    case 'divididos':        return 'divididos.';
-    case 'surpresa':         return 'ninguém esperava.';
-    case 'leitura_solo':     return 'só um acertou.';
-    case 'desconhecido':     return 'ninguém acertou.';
+    case 'leitura_perfeita':
+      return 'leitura perfeita.';
+    case 'sincronizados':
+      return 'sincronizados.';
+    case 'divididos':
+      return 'divididos.';
+    case 'surpresa':
+      return 'ninguém esperava.';
+    case 'leitura_solo':
+      return 'só um acertou.';
+    case 'desconhecido':
+      return 'ninguém acertou.';
   }
 }
 
@@ -114,7 +121,9 @@ function fadeSlideIn(
 export function TelaLocalVMC({ jogadores, config, onVoltar }: Props) {
   const engineRef = useRef<VMCLocalEngine | null>(null);
   const [estado, setEstado] = useState<EstadoVMCPublico | null>(null);
-  const [resultado, setResultado] = useState<ResultadoVMCFinalizado | null>(null);
+  const [resultado, setResultado] = useState<ResultadoVMCFinalizado | null>(
+    null,
+  );
 
   useEffect(() => {
     assegurarSessaoIniciada(jogadores, 'voce-me-conhece');
@@ -144,59 +153,67 @@ export function TelaLocalVMC({ jogadores, config, onVoltar }: Props) {
 
   const engine = engineRef.current;
 
+  function comEncerrar(children: React.ReactNode) {
+    return (
+      <ControleEncerrarJogo onConfirmar={onVoltar}>
+        {children}
+      </ControleEncerrarJogo>
+    );
+  }
+
   // ── Routing ──────────────────────────────────────────────────────────────
 
   switch (estado.fase) {
     case 'aguardando_ranqueador': {
       const ranqueador = engine.getRanqueadorAtual();
-      return (
+      return comEncerrar(
         <TelaAguardandoRanqueador
           nomeRanqueador={ranqueador?.nome ?? ''}
           rodadaAtual={estado.rodadaAtual}
           totalRodadas={estado.totalRodadas}
           onConfirmar={() => engine.confirmarPassagem()}
-        />
+        />,
       );
     }
 
     case 'ranqueador_escolhendo':
-      return (
+      return comEncerrar(
         <TelaRanqueadorEscolhendo
           estado={estado}
           nomeRanqueador={engine.getRanqueadorAtual()?.nome ?? ''}
           onEscolheu={(opcao) => engine.ranqueadorEscolheu(opcao)}
-        />
+        />,
       );
 
     case 'coletando_previsoes': {
       const previsor = engine.getPrevisortAtual();
-      return (
+      return comEncerrar(
         <TelaColetandoPrevisoes
           key={estado.coletandoPrevisoes?.indiceAtual ?? 0}
           estado={estado}
           nomePrevisor={previsor?.nome ?? ''}
           nomeRanqueador={engine.getRanqueadorAtual()?.nome ?? ''}
           onPrevisao={(opcao) => engine.registrarPrevisao(opcao)}
-        />
+        />,
       );
     }
 
     case 'revelando':
-      return (
+      return comEncerrar(
         <TelaRevelando
           estado={estado}
           engine={engine}
           onContinuar={() => engine.confirmarRevelacao()}
-        />
+        />,
       );
 
     case 'resultado_rodada':
-      return (
+      return comEncerrar(
         <TelaResultadoRodada
           estado={estado}
           engine={engine}
           onProxima={() => engine.confirmarResultado()}
-        />
+        />,
       );
 
     case 'finalizado':
@@ -345,10 +362,12 @@ function TelaRanqueadorEscolhendo({
 
       <View style={estilosEscolhendo.opcoes}>
         {card.opcoes.map((opcao, i) => {
-          const translateY = (optAnims[i] ?? new Animated.Value(1)).interpolate({
-            inputRange: [0, 1],
-            outputRange: [14, 0],
-          });
+          const translateY = (optAnims[i] ?? new Animated.Value(1)).interpolate(
+            {
+              inputRange: [0, 1],
+              outputRange: [14, 0],
+            },
+          );
           return (
             <Animated.View
               key={opcao}
@@ -490,10 +509,12 @@ function TelaColetandoPrevisoes({
 
       <View style={estilosEscolhendo.opcoes}>
         {card.opcoes.map((opcao, i) => {
-          const translateY = (optAnims[i] ?? new Animated.Value(1)).interpolate({
-            inputRange: [0, 1],
-            outputRange: [14, 0],
-          });
+          const translateY = (optAnims[i] ?? new Animated.Value(1)).interpolate(
+            {
+              inputRange: [0, 1],
+              outputRange: [14, 0],
+            },
+          );
           return (
             <Animated.View
               key={opcao}
@@ -617,7 +638,7 @@ function TelaRevelando({
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
     }).start();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!card || !escolha || !leitura) return null;
@@ -630,12 +651,14 @@ function TelaRevelando({
 
   return (
     <SafeAreaView style={estilosBase.container}>
-
       {/* Cabeçalho: leitura emocional colorida por tipo */}
       <Animated.View
         style={[
           estilosRevelando.cabecalho,
-          { opacity: headerAnim, transform: [{ translateY: headerTranslateY }] },
+          {
+            opacity: headerAnim,
+            transform: [{ translateY: headerTranslateY }],
+          },
         ]}
       >
         <Text style={[estilosRevelando.leitura, { color: leituraColor }]}>
@@ -647,10 +670,12 @@ function TelaRevelando({
       <View style={estilosRevelando.opcoes}>
         {card.opcoes.map((opcao, i) => {
           const isEscolha = opcao === escolha;
-          const translateY = (optAnims[i] ?? new Animated.Value(1)).interpolate({
-            inputRange: [0, 1],
-            outputRange: [12, 0],
-          });
+          const translateY = (optAnims[i] ?? new Animated.Value(1)).interpolate(
+            {
+              inputRange: [0, 1],
+              outputRange: [12, 0],
+            },
+          );
 
           const inner = (
             <Animated.View
@@ -658,7 +683,10 @@ function TelaRevelando({
                 estilosRevelando.linhaOpcao,
                 isEscolha && [
                   estilosRevelando.linhaOpcaoDestacada,
-                  { borderColor: `${leituraColor}40`, backgroundColor: `${leituraColor}0C` },
+                  {
+                    borderColor: `${leituraColor}40`,
+                    backgroundColor: `${leituraColor}0C`,
+                  },
                 ],
               ]}
             >
@@ -717,7 +745,6 @@ function TelaRevelando({
           <Text style={estilosBase.textoContinuar}>próxima</Text>
         </TouchableOpacity>
       </Animated.View>
-
     </SafeAreaView>
   );
 }
@@ -740,7 +767,9 @@ function TelaResultadoRodada({
 
   // Calcula placar corrente a partir do histórico
   const acertosPorJogador: Record<PlayerId, number> = {};
-  jogadores.forEach((j) => { acertosPorJogador[j.id] = 0; });
+  jogadores.forEach((j) => {
+    acertosPorJogador[j.id] = 0;
+  });
   estado.historico.forEach((r) => {
     r.acertos.forEach((id) => {
       acertosPorJogador[id] = (acertosPorJogador[id] ?? 0) + 1;
@@ -776,18 +805,19 @@ function TelaResultadoRodada({
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
     }).start();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isUltimaRodada = estado.rodadaAtual === estado.totalRodadas;
 
   return (
     <SafeAreaView style={estilosBase.container}>
-
       <View style={estilosPlacar.lista}>
         {jogadoresOrdenados.map((j, idx) => {
           const acertos = acertosPorJogador[j.id] ?? 0;
-          const translateY = (linhaAnims[idx] ?? new Animated.Value(1)).interpolate({
+          const translateY = (
+            linhaAnims[idx] ?? new Animated.Value(1)
+          ).interpolate({
             inputRange: [0, 1],
             outputRange: [16, 0],
           });
@@ -819,7 +849,6 @@ function TelaResultadoRodada({
           </Text>
         </TouchableOpacity>
       </Animated.View>
-
     </SafeAreaView>
   );
 }

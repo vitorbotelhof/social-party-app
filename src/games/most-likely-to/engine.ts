@@ -1,10 +1,5 @@
 import { GameEngine } from '@/engine/GameEngine';
-import type {
-  GameConfig,
-  GameState,
-  Player,
-  PlayerId,
-} from '@/engine/types';
+import type { GameConfig, GameState, Player, PlayerId } from '@/engine/types';
 import { PROMPTS } from '@/games/most-likely-to/prompts';
 import type {
   EnergiaPrompt,
@@ -15,7 +10,7 @@ import type {
   OpcoesMostLikely,
   ResultadoRodada,
 } from '@/games/most-likely-to/types';
-import { embaralhar, sortearUm } from '@/utils/random';
+import { sortearUm } from '@/utils/random';
 
 type MostLikelyState = GameState<MostLikelyPublicState, MostLikelyPrivateState>;
 
@@ -38,9 +33,7 @@ function normalizarOpcoes(opcoes: unknown): OpcoesMostLikely {
     Math.min(totalSolicitado, TOTAL_RODADAS_MAX),
   );
   const modo: ModoMostLikely =
-    o.modo === 'classico' || o.modo === 'sincero'
-      ? o.modo
-      : OPCOES_PADRAO.modo;
+    o.modo === 'classico' || o.modo === 'sincero' ? o.modo : OPCOES_PADRAO.modo;
   return { totalRodadas, modo };
 }
 
@@ -131,9 +124,13 @@ class MostLikelyEngine extends GameEngine<
     opcoes?: unknown,
   ): MostLikelyState {
     const config = normalizarOpcoes(opcoes);
-    const ordemJogadores = embaralhar(jogadores.map((j) => j.id));
+    const ordemJogadores = jogadores.map((j) => j.id);
 
-    const { texto: promptAtual, indice } = selecionarProximo([], 1, config.modo);
+    const { texto: promptAtual, indice } = selecionarProximo(
+      [],
+      1,
+      config.modo,
+    );
 
     // Todos os jogadores têm estado privado vazio — MLT não tem informação assimétrica.
     const estadosPrivados = Object.fromEntries(
@@ -166,10 +163,18 @@ class MostLikelyEngine extends GameEngine<
     };
   }
 
-  processarAcao(estado: MostLikelyState, acao: MostLikelyAction): MostLikelyState {
+  processarAcao(
+    estado: MostLikelyState,
+    acao: MostLikelyAction,
+  ): MostLikelyState {
     switch (acao.tipo) {
       case 'votar':
-        return this.tratarVotar(estado, acao.jogadorId, acao.payload.alvoId, acao.em);
+        return this.tratarVotar(
+          estado,
+          acao.jogadorId,
+          acao.payload.alvoId,
+          acao.em,
+        );
       case 'forcar_reveal':
         return this.tratarForcarReveal(estado, acao.em);
       case 'avancar_rodada':
@@ -215,7 +220,10 @@ class MostLikelyEngine extends GameEngine<
     return this.resolverRodada(estado, votos, em);
   }
 
-  private tratarForcarReveal(estado: MostLikelyState, em: number): MostLikelyState {
+  private tratarForcarReveal(
+    estado: MostLikelyState,
+    em: number,
+  ): MostLikelyState {
     const { estadoPublico } = estado;
     if (estadoPublico.subFase !== 'votando') return estado;
     const totalEsperado = estadoPublico.ordemJogadores.length;
@@ -300,7 +308,10 @@ class MostLikelyEngine extends GameEngine<
 
   // ---------- finalização ----------
 
-  private finalizarPartida(estado: MostLikelyState, em: number): MostLikelyState {
+  private finalizarPartida(
+    estado: MostLikelyState,
+    em: number,
+  ): MostLikelyState {
     // O "mais nomeado da noite" vira o vencedorIds — usado no retrato social.
     const contagem = new Map<PlayerId, number>();
     for (const r of estado.estadoPublico.resultados) {

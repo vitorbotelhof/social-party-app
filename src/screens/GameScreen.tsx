@@ -2,7 +2,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View } from 'react-native';
 
-import { TelaCarregamento } from '@/components';
+import { ControleEncerrarJogo, TelaCarregamento } from '@/components';
 import type { GameState, Player, PlayerId } from '@/engine/types';
 import type {
   MrWhitePrivateState,
@@ -17,6 +17,7 @@ import { TelaVotacao } from '@/screens/TelaVotacao';
 import { TelaWordReveal } from '@/screens/TelaWordReveal';
 import { setPartidaAtiva } from '@/services/partidaAtiva';
 import { configurarPresenca } from '@/services/presenca';
+import { encerrarPartidaRealtime } from '@/services/encerrarPartida';
 import {
   observarEstadoDoJogo,
   observarJogadores,
@@ -81,6 +82,20 @@ export function GameScreen({ navigation, route }: Props) {
     return m;
   }, [jogadores]);
 
+  async function encerrarJogo() {
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+    setTransicao(null);
+    await encerrarPartidaRealtime({
+      roomCode,
+      jogadorId,
+      ehAnfitriao:
+        jogadores.find((jogador) => jogador.id === jogadorId)?.ehAnfitriao ??
+        false,
+    });
+    navigation.navigate('Inicio');
+  }
+
   // Detecta transição saindo da votação e encadeia: apurando → empate? → descoberto?
   useEffect(() => {
     const sub = estado?.estadoPublico.subFase;
@@ -139,33 +154,48 @@ export function GameScreen({ navigation, route }: Props) {
 
   if (transicao) {
     return (
-      <OverlayTransicao
-        etapa={transicao}
-        onPular={() => {
-          timersRef.current.forEach(clearTimeout);
-          timersRef.current = [];
-          setTransicao(null);
-        }}
-      />
+      <ControleEncerrarJogo onConfirmar={encerrarJogo}>
+        <OverlayTransicao
+          etapa={transicao}
+          onPular={() => {
+            timersRef.current.forEach(clearTimeout);
+            timersRef.current = [];
+            setTransicao(null);
+          }}
+        />
+      </ControleEncerrarJogo>
     );
   }
 
-  const props = { estado, roomCode, jogoId, jogadorId };
+  const estadoAtual = estado;
+  const props = { estado: estadoAtual, roomCode, jogoId, jogadorId };
 
-  switch (estado.estadoPublico.subFase) {
-    case 'revelando':
-      return <TelaWordReveal {...props} jogadores={jogadores} />;
-    case 'dando_dicas':
-      return <TelaRodada {...props} jogadores={jogadores} />;
-    case 'votando':
-      return <TelaVotacao {...props} jogadores={jogadores} />;
-    case 'palpite_final':
-      return <TelaPalpiteMrWhite {...props} />;
-    case 'entre_rodadas':
-      return <TelaEntreRodadas {...props} jogadores={jogadores} />;
-    case 'finalizado':
-      return <TelaResultado {...props} />;
+  function renderFase() {
+    switch (estadoAtual.estadoPublico.subFase) {
+      case 'revelando':
+        return <TelaWordReveal {...props} jogadores={jogadores} />;
+      case 'dando_dicas':
+        return <TelaRodada {...props} jogadores={jogadores} />;
+      case 'votando':
+        return <TelaVotacao {...props} jogadores={jogadores} />;
+      case 'palpite_final':
+        return <TelaPalpiteMrWhite {...props} />;
+      case 'entre_rodadas':
+        return <TelaEntreRodadas {...props} jogadores={jogadores} />;
+      case 'finalizado':
+        return <TelaResultado {...props} />;
+    }
   }
+
+  if (estadoAtual.estadoPublico.subFase === 'finalizado') {
+    return renderFase();
+  }
+
+  return (
+    <ControleEncerrarJogo onConfirmar={encerrarJogo}>
+      {renderFase()}
+    </ControleEncerrarJogo>
+  );
 }
 
 function temEmpate(votos: Record<PlayerId, PlayerId>): boolean {

@@ -17,14 +17,13 @@
  * ── Rotação de ranqueadores ────────────────────────────────────────────────
  *
  * Cada jogador vira ranqueador rodadasPorJogador vezes.
- * Ordem: embaralhada por bloco (não simplesmente circular),
- * para evitar que o mesmo jogador repita antes que todos tenham jogado.
+ * Ordem: circular na ordem cadastrada, como o celular passando de mão em mão.
  *
  * ── Seleção de cards ──────────────────────────────────────────────────────
  *
- * Cards filtrados por categoria + embaralhados no construtor.
- * Sem repetição até esgotar o deck. Se o deck acabar antes do jogo
- * (grupo grande + poucas categorias), o deck é resetado — sem crash.
+ * Cards filtrados por categoria + selecionados por variedade editorial.
+ * Sem repetição até esgotar o deck. A seleção penaliza categoria, família
+ * e tags recentes para a sessão respirar melhor quando o baralho é grande.
  */
 
 import { getCardsPorCategorias } from './cards';
@@ -55,6 +54,11 @@ function embaralhar<T>(arr: T[]): T[] {
   return result;
 }
 
+function intersecao<T>(a: T[], b: T[]): T[] {
+  const bSet = new Set(b);
+  return a.filter((item) => bSet.has(item));
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Engine
 // ─────────────────────────────────────────────────────────────────────────────
@@ -68,6 +72,7 @@ export class VMCLocalEngine {
   // ── Deck de cards ──────────────────────────────────────────────────────────
   private readonly _deck: CartaoVMC[];
   private _cardsUsados = new Set<string>();
+  private _cardsRecentes: CartaoVMC[] = [];
 
   // ── Rotação de ranqueadores ────────────────────────────────────────────────
   private readonly _ordemRanqueadores: PlayerId[];
@@ -126,7 +131,9 @@ export class VMCLocalEngine {
   }
 
   getRanqueadorAtual(): JogadorVMC | null {
-    return this._jogadores.find((j) => j.id === this._estado.ranqueadorId) ?? null;
+    return (
+      this._jogadores.find((j) => j.id === this._estado.ranqueadorId) ?? null
+    );
   }
 
   getPrevisortAtual(): JogadorVMC | null {
@@ -142,6 +149,15 @@ export class VMCLocalEngine {
 
   getNome(id: PlayerId): string {
     return this._jogadores.find((j) => j.id === id)?.nome ?? id;
+  }
+
+  private _ordemCircularDepoisDe(jogadorId: PlayerId): PlayerId[] {
+    const base = this._jogadores.map((j) => j.id);
+    const indice = base.indexOf(jogadorId);
+    if (indice < 0) return base;
+    const depois = base.slice(indice + 1);
+    const antes = base.slice(0, indice);
+    return [...depois, ...antes];
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -183,9 +199,9 @@ export class VMCLocalEngine {
     this._escolha = opcao;
     this._previsoes.clear();
 
-    const ordemJogadores = this._jogadores
-      .filter((j) => j.id !== this._estado.ranqueadorId)
-      .map((j) => j.id);
+    const ordemJogadores = this._ordemCircularDepoisDe(
+      this._estado.ranqueadorId,
+    );
 
     const coleta: EstadoColetandoPrevisoes = {
       indiceAtual: 0,
@@ -297,13 +313,99 @@ export class VMCLocalEngine {
 
     if (disponiveis.length === 0) {
       // Deck esgotado — resetar sem repetir o último card
+      const ultimoCardId = this._cardsRecentes.at(-1)?.id;
       this._cardsUsados.clear();
-      disponiveis = [...this._deck];
+      disponiveis = this._deck.filter((c) => c.id !== ultimoCardId);
+      if (disponiveis.length === 0) disponiveis = [...this._deck];
     }
 
-    const card = disponiveis[Math.floor(Math.random() * disponiveis.length)]!;
+    const card = this._selecionarCardMaisVariado(disponiveis);
     this._cardsUsados.add(card.id);
+    this._cardsRecentes = [...this._cardsRecentes.slice(-4), card];
     return card;
+  }
+
+  private _selecionarCardMaisVariado(disponiveis: CartaoVMC[]): CartaoVMC {
+    if (disponiveis.length <= 1) return disponiveis[0]!;
+
+    const ranqueados = disponiveis
+      .map((card) => ({
+        card,
+        score: this._pontuarVariedade(card, disponiveis),
+      }))
+      .sort((a, b) => b.score - a.score);
+
+    // Pega um card entre os melhores para manter a sessão viva, não determinista.
+    const tamanhoPool = Math.max(1, Math.ceil(ranqueados.length * 0.18));
+    const pool = ranqueados.slice(0, tamanhoPool);
+    return pool[Math.floor(Math.random() * pool.length)]!.card;
+  }
+
+  private _pontuarVariedade(card: CartaoVMC, disponiveis: CartaoVMC[]): number {
+    const recentes = this._cardsRecentes.slice(-4);
+    const ultimo = recentes.at(-1);
+    let score = Math.random() * 6;
+
+    score += this._pontuarCurvaEmocional(card);
+
+    if (ultimo && this._existeAlternativaDeCategoria(disponiveis, ultimo)) {
+      if (card.categoriaId === ultimo.categoriaId) score -= 18;
+      if (card.editorial.familia === ultimo.editorial.familia) score -= 12;
+    }
+
+    recentes.forEach((recente, index) => {
+      const distancia = recentes.length - index;
+      const peso = distancia === 1 ? 1 : 0.55;
+
+      if (card.categoriaId === recente.categoriaId) score -= 5 * peso;
+      if (card.editorial.familia === recente.editorial.familia) {
+        score -= 3 * peso;
+      }
+
+      const tagsRepetidas = intersecao(
+        card.editorial.tags,
+        recente.editorial.tags,
+      );
+      score -= tagsRepetidas.length * 1.7 * peso;
+
+      if (
+        card.editorial.riscoRepeticao === 'alto' &&
+        card.categoriaId === recente.categoriaId
+      ) {
+        score -= 3 * peso;
+      }
+    });
+
+    return score;
+  }
+
+  private _pontuarCurvaEmocional(card: CartaoVMC): number {
+    const progresso =
+      this._estado.totalRodadas <= 1
+        ? 1
+        : (this._estado.rodadaAtual - 1) / (this._estado.totalRodadas - 1);
+
+    if (progresso < 0.25) {
+      if (card.editorial.intensidade === 'baixa') return 5;
+      if (card.editorial.intensidade === 'media') return 1;
+      return -5;
+    }
+
+    if (progresso > 0.72) {
+      if (card.editorial.intensidade === 'alta') return 4;
+      if (card.editorial.intensidade === 'media') return 2;
+      return -1;
+    }
+
+    if (card.editorial.intensidade === 'media') return 4;
+    return 1;
+  }
+
+  private _existeAlternativaDeCategoria(
+    disponiveis: CartaoVMC[],
+    ultimo: CartaoVMC,
+  ): boolean {
+    return disponiveis.some((card) => card.categoriaId !== ultimo.categoriaId);
   }
 
   private _resolverTipo(card: CartaoVMC): TipoEscolha {
@@ -314,12 +416,10 @@ export class VMCLocalEngine {
   }
 
   private _criarOrdemRanqueadores(): PlayerId[] {
-    // Cada jogador é ranqueador rodadasPorJogador vezes.
-    // Embaralhado por bloco para evitar sequências longas do mesmo jogador.
     const base = this._jogadores.map((j) => j.id);
     const ordem: PlayerId[] = [];
     for (let i = 0; i < this._config.rodadasPorJogador; i++) {
-      ordem.push(...embaralhar([...base]));
+      ordem.push(...base);
     }
     return ordem;
   }
@@ -373,7 +473,10 @@ export class VMCLocalEngine {
     });
   }
 
-  private _calcularLeitura(acertos: number, totalPrevisores: number): LeituraVMC {
+  private _calcularLeitura(
+    acertos: number,
+    totalPrevisores: number,
+  ): LeituraVMC {
     if (totalPrevisores === 0 || acertos === 0) return 'desconhecido';
     if (acertos === totalPrevisores) return 'leitura_perfeita';
     if (acertos === 1) return 'leitura_solo';
@@ -399,7 +502,8 @@ export class VMCLocalEngine {
         acertosPorJogador[id] = (acertosPorJogador[id] ?? 0) + 1;
       });
       acertosComoRanqueador[rodada.ranqueadorId] =
-        (acertosComoRanqueador[rodada.ranqueadorId] ?? 0) + rodada.acertos.length;
+        (acertosComoRanqueador[rodada.ranqueadorId] ?? 0) +
+        rodada.acertos.length;
       if (rodada.leitura === 'leitura_perfeita') leiturasPerfeitasTotal++;
       if (rodada.leitura === 'desconhecido') desconhecidosTotal++;
     });

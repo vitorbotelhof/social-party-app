@@ -1,13 +1,20 @@
 import { useEffect, useState } from 'react';
 
-import { TelaCarregamento } from '@/components';
-import type { GameId, GameState, Player, PlayerId, RoomCode } from '@/engine/types';
+import { ControleEncerrarJogo, TelaCarregamento } from '@/components';
+import type {
+  GameId,
+  GameState,
+  Player,
+  PlayerId,
+  RoomCode,
+} from '@/engine/types';
 import type {
   MostLikelyPrivateState,
   MostLikelyPublicState,
 } from '@/games/most-likely-to/types';
 import { setPartidaAtiva } from '@/services/partidaAtiva';
 import { configurarPresenca } from '@/services/presenca';
+import { encerrarPartidaRealtime } from '@/services/encerrarPartida';
 import {
   observarEstadoDoJogo,
   observarJogadores,
@@ -45,10 +52,7 @@ export function GameScreenMostLikely({
     [roomCode],
   );
 
-  useEffect(
-    () => observarJogadores(roomCode, setJogadores),
-    [roomCode],
-  );
+  useEffect(() => observarJogadores(roomCode, setJogadores), [roomCode]);
 
   useEffect(() => {
     setPartidaAtiva({ roomCode, jogoId, jogadorId });
@@ -60,6 +64,23 @@ export function GameScreenMostLikely({
     [roomCode, jogadorId],
   );
 
+  useEffect(() => {
+    if (estado?.fase === 'lobby') {
+      onVoltar?.();
+    }
+  }, [estado?.fase, onVoltar]);
+
+  async function encerrarJogo() {
+    await encerrarPartidaRealtime({
+      roomCode,
+      jogadorId,
+      ehAnfitriao:
+        jogadores.find((jogador) => jogador.id === jogadorId)?.ehAnfitriao ??
+        false,
+    });
+    onJogarDeNovo?.();
+  }
+
   if (!estado) {
     return <TelaCarregamento mensagem="Carregando partida..." />;
   }
@@ -68,9 +89,17 @@ export function GameScreenMostLikely({
 
   switch (estado.estadoPublico.subFase) {
     case 'votando':
-      return <TelaPromptMostLikely {...props} />;
+      return (
+        <ControleEncerrarJogo onConfirmar={encerrarJogo}>
+          <TelaPromptMostLikely {...props} />
+        </ControleEncerrarJogo>
+      );
     case 'reveal':
-      return <TelaRevealMostLikely {...props} />;
+      return (
+        <ControleEncerrarJogo onConfirmar={encerrarJogo}>
+          <TelaRevealMostLikely {...props} />
+        </ControleEncerrarJogo>
+      );
     case 'finalizado':
       return (
         <TelaResultadoMostLikely
