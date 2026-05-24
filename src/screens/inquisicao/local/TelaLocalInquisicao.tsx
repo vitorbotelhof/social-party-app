@@ -8,7 +8,7 @@
  * Telas inline (sem estado local, pura renderização):
  *   - TelaDiaInline         (fase: dia)
  *   - TelaRegistrarVoto     (fase: chamando_votacao)
- *   - TelaRevelacaoInline   (fase: revelando_eliminacao)
+ *   - TelaResultadoVotacaoInline (fase: resultado_votacao)
  *   - TelaAguardandoNoite   (fase: aguardando_noite)
  *
  * Telas com estado próprio (componentes):
@@ -52,6 +52,11 @@ import { cores, espacamento, familias, tipografia } from '@/theme/colors';
 import { TelaDistribuicaoLocal } from './TelaDistribuicaoLocal';
 import { TelaNoiteLocal } from './TelaNoiteLocal';
 import { TelaResultadoLocal } from './TelaResultadoLocal';
+
+const CORES_NOITE_LOCAL = {
+  fundo: '#0D0D0D',
+  texto: '#E8E2D9',
+} as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Props
@@ -156,9 +161,9 @@ export function TelaLocalInquisicao({ jogadores, config, onVoltar }: Props) {
         />,
       );
 
-    case 'revelando_eliminacao':
+    case 'resultado_votacao':
       return comEncerrar(
-        <TelaRevelacaoInline
+        <TelaResultadoVotacaoInline
           engine={engine}
           estado={estado}
           mapaNomes={mapaNomes}
@@ -258,8 +263,8 @@ function TelaDiaInline({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TelaRegistrarVoto — Host toca no nome do jogador mais votado.
-// Sem confirmação. Toque direto → eliminação registrada.
+// TelaRegistrarVoto — Host registra o resultado do apontamento físico.
+// Eliminação, empate ou ninguém caiu. Sem contagem individual no celular.
 // ─────────────────────────────────────────────────────────────────────────────
 
 function TelaRegistrarVoto({
@@ -273,8 +278,10 @@ function TelaRegistrarVoto({
 }) {
   return (
     <SafeAreaView style={estilosVoto.container}>
-      {/* Sem título — o host sabe o que está fazendo.
-          A lista de nomes é o único elemento necessário. */}
+      <View style={estilosVoto.cabecalho}>
+        <Text style={estilosVoto.titulo}>quem caiu?</Text>
+      </View>
+
       <FlatList
         data={estado.jogadoresAtivos}
         keyExtractor={(id) => id}
@@ -290,14 +297,32 @@ function TelaRegistrarVoto({
               {mapaNomes.get(id) ?? id}
             </Text>
           </TouchableOpacity>
-        )}
+          )}
       />
+
+      <View style={estilosVoto.rodape}>
+        <TouchableOpacity
+          style={estilosVoto.botaoSecundario}
+          onPress={() => engine.registrarEmpate()}
+          activeOpacity={0.8}
+        >
+          <Text style={estilosVoto.textoBotaoSecundario}>empate</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={estilosVoto.botaoSecundario}
+          onPress={() => engine.registrarSemEliminacao()}
+          activeOpacity={0.8}
+        >
+          <Text style={estilosVoto.textoBotaoSecundario}>ninguém caiu</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TelaRevelacaoInline — Nome + papel em grande. Silêncio de absorção.
+// TelaResultadoVotacaoInline — Resultado mínimo da votação física.
 // Botão "continuar" é sempre visível — o host controla o tempo.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -311,7 +336,7 @@ function corDoPapelLocal(papel: string): string {
   return COR_INOCENTE;
 }
 
-function TelaRevelacaoInline({
+function TelaResultadoVotacaoInline({
   engine,
   estado,
   mapaNomes,
@@ -320,10 +345,39 @@ function TelaRevelacaoInline({
   estado: EstadoLocalPublico;
   mapaNomes: Map<PlayerId, string>;
 }) {
-  const eliminado = estado.eliminadoPendente;
-  if (!eliminado) return null;
+  const resultado = estado.resultadoVotacao;
+  const eliminado = resultado?.tipo === 'eliminacao' ? resultado.eliminado : null;
+  const [revelarPapelPadrao, setRevelarPapelPadrao] = useState(
+    estado.configuracao.modo === 'leve',
+  );
 
-  const nome = mapaNomes.get(eliminado.jogadorId) ?? eliminado.jogadorId;
+  useEffect(() => {
+    if (estado.configuracao.modo !== 'padrao') return;
+    const timer = setTimeout(() => setRevelarPapelPadrao(true), 1100);
+    return () => clearTimeout(timer);
+  }, [estado.configuracao.modo]);
+
+  if (!resultado) return null;
+
+  const nome = eliminado
+    ? (mapaNomes.get(eliminado.jogadorId) ?? eliminado.jogadorId)
+    : resultado.tipo === 'empate'
+      ? 'empate.'
+      : 'ninguém caiu.';
+  const deveRevelarPapel =
+    eliminado !== null &&
+    (estado.configuracao.modo === 'leve' ||
+    (estado.configuracao.modo === 'padrao' && revelarPapelPadrao);
+  const textoRevelacao =
+    eliminado === null
+      ? resultado.tipo === 'empate'
+        ? 'o grupo rachou.'
+        : 'a dúvida venceu.'
+      : deveRevelarPapel
+    ? `${eliminado.papel}.`
+    : estado.configuracao.modo === 'paranoia'
+      ? 'saiu.'
+      : 'ninguém sabe ainda.';
 
   return (
     <SafeAreaView style={estilosRevelacao.container}>
@@ -332,10 +386,14 @@ function TelaRevelacaoInline({
         <Text
           style={[
             estilosRevelacao.papelEliminado,
-            { color: corDoPapelLocal(eliminado.papel) },
+            {
+              color: deveRevelarPapel
+                ? corDoPapelLocal(eliminado?.papel ?? 'inocente')
+                : cores.textoMudo,
+            },
           ]}
         >
-          {eliminado.papel}.
+          {textoRevelacao}
         </Text>
       </View>
 
@@ -493,7 +551,7 @@ const estilosRevelacao = StyleSheet.create({
     paddingTop: espacamento.md,
   },
   botaoContinuar: {
-    backgroundColor: cores.borda,
+    backgroundColor: cores.texto,
     borderRadius: 12,
     height: 56,
     justifyContent: 'center',
@@ -503,7 +561,7 @@ const estilosRevelacao = StyleSheet.create({
     fontSize: tipografia.tamanhoCorpoMaior,
     fontFamily: familias.sans,
     fontWeight: tipografia.pesoBold,
-    color: cores.textoMudo,
+    color: cores.fundo,
   },
 });
 
@@ -532,7 +590,7 @@ const estilosAguardando = StyleSheet.create({
     paddingTop: espacamento.md,
   },
   botaoNoite: {
-    backgroundColor: '#0D0D0D',
+    backgroundColor: CORES_NOITE_LOCAL.fundo,
     borderRadius: 12,
     height: 56,
     justifyContent: 'center',
@@ -542,6 +600,6 @@ const estilosAguardando = StyleSheet.create({
     fontSize: tipografia.tamanhoCorpoMaior,
     fontFamily: familias.sans,
     fontWeight: tipografia.pesoBold,
-    color: '#E8E2D9',
+    color: CORES_NOITE_LOCAL.texto,
   },
 });

@@ -54,6 +54,7 @@ export function processarLoopLocalInquisicao(loop: LoopLocalResolvido): void {
     contaminados,
     eliminarAlvoId,
     eliminarBloqueado,
+    resultadoVotacao,
   } = loop;
 
   // ── Votação: nenhum eliminado ────────────────────────────────────────────────
@@ -66,7 +67,7 @@ export function processarLoopLocalInquisicao(loop: LoopLocalResolvido): void {
       jogoId: 'inquisicao',
       rodada: numLoop,
       jogadoresIds: [],
-      dados: { totalAtivos, modoLocal: true },
+      dados: { totalAtivos, modoLocal: true, resultadoVotacao },
     });
   }
 

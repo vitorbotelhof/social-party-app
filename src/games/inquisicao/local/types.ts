@@ -38,7 +38,7 @@ export type TipoAcaoLocal = 'eliminar' | 'contaminar' | 'proteger';
  *   distribuindo_papeis
  *     → dia
  *     → chamando_votacao
- *     → revelando_eliminacao
+ *     → resultado_votacao
  *     → aguardando_noite
  *     → noite_corrompidos        [4s — engine timer]
  *     → noite_guardioes          [4s — engine timer, sempre narrado]
@@ -49,18 +49,18 @@ export type TipoAcaoLocal = 'eliminar' | 'contaminar' | 'proteger';
  * Eliminação por noite (silenciosa) encurta o caminho:
  *   noite_guardioes → encerrando_noite → distribuindo_papeis (sem revelacao_eliminacao)
  *
- * Eliminação por votação (pública) usa revelando_eliminacao.
+ * Eliminação por votação (pública) usa resultado_votacao.
  */
 export type FaseLocal =
-  | 'distribuindo_papeis'    // revelação sequencial, um jogador por vez
-  | 'dia'                    // discussão livre, sem timer, host-driven
-  | 'chamando_votacao'       // host registra o eliminado após apontamento físico
-  | 'revelando_eliminacao'   // papel do eliminado visível, silêncio de absorção
-  | 'aguardando_noite'       // beat entre revelação e início da noite
-  | 'noite_corrompidos'      // janela de 4s — corrompido ativo age
-  | 'noite_guardioes'        // janela de 4s — guardião age (narrado mesmo sem guardião)
-  | 'encerrando_noite'       // mensagem ambígua — host lê em voz alta
-  | 'finalizado';            // vencedor determinado
+  | 'distribuindo_papeis' // revelação sequencial, um jogador por vez
+  | 'dia' // discussão livre, sem timer, host-driven
+  | 'chamando_votacao' // host registra o eliminado após apontamento físico
+  | 'resultado_votacao' // eliminação, empate ou ninguém caiu
+  | 'aguardando_noite' // beat entre revelação e início da noite
+  | 'noite_corrompidos' // janela de 4s — corrompido ativo age
+  | 'noite_guardioes' // janela de 4s — guardião age (narrado mesmo sem guardião)
+  | 'encerrando_noite' // mensagem ambígua — host lê em voz alta
+  | 'finalizado'; // vencedor determinado
 
 // ─────────────────────────────────────────────────────────────────────────────
 // §3  ENTIDADES
@@ -79,6 +79,9 @@ export interface ConfiguracaoLocal {
 
   /** Corrompidos iniciais. Engine garante máx floor(n/3). */
   numeroCorrompidosInicial: number;
+
+  /** Orçamento máximo de conversões silenciosas nesta partida. */
+  maxContaminacoes: number;
 
   /**
    * Duração de cada janela de ação noturna em ms.
@@ -107,6 +110,16 @@ export interface EliminadoLocal {
   /** Origem: votação pública ou eliminação noturna silenciosa. */
   origem: 'votacao' | 'noite';
 }
+
+export type ResultadoVotacaoLocal =
+  | {
+      tipo: 'eliminacao';
+      eliminado: EliminadoLocal;
+    }
+  | {
+      tipo: 'empate' | 'sem_eliminacao';
+      eliminado: null;
+    };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // §4  ESTADO PÚBLICO (lido pelo UI sem restrição)
@@ -146,6 +159,9 @@ export interface EstadoLocalPublico {
    * Eliminações noturnas NÃO passam por este campo — são silenciosas.
    */
   eliminadoPendente: EliminadoLocal | null;
+
+  /** Resultado público da votação física deste loop. */
+  resultadoVotacao: ResultadoVotacaoLocal | null;
 
   vencedor: 'corrompidos' | 'inocentes' | null;
   revelacaoFinal: RevelacaoFinalLocal | null;
@@ -229,6 +245,9 @@ export interface LoopLocalResolvido {
 
   /** Guardião bloqueou a eliminação noturna neste loop. */
   eliminarBloqueado: boolean;
+
+  /** Resultado físico registrado antes da noite. */
+  resultadoVotacao: ResultadoVotacaoLocal['tipo'];
 }
 
 /**
@@ -276,6 +295,8 @@ export function criarConfiguracaoLocal(
     modo,
     incluirGuardiao: modo !== 'leve',
     numeroCorrompidosInicial: numJogadores >= 8 ? 2 : 1,
+    maxContaminacoes:
+      modo === 'leve' ? 0 : modo === 'padrao' ? 1 : numJogadores >= 7 ? 2 : 1,
     duracaoJanelaNoiteMs: 4_000,
     duracaoDistribuicaoMs: 4_000,
   };

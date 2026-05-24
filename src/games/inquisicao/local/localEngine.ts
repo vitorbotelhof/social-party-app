@@ -51,6 +51,7 @@ import type {
   EstadoLocalPublico,
   EstadoDistribuicao,
   PapelAtribuidoLocal,
+  ResultadoVotacaoLocal,
   RevelacaoFinalLocal,
   LoopLocalResolvido,
   ResultadoLocalFinalizado,
@@ -120,7 +121,14 @@ export class InquisicaoLocalEngine {
   // ── Tracking de sessão (acumula ao longo do jogo) ─────────────────────────
 
   /** Eliminado por votação no loop corrente — resetado em iniciarNoite(). */
-  private _eliminadoVotacaoLoop: { jogadorId: PlayerId; papel: PapelLocal } | null = null;
+  private _eliminadoVotacaoLoop: {
+    jogadorId: PlayerId;
+    papel: PapelLocal;
+  } | null = null;
+
+  /** Resultado físico da votação no loop corrente. */
+  private _resultadoVotacaoLoop: ResultadoVotacaoLocal['tipo'] =
+    'sem_eliminacao';
 
   /** Histórico de eliminações por votação — para o resultado final. */
   private _eliminadosPorVotacaoHistorico: Array<{
@@ -131,6 +139,9 @@ export class InquisicaoLocalEngine {
 
   /** Contagem de ações noturnas executadas por corrompido. */
   private _acoesCorrompidas = new Map<PlayerId, number>();
+
+  /** Conversões já agendadas nesta partida, incluindo pendentes. */
+  private _contaminacoesAgendadas = 0;
 
   constructor(
     jogadores: JogadorLocal[],
@@ -176,6 +187,7 @@ export class InquisicaoLocalEngine {
       distribuicao: this._novaDistribuicao(jogadoresAtivos),
       mensagemNoite: null,
       eliminadoPendente: null,
+      resultadoVotacao: null,
       vencedor: null,
       revelacaoFinal: null,
       configuracao: config,
@@ -213,10 +225,11 @@ export class InquisicaoLocalEngine {
 
   /**
    * Host registra o jogador com mais votos após o apontamento simultâneo.
-   * Papel revelado imediatamente — silêncio de absorção começa.
+   * Resultado fica visível por modo — silêncio de absorção começa.
    */
   registrarEliminado(jogadorId: PlayerId): void {
     if (this._estado.fase !== 'chamando_votacao') return;
+    if (!this._estado.jogadoresAtivos.includes(jogadorId)) return;
     const papel = this._priv.papeis.get(jogadorId);
     if (!papel) return;
 
@@ -224,6 +237,7 @@ export class InquisicaoLocalEngine {
 
     // Rastrear para callback de sessão — papel atual no momento da eliminação
     this._eliminadoVotacaoLoop = { jogadorId, papel };
+    this._resultadoVotacaoLoop = 'eliminacao';
     this._eliminadosPorVotacaoHistorico.push({
       jogadorId,
       loop: this._estado.loop,
@@ -238,27 +252,58 @@ export class InquisicaoLocalEngine {
     };
 
     this._emit({
-      fase: 'revelando_eliminacao',
-      jogadoresAtivos: this._estado.jogadoresAtivos.filter((id) => id !== jogadorId),
+      fase: 'resultado_votacao',
+      jogadoresAtivos: this._estado.jogadoresAtivos.filter(
+        (id) => id !== jogadorId,
+      ),
       eliminados: [...this._estado.eliminados, eliminado],
       eliminadoPendente: eliminado,
+      resultadoVotacao: { tipo: 'eliminacao', eliminado },
+    });
+  }
+
+  registrarEmpate(): void {
+    if (this._estado.fase !== 'chamando_votacao') return;
+    this._eliminadoVotacaoLoop = null;
+    this._resultadoVotacaoLoop = 'empate';
+    this._emit({
+      fase: 'resultado_votacao',
+      eliminadoPendente: null,
+      resultadoVotacao: { tipo: 'empate', eliminado: null },
+    });
+  }
+
+  registrarSemEliminacao(): void {
+    if (this._estado.fase !== 'chamando_votacao') return;
+    this._eliminadoVotacaoLoop = null;
+    this._resultadoVotacaoLoop = 'sem_eliminacao';
+    this._emit({
+      fase: 'resultado_votacao',
+      eliminadoPendente: null,
+      resultadoVotacao: { tipo: 'sem_eliminacao', eliminado: null },
     });
   }
 
   /**
-   * Host confirma após o silêncio de absorção da eliminação.
+   * Host confirma após o silêncio de absorção da votação.
    * Verifica vitória — ou avança para a espera da noite.
    */
   confirmarEliminacao(): void {
-    if (this._estado.fase !== 'revelando_eliminacao') return;
+    if (this._estado.fase !== 'resultado_votacao') return;
 
-    const vitoria = this._checarVitoria(this._estado.jogadoresAtivos);
-    if (vitoria) {
-      this._encerrarJogo(vitoria);
-      return;
+    if (this._estado.resultadoVotacao?.tipo === 'eliminacao') {
+      const vitoria = this._checarVitoria(this._estado.jogadoresAtivos);
+      if (vitoria) {
+        this._encerrarJogo(vitoria);
+        return;
+      }
     }
 
-    this._emit({ fase: 'aguardando_noite', eliminadoPendente: null });
+    this._emit({
+      fase: 'aguardando_noite',
+      eliminadoPendente: null,
+      resultadoVotacao: null,
+    });
   }
 
   /**
@@ -271,7 +316,6 @@ export class InquisicaoLocalEngine {
 
     // Limpar ações da noite anterior e rastreio de eliminação deste loop
     this._priv.acoesNoturnas = [];
-    this._eliminadoVotacaoLoop = null;
 
     // Designar ator desta noite (rotação entre corrompidos ativos)
     this._priv.atorNoite = this._escolherAtorNoite();
@@ -299,6 +343,7 @@ export class InquisicaoLocalEngine {
         : this._encontrarGuardiao();
 
     if (agente === null) return;
+    if (!this._acaoEhValidaParaFase(tipo, agente, alvo, fase)) return;
 
     // Substituir ação anterior do mesmo agente
     this._priv.acoesNoturnas = [
@@ -345,7 +390,8 @@ export class InquisicaoLocalEngine {
     const aliados =
       papel === 'corrompido'
         ? this._estado.jogadoresAtivos.filter(
-            (id) => id !== jogadorId && this._priv.papeis.get(id) === 'corrompido',
+            (id) =>
+              id !== jogadorId && this._priv.papeis.get(id) === 'corrompido',
           )
         : [];
 
@@ -371,15 +417,20 @@ export class InquisicaoLocalEngine {
         return ativos.filter((id) => id !== jogadorId);
 
       case 'contaminar':
-        return ativos.filter(
-          (id) =>
-            id !== jogadorId &&
-            this._priv.papeis.get(id) !== 'corrompido',
-        );
+        return ativos.filter((id) => this._podeContaminar(jogadorId, id));
 
       case 'proteger':
         return ativos;
     }
+  }
+
+  getAcoesCorrompidoDisponiveis(jogadorId: PlayerId): TipoAcaoLocal[] {
+    const acoes: TipoAcaoLocal[] = ['eliminar'];
+    const podeContaminar = this._estado.jogadoresAtivos.some((id) =>
+      this._podeContaminar(jogadorId, id),
+    );
+    if (podeContaminar) acoes.push('contaminar');
+    return acoes;
   }
 
   /**
@@ -457,7 +508,9 @@ export class InquisicaoLocalEngine {
   private _resolverNoite(): void {
     this._limparTimerNoite();
 
-    const acaoGuardiao = this._priv.acoesNoturnas.find((a) => a.tipo === 'proteger');
+    const acaoGuardiao = this._priv.acoesNoturnas.find(
+      (a) => a.tipo === 'proteger',
+    );
     const acaoCorrompido = this._priv.acoesNoturnas.find(
       (a) => a.tipo === 'eliminar' || a.tipo === 'contaminar',
     );
@@ -484,7 +537,9 @@ export class InquisicaoLocalEngine {
           const papel = this._priv.papeis.get(acaoCorrompido.alvo);
           if (papel) {
             this._priv.papeis.delete(acaoCorrompido.alvo);
-            novosAtivos = novosAtivos.filter((id) => id !== acaoCorrompido.alvo);
+            novosAtivos = novosAtivos.filter(
+              (id) => id !== acaoCorrompido.alvo,
+            );
             novosEliminados = [
               ...novosEliminados,
               {
@@ -498,8 +553,12 @@ export class InquisicaoLocalEngine {
         } else {
           // contaminar — efeito diferido
           const papelAlvo = this._priv.papeis.get(acaoCorrompido.alvo);
-          if (papelAlvo === 'inocente' || papelAlvo === 'guardiao') {
+          if (
+            (papelAlvo === 'inocente' || papelAlvo === 'guardiao') &&
+            this._podeContaminar(acaoCorrompido.agente, acaoCorrompido.alvo)
+          ) {
             this._priv.contaminacaoPendente = acaoCorrompido.alvo;
+            this._contaminacoesAgendadas++;
           }
         }
       } else if (acaoCorrompido.tipo === 'eliminar') {
@@ -525,6 +584,7 @@ export class InquisicaoLocalEngine {
       contaminados,
       eliminarAlvoId,
       eliminarBloqueado,
+      resultadoVotacao: this._resultadoVotacaoLoop,
     });
 
     // Vitória pode acontecer por eliminação noturna
@@ -575,6 +635,7 @@ export class InquisicaoLocalEngine {
       loop: novoLoop,
       distribuicao: this._novaDistribuicao(ativos),
       eliminadoPendente: null,
+      resultadoVotacao: null,
     });
   }
 
@@ -652,6 +713,63 @@ export class InquisicaoLocalEngine {
     return null;
   }
 
+  private _acaoEhValidaParaFase(
+    tipo: TipoAcaoLocal,
+    agente: PlayerId,
+    alvo: PlayerId,
+    fase: EstadoLocalPublico['fase'],
+  ): boolean {
+    if (!this._estado.jogadoresAtivos.includes(agente)) return false;
+    if (!this._estado.jogadoresAtivos.includes(alvo)) return false;
+
+    if (fase === 'noite_corrompidos') {
+      if (agente !== this._priv.atorNoite) return false;
+      if (this._priv.papeis.get(agente) !== 'corrompido') return false;
+      if (tipo === 'eliminar') return alvo !== agente;
+      if (tipo === 'contaminar') return this._podeContaminar(agente, alvo);
+      return false;
+    }
+
+    if (fase === 'noite_guardioes') {
+      return (
+        tipo === 'proteger' && this._priv.papeis.get(agente) === 'guardiao'
+      );
+    }
+
+    return false;
+  }
+
+  private _podeContaminar(agente: PlayerId, alvo: PlayerId): boolean {
+    if (this._config.maxContaminacoes <= 0) return false;
+    if (this._contaminacoesAgendadas >= this._config.maxContaminacoes) {
+      return false;
+    }
+    if (this._priv.contaminacaoPendente !== null) return false;
+    if (agente === alvo) return false;
+    if (!this._estado.jogadoresAtivos.includes(alvo)) return false;
+    if (this._priv.papeis.get(agente) !== 'corrompido') return false;
+
+    const papelAlvo = this._priv.papeis.get(alvo);
+    if (papelAlvo !== 'inocente' && papelAlvo !== 'guardiao') return false;
+
+    return !this._contaminacaoGerariaParidade(alvo);
+  }
+
+  private _contaminacaoGerariaParidade(alvo: PlayerId): boolean {
+    let corrompidos = 0;
+    let inocentes = 0;
+
+    for (const id of this._estado.jogadoresAtivos) {
+      if (id === alvo || this._priv.papeis.get(id) === 'corrompido') {
+        corrompidos++;
+      } else {
+        inocentes++;
+      }
+    }
+
+    return corrompidos >= inocentes;
+  }
+
   /**
    * Corrompidos vencem por paridade (≥ inocentes) ou supermaioria.
    * Inocentes vencem quando não há nenhum corrompido ativo.
@@ -682,7 +800,8 @@ export class InquisicaoLocalEngine {
         this._priv.papelOriginal.get(jogador.id) ??
         'inocente';
 
-      const papelOriginal = this._priv.papelOriginal.get(jogador.id) ?? 'inocente';
+      const papelOriginal =
+        this._priv.papelOriginal.get(jogador.id) ?? 'inocente';
 
       papeisPorJogador[jogador.id] = {
         papelFinal,
@@ -726,6 +845,7 @@ export class InquisicaoLocalEngine {
       fase: 'finalizado',
       vencedor,
       eliminadoPendente: null,
+      resultadoVotacao: null,
       revelacaoFinal: this._construirRevelacao(),
     });
   }

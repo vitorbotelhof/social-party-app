@@ -42,6 +42,8 @@ const N = {
   destaque: '#FF5A5F',
   bg_botao: '#1A1A1A',
   borda_botao: '#2A2A2A',
+  diaFundo: '#F6F3EE',
+  diaTexto: '#1A1A1A',
 } as const;
 
 interface Props {
@@ -54,17 +56,27 @@ export function TelaNoiteLocal({ engine, estado, mapaNomes }: Props) {
   const fase = estado.fase as FaseLocal;
 
   if (fase === 'encerrando_noite') {
-    return <TelaEncerrandoNoite engine={engine} mensagem={estado.mensagemNoite} />;
+    return (
+      <TelaEncerrandoNoite engine={engine} mensagem={estado.mensagemNoite} />
+    );
   }
 
   if (fase === 'noite_corrompidos') {
-    return <TelaAcaoCorrompido engine={engine} estado={estado} mapaNomes={mapaNomes} />;
+    return (
+      <TelaAcaoCorrompido
+        engine={engine}
+        estado={estado}
+        mapaNomes={mapaNomes}
+      />
+    );
   }
 
   if (fase === 'noite_guardioes') {
     const ator = engine.getAtorFaseAtual();
     if (!ator) return <TelaNeutra />;
-    return <TelaAcaoGuardiao engine={engine} estado={estado} mapaNomes={mapaNomes} />;
+    return (
+      <TelaAcaoGuardiao engine={engine} estado={estado} mapaNomes={mapaNomes} />
+    );
   }
 
   return null;
@@ -92,7 +104,9 @@ function TelaAcaoCorrompido({
   mapaNomes: Map<PlayerId, string>;
 }) {
   const [etapa, setEtapa] = useState<EtapaCorrompido>('escolhendo_tipo');
-  const [tipoEscolhido, setTipoEscolhido] = useState<TipoAcaoLocal | null>(null);
+  const [tipoEscolhido, setTipoEscolhido] = useState<TipoAcaoLocal | null>(
+    null,
+  );
 
   const handleEscolherTipo = (tipo: TipoAcaoLocal) => {
     setTipoEscolhido(tipo);
@@ -109,8 +123,15 @@ function TelaAcaoCorrompido({
 
   const alvos =
     tipoEscolhido && etapa === 'escolhendo_alvo'
-      ? engine.getAlvosDisponiveis(engine.getAtorFaseAtual() ?? '', tipoEscolhido)
+      ? engine.getAlvosDisponiveis(
+          engine.getAtorFaseAtual() ?? '',
+          tipoEscolhido,
+        )
       : [];
+  const ator = engine.getAtorFaseAtual();
+  const acoes: TipoAcaoLocal[] = ator
+    ? engine.getAcoesCorrompidoDisponiveis(ator)
+    : ['eliminar'];
 
   // ── Confirmado — aguardar timer do engine ────────────────────────────────
   if (etapa === 'confirmado') {
@@ -145,7 +166,10 @@ function TelaAcaoCorrompido({
         {/* Volta para escolha de tipo — mesmo toque de navegação normalizadora */}
         <TouchableOpacity
           style={estilos.voltarContainer}
-          onPress={() => { setTipoEscolhido(null); setEtapa('escolhendo_tipo'); }}
+          onPress={() => {
+            setTipoEscolhido(null);
+            setEtapa('escolhendo_tipo');
+          }}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
           <Text style={estilos.labelVoltar}>← voltar</Text>
@@ -158,21 +182,16 @@ function TelaAcaoCorrompido({
   return (
     <SafeAreaView style={estilos.container}>
       <View style={estilos.acoesContainer}>
-        <TouchableOpacity
-          style={estilos.botaoAcao}
-          onPress={() => handleEscolherTipo('eliminar')}
-          activeOpacity={0.8}
-        >
-          <Text style={estilos.textoBotaoAcao}>eliminar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={estilos.botaoAcao}
-          onPress={() => handleEscolherTipo('contaminar')}
-          activeOpacity={0.8}
-        >
-          <Text style={estilos.textoBotaoAcao}>contaminar</Text>
-        </TouchableOpacity>
+        {acoes.map((acao) => (
+          <TouchableOpacity
+            key={acao}
+            style={estilos.botaoAcao}
+            onPress={() => handleEscolherTipo(acao)}
+            activeOpacity={0.8}
+          >
+            <Text style={estilos.textoBotaoAcao}>{acao}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
     </SafeAreaView>
   );
@@ -196,7 +215,9 @@ function TelaAcaoGuardiao({
   const [etapa, setEtapa] = useState<EtapaGuardiao>('confirmar_intencao');
 
   const guardiao = engine.getAtorFaseAtual();
-  const alvos = guardiao ? engine.getAlvosDisponiveis(guardiao, 'proteger') : [];
+  const alvos = guardiao
+    ? engine.getAlvosDisponiveis(guardiao, 'proteger')
+    : [];
 
   const handleEscolherAlvo = (alvo: PlayerId) => {
     if (etapa !== 'escolhendo_alvo' || !guardiao) return;
@@ -354,7 +375,7 @@ const estilos = StyleSheet.create({
   // ── Encerrando noite (fundo claro — amanheceu) ─────────────────────────
   containerDia: {
     flex: 1,
-    backgroundColor: '#F6F3EE',
+    backgroundColor: N.diaFundo,
   },
   centroMensagem: {
     flex: 1,
@@ -365,7 +386,7 @@ const estilos = StyleSheet.create({
   mensagemNoite: {
     fontSize: tipografia.tamanhoSubtituloGrande,
     fontFamily: familias.serifDisplay,
-    color: '#1A1A1A',
+    color: N.diaTexto,
     textAlign: 'center',
     letterSpacing: 0.3,
   },
@@ -374,7 +395,7 @@ const estilos = StyleSheet.create({
     paddingBottom: espacamento.xl,
   },
   botaoContinuar: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: N.diaTexto,
     borderRadius: 12,
     height: 56,
     justifyContent: 'center',
@@ -384,6 +405,6 @@ const estilos = StyleSheet.create({
     fontSize: tipografia.tamanhoCorpoMaior,
     fontFamily: familias.sans,
     fontWeight: tipografia.pesoBold,
-    color: '#F6F3EE',
+    color: N.diaFundo,
   },
 });
