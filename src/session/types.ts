@@ -66,7 +66,10 @@ export type TipoMomento =
   // ── Aliança ────────────────────────────────────────────────────────────────
   | 'missao_sabotada_alianca' // missão aprovada falhou sem revelar autoria
   | 'confianca_restaurada_alianca' // equipe suspeita passou limpa
-  | 'rejeicao_em_cadeia_alianca'; // grupo recusou equipes em sequência
+  | 'rejeicao_em_cadeia_alianca' // grupo recusou equipes em sequência
+  // ── Duvido ─────────────────────────────────────────────────────────────────
+  | 'leitura_perfeita_duvido' // duvidou de item inválido — leu o bluff corretamente
+  | 'aposta_errada_duvido'; // duvidou de item válido — pagou o preço
 
 export interface Momento {
   id: string;
@@ -137,6 +140,26 @@ export interface FazAiSessaoStats {
   categoriasFavoritas: string[];
 }
 
+export interface DuvidoSessaoStats {
+  /** Total de rankings jogados na sessão. */
+  totalRankings: number;
+
+  /** Total de confrontos "duvido" em toda a sessão. */
+  totalDuvidas: number;
+
+  /** IDs dos vencedores por ranking, em ordem de jogo. */
+  vencedoresPorRanking: PlayerId[];
+
+  /** Jogador com mais dúvidas certas — melhor leitor de bluff. null em empate. */
+  melhorLeitorId: PlayerId | null;
+
+  /** Jogador com mais itens aceitos sem ser duvidado — maior bluffador. null em empate. */
+  maiorBlufferSemPunicaoId: PlayerId | null;
+
+  /** Temperatura emocional calculada pelo engine local. */
+  temperatura: 'competitivo' | 'caótico' | 'equilibrado';
+}
+
 export interface AliancaSessaoStats {
   vencedor: 'leais' | 'traidores';
   totalRodadas: number;
@@ -163,6 +186,7 @@ export interface JogoSessao {
   vmc?: VMCSessaoStats;
   fazAi?: FazAiSessaoStats;
   alianca?: AliancaSessaoStats;
+  duvido?: DuvidoSessaoStats;
 }
 
 // ─── Jogador na sessão ────────────────────────────────────────────────────────
@@ -206,6 +230,10 @@ export interface SessaoJogador {
   liderancasAlianca: number; // liderou proposta de missão
   missoesAlianca: number; // participou de missões aprovadas
   vezesTraidorAlianca: number; // terminou revelado como traidor
+
+  // Duvido
+  dubidasCertasDuvido: number; // duvidou de item inválido — leu o bluff
+  rankingsVencidosDuvido: number; // sobreviveu como último ativo no ranking
 }
 
 // ─── Sessão ───────────────────────────────────────────────────────────────────

@@ -280,6 +280,8 @@ export function TelaInicio({ navigation }: Props) {
         navigation.navigate('ConfiguracaoLocalFazAi');
       } else if (jogoId === 'alianca') {
         navigation.navigate('ConfiguracaoLocalAlianca');
+      } else if (jogoId === 'duvido') {
+        navigation.navigate('ConfiguracaoLocalDuvido');
       } else {
         navigation.navigate('ConfiguracaoLocal');
       }

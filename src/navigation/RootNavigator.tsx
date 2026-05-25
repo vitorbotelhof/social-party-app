@@ -5,6 +5,9 @@ import type { RootStackParamList } from '@/navigation/types';
 import { TelaInquisicao } from '@/screens/inquisicao/TelaInquisicao';
 import { TelaConfiguracaoLocalAlianca } from '@/screens/alianca/local/TelaConfiguracaoLocalAlianca';
 import { TelaLocalAlianca } from '@/screens/alianca/local/TelaLocalAlianca';
+import { TelaConfiguracaoLocalDuvido } from '@/screens/TelaConfiguracaoLocalDuvido';
+import { TelaJogoLocalDuvido } from '@/screens/TelaJogoLocalDuvido';
+import { TelaResultadoLocalDuvido } from '@/screens/TelaResultadoLocalDuvido';
 import { TelaConfiguracaoLocalInquisicao } from '@/screens/inquisicao/local/TelaConfiguracaoLocalInquisicao';
 import { TelaLocalInquisicao } from '@/screens/inquisicao/local/TelaLocalInquisicao';
 import { TelaConfiguracaoLocalVMC } from '@/screens/voce-me-conhece/local/TelaConfiguracaoLocalVMC';
@@ -311,6 +314,29 @@ export function RootNavigator() {
           headerShown: false,
           animation: 'fade_from_bottom',
           animationDuration: 220,
+        }}
+      />
+      <Stack.Screen
+        name="ConfiguracaoLocalDuvido"
+        component={TelaConfiguracaoLocalDuvido}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="JogoLocalDuvido"
+        component={TelaJogoLocalDuvido}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
+      />
+      <Stack.Screen
+        name="ResultadoLocalDuvido"
+        component={TelaResultadoLocalDuvido}
+        options={{
+          headerShown: false,
+          animation: 'fade',
+          animationDuration: 300,
         }}
       />
     </Stack.Navigator>

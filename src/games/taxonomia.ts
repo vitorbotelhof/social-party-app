@@ -186,6 +186,7 @@ export type MecanicaPrincipal =
   | 'desafio'
   | 'leitura'
   | 'palavra'
+  | 'ranking'
   | 'votacao';
 
 export type IntencaoSocial =

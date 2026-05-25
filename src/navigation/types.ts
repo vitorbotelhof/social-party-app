@@ -1,4 +1,5 @@
 import type { CategoriaIdNPL } from '@/games/na-ponta-da-lingua/types';
+import type { ConfiguracaoDuvido, RankingDuvido } from '@/games/duvido/types';
 import type { CategoriaFazAiId, IntensidadeSocial } from '@/games/faz-ai/types';
 import type {
   ConfiguracaoAlianca,
@@ -50,6 +51,23 @@ export type RootStackParamList = {
   JogoLocalAlianca: {
     jogadores: JogadorAlianca[];
     config: ConfiguracaoAlianca;
+  };
+  ConfiguracaoLocalDuvido: undefined;
+  JogoLocalDuvido: {
+    configuracao: ConfiguracaoDuvido;
+    rankingsSelecionados: RankingDuvido[];
+  };
+  ResultadoLocalDuvido: {
+    jogadores: { id: string; nome: string }[];
+    historicoPorRanking: Array<{
+      rankingId: string;
+      rankingTitulo: string;
+      vencedorId: string;
+      totalEliminacoes: number;
+      itensDitos: string[];
+    }>;
+    totalRankings: number;
+    temperatura: 'competitivo' | 'caótico' | 'equilibrado';
   };
   JogoLocalVMC: {
     jogadores: JogadorVMC[];

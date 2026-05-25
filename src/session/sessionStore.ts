@@ -62,6 +62,8 @@ export function iniciarSessao(
     liderancasAlianca: 0,
     missoesAlianca: 0,
     vezesTraidorAlianca: 0,
+    dubidasCertasDuvido: 0,
+    rankingsVencidosDuvido: 0,
   }));
 
   sessaoAtual = {

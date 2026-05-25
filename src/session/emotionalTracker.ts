@@ -70,6 +70,9 @@ const PESO_MOMENTOS_CAOS: Partial<Record<TipoMomento, number>> = {
   missao_sabotada_alianca: 2,
   rejeicao_em_cadeia_alianca: 1,
   confianca_restaurada_alianca: 1,
+  // Duvido
+  leitura_perfeita_duvido: 1,  // duvidou certo — leitura social aguçada
+  aposta_errada_duvido: 2,     // apostou errado num ranking — exposição alta
 };
 
 // ─── Cálculo de peso total ────────────────────────────────────────────────────
