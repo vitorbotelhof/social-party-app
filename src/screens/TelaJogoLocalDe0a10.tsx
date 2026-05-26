@@ -163,8 +163,8 @@ function TelaNotaSecreta({
           <Text style={estilos.notaLabel}>sua nota é</Text>
           <Text style={estilos.notaNumero}>{rodada.nota}</Text>
           <Text style={estilos.notaInstrucao}>
-            responda cada categoria de acordo com ela.{'\n'}
-            primeira associação que vier. não pense.
+            responda cada pergunta de acordo com a sua nota.{'\n'}
+            pense bem — cada resposta ajuda o grupo a te calibrar.
           </Text>
         </View>
 
@@ -214,10 +214,15 @@ function TelaNotaSecreta({
                   </Pressable>
                 </View>
                 {!pulada && (
+                  <Text style={estilos.campoPergunta}>
+                    {rodada.perguntasPorCategoria[id]}
+                  </Text>
+                )}
+                {!pulada && (
                   <TextInput
                     style={estilos.campoInput}
-                    placeholder={cat.instrucao}
-                    placeholderTextColor="rgba(255,255,255,0.25)"
+                    placeholder="sua resposta"
+                    placeholderTextColor="rgba(255,255,255,0.20)"
                     value={textos[id]}
                     onChangeText={(t) =>
                       setTextos((prev) => ({ ...prev, [id]: t }))
@@ -301,20 +306,28 @@ function TelaDebate({
             const cat = getCategoria(id);
             const resp = rodada.respostas.find((r) => r.categoriaId === id);
             const texto = resp?.resposta ?? null;
+            const pergunta = rodada.perguntasPorCategoria[id];
             return (
-              <View key={id} style={estilos.respostaLinha}>
-                <View style={estilos.respostaCategoriaCol}>
-                  <Text style={estilos.respostaEmoji}>{cat.emoji}</Text>
-                  <Text style={estilos.respostaCatNome}>{cat.nome}</Text>
+              <View key={id} style={estilos.respostaCard}>
+                {/* Pergunta como contexto de debate */}
+                {pergunta && (
+                  <Text style={estilos.respostaPergunta}>{pergunta}</Text>
+                )}
+                {/* Categoria + resposta */}
+                <View style={estilos.respostaLinha}>
+                  <View style={estilos.respostaCategoriaCol}>
+                    <Text style={estilos.respostaEmoji}>{cat.emoji}</Text>
+                    <Text style={estilos.respostaCatNome}>{cat.nome}</Text>
+                  </View>
+                  <Text
+                    style={[
+                      estilos.respostaTexto,
+                      texto === null && estilos.respostaTextoVazio,
+                    ]}
+                  >
+                    {texto ?? '—'}
+                  </Text>
                 </View>
-                <Text
-                  style={[
-                    estilos.respostaTexto,
-                    texto === null && estilos.respostaTextoVazio,
-                  ]}
-                >
-                  {texto ?? '—'}
-                </Text>
               </View>
             );
           })}
@@ -568,8 +581,14 @@ function TelaReveal({
                   </Text>
                 </View>
                 {sessao.modoCompetitivo && (
-                  <Text style={estilos.palpitePontos}>
-                    {pontos > 0 ? `+${pontos}` : ''}
+                  <Text
+                    style={[
+                      estilos.palpitePontos,
+                      pontos === 2 && estilos.palpitePontosExato,
+                      pontos === 1 && estilos.palpitePontosBeirada,
+                    ]}
+                  >
+                    {pontos === 2 ? '+2 ★' : pontos === 1 ? '+1' : ''}
                   </Text>
                 )}
               </View>
@@ -578,10 +597,18 @@ function TelaReveal({
         </View>
 
         {/* Pontuação do respondente (modo competitivo) */}
-        {sessao.modoCompetitivo && resultado.pontosRespondente > 0 && (
-          <View style={estilos.pontoRespondente}>
-            <Text style={estilos.pontoRespondenteTexto}>
-              🎭 {resultado.respondente.nome} ganhou +1 por ser difícil de ler
+        {sessao.modoCompetitivo && (
+          <View style={[
+            estilos.pontoRespondente,
+            resultado.pontosRespondente === 0 && estilos.pontoRespondenteZero,
+          ]}>
+            <Text style={[
+              estilos.pontoRespondenteTexto,
+              resultado.pontosRespondente === 0 && estilos.pontoRespondenteTextoZero,
+            ]}>
+              {resultado.pontosRespondente > 0
+                ? `🎯 ${resultado.respondente.nome} ficou legível para ${resultado.pontosRespondente} de ${resultado.palpites.length} — +${resultado.pontosRespondente} pt`
+                : `😶 ninguém acertou a nota de ${resultado.respondente.nome}`}
             </Text>
           </View>
         )}
@@ -959,6 +986,13 @@ const estilos = StyleSheet.create({
   },
   chipPularTextoAtivo: { color: COR_D010 },
   chipPularDesabilitado: { opacity: 0.3 },
+  campoPergunta: {
+    color: 'rgba(255,255,255,0.45)',
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoMicro,
+    lineHeight: 16,
+    marginBottom: espacamento.sm,
+  },
   campoInput: {
     color: '#FFFFFF',
     fontFamily: familias.sans,
@@ -978,6 +1012,20 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacamento.md,
     paddingTop: espacamento.md,
   },
+  respostaCard: {
+    backgroundColor: cores.superficie,
+    borderColor: cores.borda,
+    borderRadius: raio.lg,
+    borderWidth: 1,
+    padding: espacamento.md,
+  },
+  respostaPergunta: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoMicro,
+    lineHeight: 16,
+    marginBottom: espacamento.sm,
+  },
   debateTitulo: {
     color: cores.texto,
     fontFamily: familias.sans,
@@ -994,13 +1042,8 @@ const estilos = StyleSheet.create({
   listaRespostas: { gap: espacamento.sm },
   respostaLinha: {
     alignItems: 'center',
-    backgroundColor: cores.superficie,
-    borderColor: cores.borda,
-    borderRadius: raio.lg,
-    borderWidth: 1,
     flexDirection: 'row',
     gap: espacamento.md,
-    padding: espacamento.md,
   },
   respostaCategoriaCol: {
     alignItems: 'center',
@@ -1186,12 +1229,18 @@ const estilos = StyleSheet.create({
     fontWeight: tipografia.pesoBold,
   },
   palpitePontos: {
-    color: COR_D010,
+    color: 'transparent', // base — cor sobrescrita por variantes abaixo
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     fontWeight: tipografia.pesoBold,
-    minWidth: 28,
+    minWidth: 32,
     textAlign: 'right',
+  },
+  palpitePontosExato: {
+    color: COR_D010, // +2: verde vivo — acerto exato
+  },
+  palpitePontosBeirada: {
+    color: '#6EE7B7', // +1: verde mais suave — beirada ±1
   },
   pontoRespondente: {
     backgroundColor: COR_D010_FUNDO,
@@ -1201,10 +1250,17 @@ const estilos = StyleSheet.create({
     marginTop: espacamento.md,
     padding: espacamento.md,
   },
+  pontoRespondenteZero: {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderColor: cores.borda,
+  },
   pontoRespondenteTexto: {
     color: COR_D010,
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
+  },
+  pontoRespondenteTextoZero: {
+    color: cores.textoMudo,
   },
   placarContainer: {
     marginTop: espacamento.xl,

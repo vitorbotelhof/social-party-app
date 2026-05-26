@@ -39,7 +39,12 @@ export interface Categoria {
   id: CategoriaId;
   emoji: string;
   nome: string;
-  instrucao: string; // prompt exibido ao jogador no input: "um filme"
+  /**
+   * 3–5 perguntas específicas para esta categoria.
+   * Cada pergunta tem âncoras de 0 e 10 embutidas.
+   * O engine sorteia uma por rodada.
+   */
+  perguntas: string[];
   tier: TierCategoria;
   mais18?: boolean;
 }
@@ -66,8 +71,10 @@ export interface ResultadoRodada {
   mediaGuesses: number;
   divergencia: number; // spread = max(palpites) - min(palpites)
   // Pontuação (só usada se modoCompetitivo)
-  pontosRespondente: number; // 1 se grupo divergiu muito (≥3), 0 caso contrário
-  pontosPorAdivinhador: Record<string, number>; // 1 se acertou ±1
+  // Respondente: ganha 1 pt por adivinhador que acertou dentro de ±1
+  pontosRespondente: number;
+  // Adivinhador: 2 pts se erro = 0 (exato), 1 pt se erro = 1 (beirada), 0 pts se erro ≥ 2
+  pontosPorAdivinhador: Record<string, 0 | 1 | 2>;
 }
 
 // Sub-fases do jogo — cada uma mapeia para um sub-componente na tela
@@ -86,6 +93,8 @@ export interface RodadaAtual {
   respondente: { id: string; nome: string };
   nota: NotaDe0a10;
   categorias: CategoriaId[];
+  /** Pergunta específica sorteada para cada categoria desta rodada. */
+  perguntasPorCategoria: Record<string, string>;
   respostas: RespostaCategoria[];
   palpites: PalpiteJogador[];
   // Lista de jogadores que devem palpitar (todos exceto o respondente)

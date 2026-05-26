@@ -7,7 +7,7 @@
 //   • Categorias +18 filtradas se incluirMais18 = false
 //   • Resultado embaralhado para evitar padrão previsível
 
-import { CATEGORIAS } from './categories';
+import { CATEGORIAS, getCategoria, sortearPergunta } from './categories';
 import type { CategoriaId } from './types';
 
 const QTD_CATEGORIAS_POR_RODADA = 3;
@@ -64,6 +64,21 @@ export function selecionarCategorias(
 
   // Embaralha posição final para Tier S não ficar sempre primeiro
   return embaralhar(resultado);
+}
+
+/**
+ * Para cada categoria selecionada na rodada, sorteia uma pergunta aleatória.
+ * Retorna um mapa de categoriaId → pergunta para uso na UI.
+ */
+export function selecionarPerguntasPorCategoria(
+  categorias: CategoriaId[],
+): Record<string, string> {
+  const resultado: Record<string, string> = {};
+  for (const id of categorias) {
+    const cat = getCategoria(id);
+    resultado[id] = sortearPergunta(cat);
+  }
+  return resultado;
 }
 
 // Retorna apenas os IDs das categorias usadas nesta rodada para marcar na sessão

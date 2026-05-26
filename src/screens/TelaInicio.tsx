@@ -2,10 +2,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   ImageBackground,
+  Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -31,6 +32,7 @@ import {
   type JogoCatalogoItem,
   type SecaoJogosItem,
 } from '@/components';
+import { buscarJogosCatalogo } from '@/games/buscaCatalogo';
 import {
   getSecaoCategoriaPrincipalCatalogo,
   getSecaoContextoCatalogo,
@@ -123,6 +125,8 @@ export function TelaInicio({ navigation }: Props) {
   const [mostrarModalNome, setMostrarModalNome] = useState(false);
   const [nomeDigitado, setNomeDigitado] = useState('');
   const [salvando, setSalvando] = useState(false);
+  const [consultaBusca, setConsultaBusca] = useState('');
+  const [buscaEmFoco, setBuscaEmFoco] = useState(false);
   const [secaoAtiva, setSecaoAtiva] = useState<SecaoCatalogo | null>(null);
   const [temperatura, setTemperatura] = useState<TemperaturaEmocional>('frio');
   const [jogoSelecionado, setJogoSelecionado] = useState<DefinicaoJogo | null>(
@@ -170,6 +174,12 @@ export function TelaInicio({ navigation }: Props) {
   }, [conteudoOp, headerOp, headerY]);
 
   const nomeValido = nomeDigitado.trim().length >= MIN_TAMANHO_NOME;
+  const termoBusca = consultaBusca.trim();
+  const buscaAtiva = termoBusca.length > 0;
+  const resultadosBusca = useMemo(
+    () => buscarJogosCatalogo(termoBusca),
+    [termoBusca],
+  );
   const secaoFiltrada = secaoAtiva;
   const larguraCardFiltro = Math.floor(
     (width - MARGEM_TELA * 2 - espacamento.md) / 2,
@@ -195,6 +205,7 @@ export function TelaInicio({ navigation }: Props) {
       setMostrarModalNome(true);
       return;
     }
+    Keyboard.dismiss();
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setJogoSelecionado(jogo);
     setEtapaSheet('descricao');
@@ -241,6 +252,17 @@ export function TelaInicio({ navigation }: Props) {
 
   function limparFiltro() {
     setSecaoAtiva(null);
+    void Haptics.selectionAsync();
+  }
+
+  function atualizarBusca(texto: string) {
+    setConsultaBusca(texto);
+    if (texto.trim().length > 0) setSecaoAtiva(null);
+  }
+
+  function limparBusca() {
+    setConsultaBusca('');
+    Keyboard.dismiss();
     void Haptics.selectionAsync();
   }
 
@@ -357,15 +379,64 @@ export function TelaInicio({ navigation }: Props) {
             <Text style={estilos.botaoEntrarTexto}>tenho código</Text>
           </Pressable>
         </View>
+
+        <View
+          style={[
+            estilos.busca,
+            (buscaEmFoco || buscaAtiva) && estilos.buscaAtiva,
+          ]}
+        >
+          <Text style={estilos.buscaIcone} accessibilityElementsHidden>
+            ⌕
+          </Text>
+          <TextInput
+            value={consultaBusca}
+            onChangeText={atualizarBusca}
+            onFocus={() => setBuscaEmFoco(true)}
+            onBlur={() => setBuscaEmFoco(false)}
+            onSubmitEditing={() => Keyboard.dismiss()}
+            placeholder="buscar jogo, clima ou dinâmica"
+            placeholderTextColor={cores.textoMudo}
+            returnKeyType="search"
+            autoCapitalize="none"
+            style={estilos.buscaInput}
+            accessibilityLabel="Buscar jogos"
+          />
+          {buscaAtiva ? (
+            <Pressable
+              onPress={limparBusca}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel="Limpar busca"
+              style={({ pressed }) => [
+                estilos.buscaLimpar,
+                pressed && estilos.buscaLimparPressionado,
+              ]}
+            >
+              <Text style={estilos.buscaLimparTexto}>×</Text>
+            </Pressable>
+          ) : null}
+        </View>
       </Animated.View>
 
       <ScrollView
         style={estilos.scroll}
         contentContainerStyle={estilos.scrollConteudo}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <Animated.View style={{ opacity: conteudoOp }}>
-          {secaoFiltrada ? (
+          {buscaAtiva ? (
+            <ResultadosBusca
+              termo={termoBusca}
+              resultados={resultadosBusca.map((resultado) =>
+                adaptarJogoCatalogo(resultado.jogo),
+              )}
+              larguraCard={larguraCardFiltro}
+              onLimpar={limparBusca}
+              onEscolherJogo={aoEscolherItemCatalogo}
+            />
+          ) : secaoFiltrada ? (
             <CatalogoFiltrado
               secao={secaoFiltrada}
               larguraCard={larguraCardFiltro}
@@ -621,6 +692,83 @@ function CategoriaChipsCatalogo({
   );
 }
 
+interface ResultadosBuscaProps {
+  termo: string;
+  resultados: JogoCatalogoItem[];
+  larguraCard: number;
+  onLimpar: () => void;
+  onEscolherJogo: (jogo: JogoCatalogoItem) => void;
+}
+
+function ResultadosBusca({
+  termo,
+  resultados,
+  larguraCard,
+  onLimpar,
+  onEscolherJogo,
+}: ResultadosBuscaProps) {
+  const aguardandoMaisTexto = termo.length < 2;
+  const quantidade =
+    resultados.length === 1
+      ? '1 jogo encontrado'
+      : `${resultados.length} jogos encontrados`;
+
+  return (
+    <View style={estilos.filtroContainer}>
+      <View style={estilos.filtroCabecalho}>
+        <View style={estilos.filtroTextos}>
+          <Text style={estilos.filtroEyebrow}>busca</Text>
+          <Text style={estilos.filtroTitulo}>jogos</Text>
+          {!aguardandoMaisTexto ? (
+            <Text style={estilos.filtroSubtitulo}>{quantidade}</Text>
+          ) : null}
+        </View>
+
+        <Pressable
+          onPress={onLimpar}
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel="Limpar busca"
+          style={({ pressed }) => [
+            estilos.filtroFechar,
+            pressed && estilos.filtroFecharPressionado,
+          ]}
+        >
+          <Text style={estilos.filtroFecharTexto}>×</Text>
+        </Pressable>
+      </View>
+
+      {resultados.length > 0 ? (
+        <View style={estilos.gradeJogos}>
+          {resultados.map((jogo) => (
+            <View key={jogo.id} style={{ width: larguraCard }}>
+              <CardJogoCatalogo
+                jogo={jogo}
+                largura={larguraCard}
+                alturaImagem={larguraCard}
+                onPress={onEscolherJogo}
+              />
+            </View>
+          ))}
+        </View>
+      ) : (
+        <View style={estilos.buscaVazia}>
+          <Text style={estilos.buscaVaziaTitulo}>
+            {aguardandoMaisTexto
+              ? 'continue digitando'
+              : 'nenhum jogo encontrado'}
+          </Text>
+          {!aguardandoMaisTexto ? (
+            <Text style={estilos.buscaVaziaTexto}>
+              tente outro nome, clima ou tipo de jogo.
+            </Text>
+          ) : null}
+        </View>
+      )}
+    </View>
+  );
+}
+
 interface SheetOpcaoProps {
   titulo: string;
   descricao: string;
@@ -814,6 +962,77 @@ const estilos = StyleSheet.create({
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     fontWeight: tipografia.pesoSemibold,
+  },
+  busca: {
+    alignItems: 'center',
+    backgroundColor: cores.superficie,
+    borderColor: cores.borda,
+    borderRadius: raio.pill,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: espacamento.sm,
+    marginTop: espacamento.md,
+    minHeight: 48,
+    paddingHorizontal: espacamento.md,
+  },
+  buscaAtiva: {
+    borderColor: cores.bordaForte,
+  },
+  buscaIcone: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoIconePequeno,
+    lineHeight: 20,
+  },
+  buscaInput: {
+    color: cores.texto,
+    flex: 1,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpo,
+    fontWeight: tipografia.pesoRegular,
+    letterSpacing: 0,
+    paddingVertical: espacamento.sm,
+  },
+  buscaLimpar: {
+    alignItems: 'center',
+    borderRadius: raio.pill,
+    height: 30,
+    justifyContent: 'center',
+    width: 30,
+  },
+  buscaLimparPressionado: {
+    backgroundColor: cores.superficieElevada,
+  },
+  buscaLimparTexto: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoIconePequeno,
+    fontWeight: tipografia.pesoBold,
+    lineHeight: 22,
+  },
+  buscaVazia: {
+    alignItems: 'center',
+    borderColor: cores.borda,
+    borderRadius: raio.lg,
+    borderWidth: 1,
+    gap: espacamento.xs,
+    justifyContent: 'center',
+    minHeight: 156,
+    paddingHorizontal: espacamento.lg,
+  },
+  buscaVaziaTexto: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpoMenor,
+    lineHeight: 20,
+    textAlign: 'center',
+  },
+  buscaVaziaTitulo: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpo,
+    fontWeight: tipografia.pesoSemibold,
+    letterSpacing: 0,
   },
   chipCategoria: {
     alignItems: 'center',

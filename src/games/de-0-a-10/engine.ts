@@ -4,7 +4,11 @@
 // Fluxo por rodada:
 //   vez_de → nota_secreta → debate → palpites → reveal → (próximo) → vez_de
 
-import { marcarCategoriasUsadas, selecionarCategorias } from './categorySelection';
+import {
+  marcarCategoriasUsadas,
+  selecionarCategorias,
+  selecionarPerguntasPorCategoria,
+} from './categorySelection';
 import { selecionarNota } from './noteSelection';
 import type {
   ConfiguracaoDe0a10,
@@ -61,12 +65,15 @@ export function iniciarRodada(sessao: SessaoDe0a10): SessaoDe0a10 {
     sessao.incluirMais18,
   );
 
+  const perguntasPorCategoria = selecionarPerguntasPorCategoria(categorias);
+
   const adivinhadores = sessao.jogadores.filter((j) => j.id !== respondente.id);
 
   const rodadaAtual: RodadaAtual = {
     respondente,
     nota,
     categorias,
+    perguntasPorCategoria,
     respostas: [],
     palpites: [],
     adivinhadores,
@@ -150,15 +157,21 @@ export function calcularResultadoRodada(
   const maxNota = Math.max(...notas);
   const divergencia = maxNota - minNota;
 
-  // Respondente ganha 1 ponto se grupo ficou espalhado (divergência ≥ 3)
-  const pontosRespondente = divergencia >= 3 ? 1 : 0;
-
-  // Adivinhadores ganham 1 ponto se acertaram ±1
-  const pontosPorAdivinhador: Record<string, number> = {};
+  // Adivinhadores:
+  //   erro = 0 (exato) → 2 pts
+  //   erro = 1 (beirada) → 1 pt
+  //   erro ≥ 2 → 0 pts
+  const pontosPorAdivinhador: Record<string, 0 | 1 | 2> = {};
   for (const palpite of rodada.palpites) {
     const erro = Math.abs(palpite.nota - rodada.nota);
-    pontosPorAdivinhador[palpite.jogadorId] = erro <= 1 ? 1 : 0;
+    pontosPorAdivinhador[palpite.jogadorId] =
+      erro === 0 ? 2 : erro === 1 ? 1 : 0;
   }
+
+  // Respondente ganha 1 pt por cada adivinhador que acertou dentro de ±1
+  const pontosRespondente = rodada.palpites.filter(
+    (p) => Math.abs(p.nota - rodada.nota) <= 1,
+  ).length;
 
   return {
     respondente: rodada.respondente,
