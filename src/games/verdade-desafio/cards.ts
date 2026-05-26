@@ -135,7 +135,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'au06',
     tipo: 'verdade',
-    texto: 'Qual é a coisa mais egoísta que você já fez — e não se arrependeu completamente?',
+    texto:
+      'Qual é a coisa mais egoísta que você já fez — e não se arrependeu completamente?',
     categoria: 'autoconhecimento',
     intensidade: 'social',
     mais18: false,
@@ -144,7 +145,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'au07',
     tipo: 'verdade',
-    texto: 'Qual foi a decisão mais difícil que você já tomou — e você tomaria de novo?',
+    texto:
+      'Qual foi a decisão mais difícil que você já tomou — e você tomaria de novo?',
     categoria: 'autoconhecimento',
     intensidade: 'pesado',
     mais18: false,
@@ -153,7 +155,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'au08',
     tipo: 'verdade',
-    texto: 'Qual opinião boba você defende com convicção, mesmo sabendo que o grupo vai discordar?',
+    texto:
+      'Qual opinião boba você defende com convicção, mesmo sabendo que o grupo vai discordar?',
     categoria: 'autoconhecimento',
     intensidade: 'pesado',
     mais18: false,
@@ -162,7 +165,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'au09',
     tipo: 'verdade',
-    texto: 'Qual escolha sua parecia uma péssima ideia e acabou virando uma boa história?',
+    texto:
+      'Qual escolha sua parecia uma péssima ideia e acabou virando uma boa história?',
     categoria: 'autoconhecimento',
     intensidade: 'pesado',
     mais18: false,
@@ -191,7 +195,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 're01',
     tipo: 'verdade',
-    texto: 'Qual é o motivo mais ridículo pelo qual você já terminou ou foi terminado?',
+    texto:
+      'Qual é o motivo mais ridículo pelo qual você já terminou ou foi terminado?',
     categoria: 'relacionamentos',
     intensidade: 'leve',
     mais18: false,
@@ -200,7 +205,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 're02',
     tipo: 'verdade',
-    texto: 'Qual foi a coisa mais exagerada que você já fez por alguém que gostava?',
+    texto:
+      'Qual foi a coisa mais exagerada que você já fez por alguém que gostava?',
     categoria: 'relacionamentos',
     intensidade: 'leve',
     mais18: false,
@@ -218,7 +224,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 're04',
     tipo: 'verdade',
-    texto: 'Você já fingiu curtir algo só por causa de uma pessoa e acabou gostando de verdade?',
+    texto:
+      'Você já fingiu curtir algo só por causa de uma pessoa e acabou gostando de verdade?',
     categoria: 'relacionamentos',
     intensidade: 'social',
     mais18: false,
@@ -227,7 +234,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 're05',
     tipo: 'verdade',
-    texto: 'Você já terminou e voltou com a mesma pessoa mais de uma vez? Valeu a pena?',
+    texto:
+      'Você já terminou e voltou com a mesma pessoa mais de uma vez? Valeu a pena?',
     categoria: 'relacionamentos',
     intensidade: 'social',
     mais18: false,
@@ -263,7 +271,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 're09',
     tipo: 'verdade',
-    texto: 'Você já prolongou uma ficada por não saber como encerrar a conversa?',
+    texto:
+      'Você já prolongou uma ficada por não saber como encerrar a conversa?',
     categoria: 'relacionamentos',
     intensidade: 'pesado',
     mais18: false,
@@ -290,7 +299,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 're12',
     tipo: 'verdade',
-    texto: 'Você já ficou com duas pessoas no mesmo período — e elas sabiam uma da outra?',
+    texto:
+      'Você já ficou com duas pessoas no mesmo período — e elas sabiam uma da outra?',
     categoria: 'relacionamentos',
     intensidade: 'caotico',
     mais18: true,
@@ -299,7 +309,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 're13',
     tipo: 'verdade',
-    texto: 'Você foi mais honesto com alguém depois de terminar do que durante o relacionamento?',
+    texto:
+      'Você foi mais honesto com alguém depois de terminar do que durante o relacionamento?',
     categoria: 'relacionamentos',
     intensidade: 'pesado',
     mais18: false,
@@ -346,7 +357,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'gr05',
     tipo: 'verdade',
-    texto: 'Quem aqui você acha mais difícil de ler? O que te confunde nessa pessoa?',
+    texto:
+      'Quem aqui você acha mais difícil de ler? O que te confunde nessa pessoa?',
     categoria: 'grupo',
     intensidade: 'social',
     mais18: false,
@@ -355,7 +367,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'gr06',
     tipo: 'verdade',
-    texto: 'Tem alguém aqui que você julgou antes de conhecer — e o julgamento mudou?',
+    texto:
+      'Tem alguém aqui que você julgou antes de conhecer — e o julgamento mudou?',
     categoria: 'grupo',
     intensidade: 'social',
     mais18: false,
@@ -364,7 +377,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'gr07',
     tipo: 'verdade',
-    texto: 'Quem aqui escolheria o encontro mais inesperado e ainda faria dar certo?',
+    texto:
+      'Quem aqui escolheria o encontro mais inesperado e ainda faria dar certo?',
     categoria: 'grupo',
     intensidade: 'social',
     mais18: false,
@@ -402,7 +416,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 've01',
     tipo: 'verdade',
-    texto: 'Qual é o filme, série ou músico que você ama mas te envergonha admitir?',
+    texto:
+      'Qual é o filme, série ou músico que você ama mas te envergonha admitir?',
     categoria: 'vergonha',
     intensidade: 'leve',
     mais18: false,
@@ -411,7 +426,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 've02',
     tipo: 'verdade',
-    texto: 'Qual é o nome famoso ou personagem que você pronunciou errado por muito tempo sem perceber?',
+    texto:
+      'Qual é o nome famoso ou personagem que você pronunciou errado por muito tempo sem perceber?',
     categoria: 'vergonha',
     intensidade: 'leve',
     mais18: false,
@@ -420,7 +436,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 've03',
     tipo: 'verdade',
-    texto: 'Qual é o momento mais constrangedor que você se lembra com absoluta clareza?',
+    texto:
+      'Qual é o momento mais constrangedor que você se lembra com absoluta clareza?',
     categoria: 'vergonha',
     intensidade: 'leve',
     mais18: false,
@@ -447,7 +464,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 've06',
     tipo: 'verdade',
-    texto: 'Você já comentou algo num post achando que era uma mensagem privada?',
+    texto:
+      'Você já comentou algo num post achando que era uma mensagem privada?',
     categoria: 'vergonha',
     intensidade: 'social',
     mais18: false,
@@ -456,7 +474,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 've07',
     tipo: 'verdade',
-    texto: 'Qual foi o pior trabalho, apresentação ou performance que você já deu em público?',
+    texto:
+      'Qual foi o pior trabalho, apresentação ou performance que você já deu em público?',
     categoria: 'vergonha',
     intensidade: 'social',
     mais18: false,
@@ -465,7 +484,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 've08',
     tipo: 'verdade',
-    texto: 'Você já foi pego numa mentira que jurou de pé junto que conseguiria sustentar?',
+    texto:
+      'Você já foi pego numa mentira que jurou de pé junto que conseguiria sustentar?',
     categoria: 'vergonha',
     intensidade: 'social',
     mais18: false,
@@ -474,7 +494,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 've09',
     tipo: 'verdade',
-    texto: 'Qual fase sua renderia o melhor episódio de comédia se fosse contada hoje?',
+    texto:
+      'Qual fase sua renderia o melhor episódio de comédia se fosse contada hoje?',
     categoria: 'vergonha',
     intensidade: 'pesado',
     mais18: false,
@@ -521,7 +542,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'co03',
     tipo: 'verdade',
-    texto: 'Qual pequena tarefa você adia tanto que já virou piada consigo mesmo?',
+    texto:
+      'Qual pequena tarefa você adia tanto que já virou piada consigo mesmo?',
     categoria: 'coragem',
     intensidade: 'social',
     mais18: false,
@@ -530,7 +552,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'co04',
     tipo: 'verdade',
-    texto: 'Você já quis sair de uma situação mas ficou por pura obrigação social?',
+    texto:
+      'Você já quis sair de uma situação mas ficou por pura obrigação social?',
     categoria: 'coragem',
     intensidade: 'social',
     mais18: false,
@@ -539,7 +562,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'co05',
     tipo: 'verdade',
-    texto: 'Você já evitou uma oportunidade real por medo de falhar em público?',
+    texto:
+      'Você já evitou uma oportunidade real por medo de falhar em público?',
     categoria: 'coragem',
     intensidade: 'social',
     mais18: false,
@@ -548,7 +572,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'co06',
     tipo: 'verdade',
-    texto: 'Qual coisa nova você gostaria de tentar se tivesse uma torcida do grupo?',
+    texto:
+      'Qual coisa nova você gostaria de tentar se tivesse uma torcida do grupo?',
     categoria: 'coragem',
     intensidade: 'pesado',
     mais18: false,
@@ -557,7 +582,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'co07',
     tipo: 'verdade',
-    texto: 'O que você teria feito diferente se não tivesse medo do que as pessoas pensam?',
+    texto:
+      'O que você teria feito diferente se não tivesse medo do que as pessoas pensam?',
     categoria: 'coragem',
     intensidade: 'pesado',
     mais18: false,
@@ -566,7 +592,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'co08',
     tipo: 'verdade',
-    texto: 'Qual é a opinião que você sustenta em silêncio porque sabe que vai causar conflito?',
+    texto:
+      'Qual é a opinião que você sustenta em silêncio porque sabe que vai causar conflito?',
     categoria: 'coragem',
     intensidade: 'pesado',
     mais18: false,
@@ -575,7 +602,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'co09',
     tipo: 'verdade',
-    texto: 'Qual é a coisa que você nunca faria mesmo com muito dinheiro envolvido?',
+    texto:
+      'Qual é a coisa que você nunca faria mesmo com muito dinheiro envolvido?',
     categoria: 'coragem',
     intensidade: 'caotico',
     mais18: false,
@@ -584,7 +612,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'co10',
     tipo: 'verdade',
-    texto: 'Qual desafio bobo te assusta mais do que deveria, mas você toparia com incentivo?',
+    texto:
+      'Qual desafio bobo te assusta mais do que deveria, mas você toparia com incentivo?',
     categoria: 'coragem',
     intensidade: 'caotico',
     mais18: false,
@@ -599,7 +628,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds01',
     tipo: 'desafio',
-    texto: 'Fale 5 palavras que te descrevem em 10 segundos. O grupo julga se concordam.',
+    texto:
+      'Fale 5 palavras que te descrevem em 10 segundos. O grupo julga se concordam.',
     categoria: 'desafio_social',
     intensidade: 'leve',
     mais18: false,
@@ -608,7 +638,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds02',
     tipo: 'desafio',
-    texto: 'Conte uma história de 30 segundos usando no máximo 10 palavras diferentes.',
+    texto:
+      'Conte uma história de 30 segundos usando no máximo 10 palavras diferentes.',
     categoria: 'desafio_social',
     intensidade: 'leve',
     mais18: false,
@@ -617,7 +648,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds03',
     tipo: 'desafio',
-    texto: 'Fale um fato verdadeiro e dois inventados. O grupo tem 30 segundos pra descobrir qual é o verdadeiro.',
+    texto:
+      'Fale um fato verdadeiro e dois inventados. O grupo tem 30 segundos pra descobrir qual é o verdadeiro.',
     categoria: 'desafio_social',
     intensidade: 'leve',
     mais18: false,
@@ -626,7 +658,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds04',
     tipo: 'desafio',
-    texto: 'Descreva seu dia de hoje como se fosse a sinopse de um filme de ação.',
+    texto:
+      'Descreva seu dia de hoje como se fosse a sinopse de um filme de ação.',
     categoria: 'desafio_social',
     intensidade: 'leve',
     mais18: false,
@@ -653,7 +686,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds07',
     tipo: 'desafio',
-    texto: 'Interprete como você escreve quando tenta fingir que não está ansioso por resposta.',
+    texto:
+      'Interprete como você escreve quando tenta fingir que não está ansioso por resposta.',
     categoria: 'desafio_social',
     intensidade: 'social',
     mais18: false,
@@ -662,7 +696,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds08',
     tipo: 'desafio',
-    texto: 'Invente uma busca absurda que combinaria com você e defenda por que pesquisaria isso.',
+    texto:
+      'Invente uma busca absurda que combinaria com você e defenda por que pesquisaria isso.',
     categoria: 'desafio_social',
     intensidade: 'social',
     mais18: false,
@@ -671,7 +706,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds09',
     tipo: 'desafio',
-    texto: 'Cante um trecho de uma música que define sua semana; o grupo adivinha o clima.',
+    texto:
+      'Cante um trecho de uma música que define sua semana; o grupo adivinha o clima.',
     categoria: 'desafio_social',
     intensidade: 'leve',
     mais18: false,
@@ -680,7 +716,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds10',
     tipo: 'desafio',
-    texto: 'Dite uma mensagem absurda que você jamais teria coragem de mandar para um contato aleatório.',
+    texto:
+      'Dite uma mensagem absurda que você jamais teria coragem de mandar para um contato aleatório.',
     categoria: 'desafio_social',
     intensidade: 'social',
     mais18: false,
@@ -698,7 +735,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds12',
     tipo: 'desafio',
-    texto: 'Interprete o reencontro mais dramático possível com alguém que sumiu.',
+    texto:
+      'Interprete o reencontro mais dramático possível com alguém que sumiu.',
     categoria: 'desafio_social',
     intensidade: 'social',
     mais18: false,
@@ -707,7 +745,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds13',
     tipo: 'desafio',
-    texto: 'Interprete ao vivo o áudio mais dramático que alguém mandaria ao perceber que exagerou.',
+    texto:
+      'Interprete ao vivo o áudio mais dramático que alguém mandaria ao perceber que exagerou.',
     categoria: 'desafio_social',
     intensidade: 'social',
     mais18: false,
@@ -716,7 +755,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds14',
     tipo: 'desafio',
-    texto: 'Deixe o grupo escolher uma legenda constrangedora; você precisa posar para esse story imaginário.',
+    texto:
+      'Deixe o grupo escolher uma legenda constrangedora; você precisa posar para esse story imaginário.',
     categoria: 'desafio_social',
     intensidade: 'pesado',
     mais18: false,
@@ -725,7 +765,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds15',
     tipo: 'desafio',
-    texto: 'Cante parabéns como se estivesse numa ligação completamente errada; o grupo faz a outra ponta.',
+    texto:
+      'Cante parabéns como se estivesse numa ligação completamente errada; o grupo faz a outra ponta.',
     categoria: 'desafio_social',
     intensidade: 'pesado',
     mais18: false,
@@ -734,7 +775,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds16',
     tipo: 'desafio',
-    texto: 'Faça um discurso de "saudades" para um personagem imaginário que claramente não merece.',
+    texto:
+      'Faça um discurso de "saudades" para um personagem imaginário que claramente não merece.',
     categoria: 'desafio_social',
     intensidade: 'pesado',
     mais18: false,
@@ -743,7 +785,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds17',
     tipo: 'desafio',
-    texto: 'Leia em voz alta a mensagem mais inadequada que alguém mandaria no grupo da família ou do trabalho.',
+    texto:
+      'Leia em voz alta a mensagem mais inadequada que alguém mandaria no grupo da família ou do trabalho.',
     categoria: 'desafio_social',
     intensidade: 'pesado',
     mais18: false,
@@ -752,7 +795,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds18',
     tipo: 'desafio',
-    texto: 'Faça três poses de selfie progressivamente piores; o grupo escolhe a campeã.',
+    texto:
+      'Faça três poses de selfie progressivamente piores; o grupo escolhe a campeã.',
     categoria: 'desafio_social',
     intensidade: 'pesado',
     mais18: false,
@@ -761,7 +805,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds19',
     tipo: 'desafio',
-    texto: 'O grupo te dá três palavras e você improvisa uma conversa suspeita usando todas.',
+    texto:
+      'O grupo te dá três palavras e você improvisa uma conversa suspeita usando todas.',
     categoria: 'desafio_social',
     intensidade: 'pesado',
     mais18: false,
@@ -770,7 +815,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds20',
     tipo: 'desafio',
-    texto: 'Conte uma fofoca fictícia usando apenas gestos e sons; o grupo tenta reconstruir a história.',
+    texto:
+      'Conte uma fofoca fictícia usando apenas gestos e sons; o grupo tenta reconstruir a história.',
     categoria: 'desafio_social',
     intensidade: 'caotico',
     mais18: false,
@@ -779,7 +825,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds21',
     tipo: 'desafio',
-    texto: 'Faça o pedido de desculpas mais exagerado por ter cometido um erro minúsculo e inventado.',
+    texto:
+      'Faça o pedido de desculpas mais exagerado por ter cometido um erro minúsculo e inventado.',
     categoria: 'desafio_social',
     intensidade: 'caotico',
     mais18: false,
@@ -788,7 +835,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'ds22',
     tipo: 'desafio',
-    texto: 'Peça um favor impossível a alguém do grupo como se sua vida dependesse disso.',
+    texto:
+      'Peça um favor impossível a alguém do grupo como se sua vida dependesse disso.',
     categoria: 'desafio_social',
     intensidade: 'caotico',
     mais18: false,
@@ -808,7 +856,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df02',
     tipo: 'desafio',
-    texto: 'Fale seu nome ao contrário 3 vezes seguidas o mais rápido possível.',
+    texto:
+      'Fale seu nome ao contrário 3 vezes seguidas o mais rápido possível.',
     categoria: 'desafio_fisico',
     intensidade: 'leve',
     mais18: false,
@@ -817,7 +866,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df03',
     tipo: 'desafio',
-    texto: 'Interprete alguém tentando caminhar discretamente depois de fazer barulho de madrugada.',
+    texto:
+      'Interprete alguém tentando caminhar discretamente depois de fazer barulho de madrugada.',
     categoria: 'desafio_fisico',
     intensidade: 'leve',
     mais18: false,
@@ -826,7 +876,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df04',
     tipo: 'desafio',
-    texto: 'Faça 3 poses de modelo seguidas com a cara mais séria que conseguir.',
+    texto:
+      'Faça 3 poses de modelo seguidas com a cara mais séria que conseguir.',
     categoria: 'desafio_fisico',
     intensidade: 'leve',
     mais18: false,
@@ -844,7 +895,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df06',
     tipo: 'desafio',
-    texto: 'Tente se equilibrar numa perna só por 30 segundos enquanto conta de trás pra frente.',
+    texto:
+      'Tente se equilibrar numa perna só por 30 segundos enquanto conta de trás pra frente.',
     categoria: 'desafio_fisico',
     intensidade: 'leve',
     mais18: false,
@@ -853,7 +905,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df07',
     tipo: 'desafio',
-    texto: 'Faça a voz mais grave possível e diga uma frase dramática de novela.',
+    texto:
+      'Faça a voz mais grave possível e diga uma frase dramática de novela.',
     categoria: 'desafio_fisico',
     intensidade: 'leve',
     mais18: false,
@@ -862,7 +915,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df08',
     tipo: 'desafio',
-    texto: 'Cante o refrão da última música que você ouviu — o grupo precisa reconhecer.',
+    texto:
+      'Cante o refrão da última música que você ouviu — o grupo precisa reconhecer.',
     categoria: 'desafio_fisico',
     intensidade: 'social',
     mais18: false,
@@ -880,7 +934,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df10',
     tipo: 'desafio',
-    texto: 'Narre o que está acontecendo como um repórter ao vivo em plena confusão.',
+    texto:
+      'Narre o que está acontecendo como um repórter ao vivo em plena confusão.',
     categoria: 'desafio_fisico',
     intensidade: 'social',
     mais18: false,
@@ -889,7 +944,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df11',
     tipo: 'desafio',
-    texto: 'Faça uma coreografia de 20 segundos usando a música que alguém do grupo escolher.',
+    texto:
+      'Faça uma coreografia de 20 segundos usando a música que alguém do grupo escolher.',
     categoria: 'desafio_fisico',
     intensidade: 'social',
     mais18: false,
@@ -898,7 +954,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df12',
     tipo: 'desafio',
-    texto: 'Invente um alongamento absurdo e convença o grupo a copiar por 15 segundos.',
+    texto:
+      'Invente um alongamento absurdo e convença o grupo a copiar por 15 segundos.',
     categoria: 'desafio_fisico',
     intensidade: 'social',
     mais18: false,
@@ -907,7 +964,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df13',
     tipo: 'desafio',
-    texto: 'Tente tocar o nariz com a língua por 10 segundos enquanto mantém pose de capa de revista.',
+    texto:
+      'Tente tocar o nariz com a língua por 10 segundos enquanto mantém pose de capa de revista.',
     categoria: 'desafio_fisico',
     intensidade: 'leve',
     mais18: false,
@@ -916,7 +974,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df14',
     tipo: 'desafio',
-    texto: 'Faça a imitação mais convincente de alguém famoso que o grupo vai conseguir adivinhar.',
+    texto:
+      'Faça a imitação mais convincente de alguém famoso que o grupo vai conseguir adivinhar.',
     categoria: 'desafio_fisico',
     intensidade: 'social',
     mais18: false,
@@ -925,7 +984,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df15',
     tipo: 'desafio',
-    texto: 'Faça a última série que você viu em 45 segundos. Cenário, personagens, climão.',
+    texto:
+      'Faça a última série que você viu em 45 segundos. Cenário, personagens, climão.',
     categoria: 'desafio_fisico',
     intensidade: 'social',
     mais18: false,
@@ -934,7 +994,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df16',
     tipo: 'desafio',
-    texto: 'Faça o movimento mais estranho que você consegue por 15 segundos. Sem rir.',
+    texto:
+      'Faça o movimento mais estranho que você consegue por 15 segundos. Sem rir.',
     categoria: 'desafio_fisico',
     intensidade: 'social',
     mais18: false,
@@ -943,7 +1004,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df17',
     tipo: 'desafio',
-    texto: 'Tente fazer alguém do grupo rir em 20 segundos. Não pode tocar a pessoa.',
+    texto:
+      'Tente fazer alguém do grupo rir em 20 segundos. Não pode tocar a pessoa.',
     categoria: 'desafio_fisico',
     intensidade: 'social',
     mais18: false,
@@ -952,7 +1014,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df18',
     tipo: 'desafio',
-    texto: 'Feche os olhos e tente apontar de onde veio uma palma. O grupo pode fazer três tentativas.',
+    texto:
+      'Feche os olhos e tente apontar de onde veio uma palma. O grupo pode fazer três tentativas.',
     categoria: 'desafio_fisico',
     intensidade: 'leve',
     mais18: false,
@@ -961,7 +1024,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df19',
     tipo: 'desafio',
-    texto: 'Invente uma cena de novela de 30 segundos com dois jogadores que toparem.',
+    texto:
+      'Invente uma cena de novela de 30 segundos com dois jogadores que toparem.',
     categoria: 'desafio_fisico',
     intensidade: 'pesado',
     mais18: false,
@@ -970,7 +1034,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df20',
     tipo: 'desafio',
-    texto: 'Faça um discurso emocionado de premiação para dois personagens inventados pelo grupo.',
+    texto:
+      'Faça um discurso emocionado de premiação para dois personagens inventados pelo grupo.',
     categoria: 'desafio_fisico',
     intensidade: 'pesado',
     mais18: false,
@@ -979,7 +1044,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df21',
     tipo: 'desafio',
-    texto: 'Imite carinhosamente o jogador à sua direita por 20 segundos até o grupo reconhecer.',
+    texto:
+      'Imite carinhosamente o jogador à sua direita por 20 segundos até o grupo reconhecer.',
     categoria: 'desafio_fisico',
     intensidade: 'pesado',
     mais18: false,
@@ -988,7 +1054,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'df22',
     tipo: 'desafio',
-    texto: 'Conte uma história inventada em 30 segundos. O grupo tem 15 segundos pra apontar a mentira.',
+    texto:
+      'Conte uma história inventada em 30 segundos. O grupo tem 15 segundos pra apontar a mentira.',
     categoria: 'desafio_fisico',
     intensidade: 'pesado',
     mais18: false,
@@ -999,7 +1066,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc01',
     tipo: 'desafio',
-    texto: 'Diga um elogio genuíno pra cada pessoa do grupo. Sem repetir adjetivos.',
+    texto:
+      'Diga um elogio genuíno pra cada pessoa do grupo. Sem repetir adjetivos.',
     categoria: 'desafio_caotico',
     intensidade: 'leve',
     mais18: false,
@@ -1008,7 +1076,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc02',
     tipo: 'desafio',
-    texto: 'Invente um apelido de super-herói para alguém do grupo e explique o poder.',
+    texto:
+      'Invente um apelido de super-herói para alguém do grupo e explique o poder.',
     categoria: 'desafio_caotico',
     intensidade: 'leve',
     mais18: false,
@@ -1017,7 +1086,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc03',
     tipo: 'desafio',
-    texto: 'Escolha a música que define cada pessoa do grupo. Canta ou tarararara a melodia.',
+    texto:
+      'Escolha a música que define cada pessoa do grupo. Canta ou tarararara a melodia.',
     categoria: 'desafio_caotico',
     intensidade: 'leve',
     mais18: false,
@@ -1026,7 +1096,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc04',
     tipo: 'desafio',
-    texto: 'Escolha alguém do grupo e descreva o jeito dela em exatamente 3 palavras. Não pode ser "legal", "divertida" ou "gente boa".',
+    texto:
+      'Escolha alguém do grupo e descreva o jeito dela em exatamente 3 palavras. Não pode ser "legal", "divertida" ou "gente boa".',
     categoria: 'desafio_caotico',
     intensidade: 'social',
     mais18: false,
@@ -1035,7 +1106,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc05',
     tipo: 'desafio',
-    texto: 'Faça uma declaração pública de amizade pra alguém do grupo. Específica, não genérica.',
+    texto:
+      'Faça uma declaração pública de amizade pra alguém do grupo. Específica, não genérica.',
     categoria: 'desafio_caotico',
     intensidade: 'social',
     mais18: false,
@@ -1044,7 +1116,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc06',
     tipo: 'desafio',
-    texto: 'Recomende uma experiência divertida para a pessoa à sua esquerda. Tem que ser específica.',
+    texto:
+      'Recomende uma experiência divertida para a pessoa à sua esquerda. Tem que ser específica.',
     categoria: 'desafio_caotico',
     intensidade: 'social',
     mais18: false,
@@ -1053,7 +1126,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc07',
     tipo: 'desafio',
-    texto: 'Faça um brinde com palavras suas — uma frase que diga algo verdadeiro sobre o grupo agora.',
+    texto:
+      'Faça um brinde com palavras suas — uma frase que diga algo verdadeiro sobre o grupo agora.',
     categoria: 'desafio_caotico',
     intensidade: 'social',
     mais18: false,
@@ -1062,7 +1136,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc08',
     tipo: 'desafio',
-    texto: 'Sussurre uma mentira absurda no ouvido de alguém; a pessoa precisa defendê-la como verdade.',
+    texto:
+      'Sussurre uma mentira absurda no ouvido de alguém; a pessoa precisa defendê-la como verdade.',
     categoria: 'desafio_caotico',
     intensidade: 'social',
     mais18: false,
@@ -1071,7 +1146,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc09',
     tipo: 'desafio',
-    texto: 'Escolha um objeto imaginário que representa quem você é agora e venda essa ideia ao grupo.',
+    texto:
+      'Escolha um objeto imaginário que representa quem você é agora e venda essa ideia ao grupo.',
     categoria: 'desafio_caotico',
     intensidade: 'social',
     mais18: false,
@@ -1080,7 +1156,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc10',
     tipo: 'desafio',
-    texto: 'Escolha alguém que topar: façam 20 segundos de improvisação musical em dueto.',
+    texto:
+      'Escolha alguém que topar: façam 20 segundos de improvisação musical em dueto.',
     categoria: 'desafio_caotico',
     intensidade: 'social',
     mais18: false,
@@ -1089,7 +1166,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc11',
     tipo: 'desafio',
-    texto: 'Deixe alguém do grupo dirigir sua pose para uma foto de perfil imaginária completamente fora do seu estilo.',
+    texto:
+      'Deixe alguém do grupo dirigir sua pose para uma foto de perfil imaginária completamente fora do seu estilo.',
     categoria: 'desafio_caotico',
     intensidade: 'pesado',
     mais18: false,
@@ -1098,7 +1176,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc12',
     tipo: 'desafio',
-    texto: 'Escolha alguém que topar: encenem um duelo de olhares por 15 segundos, sem contato.',
+    texto:
+      'Escolha alguém que topar: encenem um duelo de olhares por 15 segundos, sem contato.',
     categoria: 'desafio_caotico',
     intensidade: 'pesado',
     mais18: false,
@@ -1107,7 +1186,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc13',
     tipo: 'desafio',
-    texto: 'Conte uma primeira impressão positiva ou engraçada de alguém do grupo.',
+    texto:
+      'Conte uma primeira impressão positiva ou engraçada de alguém do grupo.',
     categoria: 'desafio_caotico',
     intensidade: 'pesado',
     mais18: false,
@@ -1116,7 +1196,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc14',
     tipo: 'desafio',
-    texto: 'Escolha alguém pra dar um elogio que você nunca falou pra essa pessoa antes. Sem esquecer que o grupo está ouvindo.',
+    texto:
+      'Escolha alguém pra dar um elogio que você nunca falou pra essa pessoa antes. Sem esquecer que o grupo está ouvindo.',
     categoria: 'desafio_caotico',
     intensidade: 'pesado',
     mais18: false,
@@ -1125,7 +1206,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc15',
     tipo: 'desafio',
-    texto: 'Escolha duas pessoas mais prováveis de topar uma aventura absurda e invente qual seria.',
+    texto:
+      'Escolha duas pessoas mais prováveis de topar uma aventura absurda e invente qual seria.',
     categoria: 'desafio_caotico',
     intensidade: 'pesado',
     mais18: false,
@@ -1134,7 +1216,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc16',
     tipo: 'desafio',
-    texto: 'Dê a cada pessoa do grupo um slogan de reality show que seja engraçado, sem ofender.',
+    texto:
+      'Dê a cada pessoa do grupo um slogan de reality show que seja engraçado, sem ofender.',
     categoria: 'desafio_caotico',
     intensidade: 'pesado',
     mais18: false,
@@ -1143,7 +1226,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc17',
     tipo: 'desafio',
-    texto: 'Vote: quem aqui venderia melhor uma ideia absurda como se fosse genial? Explica.',
+    texto:
+      'Vote: quem aqui venderia melhor uma ideia absurda como se fosse genial? Explica.',
     categoria: 'desafio_caotico',
     intensidade: 'pesado',
     mais18: false,
@@ -1152,7 +1236,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc18',
     tipo: 'desafio',
-    texto: 'Vote: quem do grupo você apostaria que vai acordar mais cedo amanhã? E quem vai dormir mais tarde?',
+    texto:
+      'Vote: quem do grupo você apostaria que vai acordar mais cedo amanhã? E quem vai dormir mais tarde?',
     categoria: 'desafio_caotico',
     intensidade: 'leve',
     mais18: false,
@@ -1161,7 +1246,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc19',
     tipo: 'desafio',
-    texto: 'Escolha alguém que topar e façam uma pose de reencontro cinematográfico, sem contato obrigatório.',
+    texto:
+      'Escolha alguém que topar e façam uma pose de reencontro cinematográfico, sem contato obrigatório.',
     categoria: 'desafio_caotico',
     intensidade: 'pesado',
     mais18: false,
@@ -1170,7 +1256,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc20',
     tipo: 'desafio',
-    texto: 'Escolha dois jogadores pra fazer um roleplay: um é o chefe, o outro acabou de chegar atrasado.',
+    texto:
+      'Escolha dois jogadores pra fazer um roleplay: um é o chefe, o outro acabou de chegar atrasado.',
     categoria: 'desafio_caotico',
     intensidade: 'caotico',
     mais18: false,
@@ -1179,7 +1266,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc21',
     tipo: 'desafio',
-    texto: 'Vote em silêncio: quem teria a história mais inesperada de uma viagem? Todos revelam juntos.',
+    texto:
+      'Vote em silêncio: quem teria a história mais inesperada de uma viagem? Todos revelam juntos.',
     categoria: 'desafio_caotico',
     intensidade: 'caotico',
     mais18: false,
@@ -1188,7 +1276,8 @@ export const CARTAS_VD: CartaVD[] = [
   {
     id: 'dc22',
     tipo: 'desafio',
-    texto: 'Faça uma previsão divertida para este grupo daqui a 5 anos. Todos podem completar.',
+    texto:
+      'Faça uma previsão divertida para este grupo daqui a 5 anos. Todos podem completar.',
     categoria: 'desafio_caotico',
     intensidade: 'caotico',
     mais18: false,

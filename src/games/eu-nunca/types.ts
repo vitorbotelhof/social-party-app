@@ -47,7 +47,7 @@ export interface ConfiguracaoEuNunca {
 // Estado da sessão de jogo (local, anônimo)
 export interface SessaoEuNunca {
   config: ConfiguracaoEuNunca;
-  cartasUsadas: string[];   // IDs das cartas já exibidas
+  cartasUsadas: string[]; // IDs das cartas já exibidas
   cartaAtual: CartaEuNunca | null;
   totalCartasExibidas: number;
   fase: FaseEuNunca;

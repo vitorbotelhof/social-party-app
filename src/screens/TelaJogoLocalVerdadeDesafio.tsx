@@ -1,13 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
-import { useCallback, useRef, useState } from 'react';
-import {
-  Animated,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { useRef, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
@@ -38,9 +32,10 @@ type Props = NativeStackScreenProps<
 >;
 
 // ─── Cores ───────────────────────────────────────────────────────────────────
-const COR_VERDADE = '#3B82F6';           // azul — revelação, confiança
-const COR_DESAFIO = '#EF4444';          // vermelho — ação, coragem
-const COR_VD = '#6366F1';               // índigo — identidade geral do jogo
+const COR_VERDADE = '#3B82F6'; // azul — revelação, confiança
+const COR_DESAFIO = '#EF4444'; // vermelho — ação, coragem
+const COR_VD = '#6366F1'; // índigo — identidade geral do jogo
+const COR_VD_FUNDO = 'rgba(99, 102, 241, 0.10)';
 const COR_VERDADE_FUNDO = 'rgba(59, 130, 246, 0.08)';
 const COR_DESAFIO_FUNDO = 'rgba(239, 68, 68, 0.08)';
 const COR_VERDADE_BORDA = 'rgba(59, 130, 246, 0.35)';
@@ -75,7 +70,8 @@ function corIntensidade(i: IntensidadeVD): string {
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 export function TelaJogoLocalVerdadeDesafio({ navigation, route }: Props) {
-  const { jogadores, intensidade, categorias, incluirMais18, voltas } = route.params;
+  const { jogadores, intensidade, categorias, incluirMais18, voltas } =
+    route.params;
 
   const [indiceTurno, setIndiceTurno] = useState(0);
   const [totalTurnos, setTotalTurnos] = useState(0);
@@ -83,7 +79,9 @@ export function TelaJogoLocalVerdadeDesafio({ navigation, route }: Props) {
   const [subFase, setSubFase] = useState<SubFase>('escolhendo');
   const [tipoEscolhido, setTipoEscolhido] = useState<TipoCartaVD | null>(null);
   const [cartaAtual, setCartaAtual] = useState<CartaVD | null>(null);
-  const [turnosRegistrados, setTurnosRegistrados] = useState<TurnoRegistrado[]>([]);
+  const [turnosRegistrados, setTurnosRegistrados] = useState<TurnoRegistrado[]>(
+    [],
+  );
   const [finalizado, setFinalizado] = useState(false);
   const resultadoProcessado = useRef(false);
   const iniciouEm = useRef(Date.now());
@@ -142,48 +140,38 @@ export function TelaJogoLocalVerdadeDesafio({ navigation, route }: Props) {
     ]).start(cb);
   }
 
-  const escolherTipo = useCallback(
-    (tipo: TipoCartaVD) => {
-      if (interacaoBloqueada.current) return;
-      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  function escolherTipo(tipo: TipoCartaVD) {
+    if (interacaoBloqueada.current) return;
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-      const carta = selecionarCartaVD(
-        tipo,
-        cartasUsadas,
-        categorias as CategoriaVDId[] | 'todas',
-        intensidade as IntensidadeVD | 'todas',
-        incluirMais18,
-        totalTurnos,
-      );
-      if (!carta) {
-        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        return;
-      }
-      interacaoBloqueada.current = true;
-
-      // Anima botões saindo
-      Animated.timing(opacidadeEscolha, {
-        toValue: 0,
-        duration: 100,
-        useNativeDriver: true,
-      }).start(() => {
-        setTipoEscolhido(tipo);
-        setCartaAtual(carta);
-        setSubFase('executando');
-        animarEntradaCard(() => {
-          interacaoBloqueada.current = false;
-        });
-      });
-    },
-    [
+    const carta = selecionarCartaVD(
+      tipo,
       cartasUsadas,
-      categorias,
+      categorias as CategoriaVDId[] | 'todas',
+      intensidade as IntensidadeVD | 'todas',
       incluirMais18,
-      intensidade,
-      opacidadeEscolha,
       totalTurnos,
-    ],
-  );
+    );
+    if (!carta) {
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      return;
+    }
+    interacaoBloqueada.current = true;
+
+    // Anima botões saindo
+    Animated.timing(opacidadeEscolha, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: true,
+    }).start(() => {
+      setTipoEscolhido(tipo);
+      setCartaAtual(carta);
+      setSubFase('executando');
+      animarEntradaCard(() => {
+        interacaoBloqueada.current = false;
+      });
+    });
+  }
 
   function resolverTurno(resultado: 'cumpriu' | 'passou') {
     if (!tipoEscolhido || !jogadorAtual) return;
@@ -243,12 +231,15 @@ export function TelaJogoLocalVerdadeDesafio({ navigation, route }: Props) {
           : null;
       processarResultadoVerdadeDesafio({
         totalTurnos: turnos.length,
-        verdadesEscolhidas: turnos.filter((turno) => turno.tipo === 'verdade').length,
-        desafiosEscolhidos: turnos.filter((turno) => turno.tipo === 'desafio').length,
+        verdadesEscolhidas: turnos.filter((turno) => turno.tipo === 'verdade')
+          .length,
+        desafiosEscolhidos: turnos.filter((turno) => turno.tipo === 'desafio')
+          .length,
         desafiosCumpridos: turnos.filter(
           (turno) => turno.tipo === 'desafio' && turno.resultado === 'cumpriu',
         ).length,
-        cartasPassadas: turnos.filter((turno) => turno.resultado === 'passou').length,
+        cartasPassadas: turnos.filter((turno) => turno.resultado === 'passou')
+          .length,
         jogadorMaisCorajosoId,
         categorias: categorias === 'todas' ? ['todas'] : categorias,
         duracaoMs: Date.now() - iniciouEm.current,
@@ -267,19 +258,27 @@ export function TelaJogoLocalVerdadeDesafio({ navigation, route }: Props) {
     tipoEscolhido === 'verdade' ? COR_VERDADE_FUNDO : COR_DESAFIO_FUNDO;
 
   if (finalizado) {
-    const desafios = turnosRegistrados.filter((turno) => turno.tipo === 'desafio');
-    const cumpridos = desafios.filter((turno) => turno.resultado === 'cumpriu').length;
+    const desafios = turnosRegistrados.filter(
+      (turno) => turno.tipo === 'desafio',
+    );
+    const cumpridos = desafios.filter(
+      (turno) => turno.resultado === 'cumpriu',
+    ).length;
     return (
       <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
         <View style={estilos.final}>
           <Text style={estilos.finalLabel}>fim de partida</Text>
           <Text style={estilos.finalTitulo}>coragem na medida certa.</Text>
           <Text style={estilos.finalResumo}>
-            {turnosRegistrados.length} {turnosRegistrados.length === 1 ? 'turno jogado' : 'turnos jogados'}
+            {turnosRegistrados.length}{' '}
+            {turnosRegistrados.length === 1 ? 'turno jogado' : 'turnos jogados'}
             {desafios.length > 0 ? ` · ${cumpridos} desafios cumpridos` : ''}
           </Text>
           <FeedbackSessao jogoId="verdade-desafio" />
-          <BotaoPrimario titulo="escolher outro jogo" onPress={() => navigation.navigate('Inicio')} />
+          <BotaoPrimario
+            titulo="escolher outro jogo"
+            onPress={() => navigation.navigate('Inicio')}
+          />
         </View>
       </SafeAreaView>
     );
@@ -352,10 +351,14 @@ export function TelaJogoLocalVerdadeDesafio({ navigation, route }: Props) {
               accessibilityLabel="Escolher Verdade"
             >
               <Text style={estilos.botaoEscolhaEmoji}>💬</Text>
-              <Text style={[estilos.botaoEscolhaTitulo, { color: COR_VERDADE }]}>
+              <Text
+                style={[estilos.botaoEscolhaTitulo, { color: COR_VERDADE }]}
+              >
                 Verdade
               </Text>
-              <Text style={estilos.botaoEscolhaSubtitulo}>confissão honesta</Text>
+              <Text style={estilos.botaoEscolhaSubtitulo}>
+                confissão honesta
+              </Text>
             </Pressable>
 
             {/* Desafio */}
@@ -370,10 +373,14 @@ export function TelaJogoLocalVerdadeDesafio({ navigation, route }: Props) {
               accessibilityLabel="Escolher Desafio"
             >
               <Text style={estilos.botaoEscolhaEmoji}>⚡</Text>
-              <Text style={[estilos.botaoEscolhaTitulo, { color: COR_DESAFIO }]}>
+              <Text
+                style={[estilos.botaoEscolhaTitulo, { color: COR_DESAFIO }]}
+              >
                 Desafio
               </Text>
-              <Text style={estilos.botaoEscolhaSubtitulo}>missão pra cumprir</Text>
+              <Text style={estilos.botaoEscolhaSubtitulo}>
+                missão pra cumprir
+              </Text>
             </Pressable>
           </View>
         </Animated.View>
@@ -512,21 +519,6 @@ const estilos = StyleSheet.create({
   botaoDesafio: {
     borderColor: COR_DESAFIO_BORDA,
   },
-  botaoEncerrar: {
-    alignItems: 'center',
-    borderColor: cores.borda,
-    borderRadius: raio.pill,
-    borderWidth: 1,
-    height: 36,
-    justifyContent: 'center',
-    paddingHorizontal: 14,
-  },
-  botaoEncerrarTexto: {
-    color: cores.textoSecundario,
-    fontFamily: familias.sans,
-    fontSize: tipografia.tamanhoLegenda,
-    fontWeight: tipografia.pesoBold,
-  },
   botaoEscolha: {
     alignItems: 'center',
     backgroundColor: cores.superficie,
@@ -537,7 +529,7 @@ const estilos = StyleSheet.create({
     minHeight: 160,
     paddingHorizontal: espacamento.md,
     paddingVertical: espacamento.xl,
-    shadowColor: '#161616',
+    shadowColor: cores.texto,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
@@ -590,7 +582,7 @@ const estilos = StyleSheet.create({
     elevation: 5,
   },
   botaoCumpriuTexto: {
-    color: '#FFFFFF',
+    color: cores.textoSobrePrimaria,
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpo,
     fontWeight: tipografia.pesoExtraBold,
@@ -614,7 +606,7 @@ const estilos = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal: espacamento.lg,
     padding: espacamento.xl,
-    shadowColor: '#161616',
+    shadowColor: cores.texto,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 14,
@@ -631,13 +623,13 @@ const estilos = StyleSheet.create({
   },
   chip18: {
     alignItems: 'center',
-    backgroundColor: 'rgba(99, 102, 241, 0.10)',
+    backgroundColor: COR_VD_FUNDO,
     borderRadius: raio.sm,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   chip18Texto: {
-    color: '#6366F1',
+    color: COR_VD,
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoMicro,
     fontWeight: tipografia.pesoBold,

@@ -23,7 +23,9 @@ export interface ResultadoVerdadeDesafio {
   duracaoMediaTurnoMs: number;
 }
 
-export function processarTurnoVerdadeDesafio(_turno: TurnoVerdadeDesafio): void {
+export function processarTurnoVerdadeDesafio(
+  _turno: TurnoVerdadeDesafio,
+): void {
   // O histórico agregado é fechado no resultado; o hook permite eventos futuros.
 }
 

@@ -26,9 +26,10 @@ type Props = NativeStackScreenProps<
 >;
 
 // ─── Identidade visual do jogo ────────────────────────────────────────────────
-const COR_VD = '#6366F1';         // índigo — neutro entre verdade e desafio
+const COR_VD = '#6366F1'; // índigo — neutro entre verdade e desafio
 const COR_ATIVA_FUNDO = 'rgba(99, 102, 241, 0.08)';
 const COR_ATIVA_BORDA = 'rgba(99, 102, 241, 0.40)';
+const COR_BADGE_FUNDO = 'rgba(99, 102, 241, 0.10)';
 
 const MIN_JOGADORES = 2;
 const MAX_JOGADORES = 10;
@@ -57,7 +58,9 @@ const TODAS_IDS: CategoriaVDId[] = CATEGORIAS_VD.map((c) => c.id);
 
 export function TelaConfiguracaoLocalVerdadeDesafio({ navigation }: Props) {
   const [nomes, setNomes] = useState<string[]>([]);
-  const [intensidade, setIntensidade] = useState<IntensidadeVD | 'todas'>('todas');
+  const [intensidade, setIntensidade] = useState<IntensidadeVD | 'todas'>(
+    'todas',
+  );
   const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<
     CategoriaVDId[] | 'todas'
   >('todas');
@@ -66,8 +69,12 @@ export function TelaConfiguracaoLocalVerdadeDesafio({ navigation }: Props) {
 
   const categoriasAtivas =
     categoriasSelecionadas === 'todas' ? TODAS_IDS : categoriasSelecionadas;
-  const temVerdadeAtiva = CATS_VERDADE.some((c) => categoriasAtivas.includes(c.id));
-  const temDesafioAtivo = CATS_DESAFIO.some((c) => categoriasAtivas.includes(c.id));
+  const temVerdadeAtiva = CATS_VERDADE.some((c) =>
+    categoriasAtivas.includes(c.id),
+  );
+  const temDesafioAtivo = CATS_DESAFIO.some((c) =>
+    categoriasAtivas.includes(c.id),
+  );
 
   const podeIniciar =
     nomes.length >= MIN_JOGADORES && temVerdadeAtiva && temDesafioAtivo;
@@ -79,7 +86,7 @@ export function TelaConfiguracaoLocalVerdadeDesafio({ navigation }: Props) {
         ? 'selecione pelo menos uma categoria de verdade'
         : !temDesafioAtivo
           ? 'selecione pelo menos um tipo de desafio'
-        : undefined;
+          : undefined;
 
   function alternarCategoria(id: CategoriaVDId) {
     void Haptics.selectionAsync();
@@ -208,9 +215,7 @@ export function TelaConfiguracaoLocalVerdadeDesafio({ navigation }: Props) {
                 <Text style={estilos.categoriaDescricao} numberOfLines={2}>
                   {cat.descricao}
                 </Text>
-                {cat.temMais18 && (
-                  <Text style={estilos.badge18}>+18</Text>
-                )}
+                {cat.temMais18 && <Text style={estilos.badge18}>+18</Text>}
               </Pressable>
             );
           })}
@@ -231,7 +236,9 @@ export function TelaConfiguracaoLocalVerdadeDesafio({ navigation }: Props) {
             onPress={selecionarTodas}
             accessibilityRole="button"
             accessibilityLabel="Selecionar todas as categorias"
-            accessibilityState={{ selected: categoriasSelecionadas === 'todas' }}
+            accessibilityState={{
+              selected: categoriasSelecionadas === 'todas',
+            }}
             style={({ pressed }) => [
               estilos.chipFiltro,
               categoriasSelecionadas === 'todas' && estilos.chipFiltroAtivo,
@@ -241,7 +248,8 @@ export function TelaConfiguracaoLocalVerdadeDesafio({ navigation }: Props) {
             <Text
               style={[
                 estilos.chipFiltroTexto,
-                categoriasSelecionadas === 'todas' && estilos.chipFiltroTextoAtivo,
+                categoriasSelecionadas === 'todas' &&
+                  estilos.chipFiltroTextoAtivo,
               ]}
             >
               misturar tudo
@@ -253,7 +261,8 @@ export function TelaConfiguracaoLocalVerdadeDesafio({ navigation }: Props) {
             accessibilityLabel="Deselecionar todas as categorias"
             accessibilityState={{
               selected:
-                categoriasSelecionadas !== 'todas' && categoriasAtivas.length === 0,
+                categoriasSelecionadas !== 'todas' &&
+                categoriasAtivas.length === 0,
             }}
             style={({ pressed }) => [
               estilos.chipFiltro,
@@ -350,7 +359,7 @@ const estilos = StyleSheet.create({
   },
   badge18: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(99, 102, 241, 0.10)',
+    backgroundColor: COR_BADGE_FUNDO,
     borderRadius: raio.sm,
     color: COR_VD,
     fontFamily: familias.sans,

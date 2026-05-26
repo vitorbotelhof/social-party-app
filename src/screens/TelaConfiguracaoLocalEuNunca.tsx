@@ -27,6 +27,7 @@ type Props = NativeStackScreenProps<
 const COR_EU_NUNCA = '#E8407A';
 const COR_ATIVA_FUNDO = 'rgba(232, 64, 122, 0.08)';
 const COR_ATIVA_BORDA = 'rgba(232, 64, 122, 0.45)';
+const COR_BADGE_FUNDO = 'rgba(232, 64, 122, 0.12)';
 
 const INTENSIDADES: {
   valor: IntensidadeEuNunca | 'todas';
@@ -289,7 +290,7 @@ const estilos = StyleSheet.create({
   },
   badge18: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(232, 64, 122, 0.12)',
+    backgroundColor: COR_BADGE_FUNDO,
     borderRadius: raio.sm,
     color: COR_EU_NUNCA,
     fontFamily: familias.sans,

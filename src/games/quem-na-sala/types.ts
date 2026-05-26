@@ -6,11 +6,11 @@
 // O resultado revela quem recebeu mais votos (sem mostrar quem votou em quem).
 
 export type CategoriaQNSId =
-  | 'provavel'    // quem provavelmente faria X
-  | 'elogio'      // qualidades genuínas do grupo
-  | 'dinamica'    // como o grupo funciona junto
-  | 'exposicao'   // julgamentos honestos sobre caráter
-  | 'caos';       // perguntas que desestabilizam
+  | 'provavel' // quem provavelmente faria X
+  | 'elogio' // qualidades genuínas do grupo
+  | 'dinamica' // como o grupo funciona junto
+  | 'exposicao' // julgamentos honestos sobre caráter
+  | 'caos'; // perguntas que desestabilizam
 
 export type IntensidadeQNS = 'leve' | 'social' | 'pesado' | 'caotico';
 
@@ -51,16 +51,16 @@ export type VotosRodada = Record<string, string>;
 
 // Subfases de uma rodada
 export type SubFaseQNS =
-  | 'pergunta'        // mostra a pergunta pro grupo todo
-  | 'passando_para'   // instrução "passe o celular para [Nome]"
-  | 'votando'         // tela privada: o jogador escolhe em quem vota
-  | 'revelacao';      // resultado final da rodada
+  | 'pergunta' // mostra a pergunta pro grupo todo
+  | 'passando_para' // instrução "passe o celular para [Nome]"
+  | 'votando' // tela privada: o jogador escolhe em quem vota
+  | 'revelacao'; // resultado final da rodada
 
 export interface ResultadoRodada {
   cartaId: string;
   complemento: string;
   votosContagem: Array<{ jogadorId: string; nome: string; votos: number }>;
-  vencedorId: string | null;   // quem recebeu mais votos
+  vencedorId: string | null; // quem recebeu mais votos
   empate: boolean;
 }
 
@@ -69,9 +69,9 @@ export interface SessaoQNS {
   subFase: SubFaseQNS;
   cartaAtual: CartaQNS | null;
   cartasUsadas: string[];
-  totalRodadas: number;           // rodadas completas jogadas
+  totalRodadas: number; // rodadas completas jogadas
   // Votação em andamento
-  indiceVotanteAtual: number;    // qual jogador está votando agora
+  indiceVotanteAtual: number; // qual jogador está votando agora
   votosRodadaAtual: VotosRodada;
   // Histórico
   historico: ResultadoRodada[];

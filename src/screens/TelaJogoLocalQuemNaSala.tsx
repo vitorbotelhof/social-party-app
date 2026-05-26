@@ -1,13 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { useRef, useState } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
@@ -40,6 +34,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'JogoLocalQuemNaSala'>;
 const COR_QNS = '#F59E0B';
 const COR_QNS_FUNDO = 'rgba(245, 158, 11, 0.10)';
 const COR_QNS_BORDA = 'rgba(245, 158, 11, 0.35)';
+const COR_VOTO_FUNDO = '#1E1E1E';
+const COR_VOTO_BORDA = '#333333';
+const COR_VOTO_TEXTO = '#E0E0E0';
 
 type SubFase = 'pergunta' | 'passando_para' | 'votando' | 'revelacao';
 
@@ -73,7 +70,9 @@ function TelaPergunta({
         {/* Label fixo */}
         <View style={estilos.labelContainer}>
           <Text style={estilos.labelFixo}>QUEM NA SALA</Text>
-          <View style={[estilos.labelLinha, { backgroundColor: COR_QNS + '30' }]} />
+          <View
+            style={[estilos.labelLinha, { backgroundColor: COR_QNS + '30' }]}
+          />
         </View>
 
         {/* Complemento */}
@@ -154,7 +153,11 @@ function TelaPassandoPara({
     <View style={estilos.subTela}>
       <View style={estilos.corpoPassando}>
         <Text style={estilos.passandoLabel}>passe o celular para</Text>
-        <Text style={estilos.passandoNome} numberOfLines={2} adjustsFontSizeToFit>
+        <Text
+          style={estilos.passandoNome}
+          numberOfLines={2}
+          adjustsFontSizeToFit
+        >
           {jogador.nome}
         </Text>
         <Text style={estilos.passandoContador}>
@@ -165,7 +168,7 @@ function TelaPassandoPara({
 
         <Text style={estilos.passandoInstrucao}>
           {jogador.nome}, quando o celular estiver com você,{'\n'}
-          toque em "estou pronto" para votar.
+          toque em “estou pronto” para votar.
         </Text>
       </View>
 
@@ -197,10 +200,12 @@ function TelaVotando({
   onVotar: (votadoId: string) => void;
 }) {
   return (
-    <View style={[estilos.subTela, { backgroundColor: '#161616' }]}>
+    <View style={[estilos.subTela, estilos.telaVotando]}>
       <View style={estilos.headerVotando}>
         <Text style={estilos.votandoLabel}>seu voto, {votante.nome}</Text>
-        <Text style={estilos.votandoSubtitulo}>toque em um nome para confirmar · seu voto é secreto</Text>
+        <Text style={estilos.votandoSubtitulo}>
+          toque em um nome para confirmar · seu voto é secreto
+        </Text>
       </View>
 
       <ScrollView
@@ -223,9 +228,7 @@ function TelaVotando({
               accessibilityRole="button"
               accessibilityLabel={`Votar em ${candidato.nome}`}
             >
-              <Text style={estilos.itemVotoNome}>
-                {candidato.nome}
-              </Text>
+              <Text style={estilos.itemVotoNome}>{candidato.nome}</Text>
               <Text style={estilos.itemVotoSeta}>→</Text>
             </Pressable>
           );
@@ -252,7 +255,7 @@ function TelaRevelacao({
   return (
     <View style={estilos.subTela}>
       <View style={estilos.header}>
-        <View style={{ width: 36 }} />
+        <View style={estilos.headerEspaco} />
         <Text style={estilos.headerTexto}>resultado</Text>
         <View style={estilos.headerEspaco} />
       </View>
@@ -283,10 +286,12 @@ function TelaRevelacao({
             <Text style={estilos.vencedorCoroa}>🏆</Text>
             <Text style={estilos.vencedorNome}>{vencedor?.nome ?? ''}</Text>
             <Text style={estilos.vencedorVotos}>
-              {resultado.votosContagem.find((v) => v.jogadorId === resultado.vencedorId)
-                ?.votos ?? 0}{' '}
-              {resultado.votosContagem.find((v) => v.jogadorId === resultado.vencedorId)
-                ?.votos === 1
+              {resultado.votosContagem.find(
+                (v) => v.jogadorId === resultado.vencedorId,
+              )?.votos ?? 0}{' '}
+              {resultado.votosContagem.find(
+                (v) => v.jogadorId === resultado.vencedorId,
+              )?.votos === 1
                 ? 'voto'
                 : 'votos'}
             </Text>
@@ -310,7 +315,9 @@ function TelaRevelacao({
                       {
                         width: `${(v.votos / (resultado.votosContagem[0]?.votos || 1)) * 100}%`,
                         backgroundColor:
-                          idx === 0 && !resultado.empate ? COR_QNS : cores.borda,
+                          idx === 0 && !resultado.empate
+                            ? COR_QNS
+                            : cores.borda,
                       },
                     ]}
                   />
@@ -338,7 +345,9 @@ function TelaRevelacao({
             pressed && estilos.botaoPrimarioPressionado,
           ]}
           accessibilityRole="button"
-          accessibilityLabel={ultimaPergunta ? 'Encerrar votação' : 'Próxima pergunta'}
+          accessibilityLabel={
+            ultimaPergunta ? 'Encerrar votação' : 'Próxima pergunta'
+          }
         >
           <Text style={estilos.botaoPrimarioTexto}>
             {ultimaPergunta ? 'encerrar votação' : 'próxima pergunta →'}
@@ -351,13 +360,8 @@ function TelaRevelacao({
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 export function TelaJogoLocalQuemNaSala({ navigation, route }: Props) {
-  const {
-    jogadores,
-    intensidade,
-    categorias,
-    incluirMais18,
-    totalPerguntas,
-  } = route.params;
+  const { jogadores, intensidade, categorias, incluirMais18, totalPerguntas } =
+    route.params;
 
   const [subFase, setSubFase] = useState<SubFase>('pergunta');
   const [cartaAtual, setCartaAtual] = useState<CartaQNS | null>(() =>
@@ -397,7 +401,10 @@ export function TelaJogoLocalQuemNaSala({ navigation, route }: Props) {
     const contagem = new Map<string, number>();
     for (const rodada of resultados) {
       for (const item of rodada.votosContagem) {
-        contagem.set(item.jogadorId, (contagem.get(item.jogadorId) ?? 0) + item.votos);
+        contagem.set(
+          item.jogadorId,
+          (contagem.get(item.jogadorId) ?? 0) + item.votos,
+        );
       }
     }
     const ranking = [...contagem.entries()].sort((a, b) => b[1] - a[1]);
@@ -501,7 +508,7 @@ export function TelaJogoLocalQuemNaSala({ navigation, route }: Props) {
   if (!cartaAtual && !finalizado) {
     return (
       <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
-        <View style={[estilos.subTela, { justifyContent: 'center', alignItems: 'center' }]}>
+        <View style={[estilos.subTela, estilos.semCartasContainer]}>
           <Text style={estilos.semCartasTexto}>perguntas esgotadas 🎉</Text>
           <Text style={estilos.semCartasSubtexto}>
             vocês viram tudo que tinha pra essa configuração.
@@ -530,11 +537,15 @@ export function TelaJogoLocalQuemNaSala({ navigation, route }: Props) {
           <Text style={estilos.finalLabel}>fim de votação</Text>
           <Text style={estilos.finalTitulo}>ninguém entrega o voto.</Text>
           <Text style={estilos.finalResumo}>
-            {resultados.length} {resultados.length === 1 ? 'pergunta jogada' : 'perguntas jogadas'}
+            {resultados.length}{' '}
+            {resultados.length === 1 ? 'pergunta jogada' : 'perguntas jogadas'}
             {destaque ? ` · último destaque: ${destaque}` : ''}
           </Text>
           <FeedbackSessao jogoId="quem-na-sala" />
-          <BotaoPrimario titulo="escolher outro jogo" onPress={() => navigation.navigate('Inicio')} />
+          <BotaoPrimario
+            titulo="escolher outro jogo"
+            onPress={() => navigation.navigate('Inicio')}
+          />
         </View>
       </SafeAreaView>
     );
@@ -573,7 +584,11 @@ export function TelaJogoLocalQuemNaSala({ navigation, route }: Props) {
         <TelaRevelacao
           resultado={resultado}
           jogadores={jogadores}
-          onProxima={resultados.length >= totalPerguntas ? finalizarPartida : proximaPergunta}
+          onProxima={
+            resultados.length >= totalPerguntas
+              ? finalizarPartida
+              : proximaPergunta
+          }
           ultimaPergunta={resultados.length >= totalPerguntas}
         />
       )}
@@ -583,21 +598,6 @@ export function TelaJogoLocalQuemNaSala({ navigation, route }: Props) {
 
 // ─── Estilos ──────────────────────────────────────────────────────────────────
 const estilos = StyleSheet.create({
-  botaoEncerrar: {
-    alignItems: 'center',
-    borderColor: cores.borda,
-    borderRadius: raio.pill,
-    borderWidth: 1,
-    height: 36,
-    justifyContent: 'center',
-    paddingHorizontal: 14,
-  },
-  botaoEncerrarTexto: {
-    color: cores.textoSecundario,
-    fontFamily: familias.sans,
-    fontSize: tipografia.tamanhoLegenda,
-    fontWeight: tipografia.pesoBold,
-  },
   botaoPrimario: {
     alignItems: 'center',
     backgroundColor: COR_QNS,
@@ -606,21 +606,16 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
     shadowColor: COR_QNS,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.30,
+    shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 5,
-  },
-  botaoPrimarioDesabilitado: {
-    backgroundColor: cores.borda,
-    elevation: 0,
-    shadowOpacity: 0,
   },
   botaoPrimarioPressionado: {
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
   },
   botaoPrimarioTexto: {
-    color: '#FFFFFF',
+    color: cores.textoSobrePrimaria,
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpo,
     fontWeight: tipografia.pesoExtraBold,
@@ -646,7 +641,7 @@ const estilos = StyleSheet.create({
     gap: espacamento.lg,
     justifyContent: 'space-between',
     padding: espacamento.xl,
-    shadowColor: '#161616',
+    shadowColor: cores.texto,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 14,
@@ -791,8 +786,8 @@ const estilos = StyleSheet.create({
   },
   itemVoto: {
     alignItems: 'center',
-    backgroundColor: '#1E1E1E',
-    borderColor: '#333333',
+    backgroundColor: COR_VOTO_FUNDO,
+    borderColor: COR_VOTO_BORDA,
     borderRadius: raio.lg,
     borderWidth: 1,
     flexDirection: 'row',
@@ -802,7 +797,7 @@ const estilos = StyleSheet.create({
     paddingVertical: espacamento.md,
   },
   itemVotoNome: {
-    color: '#E0E0E0',
+    color: COR_VOTO_TEXTO,
     flex: 1,
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpo,
@@ -813,13 +808,6 @@ const estilos = StyleSheet.create({
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpo,
     fontWeight: tipografia.pesoExtraBold,
-  },
-  itemVotoNomeSelecionado: {
-    color: COR_QNS,
-  },
-  itemVotoSelecionado: {
-    backgroundColor: 'rgba(245, 158, 11, 0.08)',
-    borderColor: COR_QNS,
   },
   labelContainer: {
     alignItems: 'center',
@@ -911,24 +899,6 @@ const estilos = StyleSheet.create({
     opacity: 0.72,
     transform: [{ scale: 0.98 }],
   },
-  radioPonto: {
-    backgroundColor: COR_QNS,
-    borderRadius: 5,
-    height: 10,
-    width: 10,
-  },
-  radioCirculo: {
-    alignItems: 'center',
-    borderColor: '#444444',
-    borderRadius: 12,
-    borderWidth: 2,
-    height: 24,
-    justifyContent: 'center',
-    width: 24,
-  },
-  radioCirculoSelecionado: {
-    borderColor: COR_QNS,
-  },
   rankingBarra: {
     borderRadius: 3,
     flex: 1,
@@ -986,11 +956,9 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacamento.lg,
     paddingTop: espacamento.sm,
   },
-  rodapeEscuro: {
-    backgroundColor: '#161616',
-    paddingBottom: espacamento.lg,
-    paddingHorizontal: espacamento.lg,
-    paddingTop: espacamento.sm,
+  semCartasContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   semCartasSubtexto: {
     color: cores.textoSecundario,
@@ -1014,6 +982,9 @@ const estilos = StyleSheet.create({
   tela: {
     backgroundColor: cores.fundo,
     flex: 1,
+  },
+  telaVotando: {
+    backgroundColor: cores.texto,
   },
   vencedorContainer: {
     alignItems: 'center',
@@ -1041,7 +1012,7 @@ const estilos = StyleSheet.create({
     marginTop: 2,
   },
   votandoLabel: {
-    color: '#FFFFFF',
+    color: cores.textoSobreEscuro,
     fontFamily: familias.sans,
     fontSize: 20,
     fontWeight: '800',
@@ -1049,7 +1020,7 @@ const estilos = StyleSheet.create({
     textAlign: 'center',
   },
   votandoSubtitulo: {
-    color: '#888888',
+    color: cores.textoMudo,
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     textAlign: 'center',

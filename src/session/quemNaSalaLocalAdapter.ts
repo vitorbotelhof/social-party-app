@@ -59,7 +59,9 @@ export function processarRodadaQuemNaSala(rodada: RodadaQuemNaSala): void {
   }
 }
 
-export function processarResultadoQuemNaSala(resultado: ResultadoQuemNaSala): void {
+export function processarResultadoQuemNaSala(
+  resultado: ResultadoQuemNaSala,
+): void {
   const stats: QuemNaSalaSessaoStats = { ...resultado };
   registrarJogoFinalizado('quem-na-sala', { quemNaSala: stats });
   atualizarEstadoEmocional();

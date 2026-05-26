@@ -93,7 +93,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'v03',
-    complemento: 'dei tchau pra alguém e ela continuou andando do meu lado por mais 3 minutos',
+    complemento:
+      'dei tchau pra alguém e ela continuou andando do meu lado por mais 3 minutos',
     categoria: 'vergonha',
     intensidade: 'leve',
     mais18: false,
@@ -101,7 +102,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'v04',
-    complemento: 'cumprimentei alguém estendendo a mão e fui abraçar ao mesmo tempo — travei e não fiz nenhum dos dois',
+    complemento:
+      'cumprimentei alguém estendendo a mão e fui abraçar ao mesmo tempo — travei e não fiz nenhum dos dois',
     categoria: 'vergonha',
     intensidade: 'leve',
     mais18: false,
@@ -125,7 +127,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'v07',
-    complemento: 'fui embora de um lugar e voltei pra buscar algo que estava no meu bolso',
+    complemento:
+      'fui embora de um lugar e voltei pra buscar algo que estava no meu bolso',
     categoria: 'vergonha',
     intensidade: 'leve',
     mais18: false,
@@ -133,7 +136,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'v08',
-    complemento: 'pedi a conta num restaurante e ela já estava na mesa há minutos',
+    complemento:
+      'pedi a conta num restaurante e ela já estava na mesa há minutos',
     categoria: 'vergonha',
     intensidade: 'leve',
     mais18: false,
@@ -141,7 +145,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'v09',
-    complemento: 'ri de algo muito constrangedor em silêncio e tentei fingir que não ouvi',
+    complemento:
+      'ri de algo muito constrangedor em silêncio e tentei fingir que não ouvi',
     categoria: 'vergonha',
     intensidade: 'leve',
     mais18: false,
@@ -165,7 +170,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'v12',
-    complemento: 'enviei mensagem pro grupo errado e tive que fingir que foi intencional',
+    complemento:
+      'enviei mensagem pro grupo errado e tive que fingir que foi intencional',
     categoria: 'vergonha',
     intensidade: 'social',
     mais18: false,
@@ -173,7 +179,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'v13',
-    complemento: 'discordei firmemente de algo que eu mesmo tinha dito 5 minutos antes',
+    complemento:
+      'discordei firmemente de algo que eu mesmo tinha dito 5 minutos antes',
     categoria: 'vergonha',
     intensidade: 'social',
     mais18: false,
@@ -189,7 +196,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'v15',
-    complemento: 'fui mal compreendido de um jeito que não consegui explicar depois',
+    complemento:
+      'fui mal compreendido de um jeito que não consegui explicar depois',
     categoria: 'vergonha',
     intensidade: 'social',
     mais18: false,
@@ -197,7 +205,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'v16',
-    complemento: 'falei mal de alguém e descobri que a pessoa era parente de quem estava ouvindo',
+    complemento:
+      'falei mal de alguém e descobri que a pessoa era parente de quem estava ouvindo',
     categoria: 'vergonha',
     intensidade: 'social',
     mais18: false,
@@ -205,7 +214,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'v17',
-    complemento: 'me perdi de cara dentro de um prédio conhecido e entrei em pânico silencioso',
+    complemento:
+      'me perdi de cara dentro de um prédio conhecido e entrei em pânico silencioso',
     categoria: 'vergonha',
     intensidade: 'leve',
     mais18: false,
@@ -231,7 +241,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'i03',
-    complemento: 'fiquei verificando os likes a cada 5 minutos por uma hora depois de postar',
+    complemento:
+      'fiquei verificando os likes a cada 5 minutos por uma hora depois de postar',
     categoria: 'internet',
     intensidade: 'leve',
     mais18: false,
@@ -255,7 +266,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'i06',
-    complemento: 'vi que a pessoa havia lido minha mensagem e entrei no avião imediatamente',
+    complemento:
+      'vi que a pessoa havia lido minha mensagem e entrei no avião imediatamente',
     categoria: 'internet',
     intensidade: 'leve',
     mais18: false,
@@ -271,7 +283,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'i08',
-    complemento: 'fingi não ter visto uma mensagem por dias para não ter que responder',
+    complemento:
+      'fingi não ter visto uma mensagem por dias para não ter que responder',
     categoria: 'internet',
     intensidade: 'social',
     mais18: false,
@@ -279,7 +292,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'i09',
-    complemento: 'segui e dessegui alguém três vezes no mesmo dia com medo de ser notado',
+    complemento:
+      'segui e dessegui alguém três vezes no mesmo dia com medo de ser notado',
     categoria: 'internet',
     intensidade: 'social',
     mais18: false,
@@ -287,7 +301,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'i10',
-    complemento: 'pesquisei o perfil de alguém que mal conheço mais de 20 vezes em uma semana',
+    complemento:
+      'pesquisei o perfil de alguém que mal conheço mais de 20 vezes em uma semana',
     categoria: 'internet',
     intensidade: 'social',
     mais18: false,
@@ -303,7 +318,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'i12',
-    complemento: 'mandei print de uma conversa sem tirar a outra pessoa da janela antes',
+    complemento:
+      'mandei print de uma conversa sem tirar a outra pessoa da janela antes',
     categoria: 'internet',
     intensidade: 'social',
     mais18: false,
@@ -319,7 +335,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'i14',
-    complemento: 'li a conversa inteira com outra pessoa antes de responder porque não sabia o que dizer',
+    complemento:
+      'li a conversa inteira com outra pessoa antes de responder porque não sabia o que dizer',
     categoria: 'internet',
     intensidade: 'social',
     mais18: false,
@@ -327,7 +344,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'i15',
-    complemento: 'respondi mensagem de alguém após dias como se tivesse esquecido — mas não tinha',
+    complemento:
+      'respondi mensagem de alguém após dias como se tivesse esquecido — mas não tinha',
     categoria: 'internet',
     intensidade: 'social',
     mais18: false,
@@ -343,7 +361,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'i17',
-    complemento: 'estalei o dedo no story de alguém por acidente e entrei em colapso silencioso',
+    complemento:
+      'estalei o dedo no story de alguém por acidente e entrei em colapso silencioso',
     categoria: 'internet',
     intensidade: 'leve',
     mais18: false,
@@ -377,7 +396,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'r04',
-    complemento: 'bloqueei alguém sem dar nenhuma satisfação e nunca me arrependi',
+    complemento:
+      'bloqueei alguém sem dar nenhuma satisfação e nunca me arrependi',
     categoria: 'relacionamentos',
     intensidade: 'social',
     mais18: false,
@@ -385,7 +405,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'r05',
-    complemento: 'mandei indireta pública claramente direcionada a uma pessoa específica',
+    complemento:
+      'mandei indireta pública claramente direcionada a uma pessoa específica',
     categoria: 'relacionamentos',
     intensidade: 'social',
     mais18: false,
@@ -393,7 +414,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'r06',
-    complemento: 'terminei um relacionamento e me arrependi imediatamente — mas não voltei',
+    complemento:
+      'terminei um relacionamento e me arrependi imediatamente — mas não voltei',
     categoria: 'relacionamentos',
     intensidade: 'social',
     mais18: false,
@@ -417,7 +439,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'r09',
-    complemento: 'inventei um compromisso pra não encontrar com alguém que estava ficando',
+    complemento:
+      'inventei um compromisso pra não encontrar com alguém que estava ficando',
     categoria: 'relacionamentos',
     intensidade: 'social',
     mais18: false,
@@ -449,7 +472,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'r13',
-    complemento: 'xinguei um ex com vocabulário criativo — em voz alta, sozinho',
+    complemento:
+      'xinguei um ex com vocabulário criativo — em voz alta, sozinho',
     categoria: 'relacionamentos',
     intensidade: 'social',
     mais18: false,
@@ -465,7 +489,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'r15',
-    complemento: 'descobri tarde demais que a pessoa com quem eu estava ficando tinha outra história mal resolvida',
+    complemento:
+      'descobri tarde demais que a pessoa com quem eu estava ficando tinha outra história mal resolvida',
     categoria: 'relacionamentos',
     intensidade: 'pessoal',
     mais18: false,
@@ -489,7 +514,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'r18',
-    complemento: 'fui mais honesto com alguém depois de terminar do que durante o relacionamento',
+    complemento:
+      'fui mais honesto com alguém depois de terminar do que durante o relacionamento',
     categoria: 'relacionamentos',
     intensidade: 'pessoal',
     mais18: false,
@@ -499,7 +525,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   // ─── EGO (16 cartas) ────────────────────────────────────────────────────────
   {
     id: 'e01',
-    complemento: 'passei mais de 5 minutos escolhendo a foto perfeita pro perfil',
+    complemento:
+      'passei mais de 5 minutos escolhendo a foto perfeita pro perfil',
     categoria: 'ego',
     intensidade: 'leve',
     mais18: false,
@@ -515,7 +542,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'e03',
-    complemento: 'checei meu próprio perfil pra ver como eu aparecia pra outras pessoas',
+    complemento:
+      'checei meu próprio perfil pra ver como eu aparecia pra outras pessoas',
     categoria: 'ego',
     intensidade: 'leve',
     mais18: false,
@@ -523,7 +551,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'e04',
-    complemento: 'parei em frente ao espelho e fiquei olhando pra mim mesmo por tempo demais',
+    complemento:
+      'parei em frente ao espelho e fiquei olhando pra mim mesmo por tempo demais',
     categoria: 'ego',
     intensidade: 'social',
     mais18: false,
@@ -539,7 +568,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'e06',
-    complemento: 'me gabei de algo que na verdade eu tinha só participado marginalmente',
+    complemento:
+      'me gabei de algo que na verdade eu tinha só participado marginalmente',
     categoria: 'ego',
     intensidade: 'social',
     mais18: false,
@@ -547,7 +577,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'e07',
-    complemento: 'deixei alguém esperando pra parecer mais ocupado do que estava',
+    complemento:
+      'deixei alguém esperando pra parecer mais ocupado do que estava',
     categoria: 'ego',
     intensidade: 'social',
     mais18: false,
@@ -555,7 +586,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'e08',
-    complemento: 'falei sobre um título, prêmio ou conquista num contexto que ninguém tinha pedido',
+    complemento:
+      'falei sobre um título, prêmio ou conquista num contexto que ninguém tinha pedido',
     categoria: 'ego',
     intensidade: 'social',
     mais18: false,
@@ -571,7 +603,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'e10',
-    complemento: 'inventei ou exagerei habilidade num momento que precisava impressionar',
+    complemento:
+      'inventei ou exagerei habilidade num momento que precisava impressionar',
     categoria: 'ego',
     intensidade: 'social',
     mais18: false,
@@ -587,7 +620,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'e12',
-    complemento: 'não admiti que errei pra não quebrar a imagem que as pessoas têm de mim',
+    complemento:
+      'não admiti que errei pra não quebrar a imagem que as pessoas têm de mim',
     categoria: 'ego',
     intensidade: 'pessoal',
     mais18: false,
@@ -611,7 +645,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'e15',
-    complemento: 'pesquisei salário da minha profissão só pra me confirmar que estou bem',
+    complemento:
+      'pesquisei salário da minha profissão só pra me confirmar que estou bem',
     categoria: 'ego',
     intensidade: 'leve',
     mais18: false,
@@ -619,7 +654,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'e16',
-    complemento: 'ensaiei uma frase de efeito antes de uma conversa que era banal',
+    complemento:
+      'ensaiei uma frase de efeito antes de uma conversa que era banal',
     categoria: 'ego',
     intensidade: 'social',
     mais18: false,
@@ -693,7 +729,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'va09',
-    complemento: 'tive uma epifania às 3 da manhã e não executei nada disso no dia seguinte',
+    complemento:
+      'tive uma epifania às 3 da manhã e não executei nada disso no dia seguinte',
     categoria: 'vida_adulta',
     intensidade: 'leve',
     mais18: false,
@@ -701,7 +738,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'va10',
-    complemento: 'demorei mais pra responder mensagem de trabalho do que de entretenimento',
+    complemento:
+      'demorei mais pra responder mensagem de trabalho do que de entretenimento',
     categoria: 'vida_adulta',
     intensidade: 'leve',
     mais18: false,
@@ -725,7 +763,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'va13',
-    complemento: 'comprei algo num impulso e guardei a embalagem pra não ser julgado',
+    complemento:
+      'comprei algo num impulso e guardei a embalagem pra não ser julgado',
     categoria: 'vida_adulta',
     intensidade: 'social',
     mais18: false,
@@ -733,7 +772,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'va14',
-    complemento: 'menti na entrevista de emprego sobre habilidade que aprendi na noite anterior',
+    complemento:
+      'menti na entrevista de emprego sobre habilidade que aprendi na noite anterior',
     categoria: 'vida_adulta',
     intensidade: 'social',
     mais18: false,
@@ -741,7 +781,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'va15',
-    complemento: 'fingi entender um contrato ou formulário e assinei com confiança',
+    complemento:
+      'fingi entender um contrato ou formulário e assinei com confiança',
     categoria: 'vida_adulta',
     intensidade: 'pessoal',
     mais18: false,
@@ -749,7 +790,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'va16',
-    complemento: 'guardei dinheiro em reserva de emergência e usei em outra coisa',
+    complemento:
+      'guardei dinheiro em reserva de emergência e usei em outra coisa',
     categoria: 'vida_adulta',
     intensidade: 'social',
     mais18: false,
@@ -757,7 +799,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'va17',
-    complemento: 'tomei decisão financeira importante sem consultar ninguém e não me arrependo',
+    complemento:
+      'tomei decisão financeira importante sem consultar ninguém e não me arrependo',
     categoria: 'vida_adulta',
     intensidade: 'social',
     mais18: false,
@@ -767,7 +810,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   // ─── SEGREDOS (16 cartas) ────────────────────────────────────────────────────
   {
     id: 's01',
-    complemento: 'gostei secretamente de uma música que publicamente digo odiar',
+    complemento:
+      'gostei secretamente de uma música que publicamente digo odiar',
     categoria: 'segredos',
     intensidade: 'social',
     mais18: false,
@@ -799,7 +843,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 's05',
-    complemento: 'disse que estava ocupado quando na verdade só queria ficar sozinho',
+    complemento:
+      'disse que estava ocupado quando na verdade só queria ficar sozinho',
     categoria: 'segredos',
     intensidade: 'pessoal',
     mais18: false,
@@ -815,7 +860,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 's07',
-    complemento: 'mudei de opinião e demorei a admitir porque eu tinha defendido demais a antiga',
+    complemento:
+      'mudei de opinião e demorei a admitir porque eu tinha defendido demais a antiga',
     categoria: 'segredos',
     intensidade: 'pessoal',
     mais18: false,
@@ -831,7 +877,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 's09',
-    complemento: 'deixei parecer que uma ideia tinha sido minha sem corrigir na hora',
+    complemento:
+      'deixei parecer que uma ideia tinha sido minha sem corrigir na hora',
     categoria: 'segredos',
     intensidade: 'pessoal',
     mais18: false,
@@ -839,7 +886,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 's10',
-    complemento: 'guardei uma fofoca boa por semanas esperando a hora certa de contar',
+    complemento:
+      'guardei uma fofoca boa por semanas esperando a hora certa de contar',
     categoria: 'segredos',
     intensidade: 'pessoal',
     mais18: false,
@@ -847,7 +895,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 's11',
-    complemento: 'soube antes de todo mundo de uma novidade e adorei ter essa vantagem',
+    complemento:
+      'soube antes de todo mundo de uma novidade e adorei ter essa vantagem',
     categoria: 'segredos',
     intensidade: 'pessoal',
     mais18: false,
@@ -855,7 +904,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 's12',
-    complemento: 'tenho um gosto muito fora da minha imagem que quase ninguém conhece',
+    complemento:
+      'tenho um gosto muito fora da minha imagem que quase ninguém conhece',
     categoria: 'segredos',
     intensidade: 'pessoal',
     mais18: false,
@@ -863,7 +913,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 's13',
-    complemento: 'escondi uma compra da família porque sabia que renderia comentário',
+    complemento:
+      'escondi uma compra da família porque sabia que renderia comentário',
     categoria: 'segredos',
     intensidade: 'pessoal',
     mais18: false,
@@ -871,7 +922,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 's14',
-    complemento: 'mudei de ideia sobre um conselho que segui e nunca contei a quem deu',
+    complemento:
+      'mudei de ideia sobre um conselho que segui e nunca contei a quem deu',
     categoria: 'segredos',
     intensidade: 'pessoal',
     mais18: false,
@@ -879,7 +931,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 's15',
-    complemento: 'tenho uma versão diferente de uma história que sempre conto da mesma forma',
+    complemento:
+      'tenho uma versão diferente de uma história que sempre conto da mesma forma',
     categoria: 'segredos',
     intensidade: 'pessoal',
     mais18: false,
@@ -887,7 +940,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 's16',
-    complemento: 'guardo uma história excelente porque ainda não achei o grupo certo pra contar',
+    complemento:
+      'guardo uma história excelente porque ainda não achei o grupo certo pra contar',
     categoria: 'segredos',
     intensidade: 'pessoal',
     mais18: false,
@@ -913,7 +967,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'h03',
-    complemento: 'reclamei de fila no supermercado e entrei na fila errada em seguida',
+    complemento:
+      'reclamei de fila no supermercado e entrei na fila errada em seguida',
     categoria: 'hipocrisia',
     intensidade: 'leve',
     mais18: false,
@@ -921,7 +976,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'h04',
-    complemento: 'fiz piada sobre não entender tecnologia e usei o Google pra checar depois',
+    complemento:
+      'fiz piada sobre não entender tecnologia e usei o Google pra checar depois',
     categoria: 'hipocrisia',
     intensidade: 'leve',
     mais18: false,
@@ -953,7 +1009,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'h08',
-    complemento: 'critiquei exibicionismo nas redes e postei foto bem produzida logo depois',
+    complemento:
+      'critiquei exibicionismo nas redes e postei foto bem produzida logo depois',
     categoria: 'hipocrisia',
     intensidade: 'social',
     mais18: false,
@@ -961,7 +1018,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'h09',
-    complemento: 'julguei alguém por não saber algo que eu também não sabia há pouco tempo',
+    complemento:
+      'julguei alguém por não saber algo que eu também não sabia há pouco tempo',
     categoria: 'hipocrisia',
     intensidade: 'social',
     mais18: false,
@@ -977,7 +1035,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'h11',
-    complemento: 'critiquei bebedeira e acordei com ressaca no final de semana seguinte',
+    complemento:
+      'critiquei bebedeira e acordei com ressaca no final de semana seguinte',
     categoria: 'hipocrisia',
     intensidade: 'social',
     mais18: false,
@@ -1009,7 +1068,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'h15',
-    complemento: 'disse que não me importo com o que as pessoas pensam e mudei de comportamento por causa de um olhar',
+    complemento:
+      'disse que não me importo com o que as pessoas pensam e mudei de comportamento por causa de um olhar',
     categoria: 'hipocrisia',
     intensidade: 'pessoal',
     mais18: false,
@@ -1017,7 +1077,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'h16',
-    complemento: 'falei que dinheiro não é tudo e tomei decisão puramente financeira em seguida',
+    complemento:
+      'falei que dinheiro não é tudo e tomei decisão puramente financeira em seguida',
     categoria: 'hipocrisia',
     intensidade: 'social',
     mais18: false,
@@ -1035,7 +1096,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x02',
-    complemento: 'minha expressão entregou minha reação antes de eu conseguir disfarçar',
+    complemento:
+      'minha expressão entregou minha reação antes de eu conseguir disfarçar',
     categoria: 'exposed',
     intensidade: 'leve',
     mais18: false,
@@ -1051,7 +1113,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x04',
-    complemento: 'entrei numa sala com cara de saber o que estava acontecendo — e não sabia nada',
+    complemento:
+      'entrei numa sala com cara de saber o que estava acontecendo — e não sabia nada',
     categoria: 'exposed',
     intensidade: 'leve',
     mais18: false,
@@ -1059,7 +1122,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x05',
-    complemento: 'tentei entrar numa conversa achando que conhecia o assunto e errei o contexto inteiro',
+    complemento:
+      'tentei entrar numa conversa achando que conhecia o assunto e errei o contexto inteiro',
     categoria: 'exposed',
     intensidade: 'social',
     mais18: false,
@@ -1067,7 +1131,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x06',
-    complemento: 'achei que estava sendo discreto e mais tarde soube que todo mundo sabia',
+    complemento:
+      'achei que estava sendo discreto e mais tarde soube que todo mundo sabia',
     categoria: 'exposed',
     intensidade: 'social',
     mais18: false,
@@ -1075,7 +1140,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x07',
-    complemento: 'dei uma desculpa elaborada e a outra parte já sabia a verdade antes de eu terminar',
+    complemento:
+      'dei uma desculpa elaborada e a outra parte já sabia a verdade antes de eu terminar',
     categoria: 'exposed',
     intensidade: 'social',
     mais18: false,
@@ -1083,7 +1149,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x08',
-    complemento: 'reclamei de alguém e essa pessoa estava do outro lado da porta',
+    complemento:
+      'reclamei de alguém e essa pessoa estava do outro lado da porta',
     categoria: 'exposed',
     intensidade: 'social',
     mais18: false,
@@ -1099,7 +1166,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x10',
-    complemento: 'fui culpado por algo que eu realmente fiz mas continuei negando',
+    complemento:
+      'fui culpado por algo que eu realmente fiz mas continuei negando',
     categoria: 'exposed',
     intensidade: 'social',
     mais18: false,
@@ -1107,7 +1175,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x11',
-    complemento: 'tinha álibi que desabou porque alguém postou uma foto no momento errado',
+    complemento:
+      'tinha álibi que desabou porque alguém postou uma foto no momento errado',
     categoria: 'exposed',
     intensidade: 'social',
     mais18: false,
@@ -1115,7 +1184,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x12',
-    complemento: 'enviei exatamente o que estava falando da pessoa — pra ela mesma',
+    complemento:
+      'enviei exatamente o que estava falando da pessoa — pra ela mesma',
     categoria: 'exposed',
     intensidade: 'social',
     mais18: false,
@@ -1123,7 +1193,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x13',
-    complemento: 'fui pego numa situação que só piora quanto mais você tenta explicar',
+    complemento:
+      'fui pego numa situação que só piora quanto mais você tenta explicar',
     categoria: 'exposed',
     intensidade: 'caotico',
     mais18: false,
@@ -1131,7 +1202,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x14',
-    complemento: 'fingi não gostar de algo e fui pego desfrutando às escondidas',
+    complemento:
+      'fingi não gostar de algo e fui pego desfrutando às escondidas',
     categoria: 'exposed',
     intensidade: 'social',
     mais18: false,
@@ -1139,7 +1211,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x15',
-    complemento: 'fui pego numa situação constrangedora em câmera que não sabia que estava ligada',
+    complemento:
+      'fui pego numa situação constrangedora em câmera que não sabia que estava ligada',
     categoria: 'exposed',
     intensidade: 'social',
     mais18: false,
@@ -1155,7 +1228,8 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
   },
   {
     id: 'x17',
-    complemento: 'fui pego mentindo numa situação em que todo mundo ainda acreditava na mentira',
+    complemento:
+      'fui pego mentindo numa situação em que todo mundo ainda acreditava na mentira',
     categoria: 'exposed',
     intensidade: 'caotico',
     mais18: false,
@@ -1166,7 +1240,9 @@ export const CARTAS_EU_NUNCA: CartaEuNunca[] = [
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 export function getCategoria(id: CategoriaEuNuncaId): CategoriaEuNunca {
-  return CATEGORIAS_EU_NUNCA.find((c) => c.id === id) ?? CATEGORIAS_EU_NUNCA[0]!;
+  return (
+    CATEGORIAS_EU_NUNCA.find((c) => c.id === id) ?? CATEGORIAS_EU_NUNCA[0]!
+  );
 }
 
 export function getCategoriasPorIds(

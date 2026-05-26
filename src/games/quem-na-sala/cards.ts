@@ -58,7 +58,6 @@ export const CATEGORIAS_QNS: CategoriaQNS[] = [
 ];
 
 export const CARTAS_QNS: CartaQNS[] = [
-
   // ═══════════════════════════════════════════════════════════════════════════
   // PROVÁVEL (25 cartas)
   // ═══════════════════════════════════════════════════════════════════════════
@@ -112,7 +111,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'pr07',
-    complemento: '... mandaria mensagem errada pro grupo errado com mais frequência?',
+    complemento:
+      '... mandaria mensagem errada pro grupo errado com mais frequência?',
     categoria: 'provavel',
     intensidade: 'leve',
     mais18: false,
@@ -144,7 +144,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'pr11',
-    complemento: '... compraria algo caro num impulso e se arrependeria no dia seguinte?',
+    complemento:
+      '... compraria algo caro num impulso e se arrependeria no dia seguinte?',
     categoria: 'provavel',
     intensidade: 'social',
     mais18: false,
@@ -160,7 +161,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'pr13',
-    complemento: '... ficaria no celular enquanto alguém conta uma história longa?',
+    complemento:
+      '... ficaria no celular enquanto alguém conta uma história longa?',
     categoria: 'provavel',
     intensidade: 'social',
     mais18: false,
@@ -208,7 +210,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'pr19',
-    complemento: '... seria visto dançando sozinho em casa por alguém inesperado?',
+    complemento:
+      '... seria visto dançando sozinho em casa por alguém inesperado?',
     categoria: 'provavel',
     intensidade: 'leve',
     mais18: false,
@@ -216,7 +219,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'pr20',
-    complemento: '... se arrependeria mais rápido depois de tomar uma decisão grande?',
+    complemento:
+      '... se arrependeria mais rápido depois de tomar uma decisão grande?',
     categoria: 'provavel',
     intensidade: 'pesado',
     mais18: false,
@@ -240,7 +244,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'pr23',
-    complemento: '... choraria de rir numa situação em que era pra estar sério?',
+    complemento:
+      '... choraria de rir numa situação em que era pra estar sério?',
     categoria: 'provavel',
     intensidade: 'leve',
     mais18: false,
@@ -256,7 +261,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'pr25',
-    complemento: '... se tornaria o caçula mimado do grupo numa situação de pressão?',
+    complemento:
+      '... se tornaria o caçula mimado do grupo numa situação de pressão?',
     categoria: 'provavel',
     intensidade: 'pesado',
     mais18: false,
@@ -300,7 +306,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'el05',
-    complemento: '... daria o conselho mais honesto sem precisar que você pedisse?',
+    complemento:
+      '... daria o conselho mais honesto sem precisar que você pedisse?',
     categoria: 'elogio',
     intensidade: 'social',
     mais18: false,
@@ -308,7 +315,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'el06',
-    complemento: '... ainda vai longe e todo mundo vê isso, mas ela não enxerga ainda?',
+    complemento:
+      '... ainda vai longe e todo mundo vê isso, mas ela não enxerga ainda?',
     categoria: 'elogio',
     intensidade: 'social',
     mais18: false,
@@ -332,7 +340,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'el09',
-    complemento: '... você nunca ouviu reclamar de alguém por detrás das costas?',
+    complemento:
+      '... você nunca ouviu reclamar de alguém por detrás das costas?',
     categoria: 'elogio',
     intensidade: 'social',
     mais18: false,
@@ -340,7 +349,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'el10',
-    complemento: '... seria o melhor parceiro num roadtrip de emergência às 2 da manhã?',
+    complemento:
+      '... seria o melhor parceiro num roadtrip de emergência às 2 da manhã?',
     categoria: 'elogio',
     intensidade: 'leve',
     mais18: false,
@@ -372,7 +382,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'el14',
-    complemento: '... você ligaria às 3 da manhã com um problema e saberia que vai atender?',
+    complemento:
+      '... você ligaria às 3 da manhã com um problema e saberia que vai atender?',
     categoria: 'elogio',
     intensidade: 'pesado',
     mais18: false,
@@ -380,7 +391,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'el15',
-    complemento: '... provavelmente vai ser o mais bem-sucedido daqui a 10 anos?',
+    complemento:
+      '... provavelmente vai ser o mais bem-sucedido daqui a 10 anos?',
     categoria: 'elogio',
     intensidade: 'social',
     mais18: false,
@@ -388,7 +400,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'el16',
-    complemento: '... surpreende o grupo toda vez que revela algo novo sobre si?',
+    complemento:
+      '... surpreende o grupo toda vez que revela algo novo sobre si?',
     categoria: 'elogio',
     intensidade: 'social',
     mais18: false,
@@ -396,7 +409,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'el17',
-    complemento: '... é o tipo de pessoa que você quer por perto quando tudo dá errado?',
+    complemento:
+      '... é o tipo de pessoa que você quer por perto quando tudo dá errado?',
     categoria: 'elogio',
     intensidade: 'pesado',
     mais18: false,
@@ -404,7 +418,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'el18',
-    complemento: '... faz o grupo inteiro se sentir bem-vindo sem precisar esforçar?',
+    complemento:
+      '... faz o grupo inteiro se sentir bem-vindo sem precisar esforçar?',
     categoria: 'elogio',
     intensidade: 'leve',
     mais18: false,
@@ -412,7 +427,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'el19',
-    complemento: '... tem a inteligência emocional mais silenciosa e mais forte do grupo?',
+    complemento:
+      '... tem a inteligência emocional mais silenciosa e mais forte do grupo?',
     categoria: 'elogio',
     intensidade: 'pesado',
     mais18: false,
@@ -420,7 +436,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'el20',
-    complemento: '... você nunca viu perder a cabeça — mesmo quando tinha todo o direito?',
+    complemento:
+      '... você nunca viu perder a cabeça — mesmo quando tinha todo o direito?',
     categoria: 'elogio',
     intensidade: 'pesado',
     mais18: false,
@@ -480,7 +497,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'di07',
-    complemento: '... sairia mais cedo do rolê sem conseguir se despedir de todo mundo?',
+    complemento:
+      '... sairia mais cedo do rolê sem conseguir se despedir de todo mundo?',
     categoria: 'dinamica',
     intensidade: 'social',
     mais18: false,
@@ -496,7 +514,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'di09',
-    complemento: '... todos já pediram conselho mas nunca verbalizaram que seguiram?',
+    complemento:
+      '... todos já pediram conselho mas nunca verbalizaram que seguiram?',
     categoria: 'dinamica',
     intensidade: 'social',
     mais18: false,
@@ -552,7 +571,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'di16',
-    complemento: '... lembraria por mais tempo de uma brincadeira que passou do ponto?',
+    complemento:
+      '... lembraria por mais tempo de uma brincadeira que passou do ponto?',
     categoria: 'dinamica',
     intensidade: 'pesado',
     mais18: false,
@@ -584,7 +604,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'di20',
-    complemento: '... o grupo inteiro mudou de opinião sobre ela ao longo do tempo — pra melhor?',
+    complemento:
+      '... o grupo inteiro mudou de opinião sobre ela ao longo do tempo — pra melhor?',
     categoria: 'dinamica',
     intensidade: 'pesado',
     mais18: false,
@@ -596,7 +617,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: 'ex01',
-    complemento: '... defenderia uma opinião por orgulho mesmo depois de mudar de ideia?',
+    complemento:
+      '... defenderia uma opinião por orgulho mesmo depois de mudar de ideia?',
     categoria: 'exposicao',
     intensidade: 'social',
     mais18: false,
@@ -620,7 +642,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ex04',
-    complemento: '... surpreenderia mais se contasse uma história que ninguém conhece?',
+    complemento:
+      '... surpreenderia mais se contasse uma história que ninguém conhece?',
     categoria: 'exposicao',
     intensidade: 'pesado',
     mais18: false,
@@ -628,7 +651,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ex05',
-    complemento: '... faz mais pelos outros do que recebe de volta — e não diz nada?',
+    complemento:
+      '... faz mais pelos outros do que recebe de volta — e não diz nada?',
     categoria: 'exposicao',
     intensidade: 'pesado',
     mais18: false,
@@ -644,7 +668,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ex07',
-    complemento: '... escuta os problemas de todo mundo e raramente fala dos próprios?',
+    complemento:
+      '... escuta os problemas de todo mundo e raramente fala dos próprios?',
     categoria: 'exposicao',
     intensidade: 'pesado',
     mais18: false,
@@ -652,7 +677,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ex08',
-    complemento: '... você conhece há mais tempo mas sente que conhece menos do que devia?',
+    complemento:
+      '... você conhece há mais tempo mas sente que conhece menos do que devia?',
     categoria: 'exposicao',
     intensidade: 'pesado',
     mais18: false,
@@ -692,7 +718,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ex13',
-    complemento: '... provavelmente sabe mais sobre todo mundo do que faz parecer?',
+    complemento:
+      '... provavelmente sabe mais sobre todo mundo do que faz parecer?',
     categoria: 'exposicao',
     intensidade: 'pesado',
     mais18: false,
@@ -700,7 +727,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ex14',
-    complemento: '... demoraria mais para voltar a confiar depois de uma mancada?',
+    complemento:
+      '... demoraria mais para voltar a confiar depois de uma mancada?',
     categoria: 'exposicao',
     intensidade: 'caotico',
     mais18: false,
@@ -708,7 +736,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ex15',
-    complemento: '... consegue disfarçar melhor quando não está curtindo um rolê?',
+    complemento:
+      '... consegue disfarçar melhor quando não está curtindo um rolê?',
     categoria: 'exposicao',
     intensidade: 'pesado',
     mais18: false,
@@ -732,7 +761,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ex18',
-    complemento: '... seria melhor em resumir cada pessoa do grupo em uma frase?',
+    complemento:
+      '... seria melhor em resumir cada pessoa do grupo em uma frase?',
     categoria: 'exposicao',
     intensidade: 'caotico',
     mais18: false,
@@ -740,7 +770,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ex19',
-    complemento: '... traria uma novidade que deixaria a roda falando a noite inteira?',
+    complemento:
+      '... traria uma novidade que deixaria a roda falando a noite inteira?',
     categoria: 'exposicao',
     intensidade: 'caotico',
     mais18: false,
@@ -748,7 +779,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ex20',
-    complemento: '... costuma ter a opinião mais inesperada quando resolve falar?',
+    complemento:
+      '... costuma ter a opinião mais inesperada quando resolve falar?',
     categoria: 'exposicao',
     intensidade: 'caotico',
     mais18: false,
@@ -776,7 +808,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ca03',
-    complemento: '... seria o vilão num filme de suspense — e todo mundo acreditaria?',
+    complemento:
+      '... seria o vilão num filme de suspense — e todo mundo acreditaria?',
     categoria: 'caos',
     intensidade: 'social',
     mais18: false,
@@ -792,7 +825,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ca05',
-    complemento: '... casaria em Las Vegas com alguém que mal conhece depois de uma noite?',
+    complemento:
+      '... casaria em Las Vegas com alguém que mal conhece depois de uma noite?',
     categoria: 'caos',
     intensidade: 'caotico',
     mais18: false,
@@ -800,7 +834,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ca06',
-    complemento: '... toparia trocar de vida com alguém do grupo por uma semana?',
+    complemento:
+      '... toparia trocar de vida com alguém do grupo por uma semana?',
     categoria: 'caos',
     intensidade: 'social',
     mais18: false,
@@ -816,7 +851,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ca08',
-    complemento: '... viraria influencer e teria mais seguidores do que imagina?',
+    complemento:
+      '... viraria influencer e teria mais seguidores do que imagina?',
     categoria: 'caos',
     intensidade: 'leve',
     mais18: false,
@@ -840,7 +876,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ca11',
-    complemento: '... levaria um cargo inventado de síndico da festa a sério demais?',
+    complemento:
+      '... levaria um cargo inventado de síndico da festa a sério demais?',
     categoria: 'caos',
     intensidade: 'caotico',
     mais18: false,
@@ -848,7 +885,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ca12',
-    complemento: '... desapareceria de um grupo e voltaria meses depois como se nada tivesse acontecido?',
+    complemento:
+      '... desapareceria de um grupo e voltaria meses depois como se nada tivesse acontecido?',
     categoria: 'caos',
     intensidade: 'caotico',
     mais18: false,
@@ -864,7 +902,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ca14',
-    complemento: '... seria o primeiro a virar celebridade e o último a agir igual depois?',
+    complemento:
+      '... seria o primeiro a virar celebridade e o último a agir igual depois?',
     categoria: 'caos',
     intensidade: 'social',
     mais18: false,
@@ -872,7 +911,8 @@ export const CARTAS_QNS: CartaQNS[] = [
   },
   {
     id: 'ca15',
-    complemento: '... ganharia um reality do grupo só por saber construir alianças?',
+    complemento:
+      '... ganharia um reality do grupo só por saber construir alianças?',
     categoria: 'caos',
     intensidade: 'caotico',
     mais18: false,

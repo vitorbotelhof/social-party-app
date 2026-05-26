@@ -29,8 +29,7 @@ function cartasElegiveis(
   faseAtual: FaseEuNunca,
 ): CartaEuNunca[] {
   const usadas = new Set(cartasUsadas);
-  const categoriasSet =
-    categorias === 'todas' ? null : new Set(categorias);
+  const categoriasSet = categorias === 'todas' ? null : new Set(categorias);
 
   return CARTAS_EU_NUNCA.filter((carta) => {
     // Já usada

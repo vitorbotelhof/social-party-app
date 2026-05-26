@@ -1,13 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  Animated,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
@@ -33,6 +27,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'JogoLocalEuNunca'>;
 // ─── Cor de identidade ────────────────────────────────────────────────────────
 const COR_EU_NUNCA = '#E8407A';
 const COR_EU_NUNCA_MEDIA = 'rgba(232, 64, 122, 0.18)';
+const COR_EU_NUNCA_SUAVE = 'rgba(232, 64, 122, 0.10)';
 
 // ─── Label de intensidade ─────────────────────────────────────────────────────
 function labelIntensidade(intensidade: IntensidadeEuNunca): string {
@@ -75,7 +70,8 @@ export function TelaJogoLocalEuNunca({ navigation, route }: Props) {
   const [cartaAtual, setCartaAtual] = useState<CartaEuNunca | null>(null);
   const [totalExibidas, setTotalExibidas] = useState(0);
   const [cartasPuladas, setCartasPuladas] = useState(0);
-  const [intensidadeMaxima, setIntensidadeMaxima] = useState<IntensidadeEuNunca | null>(null);
+  const [intensidadeMaxima, setIntensidadeMaxima] =
+    useState<IntensidadeEuNunca | null>(null);
   const [finalizado, setFinalizado] = useState(false);
   const [iniciou, setIniciou] = useState(false);
   const resultadoProcessado = useRef(false);
@@ -87,87 +83,91 @@ export function TelaJogoLocalEuNunca({ navigation, route }: Props) {
   const translateYCarta = useRef(new Animated.Value(24)).current;
   const escalaCarta = useRef(new Animated.Value(0.97)).current;
 
-  const avancar = useCallback((pulou = false) => {
-    if (transicaoEmAndamento.current) return;
-    transicaoEmAndamento.current = true;
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (pulou && cartaAtual) setCartasPuladas((quantidade) => quantidade + 1);
+  const avancar = useCallback(
+    (pulou = false) => {
+      if (transicaoEmAndamento.current) return;
+      transicaoEmAndamento.current = true;
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      if (pulou && cartaAtual) setCartasPuladas((quantidade) => quantidade + 1);
 
-    // Fade out atual
-    Animated.parallel([
-      Animated.timing(opacidadeCarta, {
-        toValue: 0,
-        duration: 160,
-        useNativeDriver: true,
-      }),
-      Animated.timing(translateYCarta, {
-        toValue: -16,
-        duration: 160,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      // Seleciona próxima carta
-      const novasUsadas = cartaAtual
-        ? [...cartasUsadas, cartaAtual.id]
-        : cartasUsadas;
-      const novoTotal = totalExibidas + (cartaAtual ? 1 : 0);
-
-      const proxima = selecionarCartaEuNunca(
-        novasUsadas,
-        categorias as CategoriaEuNuncaId[] | 'todas',
-        intensidade as IntensidadeEuNunca | 'todas',
-        incluirMais18,
-        novoTotal,
-      );
-
-      if (proxima) {
-        setCartasUsadas(novasUsadas);
-        setTotalExibidas(novoTotal);
-        setCartaAtual(proxima);
-        setIntensidadeMaxima((atual) =>
-          !atual || PESO_INTENSIDADE[proxima.intensidade] > PESO_INTENSIDADE[atual]
-            ? proxima.intensidade
-            : atual,
-        );
-      }
-
-      // Reset posição e fade in
-      translateYCarta.setValue(24);
-      escalaCarta.setValue(0.97);
-
+      // Fade out atual
       Animated.parallel([
         Animated.timing(opacidadeCarta, {
-          toValue: 1,
-          duration: 240,
-          useNativeDriver: true,
-        }),
-        Animated.spring(translateYCarta, {
           toValue: 0,
-          damping: 22,
-          stiffness: 260,
+          duration: 160,
           useNativeDriver: true,
         }),
-        Animated.spring(escalaCarta, {
-          toValue: 1,
-          damping: 22,
-          stiffness: 260,
+        Animated.timing(translateYCarta, {
+          toValue: -16,
+          duration: 160,
           useNativeDriver: true,
         }),
       ]).start(() => {
-        transicaoEmAndamento.current = false;
+        // Seleciona próxima carta
+        const novasUsadas = cartaAtual
+          ? [...cartasUsadas, cartaAtual.id]
+          : cartasUsadas;
+        const novoTotal = totalExibidas + (cartaAtual ? 1 : 0);
+
+        const proxima = selecionarCartaEuNunca(
+          novasUsadas,
+          categorias as CategoriaEuNuncaId[] | 'todas',
+          intensidade as IntensidadeEuNunca | 'todas',
+          incluirMais18,
+          novoTotal,
+        );
+
+        if (proxima) {
+          setCartasUsadas(novasUsadas);
+          setTotalExibidas(novoTotal);
+          setCartaAtual(proxima);
+          setIntensidadeMaxima((atual) =>
+            !atual ||
+            PESO_INTENSIDADE[proxima.intensidade] > PESO_INTENSIDADE[atual]
+              ? proxima.intensidade
+              : atual,
+          );
+        }
+
+        // Reset posição e fade in
+        translateYCarta.setValue(24);
+        escalaCarta.setValue(0.97);
+
+        Animated.parallel([
+          Animated.timing(opacidadeCarta, {
+            toValue: 1,
+            duration: 240,
+            useNativeDriver: true,
+          }),
+          Animated.spring(translateYCarta, {
+            toValue: 0,
+            damping: 22,
+            stiffness: 260,
+            useNativeDriver: true,
+          }),
+          Animated.spring(escalaCarta, {
+            toValue: 1,
+            damping: 22,
+            stiffness: 260,
+            useNativeDriver: true,
+          }),
+        ]).start(() => {
+          transicaoEmAndamento.current = false;
+        });
       });
-    });
-  }, [
-    cartaAtual,
-    cartasUsadas,
-    categorias,
-    escalaCarta,
-    incluirMais18,
-    intensidade,
-    opacidadeCarta,
-    totalExibidas,
-    translateYCarta,
-  ]);
+    },
+    [
+      cartaAtual,
+      cartasUsadas,
+      categorias,
+      escalaCarta,
+      incluirMais18,
+      intensidade,
+      opacidadeCarta,
+      totalExibidas,
+      translateYCarta,
+    ],
+  );
 
   // Inicializa primeira carta
   useEffect(() => {
@@ -238,10 +238,9 @@ export function TelaJogoLocalEuNunca({ navigation, route }: Props) {
 
   function avancarOuFinalizar(pulou: boolean) {
     if (atingiuMeta) {
-      finalizarPartida(
-        pulou ? cartasPuladas + 1 : cartasPuladas,
-        false,
-      );
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      if (pulou) setCartasPuladas((quantidade) => quantidade + 1);
+      finalizarPartida(pulou ? cartasPuladas + 1 : cartasPuladas, false);
       return;
     }
     avancar(pulou);
@@ -254,11 +253,17 @@ export function TelaJogoLocalEuNunca({ navigation, route }: Props) {
           <Text style={estilos.finalLabel}>fim de sessão</Text>
           <Text style={estilos.finalTitulo}>as histórias ficam na roda.</Text>
           <Text style={estilos.finalResumo}>
-            {cartasVistas} {cartasVistas === 1 ? 'carta vista' : 'cartas vistas'}
-            {cartasPuladas > 0 ? ` · ${cartasPuladas} passadas sem pressão` : ''}
+            {cartasVistas}{' '}
+            {cartasVistas === 1 ? 'carta vista' : 'cartas vistas'}
+            {cartasPuladas > 0
+              ? ` · ${cartasPuladas} passadas sem pressão`
+              : ''}
           </Text>
           <FeedbackSessao jogoId="eu-nunca" />
-          <BotaoPrimario titulo="escolher outro jogo" onPress={() => navigation.navigate('Inicio')} />
+          <BotaoPrimario
+            titulo="escolher outro jogo"
+            onPress={() => navigation.navigate('Inicio')}
+          />
         </View>
       </SafeAreaView>
     );
@@ -272,7 +277,9 @@ export function TelaJogoLocalEuNunca({ navigation, route }: Props) {
         <View style={estilos.headerEspaco} />
         <View style={estilos.headerCentro}>
           <Text style={estilos.contadorTexto}>
-            {totalExibidas > 0 ? `${totalExibidas} vista${totalExibidas === 1 ? '' : 's'}` : 'pronto'}
+            {totalExibidas > 0
+              ? `${totalExibidas} vista${totalExibidas === 1 ? '' : 's'}`
+              : 'pronto'}
           </Text>
         </View>
         <View style={estilos.headerEspaco} />
@@ -301,7 +308,11 @@ export function TelaJogoLocalEuNunca({ navigation, route }: Props) {
         >
           {cartaAtual ? (
             <>
-              <Text style={estilos.complemento} adjustsFontSizeToFit minimumFontScale={0.6}>
+              <Text
+                style={estilos.complemento}
+                adjustsFontSizeToFit
+                minimumFontScale={0.6}
+              >
                 {cartaAtual.complemento}
               </Text>
 
@@ -354,16 +365,10 @@ export function TelaJogoLocalEuNunca({ navigation, route }: Props) {
             ]}
           />
           <View
-            style={[
-              estilos.faseDot,
-              fase === 'subida' && estilos.faseDotAtiva,
-            ]}
+            style={[estilos.faseDot, fase === 'subida' && estilos.faseDotAtiva]}
           />
           <View
-            style={[
-              estilos.faseDot,
-              fase === 'pico' && estilos.faseDotAtiva,
-            ]}
+            style={[estilos.faseDot, fase === 'pico' && estilos.faseDotAtiva]}
           />
           <View
             style={[
@@ -376,13 +381,8 @@ export function TelaJogoLocalEuNunca({ navigation, route }: Props) {
 
       {/* Rodapé — botão de ação principal */}
       <View style={estilos.rodape}>
-        <CombinadoDeConforto
-          compacto
-          texto="vale passar sem explicar."
-        />
-        <Text style={estilos.instrucao}>
-          quem já fez levanta a mão
-        </Text>
+        <CombinadoDeConforto compacto texto="vale passar sem explicar." />
+        <Text style={estilos.instrucao}>quem já fez levanta a mão</Text>
         <Pressable
           onPress={() => avancarOuFinalizar(false)}
           disabled={!cartaAtual}
@@ -418,21 +418,6 @@ export function TelaJogoLocalEuNunca({ navigation, route }: Props) {
 }
 
 const estilos = StyleSheet.create({
-  botaoEncerrar: {
-    alignItems: 'center',
-    borderColor: cores.borda,
-    borderRadius: raio.pill,
-    borderWidth: 1,
-    height: 36,
-    justifyContent: 'center',
-    paddingHorizontal: 14,
-  },
-  botaoEncerrarTexto: {
-    color: cores.textoSecundario,
-    fontFamily: familias.sans,
-    fontSize: tipografia.tamanhoLegenda,
-    fontWeight: tipografia.pesoBold,
-  },
   final: {
     flex: 1,
     gap: espacamento.lg,
@@ -480,7 +465,7 @@ const estilos = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   botaoProximaTexto: {
-    color: '#FFFFFF',
+    color: cores.textoSobrePrimaria,
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpo,
     fontWeight: tipografia.pesoExtraBold,
@@ -507,7 +492,7 @@ const estilos = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal: espacamento.lg,
     padding: espacamento.xl,
-    shadowColor: '#161616',
+    shadowColor: cores.texto,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 16,
@@ -515,7 +500,7 @@ const estilos = StyleSheet.create({
   },
   chip18: {
     alignItems: 'center',
-    backgroundColor: 'rgba(232, 64, 122, 0.10)',
+    backgroundColor: COR_EU_NUNCA_SUAVE,
     borderRadius: raio.sm,
     paddingHorizontal: 8,
     paddingVertical: 4,

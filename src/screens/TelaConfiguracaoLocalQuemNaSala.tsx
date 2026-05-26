@@ -26,9 +26,10 @@ type Props = NativeStackScreenProps<
 >;
 
 // ─── Identidade visual do jogo ────────────────────────────────────────────────
-const COR_QNS = '#F59E0B';                          // âmbar — holofote, revelação
+const COR_QNS = '#F59E0B'; // âmbar — holofote, revelação
 const COR_ATIVA_FUNDO = 'rgba(245, 158, 11, 0.08)';
 const COR_ATIVA_BORDA = 'rgba(245, 158, 11, 0.40)';
+const COR_BADGE_FUNDO = 'rgba(245, 158, 11, 0.12)';
 
 const MIN_JOGADORES = 4;
 const MAX_JOGADORES = 8;
@@ -50,7 +51,9 @@ const TODAS_IDS: CategoriaQNSId[] = CATEGORIAS_QNS.map((c) => c.id);
 
 export function TelaConfiguracaoLocalQuemNaSala({ navigation }: Props) {
   const [nomes, setNomes] = useState<string[]>([]);
-  const [intensidade, setIntensidade] = useState<IntensidadeQNS | 'todas'>('todas');
+  const [intensidade, setIntensidade] = useState<IntensidadeQNS | 'todas'>(
+    'todas',
+  );
   const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<
     CategoriaQNSId[] | 'todas'
   >('todas');
@@ -159,7 +162,8 @@ export function TelaConfiguracaoLocalQuemNaSala({ navigation }: Props) {
           onChange={setTotalPerguntas}
         />
         <Text style={estilos.ajuda}>
-          {totalPerguntas} votações · no modo de um celular, funciona melhor com até 8 pessoas.
+          {totalPerguntas} votações · no modo de um celular, funciona melhor com
+          até 8 pessoas.
         </Text>
       </SecaoConfig>
 
@@ -177,7 +181,9 @@ export function TelaConfiguracaoLocalQuemNaSala({ navigation }: Props) {
             onPress={selecionarTodas}
             accessibilityRole="button"
             accessibilityLabel="Selecionar todas as categorias"
-            accessibilityState={{ selected: categoriasSelecionadas === 'todas' }}
+            accessibilityState={{
+              selected: categoriasSelecionadas === 'todas',
+            }}
             style={({ pressed }) => [
               estilos.chipFiltro,
               categoriasSelecionadas === 'todas' && estilos.chipFiltroAtivo,
@@ -187,7 +193,8 @@ export function TelaConfiguracaoLocalQuemNaSala({ navigation }: Props) {
             <Text
               style={[
                 estilos.chipFiltroTexto,
-                categoriasSelecionadas === 'todas' && estilos.chipFiltroTextoAtivo,
+                categoriasSelecionadas === 'todas' &&
+                  estilos.chipFiltroTextoAtivo,
               ]}
             >
               misturar tudo
@@ -199,7 +206,8 @@ export function TelaConfiguracaoLocalQuemNaSala({ navigation }: Props) {
             accessibilityLabel="Deselecionar todas as categorias"
             accessibilityState={{
               selected:
-                categoriasSelecionadas !== 'todas' && categoriasAtivas.length === 0,
+                categoriasSelecionadas !== 'todas' &&
+                categoriasAtivas.length === 0,
             }}
             style={({ pressed }) => [
               estilos.chipFiltro,
@@ -250,9 +258,7 @@ export function TelaConfiguracaoLocalQuemNaSala({ navigation }: Props) {
                 <Text style={estilos.categoriaDescricao} numberOfLines={2}>
                   {cat.descricao}
                 </Text>
-                {cat.temMais18 && (
-                  <Text style={estilos.badge18}>+18</Text>
-                )}
+                {cat.temMais18 && <Text style={estilos.badge18}>+18</Text>}
               </Pressable>
             );
           })}
@@ -299,7 +305,7 @@ const estilos = StyleSheet.create({
   },
   badge18: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(245, 158, 11, 0.12)',
+    backgroundColor: COR_BADGE_FUNDO,
     borderRadius: raio.sm,
     color: COR_QNS,
     fontFamily: familias.sans,
