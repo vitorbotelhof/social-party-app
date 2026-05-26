@@ -182,8 +182,25 @@ export function registrarMomento(
 
   if (!sessaoAtual) return m;
 
+  let anexouAoJogo = false;
+  const jogosDaSessao = [...sessaoAtual.jogosDaSessao]
+    .reverse()
+    .map((jogo) => {
+      if (
+        !anexouAoJogo &&
+        jogo.jogoId === momento.jogoId &&
+        jogo.finalizadoEm === null
+      ) {
+        anexouAoJogo = true;
+        return { ...jogo, momentos: [...jogo.momentos, m] };
+      }
+      return jogo;
+    })
+    .reverse();
+
   sessaoAtual = {
     ...sessaoAtual,
+    jogosDaSessao,
     momentosMemoraveis: [...sessaoAtual.momentosMemoraveis, m],
     totalRodadas: sessaoAtual.totalRodadas + 1,
   };

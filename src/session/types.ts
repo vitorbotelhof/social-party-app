@@ -71,9 +71,12 @@ export type TipoMomento =
   | 'leitura_perfeita_duvido' // duvidou de item inválido — leu o bluff corretamente
   | 'aposta_errada_duvido' // duvidou de item válido — pagou o preço
   // ── De 0 a 10 ──────────────────────────────────────────────────────────────
-  | 'leitura_perfeita_d010'  // todos adivinhadores acertaram ±1 na mesma rodada
-  | 'acerto_exato_d010'      // alguém acertou a nota exata (erro = 0)
-  | 'grupo_perdido_d010';    // divergência ≥ 5 — grupo totalmente sem calibração
+  | 'leitura_perfeita_d010' // todos adivinhadores acertaram ±1 na mesma rodada
+  | 'acerto_exato_d010' // alguém acertou a nota exata (erro = 0)
+  | 'grupo_perdido_d010' // legado: divergência ≥ 5 — grupo sem calibração
+  | 'ninguem_entendeu_d010' // nenhum palpite chegou perto do respondente
+  | 'grupo_partido_d010' // palpites ocuparam extremos incompatíveis
+  | 'imprevisivel_em_serie_d010'; // mesmo respondente confundiu o grupo novamente
 
 export interface Momento {
   id: string;
@@ -211,13 +214,18 @@ export interface VerdadeDesafioSessaoStats {
 export interface De0a10SessaoStats {
   totalRodadas: number;
   rodadasCompletas: number;
-  mediaErroGrupo: number;       // erro médio em todos os palpites (|palpite - nota|)
-  maiorDivergencia: number;     // maior spread (max-min palpites) em uma única rodada
-  acertosExatos: number;        // total de palpites com erro = 0
-  jogadorMaisLegivelId: string | null;   // cuja nota foi mais fácil de ler (menor erro médio)
-  jogadorMaisDificilId: string | null;   // mais difícil de ler (maior divergência ao responder)
+  mediaErroGrupo: number; // erro médio em todos os palpites (|palpite - nota|)
+  maiorDivergencia: number; // maior spread (max-min palpites) em uma única rodada
+  acertosExatos: number; // total de palpites com erro = 0
+  leiturasPerfeitas: number; // rodadas em que todos chegaram a ±1
+  rodadasSemLeitura: number; // rodadas em que ninguém chegou a ±1
+  gruposPartidos: number; // rodadas classificadas como divididas
+  rodadasComLeituraRotativa: number; // rodadas rápidas de grupos grandes
+  jogadorMaisLegivelId: string | null; // cuja nota foi mais fácil de ler (menor erro médio)
+  jogadorMaisDificilId: string | null; // mais difícil de ler (maior divergência ao responder)
+  jogadorMaisImprevisivelId: string | null; // repetiu rodadas sem leitura
   modoCompetitivo: boolean;
-  vencedorId: string | null;    // só se modoCompetitivo
+  vencedorId: string | null; // só se modoCompetitivo
   duracaoMs: number;
   encerradaVoluntariamente: boolean;
 }

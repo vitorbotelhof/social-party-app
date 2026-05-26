@@ -5,10 +5,11 @@
 
 import { atualizarEstadoEmocional } from './emotionalTracker';
 import { reavaliarGrupo } from './groupProfile';
-import { registrarJogoFinalizado } from './sessionStore';
-import type { De0a10SessaoStats } from './types';
+import { registrarJogoFinalizado, registrarMomento } from './sessionStore';
+import type { De0a10SessaoStats, Momento } from './types';
 import { detectarVibe } from './vibeEngine';
 import type { ResultadoRodada, SessaoDe0a10 } from '@/games/de-0-a-10';
+import type { PlayerId } from '@/engine/types';
 
 // ─── Builder de stats ─────────────────────────────────────────────────────────
 
@@ -29,18 +30,32 @@ export function buildResultadoDe0a10(
 
   // Maior divergência em uma única rodada
   const maiorDivergencia =
-    historico.length > 0
-      ? Math.max(...historico.map((r) => r.divergencia))
-      : 0;
+    historico.length > 0 ? Math.max(...historico.map((r) => r.divergencia)) : 0;
 
   // Acertos exatos (erro = 0)
   const acertosExatos = todosErros.filter((e) => e === 0).length;
+  const leiturasPerfeitas = historico.filter(
+    (rodada) =>
+      rodada.leituraColetiva === 'cravaram' ||
+      rodada.leituraColetiva === 'te_leram',
+  ).length;
+  const rodadasSemLeitura = historico.filter(
+    (rodada) => rodada.leituraColetiva === 'nao_te_leram',
+  ).length;
+  const gruposPartidos = historico.filter(
+    (rodada) => rodada.leituraColetiva === 'divididos',
+  ).length;
+  const rodadasComLeituraRotativa = historico.filter(
+    (rodada) => rodada.modoLeitura === 'rotativa',
+  ).length;
 
   // Jogador mais legível: menor erro médio como respondente
   const erroPorRespondente: Record<string, number[]> = {};
   for (const rodada of historico) {
     const id = rodada.respondente.id;
-    const erros = rodada.palpites.map((p) => Math.abs(p.nota - rodada.notaReal));
+    const erros = rodada.palpites.map((p) =>
+      Math.abs(p.nota - rodada.notaReal),
+    );
     erroPorRespondente[id] = [...(erroPorRespondente[id] ?? []), ...erros];
   }
 
@@ -48,6 +63,7 @@ export function buildResultadoDe0a10(
   let menorErroMedio = Infinity;
   let jogadorMaisDificilId: string | null = null;
   let maiorErroMedio = -Infinity;
+  const semLeituraPorRespondente: Record<string, number> = {};
 
   for (const [id, erros] of Object.entries(erroPorRespondente)) {
     if (erros.length === 0) continue;
@@ -62,9 +78,21 @@ export function buildResultadoDe0a10(
     }
   }
 
+  for (const rodada of historico) {
+    if (rodada.leituraColetiva === 'nao_te_leram') {
+      semLeituraPorRespondente[rodada.respondente.id] =
+        (semLeituraPorRespondente[rodada.respondente.id] ?? 0) + 1;
+    }
+  }
+  const jogadorMaisImprevisivelId =
+    Object.entries(semLeituraPorRespondente)
+      .filter(([, total]) => total >= 2)
+      .sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+
   // Vencedor (só se competitivo)
   const vencedorId = sessao.modoCompetitivo
-    ? ([...sessao.placar].sort((a, b) => b.total - a.total)[0]?.jogadorId ?? null)
+    ? ([...sessao.placar].sort((a, b) => b.total - a.total)[0]?.jogadorId ??
+      null)
     : null;
 
   return {
@@ -73,8 +101,13 @@ export function buildResultadoDe0a10(
     mediaErroGrupo: Math.round(mediaErroGrupo * 10) / 10,
     maiorDivergencia,
     acertosExatos,
+    leiturasPerfeitas,
+    rodadasSemLeitura,
+    gruposPartidos,
+    rodadasComLeituraRotativa,
     jogadorMaisLegivelId,
     jogadorMaisDificilId,
+    jogadorMaisImprevisivelId,
     modoCompetitivo: sessao.modoCompetitivo,
     vencedorId,
     duracaoMs: Date.now() - sessao.iniciouEm,
@@ -84,12 +117,17 @@ export function buildResultadoDe0a10(
 
 // ─── Detector de momentos ─────────────────────────────────────────────────────
 
-export function detectarMomentosDe0a10(historico: ResultadoRodada[]) {
-  const momentos: { tipo: string; rodada: number; jogadoresIds: string[] }[] =
-    [];
+type MomentoDe0a10 = Omit<Momento, 'id' | 'timestamp'>;
+
+export function detectarMomentosDe0a10(
+  historico: ResultadoRodada[],
+): MomentoDe0a10[] {
+  const momentos: MomentoDe0a10[] = [];
+  const surpresasPorRespondente = new Map<PlayerId, number>();
 
   historico.forEach((rodada, i) => {
     const totalAdivinhadores = rodada.palpites.length;
+    const respondenteId = rodada.respondente.id as PlayerId;
 
     // Leitura perfeita: todos adivinharam ±1
     const acertosProximos = rodada.palpites.filter(
@@ -101,11 +139,17 @@ export function detectarMomentosDe0a10(historico: ResultadoRodada[]) {
     ) {
       momentos.push({
         tipo: 'leitura_perfeita_d010',
+        jogoId: 'de-0-a-10',
         rodada: i + 1,
         jogadoresIds: [
-          rodada.respondente.id,
-          ...acertosProximos.map((p) => p.jogadorId),
+          respondenteId,
+          ...acertosProximos.map((p) => p.jogadorId as PlayerId),
         ],
+        dados: {
+          notaReal: rodada.notaReal,
+          totalAdivinhadores,
+          modoLeitura: rodada.modoLeitura,
+        },
       });
     }
 
@@ -114,18 +158,62 @@ export function detectarMomentosDe0a10(historico: ResultadoRodada[]) {
     if (exatos.length > 0) {
       momentos.push({
         tipo: 'acerto_exato_d010',
+        jogoId: 'de-0-a-10',
         rodada: i + 1,
-        jogadoresIds: exatos.map((p) => p.jogadorId),
+        jogadoresIds: exatos.map((p) => p.jogadorId as PlayerId),
+        dados: {
+          respondenteId,
+          notaReal: rodada.notaReal,
+          totalExatos: exatos.length,
+          modoLeitura: rodada.modoLeitura,
+        },
       });
     }
 
-    // Grupo perdido: divergência ≥ 5
-    if (rodada.divergencia >= 5) {
+    // Grupo partido: a mesma pessoa produziu interpretações incompatíveis.
+    if (rodada.leituraColetiva === 'divididos') {
       momentos.push({
-        tipo: 'grupo_perdido_d010',
+        tipo: 'grupo_partido_d010',
+        jogoId: 'de-0-a-10',
         rodada: i + 1,
-        jogadoresIds: rodada.palpites.map((p) => p.jogadorId),
+        jogadoresIds: [respondenteId],
+        dados: {
+          notaReal: rodada.notaReal,
+          divergencia: rodada.divergencia,
+          modoLeitura: rodada.modoLeitura,
+        },
       });
+    }
+
+    // Sem leitura: ninguém chegou sequer à faixa próxima.
+    if (rodada.leituraColetiva === 'nao_te_leram') {
+      momentos.push({
+        tipo: 'ninguem_entendeu_d010',
+        jogoId: 'de-0-a-10',
+        rodada: i + 1,
+        jogadoresIds: [respondenteId],
+        dados: {
+          notaReal: rodada.notaReal,
+          divergencia: rodada.divergencia,
+          modoLeitura: rodada.modoLeitura,
+        },
+      });
+
+      const totalSurpresas =
+        (surpresasPorRespondente.get(respondenteId) ?? 0) + 1;
+      surpresasPorRespondente.set(respondenteId, totalSurpresas);
+      if (totalSurpresas === 2) {
+        momentos.push({
+          tipo: 'imprevisivel_em_serie_d010',
+          jogoId: 'de-0-a-10',
+          rodada: i + 1,
+          jogadoresIds: [respondenteId],
+          dados: {
+            totalSurpresas,
+            modoLeitura: rodada.modoLeitura,
+          },
+        });
+      }
     }
   });
 
@@ -138,6 +226,10 @@ export function processarResultadoDe0a10(
   sessao: SessaoDe0a10,
   encerradaVoluntariamente: boolean,
 ): void {
+  for (const momento of detectarMomentosDe0a10(sessao.historico)) {
+    registrarMomento(momento);
+  }
+
   const stats = buildResultadoDe0a10(sessao, encerradaVoluntariamente);
   registrarJogoFinalizado('de-0-a-10', { de0a10: stats });
   atualizarEstadoEmocional();

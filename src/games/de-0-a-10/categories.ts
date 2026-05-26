@@ -20,6 +20,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '🎬',
     nome: 'filme',
     tier: 'S',
+    exposicao: 'leve',
     perguntas: [
       'um filme que te fez chorar — 0: não saiu uma lágrima, 10: foi o maior choro da sua vida',
       'um filme que te prendeu do começo ao fim — 0: dormiu no meio, 10: não conseguiu parar de pensar depois',
@@ -34,6 +35,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '💼',
     nome: 'profissão',
     tier: 'S',
+    exposicao: 'pessoal',
     perguntas: [
       'uma profissão pelo quanto você seria bom nela — 0: seria um desastre completo, 10: nasceu pra isso',
       'uma profissão pelo quanto ela te daria prazer de exercer — 0: seria um martírio diário, 10: faria de graça e feliz',
@@ -47,6 +49,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '🦊',
     nome: 'animal',
     tier: 'S',
+    exposicao: 'leve',
     perguntas: [
       'um animal pelo quanto ele te representa — 0: nada a ver contigo, 10: é você em forma de bicho',
       'um animal pelo quanto você teria medo de encontrá-lo — 0: abraçaria sem pensar, 10: fugiria em pânico',
@@ -60,6 +63,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '👅',
     nome: 'sabor',
     tier: 'S',
+    exposicao: 'leve',
     perguntas: [
       'um sabor que define como você está se sentindo agora — 0: completamente insosso, 10: intensidade total',
       'um sabor pelo quanto ele te agrada — 0: dá vontade de cuspir, 10: poderia comer todo dia',
@@ -73,6 +77,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '🥤',
     nome: 'bebida',
     tier: 'S',
+    exposicao: 'leve',
     perguntas: [
       'uma bebida pelo quanto ela representa quem você é numa festa — 0: nada a ver com você, 10: te define completamente',
       'uma bebida pelo quanto você a aprecia — 0: não consegue engolir, 10: bebe com todo o prazer',
@@ -86,6 +91,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '🚩',
     nome: 'red flag',
     tier: 'S',
+    exposicao: 'intima',
     perguntas: [
       'uma red flag em parceiro(a) — 0: não te incomodaria nada, 10: seria motivo imediato de término',
       'uma red flag que você mesmo já teve — 0: nunca foi o seu caso, 10: era 100% você',
@@ -99,6 +105,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '💔',
     nome: 'ex',
     tier: 'S',
+    exposicao: 'intima',
     perguntas: [
       'um tipo de ex — 0: o que você mal lembra, 10: o que ainda ocupa espaço na sua cabeça',
       'um comportamento de ex — 0: nunca te fizeram isso, 10: viveu isso na carne',
@@ -114,6 +121,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '🍕',
     nome: 'comida',
     tier: 'A',
+    exposicao: 'leve',
     perguntas: [
       'uma comida pelo quanto ela te conforta — 0: come por pura obrigação, 10: pede toda semana',
       'uma comida pelo quanto ela te representa — 0: nada a ver com você, 10: é sua comida definitiva',
@@ -127,6 +135,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '📺',
     nome: 'série',
     tier: 'A',
+    exposicao: 'leve',
     perguntas: [
       'uma série pelo quanto ela te prendeu — 0: desistiu no primeiro episódio, 10: assistiu tudo numa semana',
       'uma série pelo quanto ela te afetou emocionalmente — 0: passou em branco, 10: ficou dias pensando',
@@ -140,6 +149,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '⚡',
     nome: 'superpoder',
     tier: 'A',
+    exposicao: 'pessoal',
     perguntas: [
       'um superpoder pelo quanto você precisaria dele na sua vida — 0: seria inútil pra você, 10: resolveria todos os seus problemas',
       'um superpoder pelo quanto você abusaria dele — 0: usaria com muita moderação, 10: usaria pra tudo sem pensar duas vezes',
@@ -153,6 +163,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '😶',
     nome: 'emoji',
     tier: 'A',
+    exposicao: 'pessoal',
     perguntas: [
       'um emoji que representa como você chegou hoje — 0: nada a ver, 10: é exatamente você agora',
       'um emoji que define sua semana — 0: não traduz em nada, 10: foi esse do começo ao fim',
@@ -166,6 +177,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '🌆',
     nome: 'cidade',
     tier: 'A',
+    exposicao: 'leve',
     perguntas: [
       'uma cidade pelo quanto você quer morar lá — 0: nem de visita, 10: largaria tudo amanhã',
       'uma cidade pelo quanto ela combina com sua personalidade — 0: seria completamente deslocado, 10: nasceu na cidade errada',
@@ -179,6 +191,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '🎤',
     nome: 'cantor',
     tier: 'A',
+    exposicao: 'leve',
     perguntas: [
       'um cantor ou banda pelo quanto você foi ou iria ao show — 0: nunca pagaria ingresso, 10: já foi ou iria amanhã',
       'um cantor que representa um momento da sua vida — 0: sem conexão nenhuma, 10: a trilha daquele período',
@@ -192,6 +205,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '🎨',
     nome: 'cor',
     tier: 'A',
+    exposicao: 'leve',
     perguntas: [
       'uma cor que representa seu estado emocional agora — 0: não tem nada a ver com o que você sente, 10: é exatamente a cor do que está sentindo',
       'uma cor pelo quanto ela aparece na sua vida — 0: praticamente inexistente no seu dia a dia, 10: está em tudo que você usa',
@@ -205,6 +219,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '💬',
     nome: 'frase',
     tier: 'A',
+    exposicao: 'intima',
     perguntas: [
       'uma frase que você repete pra si mesmo — 0: nunca passou pela sua cabeça, 10: é seu mantra diário',
       'uma frase que define como você enfrenta problemas — 0: nada a ver com você, 10: é exatamente sua filosofia',
@@ -218,6 +233,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '✈️',
     nome: 'destino',
     tier: 'A',
+    exposicao: 'leve',
     perguntas: [
       'um destino pelo quanto você quer ir — 0: não está nos planos nem no sonho, 10: é o primeiro da sua lista',
       'um destino pelo quanto ele combina com quem você é — 0: seria completamente deslocado, 10: vai sentir que chegou em casa',
@@ -231,6 +247,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '🏷️',
     nome: 'marca',
     tier: 'A',
+    exposicao: 'pessoal',
     perguntas: [
       'uma marca pelo quanto ela faz parte da sua identidade — 0: usaria com vergonha, 10: é praticamente quem você é',
       'uma marca pelo quanto você a confia — 0: não compraria de jeito nenhum, 10: fiel há anos sem arrependimento',
@@ -246,6 +263,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '📅',
     nome: 'dia da semana',
     tier: 'B',
+    exposicao: 'leve',
     perguntas: [
       'um dia da semana pelo quanto ele representa como você está se sentindo — 0: no fundo do poço (segunda), 10: no auge (sexta à noite)',
       'um dia da semana pelo quanto você gosta dele — 0: o dia que você mais odeia na semana, 10: seu favorito absoluto',
@@ -259,6 +277,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '⚽',
     nome: 'esporte',
     tier: 'B',
+    exposicao: 'leve',
     perguntas: [
       'um esporte pelo quanto você o praticaria com prazer — 0: jamais colocaria o pé, 10: jogaria todo dia',
       'um esporte pelo quanto ele te entretém assistindo — 0: troca de canal na hora, 10: assiste sem respirar',
@@ -272,6 +291,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '📱',
     nome: 'app',
     tier: 'B',
+    exposicao: 'pessoal',
     perguntas: [
       'um app pelo quanto ele domina a sua vida — 0: praticamente não usa, 10: é o primeiro que abre de manhã',
       'um app pelo quanto você sentiria falta se ele sumisse — 0: nem notaria, 10: seria uma crise pessoal',
@@ -285,6 +305,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '⭐',
     nome: 'famoso',
     tier: 'B',
+    exposicao: 'leve',
     perguntas: [
       'um famoso pelo quanto você o admira — 0: indiferente ou até antipatia, 10: genuína admiração',
       'um famoso pelo quanto você gostaria de ter a vida dele — 0: nem trocaria de jeito nenhum, 10: assinaria na hora',
@@ -298,6 +319,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '⛅',
     nome: 'clima',
     tier: 'B',
+    exposicao: 'leve',
     perguntas: [
       'um tipo de clima pelo quanto ele afeta seu humor — 0: totalmente indiferente, 10: muda completamente como você se sente',
       'um tipo de clima que representa como você está por dentro agora — 0: nada a ver com o que sente, 10: é exatamente o que você sente',
@@ -313,6 +335,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '🌙',
     nome: 'fantasia',
     tier: 'A',
+    exposicao: 'intima',
     mais18: true,
     perguntas: [
       'uma fantasia pelo quanto você nunca admitiria publicamente — 0: pode contar em voz alta agora, 10: leva pro túmulo',
@@ -327,6 +350,7 @@ export const CATEGORIAS: ReadonlyArray<Categoria> = [
     emoji: '😈',
     nome: 'pecado favorito',
     tier: 'A',
+    exposicao: 'intima',
     mais18: true,
     perguntas: [
       'um pecado pelo quanto você o pratica sem culpa — 0: sente muita culpa sempre, 10: sem nenhum remorso',
@@ -355,8 +379,29 @@ export function getCategoriasPorTier(
   );
 }
 
-/** Sorteia uma pergunta aleatória do pool de perguntas de uma categoria. */
-export function sortearPergunta(categoria: Categoria): string {
-  const { perguntas } = categoria;
-  return perguntas[Math.floor(Math.random() * perguntas.length)]!;
+/**
+ * Sorteia uma formulação ainda não vista naquela categoria.
+ * Ao esgotar o mini-deck, reinicia sem repetir a última pergunta imediatamente.
+ */
+export function sortearPergunta(
+  categoria: Categoria,
+  perguntasUsadas: readonly string[] = [],
+  aleatorio: () => number = Math.random,
+): string {
+  const usadas = new Set(perguntasUsadas);
+  const ineditas = categoria.perguntas.filter(
+    (pergunta) => !usadas.has(pergunta),
+  );
+  const ultimaPergunta = perguntasUsadas[perguntasUsadas.length - 1];
+  const reinicioSemRepeticao = categoria.perguntas.filter(
+    (pergunta) => pergunta !== ultimaPergunta,
+  );
+  const pool =
+    ineditas.length > 0
+      ? ineditas
+      : reinicioSemRepeticao.length > 0
+        ? reinicioSemRepeticao
+        : categoria.perguntas;
+
+  return pool[Math.floor(aleatorio() * pool.length)]!;
 }

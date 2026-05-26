@@ -436,6 +436,64 @@ const TEMPLATES: CallbackTemplate[] = [
       'depois do que viram agora, difícil fingir que não se conhecem.',
   },
 
+  // ── De 0 a 10: pós-jogo ───────────────────────────────────────────────────
+
+  {
+    id: 'd010_pos_imprevisivel',
+    momento: 'pos_jogo',
+    prioridade: 92,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'imprevisivel_em_serie_d010'),
+    gerar: (s, nomes) => {
+      const momento = [...s.momentosMemoraveis]
+        .reverse()
+        .find((m) => m.tipo === 'imprevisivel_em_serie_d010');
+      const nome = momento?.jogadoresIds[0]
+        ? nomes.get(momento.jogadoresIds[0] as PlayerId)
+        : null;
+      return nome
+        ? `${nome} confundiu todo mundo mais de uma vez. impossível calibrar.`
+        : 'alguém aqui continua impossível de calibrar.';
+    },
+  },
+
+  {
+    id: 'd010_pos_leitura_perfeita',
+    momento: 'pos_jogo',
+    prioridade: 88,
+    condicao: (s) =>
+      s.momentosMemoraveis.filter((m) => m.tipo === 'leitura_perfeita_d010')
+        .length >= 2,
+    gerar: (s) => {
+      const total = s.momentosMemoraveis.filter(
+        (m) => m.tipo === 'leitura_perfeita_d010',
+      ).length;
+      return `${total} leituras perfeitas. vocês se calibram bem demais.`;
+    },
+  },
+
+  {
+    id: 'd010_pos_grupo_partido',
+    momento: 'pos_jogo',
+    prioridade: 84,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'grupo_partido_d010'),
+    gerar: () => 'a mesma resposta criou versões opostas da pessoa. excelente.',
+  },
+
+  // ── De 0 a 10: entre jogos ─────────────────────────────────────────────────
+
+  {
+    id: 'd010_entre_calibrados',
+    momento: 'entre_jogos',
+    prioridade: 74,
+    condicao: (s) =>
+      s.jogosDaSessao.some((j) => j.jogoId === 'de-0-a-10') &&
+      s.momentosMemoraveis.some((m) => m.tipo === 'leitura_perfeita_d010'),
+    gerar: () =>
+      'agora vocês acham que sabem ler o grupo. testem isso em outro jogo.',
+  },
+
   // ── Faz Aí: pós-jogo ──────────────────────────────────────────────────────
 
   {

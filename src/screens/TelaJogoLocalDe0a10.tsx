@@ -1,7 +1,9 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
+  Animated,
+  Easing,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -17,6 +19,7 @@ import { BotaoEncerrarJogo } from '@/components';
 import {
   adivinhandorAtual,
   avancarRodada,
+  avaliarRepeticoesResposta,
   calcularResultadoRodada,
   criarSessao,
   getCategoria,
@@ -25,8 +28,11 @@ import {
   jogoEncerrado,
   registrarPalpite,
   registrarRespostas,
+  respostasTemRepeticao,
   respondenteDaRodada,
+  usarVotacaoRapida,
   type CategoriaId,
+  type LeituraColetivaDe0a10,
   type NotaDe0a10,
   type RespostaCategoria,
   type ResultadoRodada,
@@ -42,8 +48,8 @@ type Props = NativeStackScreenProps<RootStackParamList, 'JogoLocalDe0a10'>;
 const COR_D010 = '#10B981';
 const COR_D010_FUNDO = 'rgba(16, 185, 129, 0.10)';
 const COR_D010_BORDA = 'rgba(16, 185, 129, 0.35)';
-const COR_PROX = '#F59E0B';   // palpite ±2 — aviso
-const COR_LONGE = '#EF4444';  // palpite ±3+ — longe
+const COR_PROX = '#F59E0B'; // palpite ±2 — aviso
+const COR_LONGE = '#EF4444'; // palpite ±3+ — longe
 const COR_TELA_PRIVADA = '#111111';
 
 // ─── Sub-tela: Vez de ─────────────────────────────────────────────────────────
@@ -67,11 +73,7 @@ function TelaVezDe({
 
       <View style={estilos.corpoVezDe}>
         <Text style={estilos.vezDeLabel}>vez de</Text>
-        <Text
-          style={estilos.vezDeNome}
-          numberOfLines={2}
-          adjustsFontSizeToFit
-        >
+        <Text style={estilos.vezDeNome} numberOfLines={2} adjustsFontSizeToFit>
           {respondente.nome}
         </Text>
         <Text style={estilos.vezDeContador}>
@@ -82,7 +84,7 @@ function TelaVezDe({
 
         <Text style={estilos.vezDeInstrucao}>
           passe o celular para {respondente.nome}.{'\n'}
-          quando estiver pronto, toque em "começar".
+          quando estiver pronto, toque em começar.
         </Text>
       </View>
 
@@ -110,9 +112,11 @@ function TelaVezDe({
 function TelaNotaSecreta({
   sessao,
   onMostrar,
+  onEncerrar,
 }: {
   sessao: SessaoDe0a10;
   onMostrar: (respostas: RespostaCategoria[]) => void;
+  onEncerrar: () => void;
 }) {
   const rodada = sessao.rodadaAtual!;
   const [textos, setTextos] = useState<Record<string, string>>(
@@ -120,10 +124,22 @@ function TelaNotaSecreta({
   );
   const [puladas, setPuladas] = useState<Set<CategoriaId>>(new Set());
 
+  const respostasRascunho: RespostaCategoria[] = rodada.categorias.map(
+    (id) => ({
+      categoriaId: id,
+      resposta: puladas.has(id) ? null : textos[id]!.trim() || null,
+    }),
+  );
+  const repeticoes = avaliarRepeticoesResposta(
+    respostasRascunho,
+    rodada.respondente.id,
+    sessao.historico,
+  );
   const respostasValidas = rodada.categorias.filter(
     (id) => !puladas.has(id) && textos[id]!.trim().length > 0,
   );
-  const podeConfirmar = respostasValidas.length >= 2;
+  const podeConfirmar =
+    respostasValidas.length >= 2 && !respostasTemRepeticao(repeticoes);
 
   function alternarPulo(id: CategoriaId) {
     void Haptics.selectionAsync();
@@ -141,16 +157,12 @@ function TelaNotaSecreta({
 
   function confirmar() {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const respostas: RespostaCategoria[] = rodada.categorias.map((id) => ({
-      categoriaId: id,
-      resposta: puladas.has(id) ? null : textos[id]!.trim() || null,
-    }));
-    onMostrar(respostas);
+    onMostrar(respostasRascunho);
   }
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={estilos.preencher}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={0}
     >
@@ -158,6 +170,8 @@ function TelaNotaSecreta({
         style={[estilos.tela, { backgroundColor: COR_TELA_PRIVADA }]}
         edges={['top', 'bottom']}
       >
+        <BotaoEncerrarJogo onConfirmar={onEncerrar} />
+
         {/* Nota em destaque */}
         <View style={estilos.notaContainer}>
           <Text style={estilos.notaLabel}>sua nota é</Text>
@@ -178,17 +192,21 @@ function TelaNotaSecreta({
           {rodada.categorias.map((id) => {
             const cat = getCategoria(id);
             const pulada = puladas.has(id);
+            const repetidaNaSessao = repeticoes.naSessao.has(id);
+            const repetidaNaRodada = repeticoes.naRodada.has(id);
             return (
               <View
                 key={id}
-                style={[
-                  estilos.campoCard,
-                  pulada && estilos.campoCardPulado,
-                ]}
+                style={[estilos.campoCard, pulada && estilos.campoCardPulado]}
               >
                 <View style={estilos.campoHeader}>
                   <Text style={estilos.campoEmoji}>{cat.emoji}</Text>
-                  <Text style={[estilos.campoNome, pulada && estilos.campoNomePulado]}>
+                  <Text
+                    style={[
+                      estilos.campoNome,
+                      pulada && estilos.campoNomePulado,
+                    ]}
+                  >
                     {cat.nome}
                   </Text>
                   <Pressable
@@ -199,14 +217,20 @@ function TelaNotaSecreta({
                       pressed && estilos.pressionado,
                     ]}
                     accessibilityRole="button"
-                    accessibilityLabel={pulada ? `Desfazer pulo de ${cat.nome}` : `Pular ${cat.nome}`}
+                    accessibilityLabel={
+                      pulada
+                        ? `Desfazer pulo de ${cat.nome}`
+                        : `Pular ${cat.nome}`
+                    }
                     disabled={!pulada && puladas.size >= 1}
                   >
                     <Text
                       style={[
                         estilos.chipPularTexto,
                         pulada && estilos.chipPularTextoAtivo,
-                        !pulada && puladas.size >= 1 && estilos.chipPularDesabilitado,
+                        !pulada &&
+                          puladas.size >= 1 &&
+                          estilos.chipPularDesabilitado,
                       ]}
                     >
                       {pulada ? 'desfa.' : 'pular'}
@@ -220,7 +244,11 @@ function TelaNotaSecreta({
                 )}
                 {!pulada && (
                   <TextInput
-                    style={estilos.campoInput}
+                    style={[
+                      estilos.campoInput,
+                      (repetidaNaSessao || repetidaNaRodada) &&
+                        estilos.campoInputRepetido,
+                    ]}
                     placeholder="sua resposta"
                     placeholderTextColor="rgba(255,255,255,0.20)"
                     value={textos[id]}
@@ -233,9 +261,17 @@ function TelaNotaSecreta({
                     autoCapitalize="none"
                   />
                 )}
-                {pulada && (
-                  <Text style={estilos.campoPuladoTexto}>—</Text>
+                {!pulada && repetidaNaRodada && (
+                  <Text style={estilos.campoAviso}>
+                    use respostas diferentes nesta rodada
+                  </Text>
                 )}
+                {!pulada && !repetidaNaRodada && repetidaNaSessao && (
+                  <Text style={estilos.campoAviso}>
+                    você já usou essa resposta. tenta outra.
+                  </Text>
+                )}
+                {pulada && <Text style={estilos.campoPuladoTexto}>—</Text>}
               </View>
             );
           })}
@@ -292,14 +328,28 @@ function TelaDebate({
       </View>
 
       <ScrollView
-        style={{ flex: 1 }}
+        style={estilos.preencher}
         contentContainerStyle={estilos.scrollDebateConteudo}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={estilos.debateTitulo}>o que {rodada.respondente.nome} disse</Text>
+        <Text style={estilos.debateTitulo}>
+          o que {rodada.respondente.nome} disse
+        </Text>
         <Text style={estilos.debateSubtitulo}>
           discutam o padrão. qual é a nota?
         </Text>
+
+        {rodada.modoLeitura === 'rotativa' && (
+          <View style={estilos.avisoLeituraRotativa}>
+            <Text style={estilos.avisoLeituraRotativaTitulo}>
+              leitura relâmpago
+            </Text>
+            <Text style={estilos.avisoLeituraRotativaTexto}>
+              quatro pessoas vão palpitar agora. os leitores mudam na próxima
+              rodada.
+            </Text>
+          </View>
+        )}
 
         <View style={estilos.listaRespostas}>
           {rodada.categorias.map((id) => {
@@ -363,15 +413,33 @@ const NOTAS_EXTRAS: NotaDe0a10[] = [0, 10];
 function TelaPalpites({
   sessao,
   onVotar,
+  onEncerrar,
 }: {
   sessao: SessaoDe0a10;
-  onVotar: (nota: NotaDe0a10) => void;
+  onVotar: (jogadorId: string, nota: NotaDe0a10) => void;
+  onEncerrar: () => void;
 }) {
   const rodada = sessao.rodadaAtual!;
   const votante = adivinhandorAtual(sessao);
-  const [selecionado, setSelecionado] = useState<NotaDe0a10 | null>(null);
+  const [selecao, setSelecao] = useState<{
+    jogadorId: string;
+    nota: NotaDe0a10;
+  } | null>(null);
   const totalAdivinhadores = rodada.adivinhadores.length;
   const votosFeitos = rodada.palpites.length;
+  const votoRapido = usarVotacaoRapida(totalAdivinhadores, rodada.modoLeitura);
+  const selecionado =
+    selecao && selecao.jogadorId === votante?.id ? selecao.nota : null;
+
+  function escolherNota(nota: NotaDe0a10) {
+    if (votoRapido) {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      if (votante) onVotar(votante.id, nota);
+      return;
+    }
+    void Haptics.selectionAsync();
+    if (votante) setSelecao({ jogadorId: votante.id, nota });
+  }
 
   if (!votante) return null;
 
@@ -380,13 +448,18 @@ function TelaPalpites({
       style={[estilos.tela, { backgroundColor: COR_TELA_PRIVADA }]}
       edges={['top', 'bottom']}
     >
+      <BotaoEncerrarJogo onConfirmar={onEncerrar} />
+
       <View style={estilos.headerVotacao}>
         <Text style={estilos.votacaoIndicador}>
+          {rodada.modoLeitura === 'rotativa' ? 'leitor ' : ''}
           {votosFeitos + 1} de {totalAdivinhadores}
         </Text>
         <Text style={estilos.votacaoLabel}>seu palpite, {votante.nome}</Text>
         <Text style={estilos.votacaoSubtitulo}>
-          ninguém vai ver seu voto agora
+          {votoRapido
+            ? 'toque na nota e passe o celular'
+            : 'ninguém vai ver seu voto agora'}
         </Text>
       </View>
 
@@ -409,14 +482,11 @@ function TelaPalpites({
       {/* Grade de números */}
       <View style={estilos.gradeNumeros}>
         {NOTAS_GRID.map((n) => {
-          const sel = selecionado === n;
+          const sel = !votoRapido && selecionado === n;
           return (
             <Pressable
               key={n}
-              onPress={() => {
-                void Haptics.selectionAsync();
-                setSelecionado(n);
-              }}
+              onPress={() => escolherNota(n)}
               style={({ pressed }) => [
                 estilos.botoaoNota,
                 sel && estilos.botoaoNotaSelecionado,
@@ -424,7 +494,9 @@ function TelaPalpites({
               ]}
               accessibilityRole="radio"
               accessibilityState={{ selected: sel }}
-              accessibilityLabel={`Nota ${n}`}
+              accessibilityLabel={
+                votoRapido ? `Votar nota ${n}` : `Selecionar nota ${n}`
+              }
             >
               <Text
                 style={[
@@ -439,65 +511,67 @@ function TelaPalpites({
         })}
       </View>
 
-      {/* Extras: 0 e 10 */}
-      <View style={estilos.gradeExtras}>
-        {NOTAS_EXTRAS.map((n) => {
-          const sel = selecionado === n;
-          return (
-            <Pressable
-              key={n}
-              onPress={() => {
-                void Haptics.selectionAsync();
-                setSelecionado(n);
-              }}
-              style={({ pressed }) => [
-                estilos.botoaoNotaExtra,
-                sel && estilos.botoaoNotaSelecionado,
-                pressed && estilos.pressionado,
-              ]}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: sel }}
-              accessibilityLabel={`Nota ${n}`}
-            >
-              <Text
-                style={[
-                  estilos.botoaoNotaExtraTexto,
-                  sel && estilos.botoaoNotaTextoSelecionado,
+      {rodada.permiteNotasExtremas ? (
+        <View style={estilos.gradeExtras}>
+          {NOTAS_EXTRAS.map((n) => {
+            const sel = !votoRapido && selecionado === n;
+            return (
+              <Pressable
+                key={n}
+                onPress={() => escolherNota(n)}
+                style={({ pressed }) => [
+                  estilos.botoaoNotaExtra,
+                  sel && estilos.botoaoNotaSelecionado,
+                  pressed && estilos.pressionado,
                 ]}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: sel }}
+                accessibilityLabel={
+                  votoRapido ? `Votar nota ${n}` : `Selecionar nota ${n}`
+                }
               >
-                {n}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
+                <Text
+                  style={[
+                    estilos.botoaoNotaExtraTexto,
+                    sel && estilos.botoaoNotaTextoSelecionado,
+                  ]}
+                >
+                  {n}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : null}
 
-      <View style={estilos.rodapePrivado}>
-        <Pressable
-          onPress={() => {
-            if (selecionado === null) return;
-            void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            onVotar(selecionado);
-          }}
-          disabled={selecionado === null}
-          style={({ pressed }) => [
-            estilos.botaoPrimario,
-            selecionado === null && estilos.botaoPrimarioDesabilitado,
-            pressed && selecionado !== null && estilos.pressionado,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel="Confirmar palpite"
-        >
-          <Text
-            style={[
-              estilos.botaoPrimarioTexto,
-              selecionado === null && estilos.botaoPrimarioTextoDesabilitado,
+      {!votoRapido && (
+        <View style={estilos.rodapePrivado}>
+          <Pressable
+            onPress={() => {
+              if (selecionado === null) return;
+              void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              onVotar(votante.id, selecionado);
+            }}
+            disabled={selecionado === null}
+            style={({ pressed }) => [
+              estilos.botaoPrimario,
+              selecionado === null && estilos.botaoPrimarioDesabilitado,
+              pressed && selecionado !== null && estilos.pressionado,
             ]}
+            accessibilityRole="button"
+            accessibilityLabel="Confirmar palpite"
           >
-            confirmar →
-          </Text>
-        </Pressable>
-      </View>
+            <Text
+              style={[
+                estilos.botaoPrimarioTexto,
+                selecionado === null && estilos.botaoPrimarioTextoDesabilitado,
+              ]}
+            >
+              confirmar →
+            </Text>
+          </Pressable>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -507,6 +581,47 @@ function corPalpite(erro: number): string {
   if (erro <= 1) return COR_D010;
   if (erro <= 2) return COR_PROX;
   return COR_LONGE;
+}
+
+interface CopyLeitura {
+  titulo: string;
+  resumo: string;
+  cor: string;
+}
+
+function copyDaLeitura(leitura: LeituraColetivaDe0a10): CopyLeitura {
+  switch (leitura) {
+    case 'cravaram':
+      return {
+        titulo: 'vocês cravaram.',
+        resumo: 'todo mundo enxergou exatamente a mesma nota.',
+        cor: COR_D010,
+      };
+    case 'te_leram':
+      return {
+        titulo: 'vocês conhecem essa pessoa.',
+        resumo: 'todo mundo chegou a um ponto da nota real.',
+        cor: COR_D010,
+      };
+    case 'quase':
+      return {
+        titulo: 'metade do grupo sacou.',
+        resumo: 'alguns entenderam a lógica antes dos outros.',
+        cor: COR_PROX,
+      };
+    case 'divididos':
+      return {
+        titulo: 'vocês viram pessoas diferentes.',
+        resumo: 'os palpites abriram lados opostos do grupo.',
+        cor: COR_LONGE,
+      };
+    case 'nao_te_leram':
+      return {
+        titulo: 'ninguém te entendeu.',
+        resumo: 'a lógica passou longe do grupo.',
+        cor: COR_LONGE,
+      };
+  }
 }
 
 function TelaReveal({
@@ -522,6 +637,55 @@ function TelaReveal({
   onEncerrar: () => void;
   ultimaRodada: boolean;
 }) {
+  const copy = copyDaLeitura(resultado.leituraColetiva);
+  const entrada = useRef(new Animated.Value(0)).current;
+  const detalhes = useRef(new Animated.Value(0)).current;
+  const momento = useRef(new Animated.Value(0)).current;
+  const placar = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (
+      resultado.leituraColetiva === 'cravaram' ||
+      resultado.leituraColetiva === 'te_leram'
+    ) {
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } else if (
+      resultado.leituraColetiva === 'divididos' ||
+      resultado.leituraColetiva === 'nao_te_leram'
+    ) {
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    } else {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    Animated.sequence([
+      Animated.timing(entrada, {
+        toValue: 1,
+        duration: 240,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(detalhes, {
+        toValue: 1,
+        duration: 200,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(momento, {
+        toValue: 1,
+        duration: 180,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(placar, {
+        toValue: 1,
+        duration: 160,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [detalhes, entrada, momento, placar, resultado.leituraColetiva]);
+
   const palpitesOrdenados = [...resultado.palpites].sort((a, b) => {
     const erroA = Math.abs(a.nota - resultado.notaReal);
     const erroB = Math.abs(b.nota - resultado.notaReal);
@@ -537,31 +701,33 @@ function TelaReveal({
       </View>
 
       <ScrollView
-        style={{ flex: 1 }}
+        style={estilos.preencher}
         contentContainerStyle={estilos.scrollRevealConteudo}
         showsVerticalScrollIndicator={false}
       >
-        {/* Nota real */}
-        <View style={estilos.revealNotaContainer}>
+        <Animated.View
+          style={[estilos.revealNotaContainer, { opacity: entrada }]}
+        >
           <Text style={estilos.revealLabel}>
             a nota de {resultado.respondente.nome}
           </Text>
           <Text style={estilos.revealNota}>{resultado.notaReal}</Text>
-          {resultado.divergencia >= 3 ? (
-            <Text style={estilos.revealDivergencia}>
-              🌊 grupo divergiu {resultado.divergencia} pontos
-            </Text>
-          ) : resultado.divergencia === 0 ? (
-            <Text style={estilos.revealDivergencia}>✨ grupo unânime</Text>
-          ) : (
-            <Text style={estilos.revealDivergencia}>
-              spread de {resultado.divergencia} ponto{resultado.divergencia !== 1 ? 's' : ''}
+          <Text style={estilos.revealDivergencia}>
+            {resultado.acertosExatos > 0
+              ? `${resultado.acertosExatos} cravou a nota`
+              : `${resultado.acertosProximos} chegou a ±1`}
+            {'  '}·{'  '}
+            diferença máxima {resultado.divergencia}
+          </Text>
+          {resultado.modoLeitura === 'rotativa' && (
+            <Text style={estilos.revealAmostra}>
+              leitura relâmpago com {resultado.palpites.length} pessoas
             </Text>
           )}
-        </View>
+        </Animated.View>
 
         {/* Palpites */}
-        <View style={estilos.listaPalpites}>
+        <Animated.View style={[estilos.listaPalpites, { opacity: detalhes }]}>
           {palpitesOrdenados.map((p) => {
             const jogador = sessao.jogadores.find((j) => j.id === p.jogadorId);
             const erro = Math.abs(p.nota - resultado.notaReal);
@@ -575,7 +741,12 @@ function TelaReveal({
                 <Text style={[estilos.palpiteNota, { color: cor }]}>
                   {p.nota}
                 </Text>
-                <View style={[estilos.palpiteIndicador, { backgroundColor: cor + '20', borderColor: cor + '40' }]}>
+                <View
+                  style={[
+                    estilos.palpiteIndicador,
+                    { backgroundColor: cor + '20', borderColor: cor + '40' },
+                  ]}
+                >
                   <Text style={[estilos.palpiteErro, { color: cor }]}>
                     {erro === 0 ? '✓ exato' : erro === 1 ? '±1' : `±${erro}`}
                   </Text>
@@ -594,28 +765,65 @@ function TelaReveal({
               </View>
             );
           })}
-        </View>
+        </Animated.View>
+
+        <Animated.View
+          style={[
+            estilos.revealMomento,
+            {
+              opacity: momento,
+              transform: [
+                {
+                  translateY: momento.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [10, 0],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <Text style={[estilos.revealMomentoTitulo, { color: copy.cor }]}>
+            {copy.titulo}
+          </Text>
+          <Text style={estilos.revealMomentoResumo}>{copy.resumo}</Text>
+        </Animated.View>
+
+        <Animated.View style={[estilos.conversaReveal, { opacity: momento }]}>
+          <Text style={estilos.conversaRevealLabel}>
+            {resultado.pulsoSocial.chamada}
+          </Text>
+          <Text style={estilos.conversaRevealTexto}>
+            {resultado.pulsoSocial.texto}
+          </Text>
+        </Animated.View>
 
         {/* Pontuação do respondente (modo competitivo) */}
         {sessao.modoCompetitivo && (
-          <View style={[
-            estilos.pontoRespondente,
-            resultado.pontosRespondente === 0 && estilos.pontoRespondenteZero,
-          ]}>
-            <Text style={[
-              estilos.pontoRespondenteTexto,
-              resultado.pontosRespondente === 0 && estilos.pontoRespondenteTextoZero,
-            ]}>
+          <Animated.View
+            style={[
+              estilos.pontoRespondente,
+              resultado.pontosRespondente === 0 && estilos.pontoRespondenteZero,
+              { opacity: placar },
+            ]}
+          >
+            <Text
+              style={[
+                estilos.pontoRespondenteTexto,
+                resultado.pontosRespondente === 0 &&
+                  estilos.pontoRespondenteTextoZero,
+              ]}
+            >
               {resultado.pontosRespondente > 0
                 ? `🎯 ${resultado.respondente.nome} ficou legível para ${resultado.pontosRespondente} de ${resultado.palpites.length} — +${resultado.pontosRespondente} pt`
                 : `😶 ninguém acertou a nota de ${resultado.respondente.nome}`}
             </Text>
-          </View>
+          </Animated.View>
         )}
 
         {/* Placar corrente (modo competitivo) */}
         {sessao.modoCompetitivo && (
-          <View style={estilos.placarContainer}>
+          <Animated.View style={[estilos.placarContainer, { opacity: placar }]}>
             <Text style={estilos.placarTitulo}>placar</Text>
             {[...sessao.placar]
               .sort((a, b) => b.total - a.total)
@@ -628,7 +836,7 @@ function TelaReveal({
                   <Text style={estilos.placarPontos}>{entrada.total} pt</Text>
                 </View>
               ))}
-          </View>
+          </Animated.View>
         )}
 
         <View style={{ height: espacamento.xl }} />
@@ -674,7 +882,8 @@ function TelaFim({
         <Text style={estilos.fimEmoji}>🎯</Text>
         <Text style={estilos.fimTitulo}>jogo encerrado</Text>
         <Text style={estilos.fimSubtitulo}>
-          {sessao.rodadasCompletas} rodada{sessao.rodadasCompletas !== 1 ? 's' : ''} no total
+          {sessao.rodadasCompletas} rodada
+          {sessao.rodadasCompletas !== 1 ? 's' : ''} no total
         </Text>
 
         {sessao.modoCompetitivo && (
@@ -683,23 +892,29 @@ function TelaFim({
             {[...sessao.placar]
               .sort((a, b) => b.total - a.total)
               .map((entrada, i) => (
-                <View key={entrada.jogadorId} style={[
-                  estilos.placarLinha,
-                  i === 0 && estilos.placarLinhaVencedor,
-                ]}>
+                <View
+                  key={entrada.jogadorId}
+                  style={[
+                    estilos.placarLinha,
+                    i === 0 && estilos.placarLinhaVencedor,
+                  ]}
+                >
                   <Text style={estilos.placarPosicao}>{i + 1}.</Text>
                   <Text style={estilos.placarNome} numberOfLines={1}>
                     {entrada.nome}
                   </Text>
-                  <Text style={[estilos.placarPontos, i === 0 && { color: COR_D010 }]}>
+                  <Text
+                    style={[
+                      estilos.placarPontos,
+                      i === 0 && { color: COR_D010 },
+                    ]}
+                  >
                     {entrada.total} pt
                   </Text>
                 </View>
               ))}
             {vencedor && (
-              <Text style={estilos.fimVencedor}>
-                🏆 {vencedor.nome} ganhou
-              </Text>
+              <Text style={estilos.fimVencedor}>🏆 {vencedor.nome} ganhou</Text>
             )}
           </View>
         )}
@@ -754,9 +969,9 @@ export function TelaJogoLocalDe0a10({ route, navigation }: Props) {
     setSessao((s) => iniciarPalpites(s));
   }
 
-  function handlePalpite(nota: NotaDe0a10) {
+  function handlePalpite(jogadorId: string, nota: NotaDe0a10) {
     setSessao((s) => {
-      const nova = registrarPalpite(s, adivinhandorAtual(s)!.id, nota);
+      const nova = registrarPalpite(s, jogadorId, nota);
       // Se todos votaram (subFase virou 'reveal'), calcula resultado
       if (nova.subFase === 'reveal') {
         const resultado = calcularResultadoRodada(nova);
@@ -807,6 +1022,7 @@ export function TelaJogoLocalDe0a10({ route, navigation }: Props) {
       <TelaNotaSecreta
         sessao={sessao}
         onMostrar={handleRegistrarRespostas}
+        onEncerrar={handleEncerrar}
       />
     );
   }
@@ -822,12 +1038,17 @@ export function TelaJogoLocalDe0a10({ route, navigation }: Props) {
   }
 
   if (sessao.subFase === 'palpites') {
-    return <TelaPalpites sessao={sessao} onVotar={handlePalpite} />;
+    return (
+      <TelaPalpites
+        sessao={sessao}
+        onVotar={handlePalpite}
+        onEncerrar={handleEncerrar}
+      />
+    );
   }
 
   if (sessao.subFase === 'reveal' && resultadoAtual) {
-    const ultimaRodada =
-      sessao.rodadasCompletas + 1 >= sessao.totalRodadas;
+    const ultimaRodada = sessao.rodadasCompletas + 1 >= sessao.totalRodadas;
     return (
       <TelaReveal
         sessao={sessao}
@@ -844,6 +1065,9 @@ export function TelaJogoLocalDe0a10({ route, navigation }: Props) {
 
 // ─── Estilos ──────────────────────────────────────────────────────────────────
 const estilos = StyleSheet.create({
+  preencher: {
+    flex: 1,
+  },
   tela: {
     backgroundColor: cores.fundo,
     flex: 1,
@@ -1001,6 +1225,16 @@ const estilos = StyleSheet.create({
     borderBottomColor: 'rgba(255,255,255,0.15)',
     borderBottomWidth: 1,
   },
+  campoInputRepetido: {
+    borderBottomColor: COR_PROX,
+  },
+  campoAviso: {
+    color: COR_PROX,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoMicro,
+    lineHeight: 16,
+    marginTop: espacamento.xs,
+  },
   campoPuladoTexto: {
     color: 'rgba(255,255,255,0.25)',
     fontFamily: familias.sans,
@@ -1038,6 +1272,27 @@ const estilos = StyleSheet.create({
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoCorpo,
     marginBottom: espacamento.lg,
+  },
+  avisoLeituraRotativa: {
+    backgroundColor: COR_D010_FUNDO,
+    borderColor: COR_D010_BORDA,
+    borderRadius: raio.md,
+    borderWidth: 1,
+    marginBottom: espacamento.lg,
+    padding: espacamento.md,
+  },
+  avisoLeituraRotativaTitulo: {
+    color: COR_D010,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    fontWeight: tipografia.pesoBold,
+  },
+  avisoLeituraRotativaTexto: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoLegenda,
+    lineHeight: 18,
+    marginTop: espacamento.xs,
   },
   listaRespostas: { gap: espacamento.sm },
   respostaLinha: {
@@ -1172,9 +1427,50 @@ const estilos = StyleSheet.create({
     paddingHorizontal: espacamento.md,
     paddingTop: espacamento.md,
   },
+  revealMomento: {
+    alignItems: 'center',
+    marginTop: espacamento.xl,
+    paddingHorizontal: espacamento.sm,
+  },
+  revealMomentoTitulo: {
+    fontFamily: familias.sans,
+    fontSize: 26,
+    fontWeight: tipografia.pesoExtraBold,
+    lineHeight: 31,
+    textAlign: 'center',
+  },
+  revealMomentoResumo: {
+    color: cores.textoSecundario,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpo,
+    lineHeight: 22,
+    marginTop: espacamento.xs,
+    textAlign: 'center',
+  },
   revealNotaContainer: {
     alignItems: 'center',
     marginBottom: espacamento.xl,
+  },
+  conversaReveal: {
+    borderColor: cores.borda,
+    borderTopWidth: 1,
+    marginTop: espacamento.lg,
+    paddingTop: espacamento.md,
+  },
+  conversaRevealLabel: {
+    color: cores.textoMudo,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoBold,
+    textTransform: 'uppercase',
+  },
+  conversaRevealTexto: {
+    color: cores.texto,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoCorpo,
+    fontWeight: tipografia.pesoBold,
+    lineHeight: 22,
+    marginTop: espacamento.xs,
   },
   revealLabel: {
     color: cores.textoMudo,
@@ -1194,6 +1490,13 @@ const estilos = StyleSheet.create({
     fontFamily: familias.sans,
     fontSize: tipografia.tamanhoLegenda,
     marginTop: espacamento.sm,
+  },
+  revealAmostra: {
+    color: COR_D010,
+    fontFamily: familias.sans,
+    fontSize: tipografia.tamanhoMicro,
+    fontWeight: tipografia.pesoBold,
+    marginTop: espacamento.xs,
   },
   listaPalpites: { gap: espacamento.xs },
   palpiteLinha: {

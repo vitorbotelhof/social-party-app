@@ -5,11 +5,20 @@
 //   vez_de → nota_secreta → debate → palpites → reveal → (próximo) → vez_de
 
 import {
+  calcularFaseExposicao,
   marcarCategoriasUsadas,
+  marcarPerguntasUsadas,
   selecionarCategorias,
   selecionarPerguntasPorCategoria,
 } from './categorySelection';
-import { selecionarNota } from './noteSelection';
+import { podeSortearNotasExtremas, selecionarNota } from './noteSelection';
+import { definirModoLeitura, selecionarLeitoresDaRodada } from './pacing';
+import {
+  avaliarRepeticoesResposta,
+  respostasTemRepeticao,
+} from './responseQuality';
+import { analisarLeituraColetiva } from './revealClassification';
+import { selecionarPulsoSocial } from './socialPulse';
 import type {
   ConfiguracaoDe0a10,
   NotaDe0a10,
@@ -46,7 +55,18 @@ export function criarSessao(config: ConfiguracaoDe0a10): SessaoDe0a10 {
     rodadasCompletas: 0,
     totalRodadas: config.jogadores.length * config.voltas,
     iniciouEm: Date.now(),
+    perguntasUsadasPorCategoria: {},
   };
+}
+
+function montarOrdemCircularAposRespondente(
+  jogadores: SessaoDe0a10['jogadores'],
+  indiceRespondente: number,
+): SessaoDe0a10['jogadores'] {
+  return [
+    ...jogadores.slice(indiceRespondente + 1),
+    ...jogadores.slice(0, indiceRespondente),
+  ];
 }
 
 // ─── Início de rodada ─────────────────────────────────────────────────────────
@@ -54,24 +74,44 @@ export function criarSessao(config: ConfiguracaoDe0a10): SessaoDe0a10 {
 
 export function iniciarRodada(sessao: SessaoDe0a10): SessaoDe0a10 {
   const respondente = sessao.jogadores[sessao.indiceRespondenteAtual]!;
+  const turnosRespondidos = (sessao.notasUsadasPorJogador[respondente.id] ?? [])
+    .length;
+  const faseExposicao = calcularFaseExposicao(turnosRespondidos);
 
   const nota = selecionarNota(
     sessao.notasUsadasPorJogador[respondente.id] ?? [],
-    sessao.rodadasCompletas,
+    sessao.historico.map((rodada) => rodada.notaReal),
   );
 
   const categorias = selecionarCategorias(
     sessao.categoriasUsadasNaSessao,
     sessao.incluirMais18,
+    faseExposicao,
   );
 
-  const perguntasPorCategoria = selecionarPerguntasPorCategoria(categorias);
+  const perguntasPorCategoria = selecionarPerguntasPorCategoria(
+    categorias,
+    sessao.perguntasUsadasPorCategoria,
+  );
 
-  const adivinhadores = sessao.jogadores.filter((j) => j.id !== respondente.id);
+  // Depois que o respondente mostra suas pistas, o celular continua rodando
+  // na mesma direção física, começando pela próxima pessoa da roda.
+  const ordemCircularDeLeitura = montarOrdemCircularAposRespondente(
+    sessao.jogadores,
+    sessao.indiceRespondenteAtual,
+  );
+  const modoLeitura = definirModoLeitura(sessao.jogadores.length);
+  const adivinhadores = selecionarLeitoresDaRodada(
+    ordemCircularDeLeitura,
+    modoLeitura,
+  );
 
   const rodadaAtual: RodadaAtual = {
     respondente,
     nota,
+    permiteNotasExtremas: podeSortearNotasExtremas(turnosRespondidos),
+    faseExposicao,
+    modoLeitura,
     categorias,
     perguntasPorCategoria,
     respostas: [],
@@ -95,6 +135,12 @@ export function registrarRespostas(
   respostas: RespostaCategoria[],
 ): SessaoDe0a10 {
   if (!sessao.rodadaAtual) return sessao;
+  const repeticoes = avaliarRepeticoesResposta(
+    respostas,
+    sessao.rodadaAtual.respondente.id,
+    sessao.historico,
+  );
+  if (respostasTemRepeticao(repeticoes)) return sessao;
 
   return {
     ...sessao,
@@ -122,11 +168,16 @@ export function registrarPalpite(
   nota: NotaDe0a10,
 ): SessaoDe0a10 {
   if (!sessao.rodadaAtual) return sessao;
+  const votanteEsperado =
+    sessao.rodadaAtual.adivinhadores[sessao.rodadaAtual.indiceAdivinhandoAtual];
+  const jaVotou = sessao.rodadaAtual.palpites.some(
+    (palpite) => palpite.jogadorId === jogadorId,
+  );
+  if (!votanteEsperado || votanteEsperado.id !== jogadorId || jaVotou) {
+    return sessao;
+  }
 
-  const novosPalpites = [
-    ...sessao.rodadaAtual.palpites,
-    { jogadorId, nota },
-  ];
+  const novosPalpites = [...sessao.rodadaAtual.palpites, { jogadorId, nota }];
 
   const todosVotaram =
     novosPalpites.length >= sessao.rodadaAtual.adivinhadores.length;
@@ -156,6 +207,16 @@ export function calcularResultadoRodada(
   const minNota = Math.min(...notas);
   const maxNota = Math.max(...notas);
   const divergencia = maxNota - minNota;
+  const leituraColetiva = analisarLeituraColetiva(
+    rodada.nota,
+    rodada.palpites,
+    divergencia,
+  );
+  const pulsoSocial = selecionarPulsoSocial(
+    leituraColetiva.leituraColetiva,
+    rodada.respondente.nome,
+    sessao.historico,
+  );
 
   // Adivinhadores:
   //   erro = 0 (exato) → 2 pts
@@ -181,6 +242,9 @@ export function calcularResultadoRodada(
     palpites: rodada.palpites,
     mediaGuesses: Math.round(media * 10) / 10,
     divergencia,
+    ...leituraColetiva,
+    pulsoSocial,
+    modoLeitura: rodada.modoLeitura,
     pontosRespondente,
     pontosPorAdivinhador,
   };
@@ -204,8 +268,7 @@ export function avancarRodada(
       entrada.jogadorId === resultado.respondente.id
         ? resultado.pontosRespondente
         : 0;
-    const novoTotal =
-      entrada.total + pontosAdivinhador + pontosRespondente;
+    const novoTotal = entrada.total + pontosAdivinhador + pontosRespondente;
     return {
       ...entrada,
       pontosAdivinhador: entrada.pontosAdivinhador + pontosAdivinhador,
@@ -227,11 +290,14 @@ export function avancarRodada(
     sessao.categoriasUsadasNaSessao,
     rodada.categorias,
   );
+  const novasPerguntasUsadas = marcarPerguntasUsadas(
+    sessao.perguntasUsadasPorCategoria,
+    rodada.perguntasPorCategoria,
+  );
 
   // Avança para o próximo respondente (circular por voltas)
   const totalJogadores = sessao.jogadores.length;
-  const proximoIndice =
-    (sessao.indiceRespondenteAtual + 1) % totalJogadores;
+  const proximoIndice = (sessao.indiceRespondenteAtual + 1) % totalJogadores;
 
   const novasRodadasCompletas = sessao.rodadasCompletas + 1;
 
@@ -241,6 +307,7 @@ export function avancarRodada(
     indiceRespondenteAtual: proximoIndice,
     rodadaAtual: null,
     categoriasUsadasNaSessao: novasCategorias,
+    perguntasUsadasPorCategoria: novasPerguntasUsadas,
     notasUsadasPorJogador: novasNotasJogador,
     historico: [...sessao.historico, resultado],
     placar: novoPlacar,

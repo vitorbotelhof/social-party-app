@@ -110,8 +110,8 @@ export function TelaConfiguracaoLocalDe0a10({ navigation }: Props) {
           <View style={estilos.switchTextos}>
             <Text style={estilos.switchLabel}>modo competitivo</Text>
             <Text style={estilos.switchDescricao}>
-              adivinhadores ganham pontos ao acertar ±1.{'\n'}
-              respondente ganha se o grupo divergir muito.
+              cravar a nota vale 2; chegar a ±1 vale 1.{'\n'}
+              respondente pontua por quem o leu de perto.
             </Text>
           </View>
           <Switch

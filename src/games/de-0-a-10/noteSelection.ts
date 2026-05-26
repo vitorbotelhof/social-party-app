@@ -1,66 +1,112 @@
 // ─── De 0 a 10 — Seleção de Nota ─────────────────────────────────────────────
 //
-// Regras de seleção:
-//   • Fase calibracao (rounds 0-1): pool [2, 3, 7, 8, 9] — âncoras claras
-//   • Fase tensao (rounds 2-4): pool [1, 2, 3, 4, 6, 7, 8, 9] — sem o 5
-//   • Fase pico (rounds 5+): pool [1-9] completo + rara chance de 0 ou 10
-//   • 5 nunca aparece nas duas primeiras fases (difícil de representar)
-//   • 0 e 10 são eventos raros (8% de chance) na fase pico
-//   • Notas já usadas pelo jogador nas últimas 2 rodadas são evitadas
-//   • Zona 4-7 tem peso 3x maior para maximizar ambiguidade e debate
+// A progressão pertence ao respondente, não à posição dele na roda:
+//   • 1a resposta: calibração com notas legíveis
+//   • 2a resposta: tensão com mais ambiguidade
+//   • 3a resposta em diante: pico, com extremos raros possíveis
+// O sorteio ainda evita repetição individual e equilibra faixas já vistas na sessão.
 
 import type { FaseDe0a10, NotaDe0a10 } from './types';
 
-// Pools por fase (sem 0 e 10 — esses entram via mecanismo especial)
-const POOL_CALIBRACAO: NotaDe0a10[] = [2, 3, 7, 8, 9];
-const POOL_TENSAO: NotaDe0a10[] = [1, 2, 3, 4, 6, 7, 8, 9];
-const POOL_PICO: NotaDe0a10[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+export type GeradorAleatorio = () => number;
 
-// Peso de cada nota — zona 4-7 é 3x mais provável (máxima ambiguidade)
-function pesoNota(nota: NotaDe0a10): number {
-  if (nota >= 4 && nota <= 7) return 3;
-  if (nota === 3 || nota === 8) return 2;
-  return 1;
+const POOL_CALIBRACAO: readonly NotaDe0a10[] = [2, 3, 7, 8];
+const POOL_TENSAO: readonly NotaDe0a10[] = [1, 2, 3, 4, 6, 7, 8, 9];
+const POOL_PICO: readonly NotaDe0a10[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+type FaixaNota = 'baixa' | 'media' | 'alta';
+
+function faixaDaNota(nota: NotaDe0a10): FaixaNota {
+  if (nota <= 3) return 'baixa';
+  if (nota <= 6) return 'media';
+  return 'alta';
 }
 
-export function calcularFase(rodadasCompletas: number): FaseDe0a10 {
-  if (rodadasCompletas < 2) return 'calibracao';
-  if (rodadasCompletas < 5) return 'tensao';
+function poolDaFase(fase: FaseDe0a10): readonly NotaDe0a10[] {
+  if (fase === 'calibracao') return POOL_CALIBRACAO;
+  if (fase === 'tensao') return POOL_TENSAO;
+  return POOL_PICO;
+}
+
+export function calcularFase(turnosRespondidos: number): FaseDe0a10 {
+  if (turnosRespondidos === 0) return 'calibracao';
+  if (turnosRespondidos === 1) return 'tensao';
   return 'pico';
 }
 
-export function selecionarNota(
-  notasUsadasPeloJogador: NotaDe0a10[],
-  rodadasCompletas: number,
+export function podeSortearNotasExtremas(turnosRespondidos: number): boolean {
+  return calcularFase(turnosRespondidos) === 'pico';
+}
+
+function pesoBase(nota: NotaDe0a10, fase: FaseDe0a10): number {
+  if (nota === 0 || nota === 10) return 0.35;
+  if (fase === 'calibracao') return 1;
+  if (nota === 5) return 0.8;
+  return 1;
+}
+
+function contarNotas(notas: readonly NotaDe0a10[]): Map<NotaDe0a10, number> {
+  const frequencia = new Map<NotaDe0a10, number>();
+  for (const nota of notas) {
+    frequencia.set(nota, (frequencia.get(nota) ?? 0) + 1);
+  }
+  return frequencia;
+}
+
+function contarFaixas(notas: readonly NotaDe0a10[]): Record<FaixaNota, number> {
+  const contagem: Record<FaixaNota, number> = {
+    baixa: 0,
+    media: 0,
+    alta: 0,
+  };
+  for (const nota of notas) contagem[faixaDaNota(nota)] += 1;
+  return contagem;
+}
+
+function escolherPonderado(
+  candidatos: readonly NotaDe0a10[],
+  pesos: readonly number[],
+  aleatorio: GeradorAleatorio,
 ): NotaDe0a10 {
-  const fase = calcularFase(rodadasCompletas);
+  const totalPeso = pesos.reduce((total, peso) => total + peso, 0);
+  let sorteio = aleatorio() * totalPeso;
 
-  // Notas especiais: 0 e 10 aparecem raramente na fase pico
-  if (fase === 'pico' && Math.random() < 0.08) {
-    return Math.random() < 0.5 ? 0 : 10;
+  for (let indice = 0; indice < candidatos.length; indice += 1) {
+    sorteio -= pesos[indice]!;
+    if (sorteio <= 0) return candidatos[indice]!;
   }
 
-  const pool =
-    fase === 'calibracao'
-      ? POOL_CALIBRACAO
-      : fase === 'tensao'
-        ? POOL_TENSAO
-        : POOL_PICO;
+  return candidatos[candidatos.length - 1]!;
+}
 
-  // Evita repetir notas recentes do mesmo jogador (últimas 2 rodadas)
-  const recentesSet = new Set(notasUsadasPeloJogador.slice(-2));
-  const poolFiltrado = pool.filter((n) => !recentesSet.has(n));
-  const poolFinal = poolFiltrado.length > 0 ? poolFiltrado : pool;
+export function selecionarNota(
+  notasUsadasPeloJogador: readonly NotaDe0a10[],
+  notasDaSessao: readonly NotaDe0a10[],
+  aleatorio: GeradorAleatorio = Math.random,
+): NotaDe0a10 {
+  const fase = calcularFase(notasUsadasPeloJogador.length);
+  const pool = poolDaFase(fase);
+  const usadasPeloJogador = new Set(notasUsadasPeloJogador);
+  const semRepeticao = pool.filter((nota) => !usadasPeloJogador.has(nota));
+  let candidatos = semRepeticao.length > 0 ? semRepeticao : [...pool];
 
-  // Seleção ponderada
-  const pesos = poolFinal.map(pesoNota);
-  const totalPeso = pesos.reduce((a, b) => a + b, 0);
-  let aleatorio = Math.random() * totalPeso;
+  const notaAnterior = notasDaSessao[notasDaSessao.length - 1];
+  const semRepeticaoImediata = candidatos.filter(
+    (nota) => nota !== notaAnterior,
+  );
+  if (semRepeticaoImediata.length > 0) candidatos = semRepeticaoImediata;
 
-  for (let i = 0; i < poolFinal.length; i++) {
-    aleatorio -= pesos[i]!;
-    if (aleatorio <= 0) return poolFinal[i]!;
-  }
+  const frequenciaNotas = contarNotas(notasDaSessao);
+  const frequenciaFaixas = contarFaixas(notasDaSessao);
+  const pesos = candidatos.map((nota) => {
+    const vezesNota = frequenciaNotas.get(nota) ?? 0;
+    const vezesFaixa = frequenciaFaixas[faixaDaNota(nota)];
+    return (
+      pesoBase(nota, fase) *
+      (1 / (1 + vezesNota * 1.8)) *
+      (1 / (1 + vezesFaixa * 0.25))
+    );
+  });
 
-  return poolFinal[poolFinal.length - 1]!;
+  return escolherPonderado(candidatos, pesos, aleatorio);
 }

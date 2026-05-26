@@ -32,6 +32,7 @@ const JOGO_POR_VIBE: Record<string, CategoriaEmocional> = {
   inquisicao: 'tensao_misterio',
   'faz-ai': 'festa_barulho',
   alianca: 'tensao_misterio',
+  'de-0-a-10': 'quem_voces_sao',
 };
 
 // ─── Pontuação de vibe ────────────────────────────────────────────────────────
@@ -138,6 +139,27 @@ function pontuarVibes(): Map<CategoriaEmocional, number> {
   if (rejeicoesAlianca >= 1) {
     add('revelacoes_caos', rejeicoesAlianca * 2);
     add('tensao_misterio', rejeicoesAlianca);
+  }
+
+  // De 0 a 10: leitura humana, sintonia e divergência de percepção
+  const leiturasDe0a10 = contarMomentos('leitura_perfeita_d010');
+  const partidosDe0a10 = contarMomentos('grupo_partido_d010');
+  const semLeituraDe0a10 = contarMomentos('ninguem_entendeu_d010');
+  const imprevisiveisDe0a10 = contarMomentos('imprevisivel_em_serie_d010');
+
+  if (leiturasDe0a10 >= 1) {
+    add('quem_voces_sao', leiturasDe0a10 * 2);
+    add('conversa_profunda', leiturasDe0a10);
+  }
+  if (partidosDe0a10 >= 1) {
+    add('votacao_exposicao', partidosDe0a10 * 2);
+    add('revelacoes_caos', partidosDe0a10);
+  }
+  if (semLeituraDe0a10 >= 1) {
+    add('quem_voces_sao', semLeituraDe0a10);
+  }
+  if (imprevisiveisDe0a10 >= 1) {
+    add('revelacoes_caos', imprevisiveisDe0a10 * 2);
   }
 
   // Temperatura geral → revelacoes_caos

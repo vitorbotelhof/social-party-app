@@ -61,6 +61,10 @@ function pontuar(): PontuacaoIdentidade[] {
   const sabotagensAlianca = contarMomentos('missao_sabotada_alianca');
   const confiancasAlianca = contarMomentos('confianca_restaurada_alianca');
   const rejeicoesAlianca = contarMomentos('rejeicao_em_cadeia_alianca');
+  const leiturasDe0a10 = contarMomentos('leitura_perfeita_d010');
+  const partidosDe0a10 = contarMomentos('grupo_partido_d010');
+  const semLeituraDe0a10 = contarMomentos('ninguem_entendeu_d010');
+  const imprevisiveisDe0a10 = contarMomentos('imprevisivel_em_serie_d010');
 
   const totalMomentos =
     unanimidades +
@@ -82,7 +86,11 @@ function pontuar(): PontuacaoIdentidade[] {
     identificacoesImediatas +
     sabotagensAlianca +
     confiancasAlianca +
-    rejeicoesAlianca;
+    rejeicoesAlianca +
+    leiturasDe0a10 +
+    partidosDe0a10 +
+    semLeituraDe0a10 +
+    imprevisiveisDe0a10;
 
   const jogosCompletos = getJogosCompletos().length;
 
@@ -99,11 +107,14 @@ function pontuar(): PontuacaoIdentidade[] {
         surtosFazAi * 3 +
         vergonhasFazAi * 2 +
         sabotagensAlianca * 2 +
-        rejeicoesAlianca,
+        rejeicoesAlianca +
+        partidosDe0a10 +
+        semLeituraDe0a10 +
+        imprevisiveisDe0a10 * 2,
     },
     {
       identidade: 'competitivo',
-      pontos: clutches * 3 + sobreviventes * 2,
+      pontos: clutches * 3 + sobreviventes * 2 + leiturasDe0a10,
     },
     {
       identidade: 'silencioso',
@@ -131,7 +142,7 @@ function pontuar(): PontuacaoIdentidade[] {
     },
     {
       identidade: 'intimo',
-      pontos: unanimidades * 3 + confiancasAlianca * 2,
+      pontos: unanimidades * 3 + confiancasAlianca * 2 + leiturasDe0a10 * 2,
     },
     {
       identidade: 'destrutivo',
@@ -142,7 +153,8 @@ function pontuar(): PontuacaoIdentidade[] {
         inversoes * 3 +
         corrupcoes * 2 +
         atuacoesDuvidosas * 2 +
-        sabotagensAlianca * 2,
+        sabotagensAlianca * 2 +
+        imprevisiveisDe0a10 * 2,
     },
   ];
 

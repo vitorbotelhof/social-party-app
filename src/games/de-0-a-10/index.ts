@@ -2,4 +2,8 @@ export * from './types';
 export * from './categories';
 export * from './noteSelection';
 export * from './categorySelection';
+export * from './responseQuality';
+export * from './revealClassification';
+export * from './pacing';
+export * from './socialPulse';
 export * from './engine';
