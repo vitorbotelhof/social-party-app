@@ -304,6 +304,35 @@ export function assegurarSessaoIniciada(
     // Nota: iniciarSessao já garante os campos padrão de SessaoJogador,
     // incluindo os campos de Inquisição (vezesEliminado, vezesContaminado, acoesCorrompidas).
     iniciarSessao(players);
+  } else if (sessaoAtual.jogadores.length === 0 && jogadores.length > 0) {
+    // Sessões podem começar anonimamente em Eu Nunca e ganhar participantes
+    // quando o grupo migra para um jogo nominal, preservando o histórico.
+    sessaoAtual = {
+      ...sessaoAtual,
+      jogadores: jogadores.map((j) => ({
+        id: j.id as PlayerId,
+        nome: j.nome,
+        vezesJulgado: 0,
+        vezesVotado: 0,
+        clutchsMrWhite: 0,
+        colapsos: 0,
+        pontosTotais: 0,
+        vezesEliminado: 0,
+        vezesContaminado: 0,
+        acoesCorrompidas: 0,
+        acertosLeitura: 0,
+        vezesDesconhecido: 0,
+        acertosFazAi: 0,
+        passesFazAi: 0,
+        turnosCaoticosFazAi: 0,
+        liderancasAlianca: 0,
+        missoesAlianca: 0,
+        vezesTraidorAlianca: 0,
+        dubidasCertasDuvido: 0,
+        rankingsVencidosDuvido: 0,
+      })),
+    };
+    notificar();
   }
   registrarJogoIniciado(jogoId);
 }

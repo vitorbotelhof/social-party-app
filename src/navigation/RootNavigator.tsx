@@ -8,6 +8,14 @@ import { TelaLocalAlianca } from '@/screens/alianca/local/TelaLocalAlianca';
 import { TelaConfiguracaoLocalDuvido } from '@/screens/TelaConfiguracaoLocalDuvido';
 import { TelaJogoLocalDuvido } from '@/screens/TelaJogoLocalDuvido';
 import { TelaResultadoLocalDuvido } from '@/screens/TelaResultadoLocalDuvido';
+import { TelaConfiguracaoLocalEuNunca } from '@/screens/TelaConfiguracaoLocalEuNunca';
+import { TelaJogoLocalEuNunca } from '@/screens/TelaJogoLocalEuNunca';
+import { TelaConfiguracaoLocalVerdadeDesafio } from '@/screens/TelaConfiguracaoLocalVerdadeDesafio';
+import { TelaJogoLocalVerdadeDesafio } from '@/screens/TelaJogoLocalVerdadeDesafio';
+import { TelaConfiguracaoLocalQuemNaSala } from '@/screens/TelaConfiguracaoLocalQuemNaSala';
+import { TelaJogoLocalQuemNaSala } from '@/screens/TelaJogoLocalQuemNaSala';
+import { TelaConfiguracaoLocalDe0a10 } from '@/screens/TelaConfiguracaoLocalDe0a10';
+import { TelaJogoLocalDe0a10 } from '@/screens/TelaJogoLocalDe0a10';
 import { TelaConfiguracaoLocalInquisicao } from '@/screens/inquisicao/local/TelaConfiguracaoLocalInquisicao';
 import { TelaLocalInquisicao } from '@/screens/inquisicao/local/TelaLocalInquisicao';
 import { TelaConfiguracaoLocalVMC } from '@/screens/voce-me-conhece/local/TelaConfiguracaoLocalVMC';
@@ -322,6 +330,11 @@ export function RootNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
+        name="ConfiguracaoLocalEuNunca"
+        component={TelaConfiguracaoLocalEuNunca}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="JogoLocalDuvido"
         component={TelaJogoLocalDuvido}
         options={{
@@ -337,6 +350,57 @@ export function RootNavigator() {
           headerShown: false,
           animation: 'fade',
           animationDuration: 300,
+        }}
+      />
+      <Stack.Screen
+        name="JogoLocalEuNunca"
+        component={TelaJogoLocalEuNunca}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
+      />
+      <Stack.Screen
+        name="ConfiguracaoLocalVerdadeDesafio"
+        component={TelaConfiguracaoLocalVerdadeDesafio}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="JogoLocalVerdadeDesafio"
+        component={TelaJogoLocalVerdadeDesafio}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
+      />
+      <Stack.Screen
+        name="ConfiguracaoLocalDe0a10"
+        component={TelaConfiguracaoLocalDe0a10}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="JogoLocalDe0a10"
+        component={TelaJogoLocalDe0a10}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
+      />
+      <Stack.Screen
+        name="ConfiguracaoLocalQuemNaSala"
+        component={TelaConfiguracaoLocalQuemNaSala}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="JogoLocalQuemNaSala"
+        component={TelaJogoLocalQuemNaSala}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
         }}
       />
     </Stack.Navigator>

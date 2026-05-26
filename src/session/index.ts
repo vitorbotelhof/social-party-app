@@ -111,6 +111,27 @@ export type {
   ResultadoAliancaFinalizado,
 } from '@/games/alianca';
 
+export { processarResultadoEuNunca } from './euNuncaLocalAdapter';
+export type { ResultadoEuNunca } from './euNuncaLocalAdapter';
+
+export {
+  processarRodadaQuemNaSala,
+  processarResultadoQuemNaSala,
+} from './quemNaSalaLocalAdapter';
+export type {
+  RodadaQuemNaSala,
+  ResultadoQuemNaSala,
+} from './quemNaSalaLocalAdapter';
+
+export {
+  processarTurnoVerdadeDesafio,
+  processarResultadoVerdadeDesafio,
+} from './verdadeDesafioLocalAdapter';
+export type {
+  TurnoVerdadeDesafio,
+  ResultadoVerdadeDesafio,
+} from './verdadeDesafioLocalAdapter';
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type {
@@ -128,6 +149,9 @@ export type {
   InquisicaoSessaoStats,
   FazAiSessaoStats,
   AliancaSessaoStats,
+  EuNuncaSessaoStats,
+  QuemNaSalaSessaoStats,
+  VerdadeDesafioSessaoStats,
   DestaqueJogador,
   DossieDoCapos,
   MomentoCallback,

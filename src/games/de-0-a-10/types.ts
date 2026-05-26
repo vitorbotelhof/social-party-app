@@ -1,0 +1,127 @@
+// ─── De 0 a 10 — Types ───────────────────────────────────────────────────────
+
+// Escala jogável: 1–9 como padrão. 0 e 10 são notas especiais/raras (fase pico).
+export type NotaDe0a10 = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+
+export type TierCategoria = 'S' | 'A' | 'B';
+
+export type CategoriaId =
+  // Tier S — máximo potencial de debate
+  | 'filme'
+  | 'profissao'
+  | 'animal'
+  | 'sabor'
+  | 'bebida'
+  | 'red_flag'
+  | 'ex'
+  // Tier A — ótimo na maioria dos grupos
+  | 'comida'
+  | 'serie'
+  | 'superpoder'
+  | 'emoji'
+  | 'cidade'
+  | 'cantor'
+  | 'cor'
+  | 'frase'
+  | 'viagem'
+  | 'marca'
+  // Tier B — bom com ressalvas
+  | 'dia_da_semana'
+  | 'esporte'
+  | 'app'
+  | 'famoso'
+  | 'clima'
+  // +18 — só com incluirMais18 ativo
+  | 'fantasia'
+  | 'pecado';
+
+export interface Categoria {
+  id: CategoriaId;
+  emoji: string;
+  nome: string;
+  instrucao: string; // prompt exibido ao jogador no input: "um filme"
+  tier: TierCategoria;
+  mais18?: boolean;
+}
+
+// Resposta do jogador para uma categoria. null = usou o skip.
+export interface RespostaCategoria {
+  categoriaId: CategoriaId;
+  resposta: string | null;
+}
+
+// Palpite individual de um adivinhador
+export interface PalpiteJogador {
+  jogadorId: string;
+  nota: NotaDe0a10;
+}
+
+// Resultado calculado após todos os adivinhadores votarem
+export interface ResultadoRodada {
+  respondente: { id: string; nome: string };
+  notaReal: NotaDe0a10;
+  categorias: CategoriaId[];
+  respostas: RespostaCategoria[];
+  palpites: PalpiteJogador[];
+  mediaGuesses: number;
+  divergencia: number; // spread = max(palpites) - min(palpites)
+  // Pontuação (só usada se modoCompetitivo)
+  pontosRespondente: number; // 1 se grupo divergiu muito (≥3), 0 caso contrário
+  pontosPorAdivinhador: Record<string, number>; // 1 se acertou ±1
+}
+
+// Sub-fases do jogo — cada uma mapeia para um sub-componente na tela
+export type SubFaseDe0a10 =
+  | 'vez_de'       // "Vez de [Nome] — pegue o celular"
+  | 'nota_secreta' // Jogador vê nota + digita respostas (tela privada/escura)
+  | 'debate'       // Tela compartilhada: categorias + respostas, grupo discute
+  | 'palpites'     // Passação: cada adivinhador vota em segredo (tela escura)
+  | 'reveal';      // Reveal da nota real + palpites + pontuação
+
+// Fase da sessão — controla quais notas ficam disponíveis
+export type FaseDe0a10 = 'calibracao' | 'tensao' | 'pico';
+
+// Estado da rodada em andamento
+export interface RodadaAtual {
+  respondente: { id: string; nome: string };
+  nota: NotaDe0a10;
+  categorias: CategoriaId[];
+  respostas: RespostaCategoria[];
+  palpites: PalpiteJogador[];
+  // Lista de jogadores que devem palpitar (todos exceto o respondente)
+  adivinhadores: { id: string; nome: string }[];
+  // Índice do adivinhador atual na passação (0 = primeiro ainda não votou)
+  indiceAdivinhandoAtual: number;
+}
+
+export interface PlacarJogador {
+  jogadorId: string;
+  nome: string;
+  pontosAdivinhador: number;
+  pontosRespondente: number;
+  total: number;
+}
+
+export interface SessaoDe0a10 {
+  jogadores: { id: string; nome: string }[];
+  voltas: 1 | 2 | 3;
+  modoCompetitivo: boolean;
+  incluirMais18: boolean;
+  subFase: SubFaseDe0a10;
+  indiceRespondenteAtual: number;
+  rodadaAtual: RodadaAtual | null;
+  categoriasUsadasNaSessao: CategoriaId[];
+  notasUsadasPorJogador: Record<string, NotaDe0a10[]>;
+  historico: ResultadoRodada[];
+  placar: PlacarJogador[];
+  rodadasCompletas: number;
+  totalRodadas: number; // jogadores.length * voltas
+  iniciouEm: number;
+}
+
+export interface ConfiguracaoDe0a10 {
+  jogadores: { id: string; nome: string }[];
+  voltas: 1 | 2 | 3;
+  modoCompetitivo: boolean;
+  incluirMais18: boolean;
+}

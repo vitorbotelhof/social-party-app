@@ -12,6 +12,7 @@ export { BotaoVoltar } from '@/components/BotaoVoltar';
 export { CardJogoCatalogo } from '@/components/CardJogoCatalogo';
 export type { JogoCatalogoItem } from '@/components/CardJogoCatalogo';
 export { CadastroJogadores } from '@/components/CadastroJogadores';
+export { CombinadoDeConforto } from '@/components/CombinadoDeConforto';
 export { ControladorNumerico } from '@/components/ControladorNumerico';
 export { RodapeConfig } from '@/components/RodapeConfig';
 export { SecaoConfig } from '@/components/SecaoConfig';

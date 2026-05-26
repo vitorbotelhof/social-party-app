@@ -282,6 +282,14 @@ export function TelaInicio({ navigation }: Props) {
         navigation.navigate('ConfiguracaoLocalAlianca');
       } else if (jogoId === 'duvido') {
         navigation.navigate('ConfiguracaoLocalDuvido');
+      } else if (jogoId === 'eu-nunca') {
+        navigation.navigate('ConfiguracaoLocalEuNunca');
+      } else if (jogoId === 'verdade-desafio') {
+        navigation.navigate('ConfiguracaoLocalVerdadeDesafio');
+      } else if (jogoId === 'de-0-a-10') {
+        navigation.navigate('ConfiguracaoLocalDe0a10');
+      } else if (jogoId === 'quem-na-sala') {
+        navigation.navigate('ConfiguracaoLocalQuemNaSala');
       } else {
         navigation.navigate('ConfiguracaoLocal');
       }

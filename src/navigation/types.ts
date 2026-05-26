@@ -1,6 +1,10 @@
 import type { CategoriaIdNPL } from '@/games/na-ponta-da-lingua/types';
 import type { ConfiguracaoDuvido, RankingDuvido } from '@/games/duvido/types';
 import type { CategoriaFazAiId, IntensidadeSocial } from '@/games/faz-ai/types';
+import type { CategoriaEuNuncaId, IntensidadeEuNunca } from '@/games/eu-nunca/types';
+import type { CategoriaVDId, IntensidadeVD } from '@/games/verdade-desafio/types';
+import type { CategoriaQNSId, IntensidadeQNS } from '@/games/quem-na-sala/types';
+import type { ConfiguracaoDe0a10 } from '@/games/de-0-a-10/types';
 import type {
   ConfiguracaoAlianca,
   JogadorAlianca,
@@ -79,6 +83,31 @@ export type RootStackParamList = {
     rodadasPorJogador: number;
     categorias: CategoriaFazAiId[] | 'todas';
     intensidade: IntensidadeSocial | 'todas';
+  };
+  ConfiguracaoLocalEuNunca: undefined;
+  JogoLocalEuNunca: {
+    categorias: CategoriaEuNuncaId[] | 'todas';
+    intensidade: IntensidadeEuNunca | 'todas';
+    incluirMais18: boolean;
+    totalCartas: 10 | 20 | null;
+  };
+  ConfiguracaoLocalVerdadeDesafio: undefined;
+  JogoLocalVerdadeDesafio: {
+    jogadores: { id: string; nome: string }[];
+    intensidade: IntensidadeVD | 'todas';
+    categorias: CategoriaVDId[] | 'todas';
+    incluirMais18: boolean;
+    voltas: 1 | 2 | 3;
+  };
+  ConfiguracaoLocalDe0a10: undefined;
+  JogoLocalDe0a10: ConfiguracaoDe0a10;
+  ConfiguracaoLocalQuemNaSala: undefined;
+  JogoLocalQuemNaSala: {
+    jogadores: { id: string; nome: string }[];
+    intensidade: IntensidadeQNS | 'todas';
+    categorias: CategoriaQNSId[] | 'todas';
+    incluirMais18: boolean;
+    totalPerguntas: 5 | 8 | 12;
   };
   JogoLocalNaPontaDaLingua: {
     jogadores: { id: string; nome: string }[];
