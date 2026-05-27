@@ -101,6 +101,8 @@ export type RootStackParamList = {
   };
   ConfiguracaoLocalDe0a10: undefined;
   JogoLocalDe0a10: ConfiguracaoDe0a10;
+  ListaEntrelinhas: undefined;
+  JogoLocalEntrelinhas: { historiaId: string };
   ConfiguracaoLocalQuemNaSala: undefined;
   JogoLocalQuemNaSala: {
     jogadores: { id: string; nome: string }[];

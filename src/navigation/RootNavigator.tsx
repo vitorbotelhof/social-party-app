@@ -16,6 +16,8 @@ import { TelaConfiguracaoLocalQuemNaSala } from '@/screens/TelaConfiguracaoLocal
 import { TelaJogoLocalQuemNaSala } from '@/screens/TelaJogoLocalQuemNaSala';
 import { TelaConfiguracaoLocalDe0a10 } from '@/screens/TelaConfiguracaoLocalDe0a10';
 import { TelaJogoLocalDe0a10 } from '@/screens/TelaJogoLocalDe0a10';
+import { TelaListaEntrelinhas } from '@/screens/TelaListaEntrelinhas';
+import { TelaJogoLocalEntrelinhas } from '@/screens/TelaJogoLocalEntrelinhas';
 import { TelaConfiguracaoLocalInquisicao } from '@/screens/inquisicao/local/TelaConfiguracaoLocalInquisicao';
 import { TelaLocalInquisicao } from '@/screens/inquisicao/local/TelaLocalInquisicao';
 import { TelaConfiguracaoLocalVMC } from '@/screens/voce-me-conhece/local/TelaConfiguracaoLocalVMC';
@@ -383,6 +385,20 @@ export function RootNavigator() {
       <Stack.Screen
         name="JogoLocalDe0a10"
         component={TelaJogoLocalDe0a10}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
+      />
+      <Stack.Screen
+        name="ListaEntrelinhas"
+        component={TelaListaEntrelinhas}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="JogoLocalEntrelinhas"
+        component={TelaJogoLocalEntrelinhas}
         options={{
           headerShown: false,
           animation: 'fade_from_bottom',
