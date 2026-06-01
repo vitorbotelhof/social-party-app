@@ -10,7 +10,7 @@ export interface SecaoJogosItem {
   id: string;
   titulo: string;
   subtitulo?: string;
-  tipo: 'recentes' | 'categoria_principal' | 'contexto' | 'tag';
+  tipo: 'recentes' | 'categoria_principal' | 'contexto' | 'tag' | 'todos';
   categoriaPrincipalId?: string;
   contextoId?: string;
   tagId?: string;

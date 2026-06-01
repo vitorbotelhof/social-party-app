@@ -35,7 +35,8 @@ export type TipoSecaoCatalogo =
   | 'recentes'
   | 'categoria_principal'
   | 'contexto'
-  | 'tag';
+  | 'tag'
+  | 'todos';
 
 export interface JogoDestaqueCatalogo {
   jogo: DefinicaoJogo;
@@ -57,8 +58,19 @@ export interface SecaoCatalogo {
 interface OpcoesListagem {
   incluirIndisponiveis?: boolean;
   limitar?: number;
+  aleatorizar?: boolean;
 }
 
+function embaralhar<T>(arr: T[]): T[] {
+  const copia = [...arr];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j]!, copia[i]!];
+  }
+  return copia;
+}
+
+// Ordenação determinística — usada em telas de filtro/detalhe.
 function ordenarJogos(jogos: DefinicaoJogo[]): DefinicaoJogo[] {
   return [...jogos].sort((a, b) => {
     if (a.disponivel !== b.disponivel) return a.disponivel ? -1 : 1;
@@ -67,6 +79,17 @@ function ordenarJogos(jogos: DefinicaoJogo[]): DefinicaoJogo[] {
     if (destaqueA !== destaqueB) return destaqueA - destaqueB;
     return (a.ordemNaCategoria ?? 999) - (b.ordemNaCategoria ?? 999);
   });
+}
+
+// Ordenação aleatória dentro de cada tier — usada na home para variar a descoberta.
+// Mantém a hierarquia: disponíveis destaque → disponíveis normais → indisponíveis.
+// Dentro de cada tier, a ordem é aleatória a cada chamada.
+function ordenarJogosAleatorio(jogos: DefinicaoJogo[]): DefinicaoJogo[] {
+  const disponiveis = jogos.filter((j) => j.disponivel);
+  const indisponiveis = jogos.filter((j) => !j.disponivel);
+  const destaques = embaralhar(disponiveis.filter((j) => j.destaque));
+  const normais = embaralhar(disponiveis.filter((j) => !j.destaque));
+  return [...destaques, ...normais, ...embaralhar(indisponiveis)];
 }
 
 function aplicarLimite(
@@ -102,40 +125,49 @@ export function getJogoPorId(
 export function getJogosPorCategoriaPrincipal(
   categoriaId: CategoriaPrincipalId,
   jogos: ReadonlyArray<DefinicaoJogo> = JOGOS,
-  { incluirIndisponiveis = true, limitar }: OpcoesListagem = {},
+  { incluirIndisponiveis = true, limitar, aleatorizar = false }: OpcoesListagem = {},
 ): DefinicaoJogo[] {
   const filtrados = jogos.filter((jogo) => {
     if (!incluirIndisponiveis && !jogo.disponivel) return false;
     return jogo.categoriasPrincipais.includes(categoriaId);
   });
 
-  return aplicarLimite(ordenarJogos(filtrados), limitar);
+  const ordenados = aleatorizar
+    ? ordenarJogosAleatorio(filtrados)
+    : ordenarJogos(filtrados);
+  return aplicarLimite(ordenados, limitar);
 }
 
 export function getJogosPorContextoCatalogo(
   contextoId: ContextoSocialId,
   jogos: ReadonlyArray<DefinicaoJogo> = JOGOS,
-  { incluirIndisponiveis = true, limitar }: OpcoesListagem = {},
+  { incluirIndisponiveis = true, limitar, aleatorizar = false }: OpcoesListagem = {},
 ): DefinicaoJogo[] {
   const filtrados = jogos.filter((jogo) => {
     if (!incluirIndisponiveis && !jogo.disponivel) return false;
     return jogo.contextos.includes(contextoId);
   });
 
-  return aplicarLimite(ordenarJogos(filtrados), limitar);
+  const ordenados = aleatorizar
+    ? ordenarJogosAleatorio(filtrados)
+    : ordenarJogos(filtrados);
+  return aplicarLimite(ordenados, limitar);
 }
 
 export function getJogosPorTagCatalogo(
   tagId: TagSocialId,
   jogos: ReadonlyArray<DefinicaoJogo> = JOGOS,
-  { incluirIndisponiveis = true, limitar }: OpcoesListagem = {},
+  { incluirIndisponiveis = true, limitar, aleatorizar = false }: OpcoesListagem = {},
 ): DefinicaoJogo[] {
   const filtrados = jogos.filter((jogo) => {
     if (!incluirIndisponiveis && !jogo.disponivel) return false;
     return jogo.tagsSociais.includes(tagId);
   });
 
-  return aplicarLimite(ordenarJogos(filtrados), limitar);
+  const ordenados = aleatorizar
+    ? ordenarJogosAleatorio(filtrados)
+    : ordenarJogos(filtrados);
+  return aplicarLimite(ordenados, limitar);
 }
 
 export function getJogoDestaqueDoDia(
@@ -170,9 +202,22 @@ export function getJogosRecentesFake(
   );
 }
 
+export function getSecaoTodosOsJogos(
+  jogos: ReadonlyArray<DefinicaoJogo> = JOGOS,
+): SecaoCatalogo {
+  return {
+    id: 'todos-os-jogos',
+    titulo: 'todos os jogos',
+    subtitulo: `${jogos.filter((j) => j.disponivel).length} jogos disponíveis`,
+    tipo: 'todos',
+    jogos: ordenarJogos(jogos.filter((j) => j.disponivel)),
+  };
+}
+
 export function getSecoesCategoriasPrincipaisCatalogo(
   categorias: ReadonlyArray<CategoriaPrincipalMeta> = CATEGORIAS_PRINCIPAIS,
   jogos: ReadonlyArray<DefinicaoJogo> = JOGOS,
+  aleatorizar = false,
 ): SecaoCatalogo[] {
   return categorias
     .map((categoria) => ({
@@ -183,6 +228,7 @@ export function getSecoesCategoriasPrincipaisCatalogo(
       categoriaPrincipalId: categoria.id,
       jogos: getJogosPorCategoriaPrincipal(categoria.id, jogos, {
         limitar: LIMITE_SECAO_HOME,
+        aleatorizar,
       }),
     }))
     .filter((secao) => secao.jogos.length > 0);
@@ -210,6 +256,7 @@ export function getSecaoCategoriaPrincipalCatalogo(
 export function getSecoesContextosCatalogo(
   contextosIds: ReadonlyArray<ContextoSocialId> = CONTEXTOS_HOME,
   jogos: ReadonlyArray<DefinicaoJogo> = JOGOS,
+  aleatorizar = false,
 ): SecaoCatalogo[] {
   return contextosIds
     .map((contextoId): SecaoCatalogo | null => {
@@ -224,6 +271,7 @@ export function getSecoesContextosCatalogo(
         contextoId: contexto.id,
         jogos: getJogosPorContextoCatalogo(contexto.id, jogos, {
           limitar: LIMITE_SECAO_HOME,
+          aleatorizar,
         }),
       };
     })
@@ -302,17 +350,20 @@ export function getSecaoRecentesFake(
 
 export function getSecoesHomeCatalogo(
   jogos: ReadonlyArray<DefinicaoJogo> = JOGOS,
+  aleatorizar = false,
 ): SecaoCatalogo[] {
   const recentes = getSecaoRecentesFake(jogos);
-  const contextos = getSecoesContextosCatalogo(CONTEXTOS_HOME, jogos);
+  const contextos = getSecoesContextosCatalogo(CONTEXTOS_HOME, jogos, aleatorizar);
   const categorias = getSecoesCategoriasPrincipaisCatalogo(
     CATEGORIAS_PRINCIPAIS,
     jogos,
+    aleatorizar,
   );
 
-  return recentes
-    ? [recentes, ...contextos, ...categorias]
-    : [...contextos, ...categorias];
+  // Quando aleatorizar, embaralha a ordem das seções (exceto recentes, sempre primeiro)
+  const corpo = aleatorizar ? embaralhar([...contextos, ...categorias]) : [...contextos, ...categorias];
+
+  return recentes ? [recentes, ...corpo] : corpo;
 }
 
 export function getMetaCategoriaPrincipal(

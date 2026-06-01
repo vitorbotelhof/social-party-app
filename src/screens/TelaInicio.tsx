@@ -37,6 +37,7 @@ import {
   getSecaoCategoriaPrincipalCatalogo,
   getSecaoContextoCatalogo,
   getSecaoTagCatalogo,
+  getSecaoTodosOsJogos,
   getJogoDestaqueDoDia,
   getJogoPorId,
   getJogosPorCategoriaPrincipal,
@@ -72,7 +73,6 @@ const GRADIENTE_SHEET_BANNER: [string, string, string] = [
 ];
 
 const destaqueDoDia = getJogoDestaqueDoDia();
-const secoesHome = getSecoesHomeCatalogo();
 const categoriasComJogos = CATEGORIAS_PRINCIPAIS.filter(
   (categoria) => getJogosPorCategoriaPrincipal(categoria.id).length > 0,
 );
@@ -172,6 +172,11 @@ export function TelaInicio({ navigation }: Props) {
       }),
     ]).start();
   }, [conteudoOp, headerOp, headerY]);
+
+  // Seções da home — aleatoriza a cada montagem do componente (nova entrada na tela).
+  // useMemo com deps vazias: calcula uma vez por mount, não por render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const secoesHome = useMemo(() => getSecoesHomeCatalogo(undefined, true), []);
 
   const nomeValido = nomeDigitado.trim().length >= MIN_TAMANHO_NOME;
   const termoBusca = consultaBusca.trim();
@@ -455,6 +460,10 @@ export function TelaInicio({ navigation }: Props) {
                   if (filtro) setSecaoAtiva(filtro);
                   void Haptics.selectionAsync();
                 }}
+                onTodos={() => {
+                  setSecaoAtiva(getSecaoTodosOsJogos());
+                  void Haptics.selectionAsync();
+                }}
               />
 
               <View style={estilos.destaqueWrap}>
@@ -613,11 +622,13 @@ function CatalogoFiltrado({
   onEscolherJogo,
 }: CatalogoFiltradoProps) {
   const eyebrow =
-    secao.tipo === 'contexto'
-      ? 'curadoria'
-      : secao.tipo === 'tag'
-        ? 'tag'
-        : 'categoria';
+    secao.tipo === 'todos'
+      ? 'catálogo'
+      : secao.tipo === 'contexto'
+        ? 'curadoria'
+        : secao.tipo === 'tag'
+          ? 'tag'
+          : 'categoria';
 
   return (
     <View style={estilos.filtroContainer}>
@@ -663,11 +674,13 @@ function CatalogoFiltrado({
 interface CategoriaChipsCatalogoProps {
   categorias: ReadonlyArray<CategoriaPrincipalMeta>;
   onSelect: (categoriaId: CategoriaPrincipalId) => void;
+  onTodos: () => void;
 }
 
 function CategoriaChipsCatalogo({
   categorias,
   onSelect,
+  onTodos,
 }: CategoriaChipsCatalogoProps) {
   return (
     <ScrollView
@@ -676,6 +689,21 @@ function CategoriaChipsCatalogo({
       style={estilos.chipsScroll}
       contentContainerStyle={estilos.chipsConteudo}
     >
+      <Pressable
+        onPress={onTodos}
+        accessibilityRole="button"
+        accessibilityLabel="Ver todos os jogos"
+        style={({ pressed }) => [
+          estilos.chipCategoria,
+          estilos.chipTodos,
+          pressed && estilos.chipCategoriaPressionado,
+        ]}
+      >
+        <Text style={[estilos.chipCategoriaTexto, estilos.chipTodosTexto]}>
+          todos os jogos
+        </Text>
+      </Pressable>
+
       {categorias.map((categoria) => (
         <Pressable
           key={categoria.id}
@@ -1057,6 +1085,13 @@ const estilos = StyleSheet.create({
     fontSize: tipografia.tamanhoSegmento,
     fontWeight: tipografia.pesoSemibold,
     letterSpacing: 0,
+  },
+  chipTodos: {
+    backgroundColor: cores.texto,
+    borderColor: cores.texto,
+  },
+  chipTodosTexto: {
+    color: cores.fundo,
   },
   chipsConteudo: {
     gap: espacamento.sm,
