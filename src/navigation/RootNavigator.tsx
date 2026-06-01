@@ -16,6 +16,8 @@ import { TelaConfiguracaoLocalQuemNaSala } from '@/screens/TelaConfiguracaoLocal
 import { TelaJogoLocalQuemNaSala } from '@/screens/TelaJogoLocalQuemNaSala';
 import { TelaConfiguracaoLocalDe0a10 } from '@/screens/TelaConfiguracaoLocalDe0a10';
 import { TelaJogoLocalDe0a10 } from '@/screens/TelaJogoLocalDe0a10';
+import { TelaConfiguracaoLocalSincronia } from '@/screens/TelaConfiguracaoLocalSincronia';
+import { TelaJogoLocalSincronia } from '@/screens/TelaJogoLocalSincronia';
 import { TelaListaEntrelinhas } from '@/screens/TelaListaEntrelinhas';
 import { TelaJogoLocalEntrelinhas } from '@/screens/TelaJogoLocalEntrelinhas';
 import { TelaConfiguracaoLocalInquisicao } from '@/screens/inquisicao/local/TelaConfiguracaoLocalInquisicao';
@@ -385,6 +387,20 @@ export function RootNavigator() {
       <Stack.Screen
         name="JogoLocalDe0a10"
         component={TelaJogoLocalDe0a10}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
+      />
+      <Stack.Screen
+        name="ConfiguracaoLocalSincronia"
+        component={TelaConfiguracaoLocalSincronia}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="JogoLocalSincronia"
+        component={TelaJogoLocalSincronia}
         options={{
           headerShown: false,
           animation: 'fade_from_bottom',

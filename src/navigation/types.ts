@@ -17,6 +17,7 @@ import type {
   ConfiguracaoVMC,
   JogadorVMC,
 } from '@/games/voce-me-conhece/local/types';
+import type { ConfiguracaoSincronia } from '@/games/sincronia/types';
 import type { GameId, PlayerId, RoomCode } from '@/engine/types';
 
 export type RootStackParamList = {
@@ -101,6 +102,8 @@ export type RootStackParamList = {
   };
   ConfiguracaoLocalDe0a10: undefined;
   JogoLocalDe0a10: ConfiguracaoDe0a10;
+  ConfiguracaoLocalSincronia: undefined;
+  JogoLocalSincronia: ConfiguracaoSincronia;
   ListaEntrelinhas: undefined;
   JogoLocalEntrelinhas: { historiaId: string };
   ConfiguracaoLocalQuemNaSala: undefined;

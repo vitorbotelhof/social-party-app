@@ -319,6 +319,8 @@ export function TelaInicio({ navigation }: Props) {
         navigation.navigate('ConfiguracaoLocalQuemNaSala');
       } else if (jogoId === 'entrelinhas') {
         navigation.navigate('ListaEntrelinhas');
+      } else if (jogoId === 'sincronia') {
+        navigation.navigate('ConfiguracaoLocalSincronia');
       } else {
         navigation.navigate('ConfiguracaoLocal');
       }

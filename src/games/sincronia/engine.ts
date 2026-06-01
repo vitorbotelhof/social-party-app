@@ -2,7 +2,6 @@ import type {
   ConfiguracaoSincronia,
   DuplaSincronia,
   EstadoJogoSincronia,
-  FaseSincronia,
   PlacarDupla,
   ResultadoRodadaSincronia,
 } from './types';
