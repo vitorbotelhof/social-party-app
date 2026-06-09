@@ -65,6 +65,12 @@ function pontuar(): PontuacaoIdentidade[] {
   const partidosDe0a10 = contarMomentos('grupo_partido_d010');
   const semLeituraDe0a10 = contarMomentos('ninguem_entendeu_d010');
   const imprevisiveisDe0a10 = contarMomentos('imprevisivel_em_serie_d010');
+  // Arquivos
+  const teoriaQuebradaArquivos = contarMomentos('teoria_quebrada_arquivos');
+  const casoResolvidoArquivos = contarMomentos('caso_resolvido_arquivos');
+  const casoFracassouArquivos = contarMomentos('caso_fracassou_arquivos');
+  const objetivoExpostoArquivos = contarMomentos('objetivo_exposto_arquivos');
+  const acaoSuspeitaArquivos = contarMomentos('acao_secreta_gerou_suspeita_arquivos');
 
   const totalMomentos =
     unanimidades +
@@ -90,7 +96,12 @@ function pontuar(): PontuacaoIdentidade[] {
     leiturasDe0a10 +
     partidosDe0a10 +
     semLeituraDe0a10 +
-    imprevisiveisDe0a10;
+    imprevisiveisDe0a10 +
+    teoriaQuebradaArquivos +
+    casoResolvidoArquivos +
+    casoFracassouArquivos +
+    objetivoExpostoArquivos +
+    acaoSuspeitaArquivos;
 
   const jogosCompletos = getJogosCompletos().length;
 
@@ -98,6 +109,7 @@ function pontuar(): PontuacaoIdentidade[] {
     {
       identidade: 'caotico',
       // Inquisição: grupo que elimina inocentes e não percebe corrupção é caótico
+      // Arquivos: fracasso e teorias derrubadas indicam caos investigativo
       pontos:
         paranoia * 2 +
         viradas * 2 +
@@ -110,11 +122,18 @@ function pontuar(): PontuacaoIdentidade[] {
         rejeicoesAlianca +
         partidosDe0a10 +
         semLeituraDe0a10 +
-        imprevisiveisDe0a10 * 2,
+        imprevisiveisDe0a10 * 2 +
+        casoFracassouArquivos * 2 +
+        teoriaQuebradaArquivos,
     },
     {
       identidade: 'competitivo',
-      pontos: clutches * 3 + sobreviventes * 2 + leiturasDe0a10,
+      // Arquivos: resolver o caso demonstra competência dedutiva coletiva
+      pontos:
+        clutches * 3 +
+        sobreviventes * 2 +
+        leiturasDe0a10 +
+        casoResolvidoArquivos * 2,
     },
     {
       identidade: 'silencioso',
@@ -125,28 +144,39 @@ function pontuar(): PontuacaoIdentidade[] {
     },
     {
       identidade: 'eficiente',
+      // Arquivos: caso resolvido sem fracasso → grupo eficiente
       pontos:
         perfeitos * 3 +
         identificacoesImediatas * 2 +
-        (jogosCompletos >= 2 && totalMomentos <= 2 ? 2 : 0),
+        (jogosCompletos >= 2 && totalMomentos <= 2 ? 2 : 0) +
+        casoResolvidoArquivos,
     },
     {
       identidade: 'paranoico',
       // Inquisição: empates e votações espalhadas definem o grupo paranoico
+      // Arquivos: ações suspeitas e segredos expostos alimentam paranoia
       pontos:
         paranoia * 3 +
         paranoia_max * 3 +
         colapsos_inq +
         sabotagensAlianca * 2 +
-        rejeicoesAlianca * 2,
+        rejeicoesAlianca * 2 +
+        acaoSuspeitaArquivos * 2 +
+        objetivoExpostoArquivos,
     },
     {
       identidade: 'intimo',
-      pontos: unanimidades * 3 + confiancasAlianca * 2 + leiturasDe0a10 * 2,
+      // Arquivos: grupo que resolve caso e não expõe segredos é íntimo e coeso
+      pontos:
+        unanimidades * 3 +
+        confiancasAlianca * 2 +
+        leiturasDe0a10 * 2 +
+        (casoResolvidoArquivos > 0 && objetivoExpostoArquivos === 0 ? 2 : 0),
     },
     {
       identidade: 'destrutivo',
       // Inquisição: corrompidos vencendo e corrupções em cadeia → grupo destrutivo
+      // Arquivos: fracasso investigativo e segredos expostos → destrutivo
       pontos:
         colapsos * 3 +
         viradas +
@@ -154,7 +184,9 @@ function pontuar(): PontuacaoIdentidade[] {
         corrupcoes * 2 +
         atuacoesDuvidosas * 2 +
         sabotagensAlianca * 2 +
-        imprevisiveisDe0a10 * 2,
+        imprevisiveisDe0a10 * 2 +
+        casoFracassouArquivos * 3 +
+        objetivoExpostoArquivos * 2,
     },
   ];
 

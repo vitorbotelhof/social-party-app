@@ -711,6 +711,179 @@ const TEMPLATES: CallbackTemplate[] = [
     condicao: () => true,
     gerar: () => 'sessão curta. mas foi algo.',
   },
+
+  // ── Arquivos: pós-jogo ─────────────────────────────────────────────────────
+
+  {
+    id: 'arq_pos_caso_resolvido',
+    momento: 'pos_jogo',
+    prioridade: 94,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'caso_resolvido_arquivos'),
+    gerar: (s) => {
+      const arq = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'arquivos')?.arquivos;
+      if (!arq) return 'o caso fechou. raro.';
+      const pct = arq.pontosPossiveis === 0
+        ? 0
+        : Math.round((arq.pontosObtidos / arq.pontosPossiveis) * 100);
+      return `o caso foi resolvido com ${pct}% de aproveitamento. vocês montaram a verdade de cacos.`;
+    },
+  },
+
+  {
+    id: 'arq_pos_fracasso',
+    momento: 'pos_jogo',
+    prioridade: 93,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'caso_fracassou_arquivos'),
+    gerar: () =>
+      'o caso ficou sem solução. cada um saiu com uma versão diferente da verdade.',
+  },
+
+  {
+    id: 'arq_pos_teoria_quebrada',
+    momento: 'pos_jogo',
+    prioridade: 87,
+    condicao: (s) =>
+      s.momentosMemoraveis.filter((m) => m.tipo === 'teoria_quebrada_arquivos')
+        .length >= 2,
+    gerar: (s) => {
+      const n = s.momentosMemoraveis.filter(
+        (m) => m.tipo === 'teoria_quebrada_arquivos',
+      ).length;
+      return `${n} viradas no caso. a teoria do grupo não durou muito.`;
+    },
+  },
+
+  {
+    id: 'arq_pos_segredos_expostos',
+    momento: 'pos_jogo',
+    prioridade: 85,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'objetivo_exposto_arquivos'),
+    gerar: (s, nomes) => {
+      const m = [...s.momentosMemoraveis]
+        .reverse()
+        .find((x) => x.tipo === 'objetivo_exposto_arquivos');
+      if (!m || m.jogadoresIds.length === 0)
+        return 'um segredo veio à tona. a investigação tem esse custo.';
+      const nome = nomes.get(m.jogadoresIds[0] as PlayerId) ?? 'alguém';
+      return `${nome} não conseguiu esconder tudo. o grupo percebeu.`;
+    },
+  },
+
+  {
+    id: 'arq_pos_acao_suspeita',
+    momento: 'pos_jogo',
+    prioridade: 82,
+    condicao: (s) =>
+      s.momentosMemoraveis.some(
+        (m) => m.tipo === 'acao_secreta_gerou_suspeita_arquivos',
+      ),
+    gerar: (s, nomes) => {
+      const m = [...s.momentosMemoraveis]
+        .reverse()
+        .find((x) => x.tipo === 'acao_secreta_gerou_suspeita_arquivos');
+      if (!m || m.jogadoresIds.length === 0)
+        return 'alguém fez algo que o grupo não esqueceu.';
+      const nome = nomes.get(m.jogadoresIds[0] as PlayerId) ?? 'alguém';
+      return `${nome} agiu de um jeito que ficou na cabeça de todo mundo.`;
+    },
+  },
+
+  // ── Arquivos: pós-resultado ───────────────────────────────────────────────
+
+  {
+    id: 'arq_pos_resultado_virada',
+    momento: 'pos_resultado',
+    prioridade: 91,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'teoria_quebrada_arquivos'),
+    gerar: () =>
+      'a nova evidência mudou tudo. o que parecia óbvio não era.',
+  },
+
+  {
+    id: 'arq_pos_resultado_objetivo_parcial',
+    momento: 'pos_resultado',
+    prioridade: 84,
+    condicao: (s) => {
+      const arq = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'arquivos')?.arquivos;
+      if (!arq) return false;
+      const total = arq.totalJogadores;
+      const alcancados = arq.jogadoresComObjetivoAlcancado;
+      return alcancados < total && alcancados > 0;
+    },
+    gerar: (s) => {
+      const arq = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'arquivos')?.arquivos;
+      if (!arq) return 'nem todos saíram satisfeitos do caso.';
+      return `${arq.jogadoresComObjetivoAlcancado} de ${arq.totalJogadores} alcançaram o objetivo pessoal. os outros pagaram um preço.`;
+    },
+  },
+
+  // ── Arquivos: entre jogos ─────────────────────────────────────────────────
+
+  {
+    id: 'arq_entre_caso_resolvido',
+    momento: 'entre_jogos',
+    prioridade: 78,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'caso_resolvido_arquivos') &&
+      s.jogosDaSessao.some((j) => j.jogoId === 'arquivos'),
+    gerar: () => 'vocês resolveram o caso. o próximo jogo vai ser mais leve.',
+  },
+
+  {
+    id: 'arq_entre_fracasso',
+    momento: 'entre_jogos',
+    prioridade: 76,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'caso_fracassou_arquivos'),
+    gerar: () =>
+      'o grupo não fechou o caso. mas ficou claro o que cada um estava escondendo.',
+  },
+
+  // ── Arquivos: dossiê ─────────────────────────────────────────────────────
+
+  {
+    id: 'arq_dossie_caso_resolvido',
+    momento: 'dossie',
+    prioridade: 91,
+    condicao: (s) =>
+      s.momentosMemoraveis.some((m) => m.tipo === 'caso_resolvido_arquivos') &&
+      (s.temperatura === 'quente' || s.temperatura === 'colapso'),
+    gerar: (s) => {
+      const arq = [...s.jogosDaSessao]
+        .reverse()
+        .find((j) => j.jogoId === 'arquivos')?.arquivos;
+      const acoes = arq?.acoesSecretasResolvidas ?? 0;
+      if (acoes >= 2) {
+        return `o caso foi resolvido, mas o que ficou na cabeça foi o que cada um fez nas sombras.`;
+      }
+      return 'o grupo montou a verdade de pedaços. nenhum pedaço era suficiente sozinho.';
+    },
+  },
+
+  {
+    id: 'arq_dossie_segredos_expostos',
+    momento: 'dossie',
+    prioridade: 86,
+    condicao: (s) =>
+      s.momentosMemoraveis.filter((m) => m.tipo === 'objetivo_exposto_arquivos')
+        .length >= 2,
+    gerar: (s) => {
+      const n = s.momentosMemoraveis.filter(
+        (m) => m.tipo === 'objetivo_exposto_arquivos',
+      ).length;
+      return `${n} segredos vieram à tona. arquivos é um jogo onde ninguém sai completamente limpo.`;
+    },
+  },
 ];
 
 // ─── Engine ───────────────────────────────────────────────────────────────────

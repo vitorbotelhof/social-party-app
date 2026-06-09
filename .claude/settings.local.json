@@ -82,7 +82,10 @@
       "Bash(grep -v \"prompts\\\\|Try \\\\`npm\\\\|windsurf\\\\|antigravity\\\\|copilot\\\\|kiro\\\\|roocode\\\\|codex\\\\|qoder\\\\|gemini\\\\|trae\\\\|opencode\\\\|cursor\\\\|codebuddy\\\\|droid\\\\|kilocode\\\\|warp\\\\|augment\\\\|\\\\\"all\\\\\"\")",
       "Bash(python3 -c ' *)",
       "Bash(npx ts-node -e ' *)",
-      "Bash(grep -c \"^  {$\\\\|^    id:\" /Users/vitorfreitas/social-party-app/src/games/eu-nunca/cards.ts)"
+      "Bash(grep -c \"^  {$\\\\|^    id:\" /Users/vitorfreitas/social-party-app/src/games/eu-nunca/cards.ts)",
+      "Bash(git -C /Users/vitorfreitas/social-party-app diff --name-only HEAD)",
+      "Bash(git -C /Users/vitorfreitas/social-party-app diff --stat HEAD -- src/screens/arquivos/ src/games/arquivos/)",
+      "Bash(git -C /Users/vitorfreitas/social-party-app status --short -- src/screens/arquivos/ src/games/arquivos/)"
     ]
   }
 }

@@ -1,0 +1,67 @@
+{
+  "_comentario": "Firebase Realtime Database Security Rules — Arquivos",
+  "_versao": "0.2",
+  "_instrucoes": [
+    "Sprint 10: regras revisadas com documentação de limitações de segurança.",
+    "Copiar o conteúdo de 'rules' para o console Firebase junto das regras globais do app.",
+    "Pré-requisito: Firebase Anonymous Auth habilitado.",
+    "",
+    "LIMITAÇÃO ESTRUTURAL CONHECIDA (MVP sem backend):",
+    "  A regra .read em $codigo garante leitura da sala inteira a qualquer auth.",
+    "  Isso inclui arquivosPrivados. Regras de leitura em filhos não podem",
+    "  RESTRINGIR acesso já concedido por um ancestral no Firebase RTDB.",
+    "  Consequência: um cliente motivado pode ler arquivosPrivados de outros.",
+    "  Proteção real exige backend dedicado (Cloud Functions ou servidor próprio).",
+    "  No MVP, a proteção vem de:",
+    "    1. UI nunca exibe dados privados de outros jogadores",
+    "    2. observarEstadoPrivadoArquivos só subscreve o path do próprio jogador",
+    "    3. criarEstadoFirebaseArquivos nunca inclui dados privados no estadoPublico",
+    "",
+    "Alterações da v0.2 em relação à v0.1:",
+    "  - arquivosEventos: somente host escreve para evitar injeção de eventos.",
+    "    Jogadores não escrevem mais em arquivosEventos (ver persistirResultadoJogador).",
+    "  - estado: somente host e jogadores autenticados da sala escrevem.",
+    "    (igual à v0.1, mantido para que jogadores possam atualizar phaseProgress).",
+    "  - Documentação de limitações expandida.",
+    "",
+    "Proteções que FUNCIONAM nesta versão:",
+    "  - Escrita em arquivosEventos restrita ao host (evita eventos falsos)",
+    "  - Escrita em arquivosPrivados/$playerId restrita ao próprio jogador e host",
+    "  - Ready state: cada jogador escreve apenas o próprio nó"
+  ],
+  "rules": {
+    "salas": {
+      "$codigo": {
+        ".read": "auth !== null",
+        "jogadores": {
+          "$playerId": {
+            ".write": "auth.uid === $playerId || auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val()"
+          }
+        },
+        "estado": {
+          "_comentario": "estadoPublico de Arquivos — nunca inclui dados privados (ver criarEstadoFirebaseArquivos). Host e jogadores autenticados escrevem.",
+          ".read": "auth !== null",
+          ".write": "auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val() || root.child('salas').child($codigo).child('jogadores').child(auth.uid).exists()"
+        },
+        "arquivosPrivados": {
+          "_comentario": "NOTA: leitura já é concedida pela regra .read em $codigo. Regras de escrita abaixo protegem gravações indevidas.",
+          "$playerId": {
+            ".write": "auth.uid === $playerId || auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val()"
+          }
+        },
+        "arquivosEventos": {
+          "_comentario": "Log auditável. Somente host escreve para evitar injeção de eventos falsos por clientes.",
+          ".read": "auth !== null",
+          ".write": "auth.uid === root.child('salas').child($codigo).child('anfitriaoId').val()"
+        },
+        "arquivosReady": {
+          "_comentario": "Ready state. Todos leem para contagem de prontidão. Cada jogador escreve apenas o próprio nó.",
+          ".read": "auth !== null",
+          "$playerId": {
+            ".write": "auth.uid === $playerId"
+          }
+        }
+      }
+    }
+  }
+}

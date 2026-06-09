@@ -27,7 +27,7 @@ import { cores, espacamento, familias, tipografia } from '@/theme/colors';
 type Props = NativeStackScreenProps<RootStackParamList, 'Lobby'>;
 
 export function TelaLobby({ navigation, route }: Props) {
-  const { roomCode, jogadorId } = route.params;
+  const { roomCode, jogoId, jogadorId } = route.params;
   const [jogadores, setJogadores] = useState<Player[]>([]);
   const [anfitriaoId, setAnfitriaoId] = useState<PlayerId | null>(null);
   const [salaRemovida, setSalaRemovida] = useState(false);
@@ -121,7 +121,9 @@ export function TelaLobby({ navigation, route }: Props) {
         <Text style={estilos.legenda}>sala</Text>
         <CodigoSala codigo={roomCode} tamanho="medio" />
         <Text style={estilos.fraseCabecalho}>
-          alguém aqui não vai ser quem parece.
+          {jogoId === 'arquivos'
+            ? 'cada pessoa tem uma parte da verdade.'
+            : 'alguém aqui não vai ser quem parece.'}
         </Text>
       </View>
 

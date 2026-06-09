@@ -132,6 +132,14 @@ export type {
   ResultadoVerdadeDesafio,
 } from './verdadeDesafioLocalAdapter';
 
+export {
+  processarResultadoArquivos,
+  processarEvidenciaLiberada,
+  processarAcaoSecretaConcluida,
+  processarVereditoRegistrado,
+} from './arquivosAdapter';
+export type { ResultadoArquivos } from './arquivosAdapter';
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type {
@@ -152,6 +160,7 @@ export type {
   EuNuncaSessaoStats,
   QuemNaSalaSessaoStats,
   VerdadeDesafioSessaoStats,
+  ArquivosSessaoStats,
   DestaqueJogador,
   DossieDoCapos,
   MomentoCallback,

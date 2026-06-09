@@ -64,6 +64,9 @@ export function iniciarSessao(
     vezesTraidorAlianca: 0,
     dubidasCertasDuvido: 0,
     rankingsVencidosDuvido: 0,
+    objetivosArquivosAlcancados: 0,
+    segredosExpostosArquivos: 0,
+    acoesArquivosConcluidas: 0,
   }));
 
   sessaoAtual = {
@@ -347,6 +350,9 @@ export function assegurarSessaoIniciada(
         vezesTraidorAlianca: 0,
         dubidasCertasDuvido: 0,
         rankingsVencidosDuvido: 0,
+        objetivosArquivosAlcancados: 0,
+        segredosExpostosArquivos: 0,
+        acoesArquivosConcluidas: 0,
       })),
     };
     notificar();

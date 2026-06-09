@@ -73,6 +73,11 @@ const PESO_MOMENTOS_CAOS: Partial<Record<TipoMomento, number>> = {
   // Duvido
   leitura_perfeita_duvido: 1, // duvidou certo — leitura social aguçada
   aposta_errada_duvido: 2, // apostou errado num ranking — exposição alta
+  // Arquivos
+  teoria_quebrada_arquivos: 2, // evidência derruba teoria — virada narrativa forte
+  caso_fracassou_arquivos: 2, // grupo falhou completamente — frustração coletiva
+  objetivo_exposto_arquivos: 1, // segredo revelado — exposição pesada
+  acao_secreta_gerou_suspeita_arquivos: 1, // comportamento virou evidência
   // De 0 a 10
   grupo_partido_d010: 1,
   ninguem_entendeu_d010: 1,

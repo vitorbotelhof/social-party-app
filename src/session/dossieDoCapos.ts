@@ -224,6 +224,60 @@ function destaqueTraidorAlianca(
   };
 }
 
+// ─── Destaques Arquivos ───────────────────────────────────────────────────────
+
+function destaqueInvestigadorArquivos(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort(
+    (a, b) =>
+      (b.objetivosArquivosAlcancados ?? 0) -
+      (a.objetivosArquivosAlcancados ?? 0),
+  )[0];
+  if (!top || (top.objetivosArquivosAlcancados ?? 0) < 1) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o melhor investigador',
+    descricao: `alcançou o objetivo pessoal em arquivos`,
+  };
+}
+
+function destaqueSegredoExpostoArquivos(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort(
+    (a, b) =>
+      (b.segredosExpostosArquivos ?? 0) - (a.segredosExpostosArquivos ?? 0),
+  )[0];
+  if (!top || (top.segredosExpostosArquivos ?? 0) < 1) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o exposto',
+    descricao: 'o segredo foi percebido durante a investigação',
+  };
+}
+
+function destaqueAgenteCampoArquivos(
+  jogadores: SessaoJogador[],
+  _nomes: Map<PlayerId, string>,
+): DestaqueJogador | null {
+  const top = [...jogadores].sort(
+    (a, b) =>
+      (b.acoesArquivosConcluidas ?? 0) - (a.acoesArquivosConcluidas ?? 0),
+  )[0];
+  if (!top || (top.acoesArquivosConcluidas ?? 0) < 2) return null;
+
+  return {
+    jogadorId: top.id,
+    titulo: 'o agente de campo',
+    descricao: `cumpriu ${top.acoesArquivosConcluidas} ações secretas em arquivos`,
+  };
+}
+
 function gerarDestaquesJogadores(
   jogadores: SessaoJogador[],
   nomes: Map<PlayerId, string>,
@@ -245,6 +299,10 @@ function gerarDestaquesJogadores(
     // Aliança
     destaquePoliticoAlianca(jogadores, nomes),
     destaqueTraidorAlianca(jogadores, nomes),
+    // Arquivos
+    destaqueInvestigadorArquivos(jogadores, nomes),
+    destaqueSegredoExpostoArquivos(jogadores, nomes),
+    destaqueAgenteCampoArquivos(jogadores, nomes),
   ].filter((d): d is DestaqueJogador => d !== null);
 
   // Evita destacar a mesma pessoa duas vezes — mantém o primeiro destaque
@@ -284,6 +342,12 @@ const PRIORIDADE_MOMENTO: Record<string, number> = {
   missao_sabotada_alianca: 86,
   rejeicao_em_cadeia_alianca: 74,
   confianca_restaurada_alianca: 58,
+  // Arquivos
+  teoria_quebrada_arquivos: 83, // nova evidência derruba teoria — virada forte
+  caso_resolvido_arquivos: 89, // caso fechado — payoff coletivo de alto impacto
+  caso_fracassou_arquivos: 79, // fracasso investigativo — memorable por frustração
+  objetivo_exposto_arquivos: 76, // segredo revelado — exposição pessoal
+  acao_secreta_gerou_suspeita_arquivos: 67, // comportamento suspeito na mesa
 };
 
 function escolherMomentoDaSessao(momentos: Momento[]): Momento | null {

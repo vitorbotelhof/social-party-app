@@ -70,6 +70,12 @@ export type TipoMomento =
   // ── Duvido ─────────────────────────────────────────────────────────────────
   | 'leitura_perfeita_duvido' // duvidou de item inválido — leu o bluff corretamente
   | 'aposta_errada_duvido' // duvidou de item válido — pagou o preço
+  // ── Arquivos ────────────────────────────────────────────────────────────────
+  | 'teoria_quebrada_arquivos' // nova evidência derrubou a teoria do grupo
+  | 'caso_resolvido_arquivos' // grupo acertou ao menos 2 das 3 perguntas obrigatórias
+  | 'caso_fracassou_arquivos' // grupo errou todas as perguntas obrigatórias
+  | 'objetivo_exposto_arquivos' // segredo de um personagem foi percebido pelo grupo
+  | 'acao_secreta_gerou_suspeita_arquivos' // ação secreta concluída teve metainformação publicada
   // ── De 0 a 10 ──────────────────────────────────────────────────────────────
   | 'leitura_perfeita_d010' // todos adivinhadores acertaram ±1 na mesma rodada
   | 'acerto_exato_d010' // alguém acertou a nota exata (erro = 0)
@@ -230,6 +236,16 @@ export interface De0a10SessaoStats {
   encerradaVoluntariamente: boolean;
 }
 
+export interface ArquivosSessaoStats {
+  caseId: string;
+  grade: string;
+  pontosObtidos: number;
+  pontosPossiveis: number;
+  totalJogadores: number;
+  acoesSecretasResolvidas: number;
+  jogadoresComObjetivoAlcancado: number;
+}
+
 export interface JogoSessao {
   jogoId: GameId;
   iniciadoEm: number;
@@ -248,6 +264,7 @@ export interface JogoSessao {
   quemNaSala?: QuemNaSalaSessaoStats;
   verdadeDesafio?: VerdadeDesafioSessaoStats;
   de0a10?: De0a10SessaoStats;
+  arquivos?: ArquivosSessaoStats;
 }
 
 // ─── Jogador na sessão ────────────────────────────────────────────────────────
@@ -295,6 +312,11 @@ export interface SessaoJogador {
   // Duvido
   dubidasCertasDuvido: number; // duvidou de item inválido — leu o bluff
   rankingsVencidosDuvido: number; // sobreviveu como último ativo no ranking
+
+  // Arquivos
+  objetivosArquivosAlcancados: number; // objetivo individual alcançado
+  segredosExpostosArquivos: number; // segredo foi percebido durante investigação
+  acoesArquivosConcluidas: number; // ações secretas concluídas (não recusadas)
 }
 
 // ─── Sessão ───────────────────────────────────────────────────────────────────

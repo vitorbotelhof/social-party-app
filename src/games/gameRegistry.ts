@@ -6,6 +6,11 @@ import type {
   PerfilDescobertaJogo,
   TagSocialId,
 } from '@/games/taxonomia';
+import {
+  ARQUIVOS_DISPONIVEL,
+  ARQUIVOS_MAX_JOGADORES,
+  ARQUIVOS_MIN_JOGADORES,
+} from '@/games/arquivos/releaseFlags';
 
 export type CategoriaEmocional =
   | 'tensao_misterio'
@@ -107,6 +112,61 @@ export interface DefinicaoJogo {
 }
 
 export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
+  {
+    id: 'arquivos',
+    nome: 'Arquivos',
+    slogan: 'cada pessoa tem uma parte da verdade.',
+    descricao:
+      'Um caso social de investigação cooperativa com segredos individuais. O grupo precisa reconstruir o que aconteceu, mas ninguém tem a história inteira.',
+    cover: require('../../assets/games/arquivos/cover.png'),
+    banner: require('../../assets/games/arquivos/banner.png'),
+    minJogadores: ARQUIVOS_MIN_JOGADORES,
+    maxJogadores: ARQUIVOS_MAX_JOGADORES,
+    tempoMedio: '35-45 min',
+    intensidade: 2,
+    disponivel: ARQUIVOS_DISPONIVEL,
+    supportsLocal: false,
+    supportsRealtime: true,
+    categoriasPrincipais: [
+      'blefe_deducao',
+      'confissoes_revelacoes',
+      'conhecimento_grupo',
+    ],
+    tagsSociais: ['deducao', 'segredo', 'conversa', 'paranoia'],
+    contextos: ['ninguem_confia', 'pra_gerar_historia', 'grupo_intimo'],
+    descoberta: {
+      mecanicaPrincipal: 'deducao',
+      intencaoSocial: 'gerar_historia',
+      ritmo: 2,
+      exposicao: 3,
+      energiaFisica: 1,
+      conversaPosRodada: 5,
+      complexidade: 4,
+      intimidade: 3,
+      toleranciaVergonha: 2,
+    },
+    socialTags: ['investigação', 'segredos', 'dedução'],
+    categorias: ['tensao_misterio', 'revelacoes_caos'],
+    destaque: true,
+    ordemNaCategoria: 1,
+    instrucoes: {
+      objetivo:
+        'Reconstruir a verdade de um caso usando arquivos privados, conversa e dedução. Cada pessoa recebe um personagem, pistas e um objetivo individual que pode entrar em conflito com a investigação.',
+      passos: [
+        'Cada jogador entra na sala pelo próprio celular e recebe um personagem com arquivos privados.',
+        'O grupo lê o caso inicial e conversa para montar a primeira teoria.',
+        'Cada pessoa decide o que revelar, resumir ou esconder, porque alguns arquivos também prejudicam sua reputação.',
+        'No meio da partida, o app libera uma nova evidência que muda a leitura do caso.',
+        'Alguns jogadores recebem ações secretas leves que podem destravar informações extras.',
+        'No final, o grupo registra o veredito e o app revela a verdade completa.',
+      ],
+      dicas: [
+        'Não leia tudo em voz alta. Transforme seus arquivos em perguntas para o grupo.',
+        'Segredo não significa culpa. Às vezes a pessoa está escondendo outra coisa.',
+        'Quando uma teoria parecer perfeita cedo demais, procure o detalhe que não encaixa.',
+      ],
+    },
+  },
   {
     id: 'na-ponta-da-lingua',
     nome: 'Na Ponta da Língua',
@@ -770,7 +830,13 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     supportsLocal: true,
     supportsRealtime: false,
     categoriasPrincipais: ['improviso_performance', 'rapidos_para_esquentar'],
-    tagsSociais: ['competitivo', 'improviso', 'gritaria', 'baixo_texto', 'rapido'],
+    tagsSociais: [
+      'competitivo',
+      'improviso',
+      'gritaria',
+      'baixo_texto',
+      'rapido',
+    ],
     contextos: ['pra_comecar', 'pra_subir_energia', 'grupo_sem_vergonha'],
     descoberta: {
       mecanicaPrincipal: 'palavra',
@@ -821,7 +887,13 @@ export const JOGOS: ReadonlyArray<DefinicaoJogo> = [
     supportsLocal: true,
     supportsRealtime: false,
     categoriasPrincipais: ['conhecimento_grupo', 'votacao_exposicao'],
-    tagsSociais: ['conversa', 'exposicao', 'grupo_intimo', 'baixo_texto', 'vergonha_leve'],
+    tagsSociais: [
+      'conversa',
+      'exposicao',
+      'grupo_intimo',
+      'baixo_texto',
+      'vergonha_leve',
+    ],
     contextos: ['pra_descobrir_o_grupo', 'grupo_intimo', 'casal'],
     descoberta: {
       mecanicaPrincipal: 'leitura',

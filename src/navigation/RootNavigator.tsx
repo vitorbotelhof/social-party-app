@@ -2,6 +2,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import type { RootStackParamList } from '@/navigation/types';
+import { TelaArquivos } from '@/screens/arquivos/TelaArquivos';
+import { TelaConfiguracaoArquivos } from '@/screens/arquivos/TelaConfiguracaoArquivos';
 import { TelaInquisicao } from '@/screens/inquisicao/TelaInquisicao';
 import { TelaConfiguracaoLocalAlianca } from '@/screens/alianca/local/TelaConfiguracaoLocalAlianca';
 import { TelaLocalAlianca } from '@/screens/alianca/local/TelaLocalAlianca';
@@ -85,6 +87,10 @@ function GameScreenGateway({
     );
   }
 
+  if (jogoId === 'arquivos') {
+    return <TelaArquivos route={route} navigation={navigation} />;
+  }
+
   return <GameScreen route={route} navigation={navigation} />;
 }
 
@@ -99,6 +105,9 @@ function ConfiguracaoJogoGateway({
   }
   if (route.params.jogoId === 'inquisicao') {
     return <TelaConfiguracaoInquisicao route={route} navigation={navigation} />;
+  }
+  if (route.params.jogoId === 'arquivos') {
+    return <TelaConfiguracaoArquivos route={route} navigation={navigation} />;
   }
   return <TelaConfiguracaoJogo route={route} navigation={navigation} />;
 }

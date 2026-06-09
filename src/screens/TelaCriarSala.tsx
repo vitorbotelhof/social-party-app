@@ -23,6 +23,7 @@ import type { RootStackParamList } from '@/navigation/types';
 import { tocar } from '@/services/audio';
 import { obterOuCriarJogador } from '@/services/jogadorLocal';
 import { configurarPresenca } from '@/services/presenca';
+import { criarSalaArquivos } from '@/services/arquivosRealtime';
 import {
   criarSala,
   observarJogadores,
@@ -34,6 +35,7 @@ import { cores, espacamento, tipografia } from '@/theme/colors';
 type Props = NativeStackScreenProps<RootStackParamList, 'CriarSala'>;
 
 const MIN_JOGADORES = 3;
+const MIN_JOGADORES_ARQUIVOS = 6;
 
 export function TelaCriarSala({ navigation, route }: Props) {
   const { jogoId } = route.params;
@@ -62,10 +64,13 @@ export function TelaCriarSala({ navigation, route }: Props) {
       const idHost = jogadorLocal.id;
       meuIdRef.current = idHost;
       try {
-        const sala = await criarSala({
-          jogoId,
-          anfitriao: { id: idHost, nome: nomeLimpo },
-        });
+        const sala =
+          jogoId === 'arquivos'
+            ? await criarSalaArquivos({ id: idHost, nome: nomeLimpo })
+            : await criarSala({
+                jogoId,
+                anfitriao: { id: idHost, nome: nomeLimpo },
+              });
         if (cancelado) {
           await sairDaSala(sala.codigo, idHost);
           return;
@@ -152,7 +157,9 @@ export function TelaCriarSala({ navigation, route }: Props) {
     return <TelaCarregamento mensagem="Criando sala..." />;
   }
 
-  const podeIniciar = jogadores.length >= MIN_JOGADORES;
+  const minimoJogadores =
+    jogoId === 'arquivos' ? MIN_JOGADORES_ARQUIVOS : MIN_JOGADORES;
+  const podeIniciar = jogadores.length >= minimoJogadores;
 
   return (
     <SafeAreaView style={estilos.tela} edges={['top', 'bottom']}>
@@ -199,7 +206,7 @@ export function TelaCriarSala({ navigation, route }: Props) {
           <BotaoPrimario titulo="configurar e começar" onPress={aoConfigurar} />
         ) : (
           <Text style={estilos.aguardando}>
-            a galera ainda está entrando... mínimo {MIN_JOGADORES}
+            a galera ainda está entrando... mínimo {minimoJogadores}
           </Text>
         )}
       </View>

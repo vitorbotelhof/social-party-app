@@ -15,8 +15,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BotaoPrimario, BotaoVoltar } from '@/components';
 import type { RootStackParamList } from '@/navigation/types';
+import { entrarSalaArquivos } from '@/services/arquivosRealtime';
 import { obterOuCriarJogador, salvarNome } from '@/services/jogadorLocal';
-import { entrarNaSala } from '@/services/roomService';
+import { entrarNaSala, obterSala } from '@/services/roomService';
 import { RoomServiceError } from '@/types/room';
 import { cores, espacamento, raio } from '@/theme/colors';
 
@@ -86,10 +87,14 @@ export function TelaEntrarSala({ navigation }: Props) {
     setErroCodigo(null);
     const nomeLimpo = nome.trim();
     try {
-      const sala = await entrarNaSala({
-        codigo,
-        jogador: { id: jogadorId, nome: nomeLimpo },
-      });
+      const salaAtual = await obterSala(codigo);
+      const sala =
+        salaAtual?.jogoId === 'arquivos'
+          ? await entrarSalaArquivos(codigo, { id: jogadorId, nome: nomeLimpo })
+          : await entrarNaSala({
+              codigo,
+              jogador: { id: jogadorId, nome: nomeLimpo },
+            });
       await salvarNome(nomeLimpo);
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       navigation.replace('Lobby', {
