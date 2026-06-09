@@ -323,6 +323,8 @@ export function TelaInicio({ navigation }: Props) {
         navigation.navigate('ConfiguracaoLocalSincronia');
       } else if (jogoId === 'na-mesma-pagina') {
         navigation.navigate('ConfiguracaoLocalNaMesmaPagina');
+      } else if (jogoId === 'operacao-resgate') {
+        navigation.navigate('ConfiguracaoLocalOperacaoResgate');
       } else {
         navigation.navigate('ConfiguracaoLocal');
       }

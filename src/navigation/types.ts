@@ -19,6 +19,7 @@ import type {
 } from '@/games/voce-me-conhece/local/types';
 import type { ConfiguracaoSincronia } from '@/games/sincronia/types';
 import type { ConfiguracaoNMP } from '@/games/na-mesma-pagina/types';
+import type { ConfiguracaoOR } from '@/games/operacao-resgate/types';
 import type { GameId, PlayerId, RoomCode } from '@/engine/types';
 
 export type RootStackParamList = {
@@ -107,6 +108,8 @@ export type RootStackParamList = {
   JogoLocalSincronia: ConfiguracaoSincronia;
   ConfiguracaoLocalNaMesmaPagina: undefined;
   JogoLocalNaMesmaPagina: ConfiguracaoNMP;
+  ConfiguracaoLocalOperacaoResgate: undefined;
+  JogoLocalOperacaoResgate: ConfiguracaoOR;
   ListaEntrelinhas: undefined;
   JogoLocalEntrelinhas: { historiaId: string };
   ConfiguracaoLocalQuemNaSala: undefined;

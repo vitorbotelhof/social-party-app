@@ -22,6 +22,8 @@ import { TelaConfiguracaoLocalSincronia } from '@/screens/TelaConfiguracaoLocalS
 import { TelaJogoLocalSincronia } from '@/screens/TelaJogoLocalSincronia';
 import { TelaConfiguracaoLocalNaMesmaPagina } from '@/screens/TelaConfiguracaoLocalNaMesmaPagina';
 import { TelaJogoLocalNaMesmaPagina } from '@/screens/TelaJogoLocalNaMesmaPagina';
+import { TelaConfiguracaoLocalOperacaoResgate } from '@/screens/TelaConfiguracaoLocalOperacaoResgate';
+import { TelaJogoLocalOperacaoResgate } from '@/screens/TelaJogoLocalOperacaoResgate';
 import { TelaListaEntrelinhas } from '@/screens/TelaListaEntrelinhas';
 import { TelaJogoLocalEntrelinhas } from '@/screens/TelaJogoLocalEntrelinhas';
 import { TelaConfiguracaoLocalInquisicao } from '@/screens/inquisicao/local/TelaConfiguracaoLocalInquisicao';
@@ -426,6 +428,20 @@ export function RootNavigator() {
       <Stack.Screen
         name="JogoLocalNaMesmaPagina"
         component={TelaJogoLocalNaMesmaPagina}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
+      />
+      <Stack.Screen
+        name="ConfiguracaoLocalOperacaoResgate"
+        component={TelaConfiguracaoLocalOperacaoResgate}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="JogoLocalOperacaoResgate"
+        component={TelaJogoLocalOperacaoResgate}
         options={{
           headerShown: false,
           animation: 'fade_from_bottom',
