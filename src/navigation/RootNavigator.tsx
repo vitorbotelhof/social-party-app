@@ -20,6 +20,8 @@ import { TelaConfiguracaoLocalDe0a10 } from '@/screens/TelaConfiguracaoLocalDe0a
 import { TelaJogoLocalDe0a10 } from '@/screens/TelaJogoLocalDe0a10';
 import { TelaConfiguracaoLocalSincronia } from '@/screens/TelaConfiguracaoLocalSincronia';
 import { TelaJogoLocalSincronia } from '@/screens/TelaJogoLocalSincronia';
+import { TelaConfiguracaoLocalNaMesmaPagina } from '@/screens/TelaConfiguracaoLocalNaMesmaPagina';
+import { TelaJogoLocalNaMesmaPagina } from '@/screens/TelaJogoLocalNaMesmaPagina';
 import { TelaListaEntrelinhas } from '@/screens/TelaListaEntrelinhas';
 import { TelaJogoLocalEntrelinhas } from '@/screens/TelaJogoLocalEntrelinhas';
 import { TelaConfiguracaoLocalInquisicao } from '@/screens/inquisicao/local/TelaConfiguracaoLocalInquisicao';
@@ -410,6 +412,20 @@ export function RootNavigator() {
       <Stack.Screen
         name="JogoLocalSincronia"
         component={TelaJogoLocalSincronia}
+        options={{
+          headerShown: false,
+          animation: 'fade_from_bottom',
+          animationDuration: 220,
+        }}
+      />
+      <Stack.Screen
+        name="ConfiguracaoLocalNaMesmaPagina"
+        component={TelaConfiguracaoLocalNaMesmaPagina}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="JogoLocalNaMesmaPagina"
+        component={TelaJogoLocalNaMesmaPagina}
         options={{
           headerShown: false,
           animation: 'fade_from_bottom',

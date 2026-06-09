@@ -85,7 +85,12 @@
       "Bash(grep -c \"^  {$\\\\|^    id:\" /Users/vitorfreitas/social-party-app/src/games/eu-nunca/cards.ts)",
       "Bash(git -C /Users/vitorfreitas/social-party-app diff --name-only HEAD)",
       "Bash(git -C /Users/vitorfreitas/social-party-app diff --stat HEAD -- src/screens/arquivos/ src/games/arquivos/)",
-      "Bash(git -C /Users/vitorfreitas/social-party-app status --short -- src/screens/arquivos/ src/games/arquivos/)"
+      "Bash(git -C /Users/vitorfreitas/social-party-app status --short -- src/screens/arquivos/ src/games/arquivos/)",
+      "Skill(loop)",
+      "Skill(loop:*)",
+      "Bash(node --experimental-strip-types -e ' *)",
+      "Bash(grep -v \"ExperimentalWarning\\\\|Use \\\\`node\")",
+      "Bash(grep -v \"Experimental\\\\|Use \\\\`node\\\\|MODULE_TYPELESS\")"
     ]
   }
 }

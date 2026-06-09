@@ -321,6 +321,8 @@ export function TelaInicio({ navigation }: Props) {
         navigation.navigate('ListaEntrelinhas');
       } else if (jogoId === 'sincronia') {
         navigation.navigate('ConfiguracaoLocalSincronia');
+      } else if (jogoId === 'na-mesma-pagina') {
+        navigation.navigate('ConfiguracaoLocalNaMesmaPagina');
       } else {
         navigation.navigate('ConfiguracaoLocal');
       }
