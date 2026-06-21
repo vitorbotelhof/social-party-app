@@ -108,7 +108,15 @@
       "Bash(echo \"===EXIT: $?===\")",
       "mcp__visualize__read_me",
       "mcp__visualize__show_widget",
-      "Bash(npx ts-node *)"
+      "Bash(npx ts-node *)",
+      "Bash(npx eas-cli *)",
+      "Bash(npx serve *)",
+      "Bash(curl -s -o /dev/null -w \"index.html: %{http_code}\\\\n\" http://localhost:4173/)",
+      "Bash(curl -s -o /dev/null -w \"bundle: %{http_code}\\\\n\" http://localhost:4173/_expo/static/js/web/index-984e60b5bdf851811e6341547a4d805f.js)",
+      "Bash(kill %1)",
+      "Bash(curl -s -o /dev/null -w \"bundle: %{http_code}, size: %{size_download} bytes\\\\n\" http://localhost:4174/_expo/static/js/web/index-984e60b5bdf851811e6341547a4d805f.js)",
+      "Bash(pkill -f \"serve dist\")",
+      "Bash(echo \"exit: $?\")"
     ]
   }
 }
