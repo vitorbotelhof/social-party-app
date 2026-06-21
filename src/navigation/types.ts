@@ -1,9 +1,19 @@
+import type { DificuldadeSolo } from '@/games/solo/types';
 import type { CategoriaIdNPL } from '@/games/na-ponta-da-lingua/types';
 import type { ConfiguracaoDuvido, RankingDuvido } from '@/games/duvido/types';
 import type { CategoriaFazAiId, IntensidadeSocial } from '@/games/faz-ai/types';
-import type { CategoriaEuNuncaId, IntensidadeEuNunca } from '@/games/eu-nunca/types';
-import type { CategoriaVDId, IntensidadeVD } from '@/games/verdade-desafio/types';
-import type { CategoriaQNSId, IntensidadeQNS } from '@/games/quem-na-sala/types';
+import type {
+  CategoriaEuNuncaId,
+  IntensidadeEuNunca,
+} from '@/games/eu-nunca/types';
+import type {
+  CategoriaVDId,
+  IntensidadeVD,
+} from '@/games/verdade-desafio/types';
+import type {
+  CategoriaQNSId,
+  IntensidadeQNS,
+} from '@/games/quem-na-sala/types';
 import type { ConfiguracaoDe0a10 } from '@/games/de-0-a-10/types';
 import type {
   ConfiguracaoAlianca,
@@ -21,9 +31,9 @@ import type { ConfiguracaoSincronia } from '@/games/sincronia/types';
 import type { ConfiguracaoNMP } from '@/games/na-mesma-pagina/types';
 import type { ConfiguracaoOR } from '@/games/operacao-resgate/types';
 import type { GameId, PlayerId, RoomCode } from '@/engine/types';
+import type { NavigatorScreenParams } from '@react-navigation/native';
 
 export type RootStackParamList = {
-  Intro: undefined;
   Inicio: undefined;
   SelecaoJogo: undefined;
   DetalhesJogo: { jogoId: GameId };
@@ -129,6 +139,34 @@ export type RootStackParamList = {
     modoJogo: 'individual' | 'todos_juntos' | 'time_vs_time';
     times?: { nomeA: string; idsA: string[]; nomeB: string; idsB: string[] };
   };
+};
+
+// ─── Jogos Solo ───────────────────────────────────────────────────────────────
+// Stack próprio da aba "Solo" (jogos individuais de lógica).
+
+export type SoloStackParamList = {
+  SoloHome: undefined;
+  SelecaoShikaku: undefined;
+  Shikaku: { puzzleId: string };
+  SelecaoCodigoSecreto: undefined;
+  CodigoSecreto: { dificuldade: DificuldadeSolo };
+};
+
+// ─── Tab raiz ─────────────────────────────────────────────────────────────────
+// Duas abas: Social (todo o app atual) e Solo (jogos individuais).
+
+export type MainTabParamList = {
+  Social: NavigatorScreenParams<RootStackParamList> | undefined;
+  Solo: NavigatorScreenParams<SoloStackParamList> | undefined;
+};
+
+// ─── Stack de aplicação (nível mais alto) ─────────────────────────────────────
+// Intro (splash) → Main (as abas). O splash fica fora das abas para não
+// exibir a tab bar durante a abertura.
+
+export type AppStackParamList = {
+  Intro: undefined;
+  Main: NavigatorScreenParams<MainTabParamList> | undefined;
 };
 
 declare global {

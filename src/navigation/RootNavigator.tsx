@@ -1,7 +1,19 @@
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {
+  getFocusedRouteNameFromRoute,
+  type RouteProp,
+} from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import type { StyleProp, ViewStyle } from 'react-native';
+import Svg, { Circle, Rect } from 'react-native-svg';
 
-import type { RootStackParamList } from '@/navigation/types';
+import type {
+  AppStackParamList,
+  MainTabParamList,
+  RootStackParamList,
+} from '@/navigation/types';
+import { SoloNavigator } from '@/navigation/SoloNavigator';
 import { TelaArquivos } from '@/screens/arquivos/TelaArquivos';
 import { TelaConfiguracaoArquivos } from '@/screens/arquivos/TelaConfiguracaoArquivos';
 import { TelaInquisicao } from '@/screens/inquisicao/TelaInquisicao';
@@ -162,10 +174,11 @@ function JogoLocalAliancaScreen({
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export function RootNavigator() {
+// Stack da aba "Social" — contém todo o app de jogos sociais existente.
+function SocialNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Intro"
+      initialRouteName="Inicio"
       screenOptions={{
         headerStyle: { backgroundColor: cores.fundo },
         headerTintColor: cores.primaria,
@@ -180,11 +193,6 @@ export function RootNavigator() {
         animationDuration: 250,
       }}
     >
-      <Stack.Screen
-        name="Intro"
-        component={TelaIntro}
-        options={{ headerShown: false, animation: 'none' }}
-      />
       <Stack.Screen
         name="Inicio"
         component={TelaInicio}
@@ -477,5 +485,164 @@ export function RootNavigator() {
         }}
       />
     </Stack.Navigator>
+  );
+}
+
+// ─── Ícones das abas ──────────────────────────────────────────────────────────
+
+interface IconeAbaProps {
+  cor: string;
+  tamanho: number;
+}
+
+/** Social — duas pessoas (círculos sobrepostos). */
+function IconeSocial({ cor, tamanho }: IconeAbaProps) {
+  return (
+    <Svg width={tamanho} height={tamanho} viewBox="0 0 24 24">
+      <Circle cx={9} cy={8} r={3.2} fill={cor} />
+      <Circle cx={16} cy={9} r={2.6} fill={cor} opacity={0.55} />
+      <Rect x={3} y={13} width={12} height={7} rx={3.5} fill={cor} />
+      <Rect
+        x={13.5}
+        y={14}
+        width={8}
+        height={6}
+        rx={3}
+        fill={cor}
+        opacity={0.55}
+      />
+    </Svg>
+  );
+}
+
+/** Solo — grade de retângulos (lógica/puzzle). */
+function IconeSolo({ cor, tamanho }: IconeAbaProps) {
+  return (
+    <Svg width={tamanho} height={tamanho} viewBox="0 0 24 24">
+      <Rect x={3} y={3} width={11} height={7} rx={1.6} fill={cor} />
+      <Rect
+        x={16}
+        y={3}
+        width={5}
+        height={11}
+        rx={1.6}
+        fill={cor}
+        opacity={0.55}
+      />
+      <Rect
+        x={3}
+        y={12}
+        width={5}
+        height={9}
+        rx={1.6}
+        fill={cor}
+        opacity={0.55}
+      />
+      <Rect
+        x={10}
+        y={12}
+        width={11}
+        height={4}
+        rx={1.6}
+        fill={cor}
+        opacity={0.85}
+      />
+      <Rect
+        x={10}
+        y={18}
+        width={11}
+        height={3}
+        rx={1.5}
+        fill={cor}
+        opacity={0.4}
+      />
+    </Svg>
+  );
+}
+
+// ─── Tab bar ──────────────────────────────────────────────────────────────────
+
+const ESTILO_TAB_BAR: ViewStyle = {
+  backgroundColor: cores.fundoSecundario,
+  borderTopColor: cores.borda,
+  borderTopWidth: 1,
+  paddingTop: 6,
+};
+
+/**
+ * A tab bar só aparece nos "hubs" de cada aba. Dentro de um jogo
+ * (telas full-screen com rodapés próprios) ela some para não conflitar.
+ */
+function estiloTabBarPorRota(
+  route: RouteProp<MainTabParamList, keyof MainTabParamList>,
+  rotasComBarra: string[],
+): StyleProp<ViewStyle> {
+  const nome = getFocusedRouteNameFromRoute(route) ?? rotasComBarra[0];
+  return rotasComBarra.includes(nome) ? ESTILO_TAB_BAR : { display: 'none' };
+}
+
+const Tab = createBottomTabNavigator<MainTabParamList>();
+
+function MainTabNavigator() {
+  return (
+    <Tab.Navigator
+      initialRouteName="Social"
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: cores.primaria,
+        tabBarInactiveTintColor: cores.textoMudo,
+        tabBarStyle: ESTILO_TAB_BAR,
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+      }}
+    >
+      <Tab.Screen
+        name="Social"
+        component={SocialNavigator}
+        options={({ route }) => ({
+          tabBarLabel: 'Social',
+          tabBarIcon: ({ color, size }) => (
+            <IconeSocial cor={color} tamanho={size} />
+          ),
+          tabBarStyle: estiloTabBarPorRota(route, ['Inicio']),
+        })}
+      />
+      <Tab.Screen
+        name="Solo"
+        component={SoloNavigator}
+        options={({ route }) => ({
+          tabBarLabel: 'Solo',
+          tabBarIcon: ({ color, size }) => (
+            <IconeSolo cor={color} tamanho={size} />
+          ),
+          tabBarStyle: estiloTabBarPorRota(route, [
+            'SoloHome',
+            'SelecaoShikaku',
+          ]),
+        })}
+      />
+    </Tab.Navigator>
+  );
+}
+
+// ─── Navegador raiz da aplicação ──────────────────────────────────────────────
+
+const AppStack = createNativeStackNavigator<AppStackParamList>();
+
+export function RootNavigator() {
+  return (
+    <AppStack.Navigator
+      initialRouteName="Intro"
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: cores.fundo },
+      }}
+    >
+      <AppStack.Screen
+        name="Intro"
+        component={TelaIntro}
+        options={{ animation: 'none' }}
+      />
+      <AppStack.Screen name="Main" component={MainTabNavigator} />
+    </AppStack.Navigator>
   );
 }

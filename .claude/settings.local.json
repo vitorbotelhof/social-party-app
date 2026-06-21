@@ -90,7 +90,25 @@
       "Skill(loop:*)",
       "Bash(node --experimental-strip-types -e ' *)",
       "Bash(grep -v \"ExperimentalWarning\\\\|Use \\\\`node\")",
-      "Bash(grep -v \"Experimental\\\\|Use \\\\`node\\\\|MODULE_TYPELESS\")"
+      "Bash(grep -v \"Experimental\\\\|Use \\\\`node\\\\|MODULE_TYPELESS\")",
+      "Bash(cd /Users/vitorfreitas/bolaodosamigos && echo \"=== src tree ===\" && find src -type d | head -60 && echo \"=== docs ===\" && ls docs)",
+      "Bash(grep -rn \"supabase.from\\(\\\\|supabase\\\\s*$\\\\|from\\(\\\\\"\" src/routes src/hooks src/components)",
+      "Bash(gh pr *)",
+      "Bash(grep -rn \"apostas feitas\\\\|de 104\\\\|de \\\\${\\\\|betsCount\\\\|bets_count\\\\|betCount\\\\|made\\\\b\" src/routes src/hooks src/components)",
+      "Bash(npm --version)",
+      "Bash(echo \"EXIT=$?\")",
+      "Read(//tmp/**)",
+      "Bash(grep -rn \"from\\(\\\\\"match_scores\\\\\"\\)\\\\|from\\('match_scores'\\)\" src/routes src/hooks src/components)",
+      "Bash(grep -rn \"from\\(\\\\\"bets\\\\\"\\)\" src/routes src/hooks src/components)",
+      "Bash(grep -rn \"from\\(\\\\\"daily_kings\\\\\"\\)\" src/routes src/hooks src/components)",
+      "Bash(awk '/match_scores: \\\\{/{f=1} f{print} /Relationships/{if\\(f\\){c++; if\\(c>=1\\){f=0}}}' src/integrations/supabase/types.ts)",
+      "Bash(npx vitest *)",
+      "Bash(grep -E \"^tsx$|^ts-node$\")",
+      "Bash(node /tmp/vs/shikaku/__verify.js)",
+      "Bash(echo \"===EXIT: $?===\")",
+      "mcp__visualize__read_me",
+      "mcp__visualize__show_widget",
+      "Bash(npx ts-node *)"
     ]
   }
 }

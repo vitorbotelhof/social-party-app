@@ -13,7 +13,7 @@ import { AppState, type AppStateStatus } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { registrarJogosDisponiveis } from '@/games';
-import type { RootStackParamList } from '@/navigation/types';
+import type { AppStackParamList } from '@/navigation/types';
 import { RootNavigator } from '@/navigation/RootNavigator';
 import { carregarPreferenciaSom } from '@/services/audio';
 import { initFirebase } from '@/services/firebase';
@@ -30,7 +30,7 @@ initFirebase();
 registrarJogosDisponiveis();
 void carregarPreferenciaSom();
 
-const navegacaoRef = createNavigationContainerRef<RootStackParamList>();
+const navegacaoRef = createNavigationContainerRef<AppStackParamList>();
 
 const temaNavegacao = {
   dark: false,
@@ -72,10 +72,16 @@ async function restaurarPartidaSeNecessario(): Promise<void> {
       await limparPartida();
       return;
     }
-    navegacaoRef.navigate('Game', {
-      roomCode: dados.roomCode,
-      jogoId: sala.jogoId,
-      jogadorId: dados.jogadorId,
+    navegacaoRef.navigate('Main', {
+      screen: 'Social',
+      params: {
+        screen: 'Game',
+        params: {
+          roomCode: dados.roomCode,
+          jogoId: sala.jogoId,
+          jogadorId: dados.jogadorId,
+        },
+      },
     });
   } catch {
     await limparPartida();
